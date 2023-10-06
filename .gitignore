@@ -18,6 +18,9 @@ local.properties
 # ignore yml file
 application.yml
 
+# ignore data.sl file
+data.sql
+
 # External tool builders
 .externalToolBuilders/
 

@@ -38,7 +38,7 @@ jobs:
       - name: Make Directory
         run: mkdir -p deploy
       - name: Copy Jar
-        run: cp /build/libs/*.jar ./deploy
+        run: cp ./build/libs/*.jar ./deploy
       - name: Make zip file
         run: zip -r ./ordermanage.zip ./deploy
         shell: bash

@@ -1,4 +1,4 @@
-[submodule "/LaserOrderManage-server-submodule-config"]
-	path = /LaserOrderManage-server-submodule-config
+[submodule "LaserOrderManage-server-submodule-config"]
+	path = LaserOrderManage-server-submodule-config
 	url = https://github.com/AppLinkers/LaserOrderManage-server-submodule-config.git
 	branch = main

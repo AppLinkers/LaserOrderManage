@@ -20,7 +20,8 @@ local.properties
 .target/
 
 # ignore yml file
-application.yml
+application-dev.yml
+application-prod.yml
 
 # ignore data.sl file
 data.sql

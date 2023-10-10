@@ -46,6 +46,6 @@ tasks.named('test') {
 
 tasks.register('copyGitSubmodule', Copy) {
 	from './LaserOrderManage-server-submodule-config'
-	include '*.yml','*.sql'
+	include '*.yml'
 	into './src/main/resources'
 }

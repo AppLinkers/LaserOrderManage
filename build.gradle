@@ -43,3 +43,9 @@ dependencies {
 tasks.named('test') {
 	useJUnitPlatform()
 }
+
+tasks.register('copyGitSubmodule', Copy) {
+	from 'src/main/resources/LaserOrderManage-server-submodule-config'
+	include '*.yml','*.sql'
+	into './src/main/resources'
+}

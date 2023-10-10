@@ -44,8 +44,10 @@ tasks.named('test') {
 	useJUnitPlatform()
 }
 
-task copyGitSubmodule(type: Copy) {
-	from './laser-ordermanage-server-submodule-config'
-	include '*.yml', '*.sql'
-	into './src/main/resources'
+task copyPrivate(type: Copy) {
+	copy {
+		from './laser-ordermanage-server-submodule-config'
+		include '*.yml', '*.sql'
+		into 'src/main/resources'
+	}
 }

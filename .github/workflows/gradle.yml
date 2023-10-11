@@ -39,8 +39,12 @@ jobs:
         run: mkdir -p deploy
       - name: Copy Jar
         run: cp ./build/libs/*.jar ./deploy
+      - name: Copy appspec
+        run: cp appspec.yml ./deploy
+      - name: Copy scprits
+        run: cp scripts/** ./deploy
       - name: Make zip file
-        run: zip -r ./ordermanage.zip ./deploy
+        run: zip -r ./ordermanage.zip ./deploy/*
         shell: bash
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1

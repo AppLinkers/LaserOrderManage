@@ -4,7 +4,6 @@ files:
   - source: /
     destination: /home/ubuntu/app/
     overwrite: yes
-
 permissions:
   - object: /
     pattern: "**"

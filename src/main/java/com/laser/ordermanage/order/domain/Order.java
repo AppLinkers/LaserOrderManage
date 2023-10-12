@@ -26,6 +26,9 @@ public class Order extends CreatedAtEntity {
     @ManyToOne
     private Customer customer;
 
+    // todo: Quotation OneToOne 으로 변경
+    private Long quotation_id;
+
     @NotNull
     private String name;
 

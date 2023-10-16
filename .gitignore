@@ -4,6 +4,7 @@
 .gradle
 build
 .idea
+out
 
 ### Eclipse ###
 .metadata

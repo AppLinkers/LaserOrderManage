@@ -2,6 +2,7 @@ package com.laser.ordermanage.user.domain;
 
 import com.laser.ordermanage.user.domain.type.Role;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,7 +14,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 @Entity
-@Table(name = "users")
+@Table(name = "user_table")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 public class UserEntity implements UserDetails {
@@ -22,20 +23,26 @@ public class UserEntity implements UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotNull
     private String email;
 
+    @NotNull
     private String password;
 
+    @NotNull
     @Enumerated(value = EnumType.STRING)
     private Role role;
 
+    @NotNull
     private String phone;
 
-    private String zone_code;
+    @NotNull
+    private String zoneCode;
 
+    @NotNull
     private String address;
 
-    private String detail_address;
+    private String detailAddress;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

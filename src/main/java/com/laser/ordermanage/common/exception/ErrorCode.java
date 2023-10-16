@@ -14,6 +14,7 @@ public enum ErrorCode {
     INVALID_JWT_TOKEN(HttpStatus.BAD_REQUEST, "JWT Token 정보가 유효하지 않습니다."),
     INVALID_ACCESS_TOKEN(HttpStatus.BAD_REQUEST, "Access Token 정보가 유효하지 않습니다."),
     INVALID_REFRESH_TOKEN(HttpStatus.BAD_REQUEST, "Refresh Token 정보가 유효하지 않습니다."),
+    INVALID_STAGE_PARAMS(HttpStatus.BAD_REQUEST, "Stage 파라미터가 잘못되었습니다."),
 
     // 403 FORBIDDEN 인증 필요
     DENIED_AUTHENTICATION(HttpStatus.FORBIDDEN, "해당 요청에 대한 권한이 없습니다."),

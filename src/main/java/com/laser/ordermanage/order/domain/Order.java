@@ -10,6 +10,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -28,6 +29,12 @@ public class Order extends CreatedAtEntity {
 
     // todo: Quotation OneToOne 으로 변경
     private Long quotation_id;
+
+    // todo: Quotation Field 로 이동
+    private Long quotation_total_cost;
+
+    // todo: Quotation Delivery Field 로 이동
+    private LocalDate quotation_delivery_date;
 
     @NotNull
     private String name;

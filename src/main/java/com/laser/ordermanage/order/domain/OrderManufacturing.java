@@ -7,6 +7,9 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
@@ -27,5 +30,22 @@ public class OrderManufacturing {
     @NotNull
     @Convert(converter = BooleanToYNConverter.class)
     private Boolean isWeldingFabrication;
+
+    public List<String> toValueList() {
+        List<String> valueList = new ArrayList<>();
+        if (isLaserCutting) {
+            valueList.add("레이저 가공");
+        }
+
+        if (isBending) {
+            valueList.add("절곡");
+        }
+
+        if (isWeldingFabrication) {
+            valueList.add("용접 및 제작");
+        }
+
+        return valueList;
+    }
 
 }

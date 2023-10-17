@@ -9,19 +9,35 @@ import org.springframework.http.HttpStatus;
 public enum ErrorCode {
 
     // 400 BAD_REQUEST 잘못된 요청
-    BAD_REQUEST(HttpStatus.BAD_REQUEST, "잘못된 요청입니다."),
-    INVALID_USER_PASSWORD(HttpStatus.BAD_REQUEST, "잘못된 비밀번호 입니다."),
-    INVALID_JWT_TOKEN(HttpStatus.BAD_REQUEST, "JWT Token 정보가 유효하지 않습니다."),
-    INVALID_ACCESS_TOKEN(HttpStatus.BAD_REQUEST, "Access Token 정보가 유효하지 않습니다."),
-    INVALID_REFRESH_TOKEN(HttpStatus.BAD_REQUEST, "Refresh Token 정보가 유효하지 않습니다."),
-    INVALID_STAGE_PARAMS(HttpStatus.BAD_REQUEST, "Stage 파라미터가 잘못되었습니다."),
+    BAD_REQUEST("-000", HttpStatus.BAD_REQUEST, "잘못된 요청입니다."),
+    MISSING_JWT_TOKEN("-001", HttpStatus.BAD_REQUEST, "JWT 토큰 정보가 요청 헤더에 포함되지 않았습니다."),
+    INVALID_CREDENTIALS("-002", HttpStatus.BAD_REQUEST, "ID 또는 비밀번호가 올바르지 않습니다."),
+
+    INVALID_STAGE_PARAMS("-003", HttpStatus.BAD_REQUEST, "Stage 파라미터가 잘못되었습니다."),
+    INVALID_MANUFACTURING_PARAMS("-004", HttpStatus.BAD_REQUEST, "Manufacturing 파라미터가 잘못되었습니다."),
+
+    // 401 UNAUTHORIZED 인증 자격 정보가 유효하지 않음
+    UNAUTHORIZED("-100", HttpStatus.UNAUTHORIZED, "인증 자격 정보가 유효하지 않습니다."),
+    INVALID_JWT_TOKEN("-101", HttpStatus.UNAUTHORIZED, "JWT Token 정보가 유효하지 않습니다."),
+    EXPIRED_JWT_TOKEN("-102", HttpStatus.UNAUTHORIZED, "JWT 토큰 정보가 만료되었습니다."),
+    UNSUPPORTED_JWT_TOKEN("-103", HttpStatus.UNAUTHORIZED, "지원되지 않는 JWT 토큰 입니다."),
+    UNAUTHORIZED_JWT_TOKEN("-104", HttpStatus.UNAUTHORIZED, "JWT 토큰에 권한정보가 존재하지 않습니다."),
+
+    INVALID_ACCESS_JWT_TOKEN("-105", HttpStatus.BAD_REQUEST, "Access JWT 토큰 정보가 유효하지 않습니다."),
+    INVALID_REFRESH_JWT_TOKEN("-106", HttpStatus.BAD_REQUEST, "Refresh JWT 토큰 정보가 유효하지 않습니다."),
 
     // 403 FORBIDDEN 인증 필요
-    DENIED_AUTHENTICATION(HttpStatus.FORBIDDEN, "해당 요청에 대한 권한이 없습니다."),
+    FORBIDDEN("-300", HttpStatus.FORBIDDEN, "인증이 필요합니다."),
+    DENIED_ACCESS("-301", HttpStatus.FORBIDDEN, "해당 요청에 대한 접근 권한이 없습니다."),
 
     // 404 NOT_FOUND 리소스가 존재하지 않음
-    USER_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않은 사용자 입니다.");
+    NOT_FOUND("-400", HttpStatus.NOT_FOUND, "리소스가 존재하지 않습니다."),
 
+    // 500 INTERNAL SERVER ERROR 서버 에러
+    INTERNAL_SERVER_ERROR("-500", HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러 입니다."),
+    UNKNOWN_ERROR("-501", HttpStatus.INTERNAL_SERVER_ERROR, "알 수 없는 오류가 발생했습니다.");
+
+    private final String code;
     private final HttpStatus httpStatus;
     private final String message;
 }

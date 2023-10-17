@@ -6,7 +6,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -25,13 +24,13 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity<?> badCredentialException(BadCredentialsException e) {
-        CustomCommonException exception = new CustomCommonException(ErrorCode.INVALID_USER_PASSWORD);
+        CustomCommonException exception = new CustomCommonException(ErrorCode.INVALID_CREDENTIALS);
         return ResponseEntity.badRequest().body(exception.toErrorRes());
     }
 
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<?> accessDeniedException(Authentication e) {
-        CustomCommonException exception = new CustomCommonException(ErrorCode.DENIED_AUTHENTICATION);
+        CustomCommonException exception = new CustomCommonException(ErrorCode.DENIED_ACCESS);
         return ResponseEntity.status(exception.getHttpStatus()).body(exception.toErrorRes());
     }
 

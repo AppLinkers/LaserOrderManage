@@ -22,9 +22,9 @@ public class JwtAuthFilter extends GenericFilterBean {
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         String token = jwtUtil.resolveToken((HttpServletRequest) request);
 
-        if (token != null && jwtUtil.validateToken(token)) {
+        if (token != null && jwtUtil.validateToken(request, token)) {
             // 토큰이 유효할 경우 토큰에서 Authentication 객체를 가지고 와서 SecurityContext 에 저장
-            Authentication authentication = jwtUtil.getAuthentication(token);
+            Authentication authentication = jwtUtil.getAuthentication(request, token);
             SecurityContextHolder.getContext().setAuthentication(authentication);
             request.setAttribute("resolvedToken", token);
         }

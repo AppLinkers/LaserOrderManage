@@ -1,6 +1,5 @@
 package com.laser.ordermanage.user.service;
 
-import com.laser.ordermanage.common.exception.CustomCommonException;
 import com.laser.ordermanage.common.exception.ErrorCode;
 import com.laser.ordermanage.user.domain.UserEntity;
 import com.laser.ordermanage.user.repository.UserEntityRepository;
@@ -19,7 +18,7 @@ public class CustomUserDetailService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        UserEntity user = userRepository.findByEmail(username).orElseThrow(() -> new CustomCommonException(ErrorCode.USER_NOT_FOUND));
+        UserEntity user = userRepository.findByEmail(username).orElseThrow(() -> new UsernameNotFoundException(ErrorCode.INVALID_CREDENTIALS.getMessage()));
 
         return createUserDetails(user);
     }

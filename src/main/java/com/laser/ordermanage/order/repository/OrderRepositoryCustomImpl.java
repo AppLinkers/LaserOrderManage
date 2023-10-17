@@ -1,5 +1,7 @@
 package com.laser.ordermanage.order.repository;
 
+import com.laser.ordermanage.common.exception.CustomCommonException;
+import com.laser.ordermanage.common.exception.ErrorCode;
 import com.laser.ordermanage.customer.dto.response.GetOrderRes;
 import com.laser.ordermanage.customer.dto.response.QGetOrderRes;
 import com.laser.ordermanage.order.domain.type.Stage;
@@ -9,7 +11,6 @@ import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Repository;
@@ -90,6 +91,7 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
                         case "laser-cutting" -> booleanBuilder.or(order.manufacturing.isLaserCutting.eq(Boolean.TRUE));
                         case "bending" -> booleanBuilder.or(order.manufacturing.isBending.eq(Boolean.TRUE));
                         case "welding-fabrication" -> booleanBuilder.or(order.manufacturing.isWeldingFabrication.eq(Boolean.TRUE));
+                        default -> throw new CustomCommonException(ErrorCode.INVALID_MANUFACTURING_PARAMS);
                     }
                 }
         );

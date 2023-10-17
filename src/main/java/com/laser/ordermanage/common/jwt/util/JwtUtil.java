@@ -1,10 +1,12 @@
 package com.laser.ordermanage.common.jwt.util;
 
 import com.laser.ordermanage.common.config.ExpireTime;
+import com.laser.ordermanage.common.exception.ErrorCode;
 import com.laser.ordermanage.common.jwt.dto.TokenInfo;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import jakarta.servlet.ServletRequest;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -49,7 +51,7 @@ public class JwtUtil {
 
         long now = (new Date()).getTime();
 
-        // Access Token 생성
+        // Access JWT Token 생성
         String accessToken = Jwts.builder()
                 .setSubject(authentication.getName())
                 .claim(AUTHORITIES_KEY, authorities)
@@ -58,7 +60,7 @@ public class JwtUtil {
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
 
-        // Refresh Token 생성
+        // Refresh JWT Token 생성
         String refreshToken = Jwts.builder()
                 .setSubject(authentication.getName())
                 .claim(AUTHORITIES_KEY, authorities)
@@ -113,12 +115,12 @@ public class JwtUtil {
     }
 
     // JWT 토큰을 복호화하여 토큰에 들어있는 정보를 꺼내는 메서드
-    public Authentication getAuthentication(String jwtToken) {
+    public Authentication getAuthentication(ServletRequest request, String jwtToken) {
         // 토큰 복호화
         Claims claims = parseClaims(jwtToken);
 
         if (claims.get(AUTHORITIES_KEY) == null) {
-            throw new RuntimeException("권한 정보가 없는 토큰입니다.");
+            request.setAttribute("exception", ErrorCode.UNAUTHORIZED_JWT_TOKEN.getCode());
         }
 
         // 클레임에서 권한 정보 가져오기
@@ -133,18 +135,16 @@ public class JwtUtil {
     }
 
     // 토큰 정보를 검증하는 메서드
-    public boolean validateToken(String token) {
+    public boolean validateToken(ServletRequest request, String token) {
         try {
             Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
             return true;
-        } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {
-            log.info("Invalid JWT Token", e);
+        } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException | IllegalArgumentException e) {
+            request.setAttribute("exception", ErrorCode.INVALID_JWT_TOKEN.getCode());
         } catch (ExpiredJwtException e) {
-            log.info("Expired JWT Token", e);
+            request.setAttribute("exception", ErrorCode.EXPIRED_JWT_TOKEN.getCode());
         } catch (UnsupportedJwtException e) {
-            log.info("Unsupported JWT Token", e);
-        } catch (IllegalArgumentException e) {
-            log.info("JWT claims string is empty.", e);
+            request.setAttribute("exception", ErrorCode.UNSUPPORTED_JWT_TOKEN.getCode());
         }
 
         return false;
@@ -172,8 +172,12 @@ public class JwtUtil {
     public String resolveToken(HttpServletRequest request) {
         String bearerToken = request.getHeader(AUTHORIZATION_HEADER);
         if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(BEARER_TYPE)) {
-            return bearerToken.substring(7);
+            try {
+                return bearerToken.substring(7);
+            } catch (StringIndexOutOfBoundsException e) {}
         }
+
+        request.setAttribute("exception", ErrorCode.MISSING_JWT_TOKEN.getCode());
         return null;
     }
 }

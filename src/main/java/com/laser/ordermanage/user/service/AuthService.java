@@ -78,7 +78,7 @@ public class AuthService {
             }
         }
 
-        throw new CustomCommonException(ErrorCode.INVALID_REFRESH_TOKEN);
+        throw new CustomCommonException(ErrorCode.INVALID_REFRESH_JWT_TOKEN);
     }
 
     public void logout(HttpServletRequest httpServletRequest) {
@@ -95,7 +95,7 @@ public class AuthService {
             refreshTokenRedisRepository.deleteById(authentication.getName());
 
         } else {
-            throw new CustomCommonException(ErrorCode.INVALID_ACCESS_TOKEN);
+            throw new CustomCommonException(ErrorCode.INVALID_ACCESS_JWT_TOKEN);
         }
 
     }

@@ -9,6 +9,7 @@ import lombok.Getter;
 @AllArgsConstructor
 public class TokenInfoRes {
 
+    private String role;
     private String grantType;
     private String accessToken;
     private Long accessTokenExpirationTime;

@@ -70,6 +70,7 @@ public class JwtUtil {
                 .compact();
 
         return TokenInfo.builder()
+                .role(authorities)
                 .grantType(BEARER_TYPE)
                 .accessToken(accessToken)
                 .accessTokenExpirationTime(ExpireTime.ACCESS_TOKEN_EXPIRE_TIME)
@@ -107,6 +108,7 @@ public class JwtUtil {
                 .compact();
 
         return TokenInfo.builder()
+                .role(authorities)
                 .grantType(BEARER_TYPE)
                 .accessToken(accessToken)
                 .accessTokenExpirationTime(ExpireTime.ACCESS_TOKEN_EXPIRE_TIME)

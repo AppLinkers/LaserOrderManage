@@ -10,6 +10,7 @@ import lombok.Getter;
 @AllArgsConstructor
 public class TokenInfo {
 
+    private String role;
     private String grantType;
     private String accessToken;
     private Long accessTokenExpirationTime;
@@ -17,6 +18,7 @@ public class TokenInfo {
 
     public TokenInfoRes toTokenInfoRes() {
         return TokenInfoRes.builder()
+                .role(role)
                 .grantType(grantType)
                 .accessToken(accessToken)
                 .accessTokenExpirationTime(accessTokenExpirationTime)

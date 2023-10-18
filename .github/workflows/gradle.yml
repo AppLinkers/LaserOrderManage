@@ -35,6 +35,18 @@ jobs:
         uses: gradle/gradle-build-action@bd5760595778326ba7f1441bcf7e88b49de61a25 # v2.6.0
         with:
           arguments: build
+      - name: Compress all report files
+        if: ${{ failure() }}
+        run: |
+          echo "Compressing all report files..."
+          TIMESTAMP=$(date +%Y%m%d_%H%M%S)
+          mkdir report_files
+          REPORT_DIRS=$(find . -type d -path '*/build/reports/tests/test')
+          for dir in $REPORT_DIRS; do
+            module_path=$(echo $dir | awk -F'/build/' '{print $1}' | cut -c 3-)
+            cp -r $dir report_files/$module_path/$(basename $(dirname $dir))
+          done
+          tar czvf report_files_$TIMESTAMP.tar.gz report_files
       - name: Upload Error Report Files To Artifacts
         if: ${{ failure() }}
         uses: actions/upload-artifact@v2

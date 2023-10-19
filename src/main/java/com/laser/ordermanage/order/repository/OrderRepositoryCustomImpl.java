@@ -2,11 +2,16 @@ package com.laser.ordermanage.order.repository;
 
 import com.laser.ordermanage.common.exception.CustomCommonException;
 import com.laser.ordermanage.common.exception.ErrorCode;
+import com.laser.ordermanage.customer.domain.QCustomer;
 import com.laser.ordermanage.customer.dto.response.GetOrderRes;
 import com.laser.ordermanage.customer.dto.response.QGetOrderRes;
+import com.laser.ordermanage.factory.dto.response.GetOrderReIssueRes;
+import com.laser.ordermanage.factory.dto.response.QGetOrderReIssueRes;
 import com.laser.ordermanage.order.domain.type.Stage;
 import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
@@ -62,6 +67,73 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
                 );
 
         return PageableExecutionUtils.getPage(getOrderResList, pageable, countQuery::fetchOne);
+    }
+
+    @Override
+    public Page<GetOrderReIssueRes> findNewReIssueByFactory(String userName, Pageable pageable, Boolean hasQuotation, Boolean isUrgent) {
+        List<GetOrderReIssueRes> getOrderReIssueResList = queryFactory
+                .select(new QGetOrderReIssueRes(
+                        order.id,
+                        order.name,
+                        order.customer.name,
+                        order.customer.companyName,
+                        order.quotation_id.isNotNull(),
+                        order.imgUrl,
+                        order.isUrgent,
+                        order.manufacturing,
+                        order.createdAt,
+                        order.quotation_delivery_date,
+                        order.quotation_total_cost,
+                        order.request
+                ))
+                .from(order)
+                .where(
+                        order.stage.eq(Stage.NEW),
+                        order.isNewIssue.eq(Boolean.FALSE),
+                        eqHasQuotation(hasQuotation),
+                        eqIsUrgent(isUrgent)
+                )
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+        JPAQuery<Long> countQuery = queryFactory
+                .select(order.count())
+                .from(order)
+                .where(
+                        order.stage.eq(Stage.NEW),
+                        order.isNewIssue.eq(Boolean.FALSE),
+                        eqHasQuotation(hasQuotation),
+                        eqIsUrgent(isUrgent)
+                );
+
+        return PageableExecutionUtils.getPage(getOrderReIssueResList, pageable, countQuery::fetchOne);
+    }
+
+    private BooleanBuilder eqHasQuotation(Boolean hasQuotation) {
+        if (hasQuotation == null) {
+            return null;
+        }
+
+        BooleanBuilder booleanBuilder = new BooleanBuilder();
+        if (hasQuotation) {
+            return booleanBuilder.and(order.quotation_id.isNotNull());
+        } else {
+            return booleanBuilder.and(order.quotation_id.isNull());
+        }
+    }
+
+    private Predicate eqIsUrgent(Boolean isUrgent) {
+        if (isUrgent == null) {
+            return null;
+        }
+
+        BooleanBuilder booleanBuilder = new BooleanBuilder();
+        if (isUrgent) {
+            return booleanBuilder.and(order.isUrgent);
+        } else {
+            return booleanBuilder.and(order.isUrgent.not());
+        }
     }
 
     private BooleanBuilder eqStage(List<String> stageRequestList) {

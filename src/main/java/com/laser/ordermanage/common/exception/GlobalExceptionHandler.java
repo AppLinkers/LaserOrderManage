@@ -1,7 +1,6 @@
 package com.laser.ordermanage.common.exception;
 
 import com.laser.ordermanage.common.exception.dto.response.ErrorRes;
-import com.laser.ordermanage.common.exception.dto.response.InvalidFieldsRes;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -13,7 +12,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RestControllerAdvice
@@ -40,16 +38,15 @@ public class GlobalExceptionHandler {
     public ResponseEntity<?> methodArgumentNotValidException(MethodArgumentNotValidException e) {
         List<ObjectError> objectErrorList = e.getBindingResult().getAllErrors();
 
-        List<String> errorMessageList = new ArrayList<>();
+        StringBuilder sb = new StringBuilder();
         objectErrorList.forEach(
-                objectError -> errorMessageList.add(objectError.getDefaultMessage())
+                objectError -> sb.append(objectError.getDefaultMessage())
         );
 
-        InvalidFieldsRes response = InvalidFieldsRes.builder()
+        ErrorRes response = ErrorRes.builder()
                 .httpStatus(HttpStatus.BAD_REQUEST)
-                .errorMessageList(errorMessageList)
+                .message(sb.toString())
                 .build();
-
 
         return ResponseEntity.badRequest().body(response);
     }
@@ -57,11 +54,14 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<?> methodArgumentTypeMismatchException(MethodArgumentTypeMismatchException e) {
 
-        ErrorRes errorRes = ErrorRes.builder()
+        StringBuilder sb = new StringBuilder();
+        sb.append(e.getName()).append(" 파라미터의 타입이 올바르지 않습니다.");
+
+        ErrorRes response = ErrorRes.builder()
                 .httpStatus(HttpStatus.BAD_REQUEST)
-                .message(String.format("%s 파라미터의 타입이 올바르지 않습니다.", e.getName()))
+                .message(sb.toString())
                 .build();
 
-        return ResponseEntity.badRequest().body(errorRes);
+        return ResponseEntity.badRequest().body(response);
     }
 }

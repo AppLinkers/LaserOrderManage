@@ -1,5 +1,6 @@
 package com.laser.ordermanage.common.exception;
 
+import com.laser.ordermanage.common.exception.dto.response.ErrorRes;
 import com.laser.ordermanage.common.exception.dto.response.InvalidFieldsRes;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -10,6 +11,7 @@ import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,5 +52,16 @@ public class GlobalExceptionHandler {
 
 
         return ResponseEntity.badRequest().body(response);
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<?> methodArgumentTypeMismatchException(MethodArgumentTypeMismatchException e) {
+
+        ErrorRes errorRes = ErrorRes.builder()
+                .httpStatus(HttpStatus.BAD_REQUEST)
+                .message(String.format("%s 파라미터의 타입이 올바르지 않습니다.", e.getName()))
+                .build();
+
+        return ResponseEntity.badRequest().body(errorRes);
     }
 }

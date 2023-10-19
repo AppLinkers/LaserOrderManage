@@ -13,8 +13,9 @@ public enum ErrorCode {
     MISSING_JWT_TOKEN("-001", HttpStatus.BAD_REQUEST, "JWT 토큰 정보가 요청 헤더에 포함되지 않았습니다."),
     INVALID_CREDENTIALS("-002", HttpStatus.BAD_REQUEST, "ID 또는 비밀번호가 올바르지 않습니다."),
 
-    INVALID_STAGE_PARAMS("-003", HttpStatus.BAD_REQUEST, "Stage 파라미터가 잘못되었습니다."),
-    INVALID_MANUFACTURING_PARAMS("-004", HttpStatus.BAD_REQUEST, "Manufacturing 파라미터가 잘못되었습니다."),
+    INVALID_PARAMETER("-003", HttpStatus.BAD_REQUEST, " 파라미터가 올바르지 않습니다."),
+    INVALID_PARAMETER_TYPE("-004", HttpStatus.BAD_REQUEST, " 파라미터의 타입이 올바르지 않습니다."),
+    INVALID_FIELDS("-005", HttpStatus.BAD_REQUEST, ""),
 
     // 401 UNAUTHORIZED 인증 자격 정보가 유효하지 않음
     UNAUTHORIZED("-100", HttpStatus.UNAUTHORIZED, "인증 자격 정보가 유효하지 않습니다."),

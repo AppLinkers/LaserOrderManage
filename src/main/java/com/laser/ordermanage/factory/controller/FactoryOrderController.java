@@ -1,7 +1,8 @@
-package com.laser.ordermanage.customer.controller;
+package com.laser.ordermanage.factory.controller;
 
 import com.laser.ordermanage.common.dto.response.PageRes;
 import com.laser.ordermanage.customer.dto.response.GetOrderRes;
+import com.laser.ordermanage.factory.dto.response.GetOrderReIssueRes;
 import com.laser.ordermanage.order.service.OrderReadService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -18,25 +19,24 @@ import java.util.List;
 
 
 @RequiredArgsConstructor
-@RequestMapping("/customer/order")
+@RequestMapping("/factory/order")
 @RestController
-public class OrderController {
+public class FactoryOrderController {
 
     private final OrderReadService orderReadService;
 
-    @GetMapping("")
+    @GetMapping("/new/re-issue")
     public ResponseEntity<?> getOrderList(
             @RequestParam(value = "page", required = false, defaultValue = "1") Integer page,
             @RequestParam(value = "size", required = false, defaultValue = "10") Integer size,
-            @RequestParam(value = "stage", required = false) List<String> stageList,
-            @RequestParam(value = "manufacturing", required = false) List<String> manufacturingList,
-            @RequestParam(value = "query", required = false) String query) {
+            @RequestParam(value = "has-quotation", required = false) Boolean hasQuotation,
+            @RequestParam(value = "is-urgent", required = false) Boolean isUrgent) {
 
         User user = (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         Pageable pageable = PageRequest.of(page - 1, size);
 
-        PageRes<GetOrderRes> response = orderReadService.readByCustomer(user.getUsername(), pageable, stageList, manufacturingList, query);
+        PageRes<GetOrderReIssueRes> response = orderReadService.readNewReIssueByFactory(user.getUsername(), pageable, hasQuotation, isUrgent);
 
         return ResponseEntity.ok(response);
     }

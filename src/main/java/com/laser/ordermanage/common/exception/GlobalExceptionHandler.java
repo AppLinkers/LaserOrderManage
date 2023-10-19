@@ -1,7 +1,5 @@
 package com.laser.ordermanage.common.exception;
 
-import com.laser.ordermanage.common.exception.dto.response.ErrorRes;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -43,25 +41,14 @@ public class GlobalExceptionHandler {
                 objectError -> sb.append(objectError.getDefaultMessage())
         );
 
-        ErrorRes response = ErrorRes.builder()
-                .httpStatus(HttpStatus.BAD_REQUEST)
-                .message(sb.toString())
-                .build();
+        CustomCommonException exception = new CustomCommonException(ErrorCode.INVALID_FIELDS, sb.toString());
 
-        return ResponseEntity.badRequest().body(response);
+        return ResponseEntity.status(exception.getHttpStatus()).body(exception.toErrorRes());
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<?> methodArgumentTypeMismatchException(MethodArgumentTypeMismatchException e) {
-
-        StringBuilder sb = new StringBuilder();
-        sb.append(e.getName()).append(" 파라미터의 타입이 올바르지 않습니다.");
-
-        ErrorRes response = ErrorRes.builder()
-                .httpStatus(HttpStatus.BAD_REQUEST)
-                .message(sb.toString())
-                .build();
-
-        return ResponseEntity.badRequest().body(response);
+        CustomCommonException exception = new CustomCommonException(ErrorCode.INVALID_PARAMETER_TYPE, e.getName());
+        return ResponseEntity.status(exception.getHttpStatus()).body(exception.toErrorRes());
     }
 }

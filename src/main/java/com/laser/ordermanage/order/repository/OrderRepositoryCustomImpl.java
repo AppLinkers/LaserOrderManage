@@ -163,7 +163,7 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
                         case "laser-cutting" -> booleanBuilder.or(order.manufacturing.isLaserCutting.eq(Boolean.TRUE));
                         case "bending" -> booleanBuilder.or(order.manufacturing.isBending.eq(Boolean.TRUE));
                         case "welding-fabrication" -> booleanBuilder.or(order.manufacturing.isWeldingFabrication.eq(Boolean.TRUE));
-                        default -> throw new CustomCommonException(ErrorCode.INVALID_MANUFACTURING_PARAMS);
+                        default -> throw new CustomCommonException(ErrorCode.INVALID_PARAMETER, "manufacturing");
                     }
                 }
         );

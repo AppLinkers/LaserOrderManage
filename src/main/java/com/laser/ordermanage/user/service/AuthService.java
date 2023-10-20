@@ -50,14 +50,10 @@ public class AuthService {
         return response;
     }
 
-    public TokenInfo reissue(HttpServletRequest httpServletRequest) {
-
-        String resolvedToken = (String)httpServletRequest.getAttribute("resolvedToken");
-
+    public TokenInfo reissue(HttpServletRequest httpServletRequest, String refreshTokenReq) {
         // 1. refresh token 인지 확인
-        if (StringUtils.hasText(resolvedToken) && jwtUtil.isRefreshToken(resolvedToken)) {
-            // refresh token
-            RefreshToken refreshToken = refreshTokenRedisRepository.findByRefreshToken(resolvedToken);
+        if (StringUtils.hasText(refreshTokenReq) && jwtUtil.validateToken(refreshTokenReq) && jwtUtil.isRefreshToken(refreshTokenReq)) {
+            RefreshToken refreshToken = refreshTokenRedisRepository.findByRefreshToken(refreshTokenReq);
             if (refreshToken != null) {
                 // 2. 최초 로그인한 ip 와 같은지 확인 (처리 방식에 따라 재발급을 하지 않거나 메일 등의 알림을 주는 방법이 있음)
                 String currentIpAddress = Helper.getClientIp(httpServletRequest);

@@ -1,6 +1,7 @@
 package com.laser.ordermanage.common.jwt.util;
 
 import com.laser.ordermanage.common.config.ExpireTime;
+import com.laser.ordermanage.common.exception.CustomCommonException;
 import com.laser.ordermanage.common.exception.ErrorCode;
 import com.laser.ordermanage.common.jwt.dto.TokenInfo;
 import io.jsonwebtoken.*;
@@ -150,6 +151,19 @@ public class JwtUtil {
         }
 
         return false;
+    }
+
+    public boolean validateToken(String token) {
+        try {
+            Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
+            return true;
+        } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException | IllegalArgumentException e) {
+            throw new CustomCommonException(ErrorCode.INVALID_JWT_TOKEN);
+        } catch (ExpiredJwtException e) {
+            throw new CustomCommonException(ErrorCode.EXPIRED_JWT_TOKEN);
+        } catch (UnsupportedJwtException e) {
+            throw new CustomCommonException(ErrorCode.UNSUPPORTED_JWT_TOKEN);
+        }
     }
 
     private Claims parseClaims(String token) {

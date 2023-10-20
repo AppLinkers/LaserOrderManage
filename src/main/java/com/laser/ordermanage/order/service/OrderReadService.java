@@ -2,6 +2,7 @@ package com.laser.ordermanage.order.service;
 
 import com.laser.ordermanage.common.dto.response.PageRes;
 import com.laser.ordermanage.customer.dto.response.GetOrderRes;
+import com.laser.ordermanage.factory.dto.response.GetNewIssueNewOrderRes;
 import com.laser.ordermanage.factory.dto.response.GetOrderReIssueRes;
 import com.laser.ordermanage.order.repository.OrderRepositoryCustom;
 import lombok.RequiredArgsConstructor;
@@ -29,5 +30,11 @@ public class OrderReadService {
         Page<GetOrderReIssueRes> orderReIssuePage = orderRepositoryCustom.findNewReIssueByFactory(userName, pageable, hasQuotation, isUrgent);
 
         return new PageRes<>(orderReIssuePage);
+    }
+
+    public PageRes<GetNewIssueNewOrderRes> readNewIssueNewByFactory(String userName, Pageable pageable, Boolean hasQuotation, Boolean isNewCustomer, Boolean isUrgent) {
+        Page<GetNewIssueNewOrderRes> newIssueNewOrderPage = orderRepositoryCustom.findNewIssueNewByFactory(userName, pageable, hasQuotation, isNewCustomer, isUrgent);
+
+        return new PageRes<>(newIssueNewOrderPage);
     }
 }

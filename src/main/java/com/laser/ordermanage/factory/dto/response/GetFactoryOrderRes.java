@@ -1,4 +1,4 @@
-package com.laser.ordermanage.customer.dto.response;
+package com.laser.ordermanage.factory.dto.response;
 
 import com.laser.ordermanage.order.domain.OrderManufacturing;
 import com.laser.ordermanage.order.domain.type.Stage;
@@ -10,11 +10,15 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
-public class GetOrderRes {
+public class GetFactoryOrderRes {
 
     private final Long id;
 
     private final String name;
+
+    private final String customer;
+
+    private final String company;
 
     private final String imgUrl;
 
@@ -32,15 +36,16 @@ public class GetOrderRes {
 
     private final String request;
 
-
     @QueryProjection
-    public GetOrderRes(Long id, String name, String imgUrl, Stage stage, Boolean isUrgent, OrderManufacturing manufacturing, LocalDateTime createdAt, LocalDate deliveryAt, Long cost, String request) {
+    public GetFactoryOrderRes(Long id, String name, String customer, String company, String imgUrl, Stage stage, Boolean isUrgent, OrderManufacturing orderManufacturing, LocalDateTime createdAt, LocalDate deliveryAt, Long cost, String request) {
         this.id = id;
         this.name = name;
+        this.customer = customer;
+        this.company = company;
         this.imgUrl = imgUrl;
         this.stage = stage.getValue();
         this.isUrgent = isUrgent;
-        this.manufacturing = manufacturing.toValueList();
+        this.manufacturing = orderManufacturing.toValueList();
         this.createdAt = createdAt.toLocalDate();
         this.deliveryAt = deliveryAt;
         this.cost = cost;

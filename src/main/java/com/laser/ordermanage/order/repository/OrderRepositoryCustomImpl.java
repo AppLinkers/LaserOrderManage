@@ -2,12 +2,9 @@ package com.laser.ordermanage.order.repository;
 
 import com.laser.ordermanage.common.exception.CustomCommonException;
 import com.laser.ordermanage.common.exception.ErrorCode;
-import com.laser.ordermanage.customer.dto.response.GetOrderRes;
-import com.laser.ordermanage.customer.dto.response.QGetOrderRes;
-import com.laser.ordermanage.factory.dto.response.GetNewIssueNewOrderRes;
-import com.laser.ordermanage.factory.dto.response.GetReIssueNewOrderRes;
-import com.laser.ordermanage.factory.dto.response.QGetNewIssueNewOrderRes;
-import com.laser.ordermanage.factory.dto.response.QGetReIssueNewOrderRes;
+import com.laser.ordermanage.customer.dto.response.GetCustomerOrderRes;
+import com.laser.ordermanage.customer.dto.response.QGetCustomerOrderRes;
+import com.laser.ordermanage.factory.dto.response.*;
 import com.laser.ordermanage.order.domain.type.Stage;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.dsl.BooleanExpression;
@@ -19,6 +16,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 
 import static com.laser.ordermanage.order.domain.QOrder.order;
@@ -30,9 +30,9 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public Page<GetOrderRes> findByCustomer(String userName, Pageable pageable, List<String> stageRequestList, List<String> manufacturingRequestList, String query) {
-        List<GetOrderRes> getOrderResList = queryFactory
-                .select(new QGetOrderRes(
+    public Page<GetCustomerOrderRes> findByCustomer(String userName, Pageable pageable, List<String> stageRequestList, List<String> manufacturingRequestList, String query) {
+        List<GetCustomerOrderRes> getCustomerOrderResList = queryFactory
+                .select(new QGetCustomerOrderRes(
                         order.id,
                         order.name,
                         order.imgUrl,
@@ -49,7 +49,7 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
                         order.customer.user.email.eq(userName),
                         eqStage(stageRequestList),
                         eqManufacturing(manufacturingRequestList),
-                        eqName(query)
+                        query == null ? null : order.name.contains(query)
                 )
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
@@ -62,14 +62,14 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
                         order.customer.user.email.eq(userName),
                         eqStage(stageRequestList),
                         eqManufacturing(manufacturingRequestList),
-                        eqName(query)
+                        query == null ? null : order.name.contains(query)
                 );
 
-        return PageableExecutionUtils.getPage(getOrderResList, pageable, countQuery::fetchOne);
+        return PageableExecutionUtils.getPage(getCustomerOrderResList, pageable, countQuery::fetchOne);
     }
 
     @Override
-    public Page<GetReIssueNewOrderRes> findReIssueNewByFactory(String userName, Pageable pageable, Boolean hasQuotation, Boolean isUrgent) {
+    public Page<GetReIssueNewOrderRes> findReIssueNewByFactory(Pageable pageable, Boolean hasQuotation, Boolean isUrgent) {
         List<GetReIssueNewOrderRes> getReIssueNewOrderResList = queryFactory
                 .select(new QGetReIssueNewOrderRes(
                         order.id,
@@ -110,7 +110,7 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
     }
 
     @Override
-    public Page<GetNewIssueNewOrderRes> findNewIssueNewByFactory(String userName, Pageable pageable, Boolean hasQuotation, Boolean isNewCustomer, Boolean isUrgent) {
+    public Page<GetNewIssueNewOrderRes> findNewIssueNewByFactory(Pageable pageable, Boolean hasQuotation, Boolean isNewCustomer, Boolean isUrgent) {
         List<GetNewIssueNewOrderRes> getNewIssueNewOrderResList = queryFactory
                 .select(new QGetNewIssueNewOrderRes(
                         order.id,
@@ -153,6 +153,51 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
         return PageableExecutionUtils.getPage(getNewIssueNewOrderResList, pageable, countQuery::fetchOne);
     }
 
+    @Override
+    public Page<GetFactoryOrderRes> findByFactory(Pageable pageable, Boolean isCompleted, Boolean isUrgent, String dateCriterion, LocalDate startDate, LocalDate endDate, String query) {
+        List<GetFactoryOrderRes> getFactoryOrderResList = queryFactory
+                .select(new QGetFactoryOrderRes(
+                        order.id,
+                        order.name,
+                        order.customer.name,
+                        order.customer.companyName,
+                        order.imgUrl,
+                        order.stage,
+                        order.isUrgent,
+                        order.manufacturing,
+                        order.createdAt,
+                        order.quotation_delivery_date,
+                        order.quotation_total_cost,
+                        order.request
+                ))
+                .from(order)
+                .where(
+                        eqIsCompleted(isCompleted),
+                        eqIsUrgent(isUrgent),
+                        searchDateFilter(dateCriterion, startDate, endDate),
+                        query == null ? null : order.name.contains(query)
+                                .or(order.customer.name.contains(query))
+                                .or(order.customer.companyName.contains(query))
+                )
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+        JPAQuery<Long> countQuery = queryFactory
+                .select(order.count())
+                .from(order)
+                .where(
+                        eqIsCompleted(isCompleted),
+                        eqIsUrgent(isUrgent),
+                        searchDateFilter(dateCriterion, startDate, endDate),
+                        query == null ? null : order.name.contains(query)
+                                .or(order.customer.name.contains(query))
+                                .or(order.customer.companyName.contains(query))
+                );
+
+        return PageableExecutionUtils.getPage(getFactoryOrderResList, pageable, countQuery::fetchOne);
+    }
+
 
     private BooleanBuilder eqStage(List<String> stageRequestList) {
 
@@ -187,10 +232,6 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
         );
 
         return booleanBuilder;
-    }
-
-    private BooleanExpression eqName(String name){
-        return name == null ? null : order.name.contains(name);
     }
 
     private BooleanBuilder eqHasQuotation(Boolean hasQuotation) {
@@ -230,5 +271,34 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
         } else {
             return booleanBuilder.and(order.isUrgent.not());
         }
+    }
+
+    private BooleanBuilder eqIsCompleted(Boolean isCompleted) {
+        BooleanBuilder booleanBuilder = new BooleanBuilder();
+        if (isCompleted) {
+            return booleanBuilder.and(order.stage.eq(Stage.COMPLETED));
+        } else {
+            return booleanBuilder.and(order.stage.ne(Stage.COMPLETED));
+        }
+    }
+
+    private BooleanBuilder searchDateFilter(String dateCriterion, LocalDate startDate, LocalDate endDate) {
+        if (dateCriterion == null || startDate == null || endDate == null) {
+            return null;
+        }
+
+        BooleanBuilder booleanBuilder = new BooleanBuilder();
+        if (dateCriterion.equals("create")) {
+            BooleanExpression isGoeStartDate = order.createdAt.goe(LocalDateTime.of(startDate, LocalTime.MIN));
+            BooleanExpression isLoeEndDate = order.createdAt.loe(LocalDateTime.of(endDate, LocalTime.MAX).withNano(0));
+
+            return booleanBuilder.and(isGoeStartDate).and(isLoeEndDate);
+        } else if (dateCriterion.equals("delivery")) {
+            BooleanExpression isGoeStartDate = order.quotation_delivery_date.goe(startDate);
+            BooleanExpression isLoeEndDate = order.quotation_delivery_date.loe(endDate);
+
+            return booleanBuilder.and(isGoeStartDate).and(isLoeEndDate);
+        }
+        return null;
     }
 }

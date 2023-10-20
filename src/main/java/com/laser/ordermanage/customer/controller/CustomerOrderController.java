@@ -1,7 +1,7 @@
 package com.laser.ordermanage.customer.controller;
 
 import com.laser.ordermanage.common.dto.response.PageRes;
-import com.laser.ordermanage.customer.dto.response.GetOrderRes;
+import com.laser.ordermanage.customer.dto.response.GetCustomerOrderRes;
 import com.laser.ordermanage.order.service.OrderReadService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -36,7 +36,7 @@ public class CustomerOrderController {
 
         Pageable pageable = PageRequest.of(page - 1, size);
 
-        PageRes<GetOrderRes> response = orderReadService.readByCustomer(user.getUsername(), pageable, stageList, manufacturingList, query);
+        PageRes<GetCustomerOrderRes> response = orderReadService.readByCustomer(user.getUsername(), pageable, stageList, manufacturingList, query);
 
         return ResponseEntity.ok(response);
     }

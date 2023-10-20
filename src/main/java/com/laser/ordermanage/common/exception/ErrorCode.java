@@ -10,7 +10,7 @@ public enum ErrorCode {
 
     // 400 BAD_REQUEST 잘못된 요청
     BAD_REQUEST("-000", HttpStatus.BAD_REQUEST, "잘못된 요청입니다."),
-    MISSING_JWT_TOKEN("-001", HttpStatus.BAD_REQUEST, "JWT 토큰 정보가 요청 헤더에 포함되지 않았습니다."),
+    MISSING_JWT_TOKEN("-001", HttpStatus.BAD_REQUEST, "JWT 토큰 정보가 요청에 포함되지 않았습니다."),
     INVALID_CREDENTIALS("-002", HttpStatus.BAD_REQUEST, "ID 또는 비밀번호가 올바르지 않습니다."),
 
     INVALID_PARAMETER("-003", HttpStatus.BAD_REQUEST, " 파라미터가 올바르지 않습니다."),

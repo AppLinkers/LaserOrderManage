@@ -11,10 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
 @RequestMapping("/user")
@@ -35,8 +32,8 @@ public class AuthController {
     }
 
     @PostMapping("/re-issue")
-    public ResponseEntity<?> reissue(HttpServletRequest httpServletRequest) {
-        TokenInfo tokenInfo = authService.reissue(httpServletRequest);
+    public ResponseEntity<?> reissue(HttpServletRequest httpServletRequest, @CookieValue(value = "refreshToken") String refreshTokenReq) {
+        TokenInfo tokenInfo = authService.reissue(httpServletRequest, refreshTokenReq);
 
         TokenInfoRes tokenInfoRes = tokenInfo.toTokenInfoRes();
 

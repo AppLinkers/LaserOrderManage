@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
-public class GetOrderReIssueRes {
+public class GetReIssueNewOrderRes {
 
     private final Long id;
 
@@ -36,7 +36,7 @@ public class GetOrderReIssueRes {
     private final String request;
 
     @QueryProjection
-    public GetOrderReIssueRes(Long id, String name, String customer, String company, Boolean hasQuotation, String imgUrl, Boolean isUrgent, OrderManufacturing orderManufacturing, LocalDateTime createdAt, LocalDate deliveryAt, Long cost, String request) {
+    public GetReIssueNewOrderRes(Long id, String name, String customer, String company, Boolean hasQuotation, String imgUrl, Boolean isUrgent, OrderManufacturing orderManufacturing, LocalDateTime createdAt, LocalDate deliveryAt, Long cost, String request) {
         this.id = id;
         this.name = name;
         this.customer = customer;

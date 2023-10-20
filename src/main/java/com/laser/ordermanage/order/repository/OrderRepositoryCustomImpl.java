@@ -5,20 +5,15 @@ import com.laser.ordermanage.common.exception.ErrorCode;
 import com.laser.ordermanage.customer.dto.response.GetOrderRes;
 import com.laser.ordermanage.customer.dto.response.QGetOrderRes;
 import com.laser.ordermanage.factory.dto.response.GetNewIssueNewOrderRes;
-import com.laser.ordermanage.factory.dto.response.GetOrderReIssueRes;
+import com.laser.ordermanage.factory.dto.response.GetReIssueNewOrderRes;
 import com.laser.ordermanage.factory.dto.response.QGetNewIssueNewOrderRes;
-import com.laser.ordermanage.factory.dto.response.QGetOrderReIssueRes;
+import com.laser.ordermanage.factory.dto.response.QGetReIssueNewOrderRes;
 import com.laser.ordermanage.order.domain.type.Stage;
 import com.querydsl.core.BooleanBuilder;
-import com.querydsl.core.Tuple;
-import com.querydsl.core.types.Predicate;
-import com.querydsl.core.types.SubQueryExpression;
 import com.querydsl.core.types.dsl.BooleanExpression;
-import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.query.criteria.JpaSubQuery;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
@@ -74,9 +69,9 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
     }
 
     @Override
-    public Page<GetOrderReIssueRes> findNewReIssueByFactory(String userName, Pageable pageable, Boolean hasQuotation, Boolean isUrgent) {
-        List<GetOrderReIssueRes> getOrderReIssueResList = queryFactory
-                .select(new QGetOrderReIssueRes(
+    public Page<GetReIssueNewOrderRes> findReIssueNewByFactory(String userName, Pageable pageable, Boolean hasQuotation, Boolean isUrgent) {
+        List<GetReIssueNewOrderRes> getReIssueNewOrderResList = queryFactory
+                .select(new QGetReIssueNewOrderRes(
                         order.id,
                         order.name,
                         order.customer.name,
@@ -111,7 +106,7 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
                         eqIsUrgent(isUrgent)
                 );
 
-        return PageableExecutionUtils.getPage(getOrderReIssueResList, pageable, countQuery::fetchOne);
+        return PageableExecutionUtils.getPage(getReIssueNewOrderResList, pageable, countQuery::fetchOne);
     }
 
     @Override

@@ -4,6 +4,10 @@ import com.laser.ordermanage.common.exception.CustomCommonException;
 import com.laser.ordermanage.common.exception.ErrorCode;
 import com.laser.ordermanage.customer.dto.response.GetOrderRes;
 import com.laser.ordermanage.customer.dto.response.QGetOrderRes;
+import com.laser.ordermanage.factory.dto.response.GetNewIssueNewOrderRes;
+import com.laser.ordermanage.factory.dto.response.GetReIssueNewOrderRes;
+import com.laser.ordermanage.factory.dto.response.QGetNewIssueNewOrderRes;
+import com.laser.ordermanage.factory.dto.response.QGetReIssueNewOrderRes;
 import com.laser.ordermanage.order.domain.type.Stage;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.dsl.BooleanExpression;
@@ -64,6 +68,92 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
         return PageableExecutionUtils.getPage(getOrderResList, pageable, countQuery::fetchOne);
     }
 
+    @Override
+    public Page<GetReIssueNewOrderRes> findReIssueNewByFactory(String userName, Pageable pageable, Boolean hasQuotation, Boolean isUrgent) {
+        List<GetReIssueNewOrderRes> getReIssueNewOrderResList = queryFactory
+                .select(new QGetReIssueNewOrderRes(
+                        order.id,
+                        order.name,
+                        order.customer.name,
+                        order.customer.companyName,
+                        order.quotation_id.isNotNull(),
+                        order.imgUrl,
+                        order.isUrgent,
+                        order.manufacturing,
+                        order.createdAt,
+                        order.quotation_delivery_date,
+                        order.quotation_total_cost,
+                        order.request
+                ))
+                .from(order)
+                .where(
+                        order.stage.eq(Stage.NEW),
+                        order.isNewIssue.eq(Boolean.FALSE),
+                        eqHasQuotation(hasQuotation),
+                        eqIsUrgent(isUrgent)
+                )
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+        JPAQuery<Long> countQuery = queryFactory
+                .select(order.count())
+                .from(order)
+                .where(
+                        order.stage.eq(Stage.NEW),
+                        order.isNewIssue.eq(Boolean.FALSE),
+                        eqHasQuotation(hasQuotation),
+                        eqIsUrgent(isUrgent)
+                );
+
+        return PageableExecutionUtils.getPage(getReIssueNewOrderResList, pageable, countQuery::fetchOne);
+    }
+
+    @Override
+    public Page<GetNewIssueNewOrderRes> findNewIssueNewByFactory(String userName, Pageable pageable, Boolean hasQuotation, Boolean isNewCustomer, Boolean isUrgent) {
+        List<GetNewIssueNewOrderRes> getNewIssueNewOrderResList = queryFactory
+                .select(new QGetNewIssueNewOrderRes(
+                        order.id,
+                        order.name,
+                        order.customer.name,
+                        order.customer.companyName,
+                        order.quotation_id.isNotNull(),
+                        order.customer.isNew,
+                        order.imgUrl,
+                        order.isUrgent,
+                        order.manufacturing,
+                        order.createdAt,
+                        order.quotation_delivery_date,
+                        order.quotation_total_cost,
+                        order.request
+                ))
+                .from(order)
+                .where(
+                        order.stage.eq(Stage.NEW),
+                        order.isNewIssue.eq(Boolean.TRUE),
+                        eqHasQuotation(hasQuotation),
+                        eqIsNewCustomer(isNewCustomer),
+                        eqIsUrgent(isUrgent)
+                )
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+        JPAQuery<Long> countQuery = queryFactory
+                .select(order.count())
+                .from(order)
+                .where(
+                        order.stage.eq(Stage.NEW),
+                        order.isNewIssue.eq(Boolean.TRUE),
+                        eqHasQuotation(hasQuotation),
+                        eqIsNewCustomer(isNewCustomer),
+                        eqIsUrgent(isUrgent)
+                );
+
+        return PageableExecutionUtils.getPage(getNewIssueNewOrderResList, pageable, countQuery::fetchOne);
+    }
+
+
     private BooleanBuilder eqStage(List<String> stageRequestList) {
 
         if (stageRequestList == null) {
@@ -91,7 +181,7 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
                         case "laser-cutting" -> booleanBuilder.or(order.manufacturing.isLaserCutting.eq(Boolean.TRUE));
                         case "bending" -> booleanBuilder.or(order.manufacturing.isBending.eq(Boolean.TRUE));
                         case "welding-fabrication" -> booleanBuilder.or(order.manufacturing.isWeldingFabrication.eq(Boolean.TRUE));
-                        default -> throw new CustomCommonException(ErrorCode.INVALID_MANUFACTURING_PARAMS);
+                        default -> throw new CustomCommonException(ErrorCode.INVALID_PARAMETER, "manufacturing");
                     }
                 }
         );
@@ -101,5 +191,44 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
 
     private BooleanExpression eqName(String name){
         return name == null ? null : order.name.contains(name);
+    }
+
+    private BooleanBuilder eqHasQuotation(Boolean hasQuotation) {
+        if (hasQuotation == null) {
+            return null;
+        }
+
+        BooleanBuilder booleanBuilder = new BooleanBuilder();
+        if (hasQuotation) {
+            return booleanBuilder.and(order.quotation_id.isNotNull());
+        } else {
+            return booleanBuilder.and(order.quotation_id.isNull());
+        }
+    }
+
+    private BooleanBuilder eqIsNewCustomer(Boolean isNewCustomer) {
+        if (isNewCustomer == null) {
+            return null;
+        }
+
+        BooleanBuilder booleanBuilder = new BooleanBuilder();
+        if (isNewCustomer) {
+            return booleanBuilder.and(order.customer.isNew);
+        } else {
+            return booleanBuilder.and(order.customer.isNew.not());
+        }
+    }
+
+    private BooleanBuilder eqIsUrgent(Boolean isUrgent) {
+        if (isUrgent == null) {
+            return null;
+        }
+
+        BooleanBuilder booleanBuilder = new BooleanBuilder();
+        if (isUrgent) {
+            return booleanBuilder.and(order.isUrgent);
+        } else {
+            return booleanBuilder.and(order.isUrgent.not());
+        }
     }
 }

@@ -1,7 +1,5 @@
 package com.laser.ordermanage.common.exception;
 
-import com.laser.ordermanage.common.exception.dto.response.InvalidFieldsRes;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -10,8 +8,8 @@ import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RestControllerAdvice
@@ -38,17 +36,19 @@ public class GlobalExceptionHandler {
     public ResponseEntity<?> methodArgumentNotValidException(MethodArgumentNotValidException e) {
         List<ObjectError> objectErrorList = e.getBindingResult().getAllErrors();
 
-        List<String> errorMessageList = new ArrayList<>();
+        StringBuilder sb = new StringBuilder();
         objectErrorList.forEach(
-                objectError -> errorMessageList.add(objectError.getDefaultMessage())
+                objectError -> sb.append(objectError.getDefaultMessage())
         );
 
-        InvalidFieldsRes response = InvalidFieldsRes.builder()
-                .httpStatus(HttpStatus.BAD_REQUEST)
-                .errorMessageList(errorMessageList)
-                .build();
+        CustomCommonException exception = new CustomCommonException(ErrorCode.INVALID_FIELDS, sb.toString());
 
+        return ResponseEntity.status(exception.getHttpStatus()).body(exception.toErrorRes());
+    }
 
-        return ResponseEntity.badRequest().body(response);
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<?> methodArgumentTypeMismatchException(MethodArgumentTypeMismatchException e) {
+        CustomCommonException exception = new CustomCommonException(ErrorCode.INVALID_PARAMETER_TYPE, e.getName());
+        return ResponseEntity.status(exception.getHttpStatus()).body(exception.toErrorRes());
     }
 }

@@ -25,6 +25,6 @@ public enum Stage {
         return Arrays.stream(Stage.values())
                 .filter(v -> v.getRequest().equals(request))
                 .findAny()
-                .orElseThrow(() -> new CustomCommonException(ErrorCode.INVALID_STAGE_PARAMS));
+                .orElseThrow(() -> new CustomCommonException(ErrorCode.INVALID_PARAMETER, "stage"));
     }
 }

@@ -1,5 +1,6 @@
 package com.laser.ordermanage.customer.domain;
 
+import com.laser.ordermanage.common.converter.BooleanToYNConverter;
 import com.laser.ordermanage.user.domain.UserEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -24,4 +25,8 @@ public class Customer {
     private String name;
 
     private String companyName;
+
+    @NotNull
+    @Convert(converter = BooleanToYNConverter.class)
+    private Boolean isNew;
 }

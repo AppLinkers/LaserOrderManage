@@ -4,6 +4,7 @@ import com.laser.ordermanage.common.config.ExpireTime;
 import com.laser.ordermanage.common.exception.CustomCommonException;
 import com.laser.ordermanage.common.exception.ErrorCode;
 import com.laser.ordermanage.common.jwt.dto.TokenInfo;
+import com.laser.ordermanage.common.redis.repository.BlackListRedisRepository;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -36,10 +37,12 @@ public class JwtUtil {
     private static final String TYPE_ACCESS = "access";
     private static final String TYPE_REFRESH = "refresh";
 
+    private final BlackListRedisRepository blackListRedisRepository;
     private final Key key;
 
-    public JwtUtil(@Value("${jwt.secret.key}") String secretKey) {
+    public JwtUtil(@Value("${jwt.secret.key}") String secretKey, BlackListRedisRepository blackListRedisRepository) {
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
+        this.blackListRedisRepository = blackListRedisRepository;
         this.key = Keys.hmacShaKeyFor(keyBytes);
     }
 
@@ -141,6 +144,11 @@ public class JwtUtil {
     public boolean validateToken(ServletRequest request, String token) {
         try {
             Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
+            // access token 이 black list 에 저장되어 있는지 확인
+            if (blackListRedisRepository.findByAccessToken(token).isPresent()) {
+                request.setAttribute("exception", ErrorCode.INVALID_ACCESS_JWT_TOKEN.getCode());
+                return false;
+            }
             return true;
         } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException | IllegalArgumentException e) {
             request.setAttribute("exception", ErrorCode.INVALID_JWT_TOKEN.getCode());
@@ -172,6 +180,14 @@ public class JwtUtil {
         } catch (ExpiredJwtException e) {
             return e.getClaims();
         }
+    }
+
+    public Long getExpiration(String accessToken) {
+        // accessToken 남은 유효시간
+        Date expiration = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(accessToken).getBody().getExpiration();
+        // 현재 시간
+        Long now = new Date().getTime();
+        return (expiration.getTime() - now);
     }
 
     public boolean isAccessToken(String token) {

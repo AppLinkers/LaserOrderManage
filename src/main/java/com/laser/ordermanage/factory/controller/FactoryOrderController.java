@@ -10,8 +10,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -34,11 +32,9 @@ public class FactoryOrderController {
             @RequestParam(value = "has-quotation", required = false) Boolean hasQuotation,
             @RequestParam(value = "is-urgent", required = false) Boolean isUrgent) {
 
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
         Pageable pageable = PageRequest.of(page - 1, size);
 
-        PageRes<GetReIssueNewOrderRes> response = orderReadService.readReIssueNewByFactory(user.getUsername(), pageable, hasQuotation, isUrgent);
+        PageRes<GetReIssueNewOrderRes> response = orderReadService.readReIssueNewByFactory(pageable, hasQuotation, isUrgent);
 
         return ResponseEntity.ok(response);
     }
@@ -51,11 +47,9 @@ public class FactoryOrderController {
             @RequestParam(value = "is-new-customer", required = false) Boolean isNewCustomer,
             @RequestParam(value = "is-urgent", required = false) Boolean isUrgent) {
 
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
         Pageable pageable = PageRequest.of(page - 1, size);
 
-        PageRes<GetNewIssueNewOrderRes> response = orderReadService.readNewIssueNewByFactory(user.getUsername(), pageable, hasQuotation, isNewCustomer, isUrgent);
+        PageRes<GetNewIssueNewOrderRes> response = orderReadService.readNewIssueNewByFactory(pageable, hasQuotation, isNewCustomer, isUrgent);
 
         return ResponseEntity.ok(response);
     }

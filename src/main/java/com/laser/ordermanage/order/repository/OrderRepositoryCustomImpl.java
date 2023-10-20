@@ -7,9 +7,7 @@ import com.laser.ordermanage.customer.dto.response.QGetCustomerOrderRes;
 import com.laser.ordermanage.factory.dto.response.*;
 import com.laser.ordermanage.order.domain.type.Stage;
 import com.querydsl.core.BooleanBuilder;
-import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.dsl.BooleanExpression;
-import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
@@ -71,7 +69,7 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
     }
 
     @Override
-    public Page<GetReIssueNewOrderRes> findReIssueNewByFactory(String userName, Pageable pageable, Boolean hasQuotation, Boolean isUrgent) {
+    public Page<GetReIssueNewOrderRes> findReIssueNewByFactory(Pageable pageable, Boolean hasQuotation, Boolean isUrgent) {
         List<GetReIssueNewOrderRes> getReIssueNewOrderResList = queryFactory
                 .select(new QGetReIssueNewOrderRes(
                         order.id,
@@ -112,7 +110,7 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
     }
 
     @Override
-    public Page<GetNewIssueNewOrderRes> findNewIssueNewByFactory(String userName, Pageable pageable, Boolean hasQuotation, Boolean isNewCustomer, Boolean isUrgent) {
+    public Page<GetNewIssueNewOrderRes> findNewIssueNewByFactory(Pageable pageable, Boolean hasQuotation, Boolean isNewCustomer, Boolean isUrgent) {
         List<GetNewIssueNewOrderRes> getNewIssueNewOrderResList = queryFactory
                 .select(new QGetNewIssueNewOrderRes(
                         order.id,

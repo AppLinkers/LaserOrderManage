@@ -28,14 +28,14 @@ public class OrderReadService {
         return new PageRes<>(customerOrderPage);
     }
 
-    public PageRes<GetReIssueNewOrderRes> readReIssueNewByFactory(String userName, Pageable pageable, Boolean hasQuotation, Boolean isUrgent) {
-        Page<GetReIssueNewOrderRes> reIssueNewOrderPage = orderRepositoryCustom.findReIssueNewByFactory(userName, pageable, hasQuotation, isUrgent);
+    public PageRes<GetReIssueNewOrderRes> readReIssueNewByFactory(Pageable pageable, Boolean hasQuotation, Boolean isUrgent) {
+        Page<GetReIssueNewOrderRes> reIssueNewOrderPage = orderRepositoryCustom.findReIssueNewByFactory(pageable, hasQuotation, isUrgent);
 
         return new PageRes<>(reIssueNewOrderPage);
     }
 
-    public PageRes<GetNewIssueNewOrderRes> readNewIssueNewByFactory(String userName, Pageable pageable, Boolean hasQuotation, Boolean isNewCustomer, Boolean isUrgent) {
-        Page<GetNewIssueNewOrderRes> newIssueNewOrderPage = orderRepositoryCustom.findNewIssueNewByFactory(userName, pageable, hasQuotation, isNewCustomer, isUrgent);
+    public PageRes<GetNewIssueNewOrderRes> readNewIssueNewByFactory(Pageable pageable, Boolean hasQuotation, Boolean isNewCustomer, Boolean isUrgent) {
+        Page<GetNewIssueNewOrderRes> newIssueNewOrderPage = orderRepositoryCustom.findNewIssueNewByFactory(pageable, hasQuotation, isNewCustomer, isUrgent);
 
         return new PageRes<>(newIssueNewOrderPage);
     }

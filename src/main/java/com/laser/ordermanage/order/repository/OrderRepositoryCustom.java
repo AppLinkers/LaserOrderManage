@@ -14,9 +14,9 @@ public interface OrderRepositoryCustom {
 
     Page<GetCustomerOrderRes> findByCustomer(String userName, Pageable pageable, List<String> stageRequestList, List<String> manufacturingRequestList, String query);
 
-    Page<GetReIssueNewOrderRes> findReIssueNewByFactory(String username, Pageable pageable, Boolean hasQuotation, Boolean isUrgent);
+    Page<GetReIssueNewOrderRes> findReIssueNewByFactory(Pageable pageable, Boolean hasQuotation, Boolean isUrgent);
 
-    Page<GetNewIssueNewOrderRes> findNewIssueNewByFactory(String userName, Pageable pageable, Boolean hasQuotation, Boolean isNewCustomer, Boolean isUrgent);
+    Page<GetNewIssueNewOrderRes> findNewIssueNewByFactory(Pageable pageable, Boolean hasQuotation, Boolean isNewCustomer, Boolean isUrgent);
 
     Page<GetFactoryOrderRes> findByFactory(Pageable pageable, Boolean isCompleted, Boolean isUrgent, String dateCriterion, LocalDate startDate, LocalDate endDate, String query);
 }

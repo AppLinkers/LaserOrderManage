@@ -10,31 +10,31 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
-public class GetOrderRes {
+public class GetCustomerOrderRes {
 
-    private Long id;
+    private final Long id;
 
-    private String name;
+    private final String name;
 
-    private String imgUrl;
+    private final String imgUrl;
 
-    private String stage;
+    private final String stage;
 
-    private Boolean isUrgent;
+    private final Boolean isUrgent;
 
-    private List<String> manufacturing;
+    private final List<String> manufacturing;
 
-    private LocalDate createdAt;
+    private final LocalDate createdAt;
 
-    private LocalDate deliveryAt;
+    private final LocalDate deliveryAt;
 
-    private Long cost;
+    private final Long cost;
 
-    private String request;
+    private final String request;
 
 
     @QueryProjection
-    public GetOrderRes(Long id, String name, String imgUrl, Stage stage, Boolean isUrgent, OrderManufacturing manufacturing, LocalDateTime createdAt, LocalDate deliveryAt, Long cost, String request) {
+    public GetCustomerOrderRes(Long id, String name, String imgUrl, Stage stage, Boolean isUrgent, OrderManufacturing manufacturing, LocalDateTime createdAt, LocalDate deliveryAt, Long cost, String request) {
         this.id = id;
         this.name = name;
         this.imgUrl = imgUrl;

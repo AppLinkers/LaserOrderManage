@@ -2,7 +2,8 @@ package com.laser.ordermanage.order.service;
 
 import com.laser.ordermanage.common.dto.response.PageRes;
 import com.laser.ordermanage.customer.dto.response.GetOrderRes;
-import com.laser.ordermanage.factory.dto.response.GetOrderReIssueRes;
+import com.laser.ordermanage.factory.dto.response.GetNewIssueNewOrderRes;
+import com.laser.ordermanage.factory.dto.response.GetReIssueNewOrderRes;
 import com.laser.ordermanage.order.repository.OrderRepositoryCustom;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -25,9 +26,15 @@ public class OrderReadService {
         return new PageRes<>(orderPage);
     }
 
-    public PageRes<GetOrderReIssueRes> readNewReIssueByFactory(String userName, Pageable pageable, Boolean hasQuotation, Boolean isUrgent) {
-        Page<GetOrderReIssueRes> orderReIssuePage = orderRepositoryCustom.findNewReIssueByFactory(userName, pageable, hasQuotation, isUrgent);
+    public PageRes<GetReIssueNewOrderRes> readReIssueNewByFactory(String userName, Pageable pageable, Boolean hasQuotation, Boolean isUrgent) {
+        Page<GetReIssueNewOrderRes> reIssueNewOrderPage = orderRepositoryCustom.findReIssueNewByFactory(userName, pageable, hasQuotation, isUrgent);
 
-        return new PageRes<>(orderReIssuePage);
+        return new PageRes<>(reIssueNewOrderPage);
+    }
+
+    public PageRes<GetNewIssueNewOrderRes> readNewIssueNewByFactory(String userName, Pageable pageable, Boolean hasQuotation, Boolean isNewCustomer, Boolean isUrgent) {
+        Page<GetNewIssueNewOrderRes> newIssueNewOrderPage = orderRepositoryCustom.findNewIssueNewByFactory(userName, pageable, hasQuotation, isNewCustomer, isUrgent);
+
+        return new PageRes<>(newIssueNewOrderPage);
     }
 }

@@ -4,7 +4,9 @@ import com.laser.ordermanage.common.exception.CustomCommonException;
 import com.laser.ordermanage.common.exception.ErrorCode;
 import com.laser.ordermanage.common.jwt.dto.TokenInfo;
 import com.laser.ordermanage.common.jwt.util.JwtUtil;
+import com.laser.ordermanage.common.redis.domain.BlackList;
 import com.laser.ordermanage.common.redis.domain.RefreshToken;
+import com.laser.ordermanage.common.redis.repository.BlackListRedisRepository;
 import com.laser.ordermanage.common.redis.repository.RefreshTokenRedisRepository;
 import com.laser.ordermanage.common.util.Helper;
 import com.laser.ordermanage.user.dto.request.LoginReq;
@@ -21,6 +23,7 @@ import org.springframework.util.StringUtils;
 @RequiredArgsConstructor
 public class AuthService {
 
+    private final BlackListRedisRepository blackListRedisRepository;
     private final RefreshTokenRedisRepository refreshTokenRedisRepository;
 
     private final JwtUtil jwtUtil;
@@ -89,6 +92,13 @@ public class AuthService {
 
             // 3. Redis 에서 해당 User email 로 저장된 Refresh Token 이 있는지 여부를 확인 후 있을 경우 삭제합니다.
             refreshTokenRedisRepository.deleteById(authentication.getName());
+
+            // 4. Redis 에서 해당 Access Token 을 Black List 로 저장합니다.
+            blackListRedisRepository.save(BlackList.builder()
+                    .id(authentication.getName())
+                    .accessToken(resolvedToken)
+                    .expiration(jwtUtil.getExpiration(resolvedToken))
+                    .build());
 
         } else {
             throw new CustomCommonException(ErrorCode.INVALID_ACCESS_JWT_TOKEN);

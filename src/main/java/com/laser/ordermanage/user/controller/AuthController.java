@@ -8,14 +8,12 @@ import com.laser.ordermanage.user.service.AuthService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.web.server.Cookie;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@Slf4j
 @RequiredArgsConstructor
 @RequestMapping("/user")
 @RestController
@@ -36,8 +34,6 @@ public class AuthController {
 
     @PostMapping("/re-issue")
     public ResponseEntity<?> reissue(HttpServletRequest httpServletRequest, @CookieValue(value = "refreshToken") String refreshTokenReq) {
-        log.info("reissue");
-        log.info(refreshTokenReq);
         TokenInfo tokenInfo = authService.reissue(httpServletRequest, refreshTokenReq);
 
         TokenInfoRes tokenInfoRes = tokenInfo.toTokenInfoRes();

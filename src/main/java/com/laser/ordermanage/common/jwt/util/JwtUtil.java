@@ -211,6 +211,8 @@ public class JwtUtil {
         }
         if (request.getCookies() != null) {
             for(Cookie cookie: request.getCookies()) {
+                log.info(cookie.getName());
+                log.info(cookie.getValue());
                 if(cookie.getName().equals("refreshToken")) {
                     return cookie.getValue();
                 }

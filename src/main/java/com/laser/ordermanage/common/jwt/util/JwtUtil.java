@@ -209,6 +209,13 @@ public class JwtUtil {
                 return bearerToken.substring(7);
             } catch (StringIndexOutOfBoundsException e) {}
         }
+        if (request.getCookies() != null) {
+            for(Cookie cookie: request.getCookies()) {
+                if(cookie.getName().equals("refreshToken")) {
+                    return cookie.getValue();
+                }
+            }
+        }
 
         request.setAttribute("exception", ErrorCode.MISSING_JWT_TOKEN.getCode());
         return null;

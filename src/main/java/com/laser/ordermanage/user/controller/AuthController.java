@@ -8,6 +8,7 @@ import com.laser.ordermanage.user.service.AuthService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.web.server.Cookie;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @RequestMapping("/user")
 @RestController
+@Slf4j
 public class AuthController {
 
     private final AuthService authService;
@@ -28,13 +30,17 @@ public class AuthController {
         TokenInfoRes tokenInfoRes = tokenInfo.toTokenInfoRes();
 
         ResponseCookie responseCookie = generateResponseCookie(tokenInfo.getRefreshToken());
+        log.info("login");
+        log.info(responseCookie.getValue());
 
         return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, responseCookie.toString()).body(tokenInfoRes);
     }
 
     @PostMapping("/re-issue")
-    public ResponseEntity<?> reissue(HttpServletRequest httpServletRequest, @CookieValue(value = "refreshToken") String refreshTokenReq) {
-        TokenInfo tokenInfo = authService.reissue(httpServletRequest, refreshTokenReq);
+    public ResponseEntity<?> reissue(HttpServletRequest httpServletRequest, @CookieValue("refreshToken") String refreshToken) {
+        log.info("re-issue");
+        log.info(refreshToken);
+        TokenInfo tokenInfo = authService.reissue(httpServletRequest, refreshToken);
 
         TokenInfoRes tokenInfoRes = tokenInfo.toTokenInfoRes();
 
@@ -62,7 +68,7 @@ public class AuthController {
 
     private ResponseCookie removeResponseCookie() {
         return ResponseCookie.from("refreshToken", null)
-                .maxAge(ExpireTime.REFRESH_TOKEN_EXPIRE_TIME_FOR_REDIS_AND_COOKIE)
+                .maxAge(1)
                 .path("/") // 모든 곳에서 쿠키열람이 가능하도록 설정
                 .secure(true) // true : https 환경에서만 쿠키가 발동합니다.
                 .sameSite(Cookie.SameSite.NONE.attributeValue()) // 동일 사이트과 크로스 사이트에 모두 쿠키 전송이 가능합니다.

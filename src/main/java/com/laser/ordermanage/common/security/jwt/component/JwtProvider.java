@@ -9,6 +9,7 @@ import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.ServletRequest;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -207,6 +208,12 @@ public class JwtProvider {
             try {
                 return bearerToken.substring(7);
             } catch (StringIndexOutOfBoundsException e) {}
+        }
+        Cookie[] list = request.getCookies();
+        for(Cookie cookie:list) {
+            if(cookie.getName().equals("refreshToken")) {
+                return cookie.getValue();
+            }
         }
 
         request.setAttribute("exception", ErrorCode.MISSING_JWT_TOKEN.getCode());

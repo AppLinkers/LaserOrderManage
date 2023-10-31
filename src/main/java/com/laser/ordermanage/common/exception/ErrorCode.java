@@ -17,6 +17,8 @@ public enum ErrorCode {
     INVALID_PARAMETER_TYPE("-004", HttpStatus.BAD_REQUEST, " 파라미터의 타입이 올바르지 않습니다."),
     INVALID_FIELDS("-005", HttpStatus.BAD_REQUEST, ""),
 
+    MISSING_COOKIE("-006", HttpStatus.BAD_REQUEST, " 쿠키값이 존재하지 않습니다."),
+
     // 401 UNAUTHORIZED 인증 자격 정보가 유효하지 않음
     UNAUTHORIZED("-100", HttpStatus.UNAUTHORIZED, "인증 자격 정보가 유효하지 않습니다."),
     INVALID_JWT_TOKEN("-101", HttpStatus.UNAUTHORIZED, "JWT Token 정보가 유효하지 않습니다."),

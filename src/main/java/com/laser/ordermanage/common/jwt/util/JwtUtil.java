@@ -203,6 +203,13 @@ public class JwtUtil {
 
     // Request Header 에서 토큰 정보 추출
     public String resolveToken(HttpServletRequest request) {
+        if (request.getCookies() != null) {
+            for(Cookie cookie: request.getCookies()) {
+                log.info(cookie.getName());
+                log.info(cookie.getValue());
+            }
+        }
+
         String bearerToken = request.getHeader(AUTHORIZATION_HEADER);
         if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(BEARER_TYPE)) {
             try {

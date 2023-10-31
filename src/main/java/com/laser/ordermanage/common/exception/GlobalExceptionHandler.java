@@ -55,8 +55,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(MissingRequestCookieException.class)
     public ResponseEntity<?> missingRequestCookieException(MissingRequestCookieException e) {
-        e.printStackTrace();
-        CustomCommonException exception = new CustomCommonException(ErrorCode.MISSING_JWT_TOKEN);
+        CustomCommonException exception = new CustomCommonException(ErrorCode.MISSING_COOKIE, e.getCookieName());
         return ResponseEntity.status(exception.getHttpStatus()).body(exception.toErrorResponse());
     }
 }

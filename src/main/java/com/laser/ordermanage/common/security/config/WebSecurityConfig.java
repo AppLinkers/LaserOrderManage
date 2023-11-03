@@ -19,6 +19,9 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import java.util.List;
+
+import static org.springframework.http.HttpHeaders.SET_COOKIE;
 import static org.springframework.security.config.Customizer.withDefaults;
 
 @Configuration
@@ -45,7 +48,8 @@ public class WebSecurityConfig {
 
         http.authorizeRequests((authorizeRequests) ->
                 authorizeRequests
-                        .requestMatchers("/user/login", "/user/re-issue").permitAll()
+                        .requestMatchers("/user/login").permitAll()
+                        .requestMatchers("/user/re-issue").permitAll()
                         .requestMatchers("/user/**").authenticated()
                         .requestMatchers("/customer/**").hasRole("CUSTOMER")
                         .requestMatchers("/factory/**").hasRole("FACTORY")
@@ -68,6 +72,7 @@ public class WebSecurityConfig {
         configuration.addAllowedHeader("*");
         configuration.addAllowedMethod("*");
         configuration.setAllowCredentials(true);
+        configuration.setExposedHeaders(List.of(SET_COOKIE));
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);

@@ -1,4 +1,4 @@
-package com.laser.ordermanage.common.jwt.util;
+package com.laser.ordermanage.common.security.jwt.component;
 
 import com.laser.ordermanage.common.exception.CustomCommonException;
 import com.laser.ordermanage.common.exception.ErrorCode;

@@ -1,10 +1,10 @@
-package com.laser.ordermanage.common.jwt.util;
+package com.laser.ordermanage.common.security.jwt.component;
 
-import com.laser.ordermanage.common.config.ExpireTime;
+import com.laser.ordermanage.common.constants.ExpireTime;
 import com.laser.ordermanage.common.exception.CustomCommonException;
 import com.laser.ordermanage.common.exception.ErrorCode;
-import com.laser.ordermanage.common.jwt.dto.TokenInfo;
-import com.laser.ordermanage.common.redis.repository.BlackListRedisRepository;
+import com.laser.ordermanage.common.security.jwt.dto.TokenInfo;
+import com.laser.ordermanage.common.cache.redis.repository.BlackListRedisRepository;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Component
-public class JwtUtil {
+public class JwtProvider {
 
     private static final String AUTHORITIES_KEY = "auth";
     private static final String AUTHORIZATION_HEADER = "Authorization";
@@ -40,7 +40,7 @@ public class JwtUtil {
     private final BlackListRedisRepository blackListRedisRepository;
     private final Key key;
 
-    public JwtUtil(@Value("${jwt.secret.key}") String secretKey, BlackListRedisRepository blackListRedisRepository) {
+    public JwtProvider(@Value("${jwt.secret.key}") String secretKey, BlackListRedisRepository blackListRedisRepository) {
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         this.blackListRedisRepository = blackListRedisRepository;
         this.key = Keys.hmacShaKeyFor(keyBytes);

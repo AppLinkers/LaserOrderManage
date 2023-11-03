@@ -1,4 +1,4 @@
-package com.laser.ordermanage.common.jwt.dto;
+package com.laser.ordermanage.common.security.jwt.dto;
 
 import com.laser.ordermanage.user.dto.response.TokenInfoResponse;
 import lombok.AllArgsConstructor;

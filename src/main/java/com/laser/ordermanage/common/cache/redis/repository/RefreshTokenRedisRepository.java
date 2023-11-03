@@ -1,6 +1,6 @@
-package com.laser.ordermanage.common.redis.repository;
+package com.laser.ordermanage.common.cache.redis.repository;
 
-import com.laser.ordermanage.common.redis.domain.RefreshToken;
+import com.laser.ordermanage.common.cache.redis.dao.RefreshToken;
 import org.springframework.data.repository.CrudRepository;
 
 public interface RefreshTokenRedisRepository extends CrudRepository<RefreshToken, String> {

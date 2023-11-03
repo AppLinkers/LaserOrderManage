@@ -1,4 +1,4 @@
-package com.laser.ordermanage.common.jwt.util;
+package com.laser.ordermanage.common.security.jwt.component;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

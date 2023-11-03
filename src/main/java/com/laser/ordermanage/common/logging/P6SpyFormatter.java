@@ -1,4 +1,4 @@
-package com.laser.ordermanage.common.util;
+package com.laser.ordermanage.common.logging;
 
 import com.p6spy.engine.common.ConnectionInformation;
 import com.p6spy.engine.event.JdbcEventListener;

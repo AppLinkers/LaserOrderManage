@@ -6,10 +6,10 @@ import org.springframework.util.StringUtils;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Helper {
+public class NetworkUtil {
 
     /* 유틸리티 클래스의 불필요한 인스턴스화를 방지 */
-    private Helper() {
+    private NetworkUtil() {
     }
 
     public static String getClientIp(HttpServletRequest request) {

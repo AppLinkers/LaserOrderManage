@@ -1,6 +1,6 @@
 package com.laser.ordermanage.factory.api;
 
-import com.laser.ordermanage.common.dto.response.PageResponse;
+import com.laser.ordermanage.common.paging.PageResponse;
 import com.laser.ordermanage.factory.dto.response.FactoryGetOrderHistoryResponse;
 import com.laser.ordermanage.factory.dto.response.FactoryGetOrderIsNewAndIsNewIssueHistoryResponse;
 import com.laser.ordermanage.factory.dto.response.FactoryGetOrderIsNewAndIsReIssueHistoryResponse;

@@ -1,7 +1,7 @@
-package com.laser.ordermanage.common.config;
+package com.laser.ordermanage.common.security.config;
 
-import com.laser.ordermanage.common.jwt.filter.JwtAuthFilter;
-import com.laser.ordermanage.common.jwt.util.JwtUtil;
+import com.laser.ordermanage.common.security.jwt.filter.JwtAuthFilter;
+import com.laser.ordermanage.common.security.jwt.component.JwtProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,14 +19,14 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import static org.springframework.security.config.Customizer.*;
+import static org.springframework.security.config.Customizer.withDefaults;
 
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class WebSecurityConfig {
 
-    private final JwtUtil jwtUtil;
+    private final JwtProvider jwtProvider;
     private final AccessDeniedHandler accessDeniedHandler;
     private final AuthenticationEntryPoint authenticationEntryPoint;
 
@@ -52,7 +52,7 @@ public class WebSecurityConfig {
                         .anyRequest().authenticated()
         );
 
-        http.addFilterBefore(new JwtAuthFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(new JwtAuthFilter(jwtProvider), UsernamePasswordAuthenticationFilter.class);
 
         http.exceptionHandling(handler -> handler.accessDeniedHandler(accessDeniedHandler));
         http.exceptionHandling(handler -> handler.authenticationEntryPoint(authenticationEntryPoint));

@@ -1,4 +1,4 @@
-package com.laser.ordermanage.common.redis.domain;
+package com.laser.ordermanage.common.cache.redis.dao;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

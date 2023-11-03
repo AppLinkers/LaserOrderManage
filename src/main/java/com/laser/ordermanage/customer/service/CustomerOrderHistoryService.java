@@ -1,6 +1,6 @@
 package com.laser.ordermanage.customer.service;
 
-import com.laser.ordermanage.common.dto.response.PageResponse;
+import com.laser.ordermanage.common.paging.PageResponse;
 import com.laser.ordermanage.customer.dto.response.CustomerGetOrderHistoryResponse;
 import com.laser.ordermanage.order.repository.OrderRepositoryCustom;
 import lombok.RequiredArgsConstructor;

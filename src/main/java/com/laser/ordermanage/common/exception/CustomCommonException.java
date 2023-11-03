@@ -1,6 +1,6 @@
 package com.laser.ordermanage.common.exception;
 
-import com.laser.ordermanage.common.exception.dto.response.ErrorRes;
+import com.laser.ordermanage.common.exception.dto.response.ErrorResponse;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
@@ -22,8 +22,8 @@ public class CustomCommonException extends RuntimeException{
         this.errorCode = errorcode.getCode();
     }
 
-    public ErrorRes toErrorRes() {
-        return ErrorRes.builder()
+    public ErrorResponse toErrorResponse() {
+        return ErrorResponse.builder()
                 .httpStatus(this.httpStatus)
                 .errorCode(this.errorCode)
                 .message(this.getMessage())

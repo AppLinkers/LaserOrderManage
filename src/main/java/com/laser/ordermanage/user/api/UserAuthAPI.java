@@ -1,7 +1,7 @@
 package com.laser.ordermanage.user.api;
 
-import com.laser.ordermanage.common.config.ExpireTime;
-import com.laser.ordermanage.common.jwt.dto.TokenInfo;
+import com.laser.ordermanage.common.constants.ExpireTime;
+import com.laser.ordermanage.common.security.jwt.dto.TokenInfo;
 import com.laser.ordermanage.user.dto.request.LoginRequest;
 import com.laser.ordermanage.user.dto.response.TokenInfoResponse;
 import com.laser.ordermanage.user.service.UserAuthService;

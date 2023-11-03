@@ -1,4 +1,4 @@
-package com.laser.ordermanage.common.config;
+package com.laser.ordermanage.common.cache.redis.config;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.data.redis.RedisProperties;

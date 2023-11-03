@@ -1,6 +1,6 @@
-package com.laser.ordermanage.common.redis.domain;
+package com.laser.ordermanage.common.cache.redis.dao;
 
-import com.laser.ordermanage.common.config.ExpireTime;
+import com.laser.ordermanage.common.constants.ExpireTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

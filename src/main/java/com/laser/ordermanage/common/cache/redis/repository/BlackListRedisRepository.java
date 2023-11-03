@@ -1,6 +1,6 @@
-package com.laser.ordermanage.common.redis.repository;
+package com.laser.ordermanage.common.cache.redis.repository;
 
-import com.laser.ordermanage.common.redis.domain.BlackList;
+import com.laser.ordermanage.common.cache.redis.dao.BlackList;
 import org.springframework.data.repository.CrudRepository;
 
 import java.util.Optional;

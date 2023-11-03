@@ -1,4 +1,4 @@
-package com.laser.ordermanage.common.dto.response;
+package com.laser.ordermanage.common.paging;
 
 import lombok.Getter;
 import org.springframework.data.domain.Page;

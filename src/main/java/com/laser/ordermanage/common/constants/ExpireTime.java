@@ -1,4 +1,4 @@
-package com.laser.ordermanage.common.config;
+package com.laser.ordermanage.common.constants;
 
 public class ExpireTime {
 

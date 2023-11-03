@@ -1,6 +1,6 @@
-package com.laser.ordermanage.common.jwt.filter;
+package com.laser.ordermanage.common.security.jwt.filter;
 
-import com.laser.ordermanage.common.jwt.util.JwtUtil;
+import com.laser.ordermanage.common.security.jwt.component.JwtProvider;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
@@ -16,15 +16,15 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class JwtAuthFilter extends GenericFilterBean {
 
-    private final JwtUtil jwtUtil;
+    private final JwtProvider jwtProvider;
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-        String token = jwtUtil.resolveToken((HttpServletRequest) request);
+        String token = jwtProvider.resolveToken((HttpServletRequest) request);
 
-        if (token != null && jwtUtil.validateToken(request, token)) {
+        if (token != null && jwtProvider.validateToken(request, token)) {
             // 토큰이 유효할 경우 토큰에서 Authentication 객체를 가지고 와서 SecurityContext 에 저장
-            Authentication authentication = jwtUtil.getAuthentication(request, token);
+            Authentication authentication = jwtProvider.getAuthentication(request, token);
             SecurityContextHolder.getContext().setAuthentication(authentication);
             request.setAttribute("resolvedToken", token);
         }

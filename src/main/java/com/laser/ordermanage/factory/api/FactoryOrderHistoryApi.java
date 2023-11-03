@@ -1,4 +1,4 @@
-package com.laser.ordermanage.factory.controller;
+package com.laser.ordermanage.factory.api;
 
 import com.laser.ordermanage.common.dto.response.PageRes;
 import com.laser.ordermanage.factory.dto.response.GetFactoryOrderRes;
@@ -21,7 +21,7 @@ import java.time.LocalDate;
 @RequiredArgsConstructor
 @RequestMapping("/factory/order")
 @RestController
-public class FactoryOrderController {
+public class FactoryOrderHistoryApi {
 
     private final OrderReadService orderReadService;
 

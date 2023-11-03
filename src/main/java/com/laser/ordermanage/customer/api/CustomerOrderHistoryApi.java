@@ -1,4 +1,4 @@
-package com.laser.ordermanage.customer.controller;
+package com.laser.ordermanage.customer.api;
 
 import com.laser.ordermanage.common.dto.response.PageRes;
 import com.laser.ordermanage.customer.dto.response.GetCustomerOrderRes;
@@ -20,7 +20,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/customer/order")
 @RestController
-public class CustomerOrderController {
+public class CustomerOrderHistoryApi {
 
     private final OrderReadService orderReadService;
 

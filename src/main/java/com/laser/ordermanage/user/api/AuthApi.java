@@ -1,4 +1,4 @@
-package com.laser.ordermanage.user.controller;
+package com.laser.ordermanage.user.api;
 
 import com.laser.ordermanage.common.config.ExpireTime;
 import com.laser.ordermanage.common.jwt.dto.TokenInfo;
@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @RequestMapping("/user")
 @RestController
-public class AuthController {
+public class AuthApi {
 
     private final AuthService authService;
 

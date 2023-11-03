@@ -5,7 +5,12 @@ import com.laser.ordermanage.common.exception.ErrorCode;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-import java.util.Arrays;
+import java.util.Collections;
+import java.util.Map;
+import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @AllArgsConstructor
 public enum Stage {
@@ -21,10 +26,12 @@ public enum Stage {
     @Getter
     private final String request;
 
+    private static final Map<String, Stage> stageMap =
+            Collections.unmodifiableMap(Stream.of(values())
+                    .collect(Collectors.toMap(Stage::getRequest, Function.identity())));
+
     public static Stage ofRequest(String request) {
-        return Arrays.stream(Stage.values())
-                .filter(v -> v.getRequest().equals(request))
-                .findAny()
-                .orElseThrow(() -> new CustomCommonException(ErrorCode.INVALID_PARAMETER, "stage"));
+        return Optional.ofNullable(stageMap.get(request)).orElseThrow(() -> new CustomCommonException(ErrorCode.INVALID_PARAMETER, "stage"));
     }
+
 }

@@ -18,19 +18,19 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(CustomCommonException.class)
     public ResponseEntity<?> customCommonException(CustomCommonException e) {
-        return ResponseEntity.status(e.getHttpStatus()).body(e.toErrorRes());
+        return ResponseEntity.status(e.getHttpStatus()).body(e.toErrorResponse());
     }
 
     @ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity<?> badCredentialException(BadCredentialsException e) {
         CustomCommonException exception = new CustomCommonException(ErrorCode.INVALID_CREDENTIALS);
-        return ResponseEntity.badRequest().body(exception.toErrorRes());
+        return ResponseEntity.badRequest().body(exception.toErrorResponse());
     }
 
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<?> accessDeniedException(Authentication e) {
         CustomCommonException exception = new CustomCommonException(ErrorCode.DENIED_ACCESS);
-        return ResponseEntity.status(exception.getHttpStatus()).body(exception.toErrorRes());
+        return ResponseEntity.status(exception.getHttpStatus()).body(exception.toErrorResponse());
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -44,18 +44,18 @@ public class GlobalExceptionHandler {
 
         CustomCommonException exception = new CustomCommonException(ErrorCode.INVALID_FIELDS, sb.toString());
 
-        return ResponseEntity.status(exception.getHttpStatus()).body(exception.toErrorRes());
+        return ResponseEntity.status(exception.getHttpStatus()).body(exception.toErrorResponse());
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<?> methodArgumentTypeMismatchException(MethodArgumentTypeMismatchException e) {
         CustomCommonException exception = new CustomCommonException(ErrorCode.INVALID_PARAMETER_TYPE, e.getName());
-        return ResponseEntity.status(exception.getHttpStatus()).body(exception.toErrorRes());
+        return ResponseEntity.status(exception.getHttpStatus()).body(exception.toErrorResponse());
     }
 
     @ExceptionHandler(MissingRequestCookieException.class)
     public ResponseEntity<?> missingRequestCookieException(MissingRequestCookieException e) {
         CustomCommonException exception = new CustomCommonException(ErrorCode.MISSING_JWT_TOKEN);
-        return ResponseEntity.status(exception.getHttpStatus()).body(exception.toErrorRes());
+        return ResponseEntity.status(exception.getHttpStatus()).body(exception.toErrorResponse());
     }
 }

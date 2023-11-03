@@ -2,8 +2,8 @@ package com.laser.ordermanage.order.repository;
 
 import com.laser.ordermanage.common.exception.CustomCommonException;
 import com.laser.ordermanage.common.exception.ErrorCode;
-import com.laser.ordermanage.customer.dto.response.GetCustomerOrderRes;
-import com.laser.ordermanage.customer.dto.response.QGetCustomerOrderRes;
+import com.laser.ordermanage.customer.dto.response.CustomerGetOrderHistoryResponse;
+import com.laser.ordermanage.customer.dto.response.QCustomerGetOrderHistoryResponse;
 import com.laser.ordermanage.factory.dto.response.*;
 import com.laser.ordermanage.order.domain.type.Stage;
 import com.querydsl.core.BooleanBuilder;
@@ -30,9 +30,9 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public Page<GetCustomerOrderRes> findByCustomer(String userName, Pageable pageable, List<String> stageRequestList, List<String> manufacturingRequestList, String query) {
-        List<GetCustomerOrderRes> getCustomerOrderResList = queryFactory
-                .select(new QGetCustomerOrderRes(
+    public Page<CustomerGetOrderHistoryResponse> findByCustomer(String userName, Pageable pageable, List<String> stageRequestList, List<String> manufacturingRequestList, String query) {
+        List<CustomerGetOrderHistoryResponse> getCustomerOrderResList = queryFactory
+                .select(new QCustomerGetOrderHistoryResponse(
                         order.id,
                         order.name,
                         order.imgUrl,
@@ -69,9 +69,9 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
     }
 
     @Override
-    public Page<GetReIssueNewOrderRes> findReIssueNewByFactory(Pageable pageable, Boolean hasQuotation, Boolean isUrgent) {
-        List<GetReIssueNewOrderRes> getReIssueNewOrderResList = queryFactory
-                .select(new QGetReIssueNewOrderRes(
+    public Page<FactoryGetOrderIsNewAndIsReIssueHistoryResponse> findIsNewAndIsReIssueByFactory(Pageable pageable, Boolean hasQuotation, Boolean isUrgent) {
+        List<FactoryGetOrderIsNewAndIsReIssueHistoryResponse> factoryGetOrderIsNewAndIsReIssueHistoryResponseList = queryFactory
+                .select(new QFactoryGetOrderIsNewAndIsReIssueHistoryResponse(
                         order.id,
                         order.name,
                         order.customer.name,
@@ -106,13 +106,13 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
                         eqIsUrgent(isUrgent)
                 );
 
-        return PageableExecutionUtils.getPage(getReIssueNewOrderResList, pageable, countQuery::fetchOne);
+        return PageableExecutionUtils.getPage(factoryGetOrderIsNewAndIsReIssueHistoryResponseList, pageable, countQuery::fetchOne);
     }
 
     @Override
-    public Page<GetNewIssueNewOrderRes> findNewIssueNewByFactory(Pageable pageable, Boolean hasQuotation, Boolean isNewCustomer, Boolean isUrgent) {
-        List<GetNewIssueNewOrderRes> getNewIssueNewOrderResList = queryFactory
-                .select(new QGetNewIssueNewOrderRes(
+    public Page<FactoryGetOrderIsNewAndIsNewIssueHistoryResponse> findIsNewAndIsNewIssueByFactory(Pageable pageable, Boolean hasQuotation, Boolean isNewCustomer, Boolean isUrgent) {
+        List<FactoryGetOrderIsNewAndIsNewIssueHistoryResponse> factoryGetOrderIsNewAndIsNewIssueHistoryResponseList = queryFactory
+                .select(new QFactoryGetOrderIsNewAndIsNewIssueHistoryResponse(
                         order.id,
                         order.name,
                         order.customer.name,
@@ -150,13 +150,13 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
                         eqIsUrgent(isUrgent)
                 );
 
-        return PageableExecutionUtils.getPage(getNewIssueNewOrderResList, pageable, countQuery::fetchOne);
+        return PageableExecutionUtils.getPage(factoryGetOrderIsNewAndIsNewIssueHistoryResponseList, pageable, countQuery::fetchOne);
     }
 
     @Override
-    public Page<GetFactoryOrderRes> findByFactory(Pageable pageable, Boolean isCompleted, Boolean isUrgent, String dateCriterion, LocalDate startDate, LocalDate endDate, String query) {
-        List<GetFactoryOrderRes> getFactoryOrderResList = queryFactory
-                .select(new QGetFactoryOrderRes(
+    public Page<FactoryGetOrderHistoryResponse> findByFactory(Pageable pageable, Boolean isCompleted, Boolean isUrgent, String dateCriterion, LocalDate startDate, LocalDate endDate, String query) {
+        List<FactoryGetOrderHistoryResponse> factoryGetOrderHistoryResponseList = queryFactory
+                .select(new QFactoryGetOrderHistoryResponse(
                         order.id,
                         order.name,
                         order.customer.name,
@@ -195,7 +195,7 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
                                 .or(order.customer.companyName.contains(query))
                 );
 
-        return PageableExecutionUtils.getPage(getFactoryOrderResList, pageable, countQuery::fetchOne);
+        return PageableExecutionUtils.getPage(factoryGetOrderHistoryResponseList, pageable, countQuery::fetchOne);
     }
 
 

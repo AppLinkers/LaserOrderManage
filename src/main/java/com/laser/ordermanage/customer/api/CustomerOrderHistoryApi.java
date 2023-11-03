@@ -2,7 +2,7 @@ package com.laser.ordermanage.customer.api;
 
 import com.laser.ordermanage.common.dto.response.PageRes;
 import com.laser.ordermanage.customer.dto.response.GetCustomerOrderRes;
-import com.laser.ordermanage.order.service.OrderReadService;
+import com.laser.ordermanage.customer.service.CustomerOrderHistoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -22,10 +22,10 @@ import java.util.List;
 @RestController
 public class CustomerOrderHistoryApi {
 
-    private final OrderReadService orderReadService;
+    private final CustomerOrderHistoryService customerOrderHistoryService;
 
     @GetMapping("")
-    public ResponseEntity<?> getOrderList(
+    public ResponseEntity<?> getOrderHistory(
             @RequestParam(value = "page", required = false, defaultValue = "1") Integer page,
             @RequestParam(value = "size", required = false, defaultValue = "10") Integer size,
             @RequestParam(value = "stage", required = false) List<String> stageList,
@@ -36,7 +36,7 @@ public class CustomerOrderHistoryApi {
 
         Pageable pageable = PageRequest.of(page - 1, size);
 
-        PageRes<GetCustomerOrderRes> response = orderReadService.readByCustomer(user.getUsername(), pageable, stageList, manufacturingList, query);
+        PageRes<GetCustomerOrderRes> response = customerOrderHistoryService.getOrderHistory(user.getUsername(), pageable, stageList, manufacturingList, query);
 
         return ResponseEntity.ok(response);
     }

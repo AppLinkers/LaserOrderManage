@@ -4,7 +4,7 @@ import com.laser.ordermanage.common.dto.response.PageRes;
 import com.laser.ordermanage.factory.dto.response.GetFactoryOrderRes;
 import com.laser.ordermanage.factory.dto.response.GetNewIssueNewOrderRes;
 import com.laser.ordermanage.factory.dto.response.GetReIssueNewOrderRes;
-import com.laser.ordermanage.order.service.OrderReadService;
+import com.laser.ordermanage.factory.service.FactoryOrderHistoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -23,10 +23,10 @@ import java.time.LocalDate;
 @RestController
 public class FactoryOrderHistoryApi {
 
-    private final OrderReadService orderReadService;
+    private final FactoryOrderHistoryService factoryOrderHistoryService;
 
     @GetMapping("/new/re-issue")
-    public ResponseEntity<?> getReIssueNewOrderList(
+    public ResponseEntity<?> getReIssueNewOrderHistory(
             @RequestParam(value = "page", required = false, defaultValue = "1") Integer page,
             @RequestParam(value = "size", required = false, defaultValue = "10") Integer size,
             @RequestParam(value = "has-quotation", required = false) Boolean hasQuotation,
@@ -34,13 +34,13 @@ public class FactoryOrderHistoryApi {
 
         Pageable pageable = PageRequest.of(page - 1, size);
 
-        PageRes<GetReIssueNewOrderRes> response = orderReadService.readReIssueNewByFactory(pageable, hasQuotation, isUrgent);
+        PageRes<GetReIssueNewOrderRes> response = factoryOrderHistoryService.getReIssueNewOrderHistory(pageable, hasQuotation, isUrgent);
 
         return ResponseEntity.ok(response);
     }
 
     @GetMapping("/new/new-issue")
-    public ResponseEntity<?> getNewIssueNewOrderList(
+    public ResponseEntity<?> getNewIssueNewOrderHistory(
             @RequestParam(value = "page", required = false, defaultValue = "1") Integer page,
             @RequestParam(value = "size", required = false, defaultValue = "10") Integer size,
             @RequestParam(value = "has-quotation", required = false) Boolean hasQuotation,
@@ -49,13 +49,13 @@ public class FactoryOrderHistoryApi {
 
         Pageable pageable = PageRequest.of(page - 1, size);
 
-        PageRes<GetNewIssueNewOrderRes> response = orderReadService.readNewIssueNewByFactory(pageable, hasQuotation, isNewCustomer, isUrgent);
+        PageRes<GetNewIssueNewOrderRes> response = factoryOrderHistoryService.getNewIssueNewOrderHistory(pageable, hasQuotation, isNewCustomer, isUrgent);
 
         return ResponseEntity.ok(response);
     }
 
     @GetMapping("")
-    public ResponseEntity<?> getOrderList(
+    public ResponseEntity<?> getOrderHistory(
             @RequestParam(value = "page", required = false, defaultValue = "1") Integer page,
             @RequestParam(value = "size", required = false, defaultValue = "10") Integer size,
             @RequestParam(value = "is-completed", required = false, defaultValue = "false") Boolean isCompleted,
@@ -67,7 +67,7 @@ public class FactoryOrderHistoryApi {
 
         Pageable pageable = PageRequest.of(page - 1, size);
 
-        PageRes<GetFactoryOrderRes> response = orderReadService.readByFactory(pageable, isCompleted, isUrgent, dateCriterion, startDate, endDate, query);
+        PageRes<GetFactoryOrderRes> response = factoryOrderHistoryService.getOrderHistory(pageable, isCompleted, isUrgent, dateCriterion, startDate, endDate, query);
 
         return ResponseEntity.ok(response);
     }

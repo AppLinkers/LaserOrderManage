@@ -21,7 +21,7 @@ import org.springframework.util.StringUtils;
 
 @Service
 @RequiredArgsConstructor
-public class AuthService {
+public class UserAuthService {
 
     private final BlackListRedisRepository blackListRedisRepository;
     private final RefreshTokenRedisRepository refreshTokenRedisRepository;

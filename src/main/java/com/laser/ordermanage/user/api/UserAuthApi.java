@@ -4,7 +4,7 @@ import com.laser.ordermanage.common.config.ExpireTime;
 import com.laser.ordermanage.common.jwt.dto.TokenInfo;
 import com.laser.ordermanage.user.dto.request.LoginReq;
 import com.laser.ordermanage.user.dto.response.TokenInfoRes;
-import com.laser.ordermanage.user.service.AuthService;
+import com.laser.ordermanage.user.service.UserAuthService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -17,13 +17,13 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @RequestMapping("/user")
 @RestController
-public class AuthApi {
+public class UserAuthApi {
 
-    private final AuthService authService;
+    private final UserAuthService userAuthService;
 
     @PostMapping("/login")
     public ResponseEntity<?> login(HttpServletRequest httpServletRequest, @RequestBody @Valid LoginReq request) {
-        TokenInfo tokenInfo = authService.login(httpServletRequest, request);
+        TokenInfo tokenInfo = userAuthService.login(httpServletRequest, request);
 
         TokenInfoRes tokenInfoRes = tokenInfo.toTokenInfoRes();
 
@@ -34,7 +34,7 @@ public class AuthApi {
 
     @PostMapping("/re-issue")
     public ResponseEntity<?> reissue(HttpServletRequest httpServletRequest, @CookieValue(value = "refreshToken") String refreshTokenReq) {
-        TokenInfo tokenInfo = authService.reissue(httpServletRequest, refreshTokenReq);
+        TokenInfo tokenInfo = userAuthService.reissue(httpServletRequest, refreshTokenReq);
 
         TokenInfoRes tokenInfoRes = tokenInfo.toTokenInfoRes();
 
@@ -45,7 +45,7 @@ public class AuthApi {
 
     @PostMapping("/logout")
     public ResponseEntity<?> logout(HttpServletRequest httpServletRequest) {
-        authService.logout(httpServletRequest);
+        userAuthService.logout(httpServletRequest);
 
         return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, removeResponseCookie().toString()).build();
     }

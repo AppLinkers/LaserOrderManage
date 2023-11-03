@@ -69,7 +69,7 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
     }
 
     @Override
-    public Page<GetReIssueNewOrderRes> findReIssueNewByFactory(Pageable pageable, Boolean hasQuotation, Boolean isUrgent) {
+    public Page<GetReIssueNewOrderRes> findIsNewAndIsReIssueByFactory(Pageable pageable, Boolean hasQuotation, Boolean isUrgent) {
         List<GetReIssueNewOrderRes> getReIssueNewOrderResList = queryFactory
                 .select(new QGetReIssueNewOrderRes(
                         order.id,
@@ -110,7 +110,7 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
     }
 
     @Override
-    public Page<GetNewIssueNewOrderRes> findNewIssueNewByFactory(Pageable pageable, Boolean hasQuotation, Boolean isNewCustomer, Boolean isUrgent) {
+    public Page<GetNewIssueNewOrderRes> findIsNewAndIsNewIssueByFactory(Pageable pageable, Boolean hasQuotation, Boolean isNewCustomer, Boolean isUrgent) {
         List<GetNewIssueNewOrderRes> getNewIssueNewOrderResList = queryFactory
                 .select(new QGetNewIssueNewOrderRes(
                         order.id,

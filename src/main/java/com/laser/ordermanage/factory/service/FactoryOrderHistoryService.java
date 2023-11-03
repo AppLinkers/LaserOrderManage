@@ -20,15 +20,15 @@ public class FactoryOrderHistoryService {
     private final OrderRepositoryCustom orderRepository;
 
     @Transactional(readOnly = true)
-    public PageRes<GetReIssueNewOrderRes> getReIssueNewOrderHistory(Pageable pageable, Boolean hasQuotation, Boolean isUrgent) {
-        Page<GetReIssueNewOrderRes> reIssueNewOrderPage = orderRepository.findReIssueNewByFactory(pageable, hasQuotation, isUrgent);
+    public PageRes<GetReIssueNewOrderRes> getOrderIsNewAndIsReIssueHistory(Pageable pageable, Boolean hasQuotation, Boolean isUrgent) {
+        Page<GetReIssueNewOrderRes> reIssueNewOrderPage = orderRepository.findIsNewAndIsReIssueByFactory(pageable, hasQuotation, isUrgent);
 
         return new PageRes<>(reIssueNewOrderPage);
     }
 
     @Transactional(readOnly = true)
-    public PageRes<GetNewIssueNewOrderRes> getNewIssueNewOrderHistory(Pageable pageable, Boolean hasQuotation, Boolean isNewCustomer, Boolean isUrgent) {
-        Page<GetNewIssueNewOrderRes> newIssueNewOrderPage = orderRepository.findNewIssueNewByFactory(pageable, hasQuotation, isNewCustomer, isUrgent);
+    public PageRes<GetNewIssueNewOrderRes> getOrderIsNewAndIsNewIssueHistory(Pageable pageable, Boolean hasQuotation, Boolean isNewCustomer, Boolean isUrgent) {
+        Page<GetNewIssueNewOrderRes> newIssueNewOrderPage = orderRepository.findIsNewAndIsNewIssueByFactory(pageable, hasQuotation, isNewCustomer, isUrgent);
 
         return new PageRes<>(newIssueNewOrderPage);
     }

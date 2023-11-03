@@ -1,9 +1,9 @@
 package com.laser.ordermanage.factory.api;
 
-import com.laser.ordermanage.common.dto.response.PageRes;
-import com.laser.ordermanage.factory.dto.response.GetFactoryOrderRes;
-import com.laser.ordermanage.factory.dto.response.GetNewIssueNewOrderRes;
-import com.laser.ordermanage.factory.dto.response.GetReIssueNewOrderRes;
+import com.laser.ordermanage.common.dto.response.PageResponse;
+import com.laser.ordermanage.factory.dto.response.FactoryGetOrderHistoryResponse;
+import com.laser.ordermanage.factory.dto.response.FactoryGetOrderIsNewAndIsNewIssueHistoryResponse;
+import com.laser.ordermanage.factory.dto.response.FactoryGetOrderIsNewAndIsReIssueHistoryResponse;
 import com.laser.ordermanage.factory.service.FactoryOrderHistoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -21,7 +21,7 @@ import java.time.LocalDate;
 @RequiredArgsConstructor
 @RequestMapping("/factory/order")
 @RestController
-public class FactoryOrderHistoryApi {
+public class FactoryOrderHistoryAPI {
 
     private final FactoryOrderHistoryService factoryOrderHistoryService;
 
@@ -34,7 +34,7 @@ public class FactoryOrderHistoryApi {
 
         Pageable pageable = PageRequest.of(page - 1, size);
 
-        PageRes<GetReIssueNewOrderRes> response = factoryOrderHistoryService.getOrderIsNewAndIsReIssueHistory(pageable, hasQuotation, isUrgent);
+        PageResponse<FactoryGetOrderIsNewAndIsReIssueHistoryResponse> response = factoryOrderHistoryService.getOrderIsNewAndIsReIssueHistory(pageable, hasQuotation, isUrgent);
 
         return ResponseEntity.ok(response);
     }
@@ -49,7 +49,7 @@ public class FactoryOrderHistoryApi {
 
         Pageable pageable = PageRequest.of(page - 1, size);
 
-        PageRes<GetNewIssueNewOrderRes> response = factoryOrderHistoryService.getOrderIsNewAndIsNewIssueHistory(pageable, hasQuotation, isNewCustomer, isUrgent);
+        PageResponse<FactoryGetOrderIsNewAndIsNewIssueHistoryResponse> response = factoryOrderHistoryService.getOrderIsNewAndIsNewIssueHistory(pageable, hasQuotation, isNewCustomer, isUrgent);
 
         return ResponseEntity.ok(response);
     }
@@ -67,7 +67,7 @@ public class FactoryOrderHistoryApi {
 
         Pageable pageable = PageRequest.of(page - 1, size);
 
-        PageRes<GetFactoryOrderRes> response = factoryOrderHistoryService.getOrderHistory(pageable, isCompleted, isUrgent, dateCriterion, startDate, endDate, query);
+        PageResponse<FactoryGetOrderHistoryResponse> response = factoryOrderHistoryService.getOrderHistory(pageable, isCompleted, isUrgent, dateCriterion, startDate, endDate, query);
 
         return ResponseEntity.ok(response);
     }

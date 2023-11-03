@@ -6,7 +6,7 @@ import lombok.Getter;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 
 @Getter
-public class LoginReq {
+public class LoginRequest {
 
     @NotEmpty(message = "이메일은 필수 입력값입니다.")
     @Pattern(regexp = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+.[A-Za-z]{2,6}$", message = "이메일 형식에 맞지 않습니다.")

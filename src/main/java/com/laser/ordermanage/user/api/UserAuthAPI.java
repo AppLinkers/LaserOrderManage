@@ -2,8 +2,8 @@ package com.laser.ordermanage.user.api;
 
 import com.laser.ordermanage.common.config.ExpireTime;
 import com.laser.ordermanage.common.jwt.dto.TokenInfo;
-import com.laser.ordermanage.user.dto.request.LoginReq;
-import com.laser.ordermanage.user.dto.response.TokenInfoRes;
+import com.laser.ordermanage.user.dto.request.LoginRequest;
+import com.laser.ordermanage.user.dto.response.TokenInfoResponse;
 import com.laser.ordermanage.user.service.UserAuthService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -17,30 +17,30 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @RequestMapping("/user")
 @RestController
-public class UserAuthApi {
+public class UserAuthAPI {
 
     private final UserAuthService userAuthService;
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(HttpServletRequest httpServletRequest, @RequestBody @Valid LoginReq request) {
+    public ResponseEntity<?> login(HttpServletRequest httpServletRequest, @RequestBody @Valid LoginRequest request) {
         TokenInfo tokenInfo = userAuthService.login(httpServletRequest, request);
 
-        TokenInfoRes tokenInfoRes = tokenInfo.toTokenInfoRes();
+        TokenInfoResponse tokenInfoResponse = tokenInfo.toTokenInfoResponse();
 
         ResponseCookie responseCookie = generateResponseCookie(tokenInfo.getRefreshToken());
 
-        return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, responseCookie.toString()).body(tokenInfoRes);
+        return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, responseCookie.toString()).body(tokenInfoResponse);
     }
 
     @PostMapping("/re-issue")
     public ResponseEntity<?> reissue(HttpServletRequest httpServletRequest, @CookieValue(value = "refreshToken") String refreshTokenReq) {
         TokenInfo tokenInfo = userAuthService.reissue(httpServletRequest, refreshTokenReq);
 
-        TokenInfoRes tokenInfoRes = tokenInfo.toTokenInfoRes();
+        TokenInfoResponse tokenInfoResponse = tokenInfo.toTokenInfoResponse();
 
         ResponseCookie responseCookie = generateResponseCookie(tokenInfo.getRefreshToken());
 
-        return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, responseCookie.toString()).body(tokenInfoRes);
+        return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, responseCookie.toString()).body(tokenInfoResponse);
     }
 
     @PostMapping("/logout")

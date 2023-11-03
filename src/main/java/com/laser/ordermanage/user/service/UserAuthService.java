@@ -9,7 +9,7 @@ import com.laser.ordermanage.common.redis.domain.RefreshToken;
 import com.laser.ordermanage.common.redis.repository.BlackListRedisRepository;
 import com.laser.ordermanage.common.redis.repository.RefreshTokenRedisRepository;
 import com.laser.ordermanage.common.util.Helper;
-import com.laser.ordermanage.user.dto.request.LoginReq;
+import com.laser.ordermanage.user.dto.request.LoginRequest;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -29,7 +29,7 @@ public class UserAuthService {
     private final JwtUtil jwtUtil;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
 
-    public TokenInfo login(HttpServletRequest httpServletRequest, LoginReq request) {
+    public TokenInfo login(HttpServletRequest httpServletRequest, LoginRequest request) {
 
         // 1. Login ID/PW 를 기반으로 Authentication 객체 생성
         // 이때 authentication 는 인증 여부를 확인하는 authenticated 값이 false

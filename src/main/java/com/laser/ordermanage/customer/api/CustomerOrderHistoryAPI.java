@@ -1,7 +1,7 @@
 package com.laser.ordermanage.customer.api;
 
-import com.laser.ordermanage.common.dto.response.PageRes;
-import com.laser.ordermanage.customer.dto.response.GetCustomerOrderRes;
+import com.laser.ordermanage.common.dto.response.PageResponse;
+import com.laser.ordermanage.customer.dto.response.CustomerGetOrderHistoryResponse;
 import com.laser.ordermanage.customer.service.CustomerOrderHistoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -20,7 +20,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/customer/order")
 @RestController
-public class CustomerOrderHistoryApi {
+public class CustomerOrderHistoryAPI {
 
     private final CustomerOrderHistoryService customerOrderHistoryService;
 
@@ -36,7 +36,7 @@ public class CustomerOrderHistoryApi {
 
         Pageable pageable = PageRequest.of(page - 1, size);
 
-        PageRes<GetCustomerOrderRes> response = customerOrderHistoryService.getOrderHistory(user.getUsername(), pageable, stageList, manufacturingList, query);
+        PageResponse<CustomerGetOrderHistoryResponse> response = customerOrderHistoryService.getOrderHistory(user.getUsername(), pageable, stageList, manufacturingList, query);
 
         return ResponseEntity.ok(response);
     }

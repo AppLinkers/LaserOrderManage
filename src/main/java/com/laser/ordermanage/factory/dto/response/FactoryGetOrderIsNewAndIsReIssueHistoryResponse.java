@@ -1,7 +1,6 @@
-package com.laser.ordermanage.customer.dto.response;
+package com.laser.ordermanage.factory.dto.response;
 
 import com.laser.ordermanage.order.domain.OrderManufacturing;
-import com.laser.ordermanage.order.domain.type.Stage;
 import com.querydsl.core.annotations.QueryProjection;
 import lombok.Getter;
 
@@ -10,15 +9,19 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
-public class GetCustomerOrderRes {
+public class FactoryGetOrderIsNewAndIsReIssueHistoryResponse {
 
     private final Long id;
 
     private final String name;
 
-    private final String imgUrl;
+    private final String customer;
 
-    private final String stage;
+    private final String company;
+
+    private final Boolean hasQuotation;
+
+    private final String imgUrl;
 
     private final Boolean isUrgent;
 
@@ -32,15 +35,16 @@ public class GetCustomerOrderRes {
 
     private final String request;
 
-
     @QueryProjection
-    public GetCustomerOrderRes(Long id, String name, String imgUrl, Stage stage, Boolean isUrgent, OrderManufacturing manufacturing, LocalDateTime createdAt, LocalDate deliveryAt, Long cost, String request) {
+    public FactoryGetOrderIsNewAndIsReIssueHistoryResponse(Long id, String name, String customer, String company, Boolean hasQuotation, String imgUrl, Boolean isUrgent, OrderManufacturing orderManufacturing, LocalDateTime createdAt, LocalDate deliveryAt, Long cost, String request) {
         this.id = id;
         this.name = name;
+        this.customer = customer;
+        this.company = company;
+        this.hasQuotation = hasQuotation;
         this.imgUrl = imgUrl;
-        this.stage = stage.getValue();
         this.isUrgent = isUrgent;
-        this.manufacturing = manufacturing.toValueList();
+        this.manufacturing = orderManufacturing.toValueList();
         this.createdAt = createdAt.toLocalDate();
         this.deliveryAt = deliveryAt;
         this.cost = cost;

@@ -6,7 +6,7 @@ import org.springframework.data.domain.Page;
 import java.util.List;
 
 @Getter
-public class PageRes<T> {
+public class PageResponse<T> {
 
     private List<T> contents;
 
@@ -22,7 +22,7 @@ public class PageRes<T> {
 
     private Boolean last;
 
-    public PageRes(Page<T> contentPage) {
+    public PageResponse(Page<T> contentPage) {
         this.contents = contentPage.getContent();
 
         this.page = contentPage.getNumber() + 1;

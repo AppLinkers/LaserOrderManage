@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
-public class GetFactoryOrderRes {
+public class FactoryGetOrderHistoryResponse {
 
     private final Long id;
 
@@ -37,7 +37,7 @@ public class GetFactoryOrderRes {
     private final String request;
 
     @QueryProjection
-    public GetFactoryOrderRes(Long id, String name, String customer, String company, String imgUrl, Stage stage, Boolean isUrgent, OrderManufacturing orderManufacturing, LocalDateTime createdAt, LocalDate deliveryAt, Long cost, String request) {
+    public FactoryGetOrderHistoryResponse(Long id, String name, String customer, String company, String imgUrl, Stage stage, Boolean isUrgent, OrderManufacturing orderManufacturing, LocalDateTime createdAt, LocalDate deliveryAt, Long cost, String request) {
         this.id = id;
         this.name = name;
         this.customer = customer;

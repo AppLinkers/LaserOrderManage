@@ -1,6 +1,6 @@
 package com.laser.ordermanage.common.jwt.dto;
 
-import com.laser.ordermanage.user.dto.response.TokenInfoRes;
+import com.laser.ordermanage.user.dto.response.TokenInfoResponse;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -16,8 +16,8 @@ public class TokenInfo {
     private Long accessTokenExpirationTime;
     private String refreshToken;
 
-    public TokenInfoRes toTokenInfoRes() {
-        return TokenInfoRes.builder()
+    public TokenInfoResponse toTokenInfoResponse() {
+        return TokenInfoResponse.builder()
                 .role(role)
                 .grantType(grantType)
                 .accessToken(accessToken)

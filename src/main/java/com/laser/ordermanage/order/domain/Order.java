@@ -4,6 +4,7 @@ import com.laser.ordermanage.common.converter.BooleanToYNConverter;
 import com.laser.ordermanage.common.entity.CreatedAtEntity;
 import com.laser.ordermanage.customer.domain.Customer;
 import com.laser.ordermanage.order.domain.type.Stage;
+import com.laser.ordermanage.user.domain.DeliveryAddress;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
@@ -26,6 +27,10 @@ public class Order extends CreatedAtEntity {
     @NotNull
     @ManyToOne
     private Customer customer;
+
+    @NotNull
+    @ManyToOne
+    private DeliveryAddress deliveryAddress;
 
     // todo: Quotation OneToOne 으로 변경
     private Long quotation_id;

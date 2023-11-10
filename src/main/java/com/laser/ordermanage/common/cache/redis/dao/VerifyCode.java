@@ -12,7 +12,7 @@ import org.springframework.data.redis.core.RedisHash;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-@RedisHash(value = "verifyCode", timeToLive = ExpireTime.REFRESH_TOKEN_EXPIRE_TIME_FOR_REDIS_AND_COOKIE)
+@RedisHash(value = "verifyCode", timeToLive = ExpireTime.VERIFY_CODE_EXPIRE_TIME)
 public class VerifyCode {
 
     @Id

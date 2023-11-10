@@ -5,6 +5,7 @@ import com.laser.ordermanage.customer.domain.Customer;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -46,5 +47,18 @@ public class DeliveryAddress {
 
     @NotNull
     @Convert(converter = BooleanToYNConverter.class)
-    private Boolean isDeleted;
+    private Boolean isDeleted = Boolean.FALSE;
+
+    @Builder
+    public DeliveryAddress(Customer customer, String name, String zipCode, String address, String detailAddress, String receiver, String phone1, String phone2, Boolean isDefault) {
+        this.customer = customer;
+        this.name = name;
+        this.zipCode = zipCode;
+        this.address = address;
+        this.detailAddress = detailAddress;
+        this.receiver = receiver;
+        this.phone1 = phone1;
+        this.phone2 = phone2;
+        this.isDefault = isDefault;
+    }
 }

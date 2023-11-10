@@ -5,6 +5,7 @@ import com.laser.ordermanage.user.domain.UserEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -28,5 +29,12 @@ public class Customer {
 
     @NotNull
     @Convert(converter = BooleanToYNConverter.class)
-    private Boolean isNew;
+    private Boolean isNew = Boolean.TRUE;
+
+    @Builder
+    public Customer(UserEntity user, String name, String companyName) {
+        this.user = user;
+        this.name = name;
+        this.companyName = companyName;
+    }
 }

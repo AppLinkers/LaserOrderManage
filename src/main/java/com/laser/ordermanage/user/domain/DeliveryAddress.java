@@ -33,6 +33,9 @@ public class DeliveryAddress {
     private String detailAddress;
 
     @NotNull
+    private String receiver;
+
+    @NotNull
     private String phone1;
 
     private String phone2;

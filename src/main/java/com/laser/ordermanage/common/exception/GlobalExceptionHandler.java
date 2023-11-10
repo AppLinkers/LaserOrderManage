@@ -50,7 +50,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(ConstraintViolationException.class)
-    public ResponseEntity constraintViolationException(ConstraintViolationException e) {
+    public ResponseEntity<?> constraintViolationException(ConstraintViolationException e) {
         StringBuilder sb = new StringBuilder();
         e.getConstraintViolations().forEach(
                 constraintViolation -> sb.append(constraintViolation.getMessage())
@@ -74,7 +74,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(MissingServletRequestParameterException.class)
-    public ResponseEntity missingRequestParameterException(MissingServletRequestParameterException e) {
+    public ResponseEntity<?> missingRequestParameterException(MissingServletRequestParameterException e) {
         CustomCommonException exception = new CustomCommonException(ErrorCode.MISSING_QUERY_PARAMETER, e.getParameterName());
         return ResponseEntity.status(exception.getHttpStatus()).body(exception.toErrorResponse());
     }

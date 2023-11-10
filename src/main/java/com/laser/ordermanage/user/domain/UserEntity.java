@@ -18,7 +18,7 @@ import java.util.Collection;
 @Table(name = "user_table")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-public class UserEntity extends CreatedAtEntity implements UserDetails {
+public class User extends CreatedAtEntity implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

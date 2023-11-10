@@ -19,7 +19,7 @@ public class UserJoinAPI {
     private final UserJoinService userJoinService;
 
     @PostMapping("/request-verify")
-    public ResponseEntity requestEmailVerify(
+    public ResponseEntity<?> requestEmailVerify(
             @NotEmpty(message = "이메일은 필수 입력값입니다.")
             @Pattern(regexp = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+.[A-Za-z]{2,6}$", message = "이메일 형식에 맞지 않습니다.")
             @RequestParam(value = "email") String email
@@ -28,7 +28,7 @@ public class UserJoinAPI {
     }
 
     @PostMapping("/verify-email")
-    public ResponseEntity verifyEmail(@RequestBody @Valid VerifyEmailRequest verifyEmailRequest) {
+    public ResponseEntity<?> verifyEmail(@RequestBody @Valid VerifyEmailRequest verifyEmailRequest) {
         return ResponseEntity.ok().body(userJoinService.verifyEmail(verifyEmailRequest));
     }
 }

@@ -48,6 +48,8 @@ public class WebSecurityConfig {
 
         http.authorizeRequests((authorizeRequests) ->
                 authorizeRequests
+                        .requestMatchers("/user/request-verify").permitAll()
+                        .requestMatchers("/user/verify-email").permitAll()
                         .requestMatchers("/user/login").permitAll()
                         .requestMatchers("/user/re-issue").permitAll()
                         .requestMatchers("/user/**").authenticated()

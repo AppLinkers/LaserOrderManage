@@ -44,6 +44,10 @@ public class DeliveryAddress {
     @Convert(converter = BooleanToYNConverter.class)
     private Boolean isDefault;
 
+    public void disableDefault() {
+        this.isDefault = Boolean.FALSE;
+    }
+
     @NotNull
     @Convert(converter = BooleanToYNConverter.class)
     private Boolean isDeleted = Boolean.FALSE;

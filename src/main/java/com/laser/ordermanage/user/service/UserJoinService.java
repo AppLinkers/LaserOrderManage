@@ -4,6 +4,7 @@ import com.laser.ordermanage.common.cache.redis.dao.VerifyCode;
 import com.laser.ordermanage.common.cache.redis.repository.VerifyCodeRedisRepository;
 import com.laser.ordermanage.common.exception.CustomCommonException;
 import com.laser.ordermanage.common.exception.ErrorCode;
+import com.laser.ordermanage.common.mail.MailService;
 import com.laser.ordermanage.customer.domain.Customer;
 import com.laser.ordermanage.customer.repository.CustomerRepository;
 import com.laser.ordermanage.customer.domain.DeliveryAddress;

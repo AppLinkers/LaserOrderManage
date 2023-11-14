@@ -1,4 +1,4 @@
-package com.laser.ordermanage.user.service;
+package com.laser.ordermanage.common.mail;
 
 import com.laser.ordermanage.common.exception.CustomCommonException;
 import com.laser.ordermanage.common.exception.ErrorCode;

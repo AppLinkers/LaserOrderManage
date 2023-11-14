@@ -1,7 +1,6 @@
-package com.laser.ordermanage.user.domain;
+package com.laser.ordermanage.customer.domain;
 
 import com.laser.ordermanage.common.converter.BooleanToYNConverter;
-import com.laser.ordermanage.customer.domain.Customer;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
@@ -44,6 +43,10 @@ public class DeliveryAddress {
     @NotNull
     @Convert(converter = BooleanToYNConverter.class)
     private Boolean isDefault;
+
+    public void disableDefault() {
+        this.isDefault = Boolean.FALSE;
+    }
 
     @NotNull
     @Convert(converter = BooleanToYNConverter.class)

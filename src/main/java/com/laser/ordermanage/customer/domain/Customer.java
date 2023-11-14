@@ -19,7 +19,7 @@ public class Customer {
     private Long id;
 
     @NotNull
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     private UserEntity user;
 
     @NotNull

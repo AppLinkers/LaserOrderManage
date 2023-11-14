@@ -1,7 +1,6 @@
-package com.laser.ordermanage.user.domain;
+package com.laser.ordermanage.customer.domain;
 
 import com.laser.ordermanage.common.converter.BooleanToYNConverter;
-import com.laser.ordermanage.customer.domain.Customer;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;

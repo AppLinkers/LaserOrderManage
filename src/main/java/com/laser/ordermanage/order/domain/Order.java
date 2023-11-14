@@ -4,7 +4,7 @@ import com.laser.ordermanage.common.converter.BooleanToYNConverter;
 import com.laser.ordermanage.common.entity.CreatedAtEntity;
 import com.laser.ordermanage.customer.domain.Customer;
 import com.laser.ordermanage.order.domain.type.Stage;
-import com.laser.ordermanage.user.domain.DeliveryAddress;
+import com.laser.ordermanage.customer.domain.DeliveryAddress;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;

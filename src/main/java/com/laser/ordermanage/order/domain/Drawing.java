@@ -1,5 +1,6 @@
 package com.laser.ordermanage.order.domain;
 
+import com.laser.ordermanage.order.domain.type.FileType;
 import com.laser.ordermanage.order.domain.type.Ingredient;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -22,6 +23,13 @@ public class Drawing {
 
     @NotNull
     private String fileName;
+
+    @NotNull
+    private Long fileSize;
+
+    @NotNull
+    @Enumerated(value = EnumType.STRING)
+    private FileType fileType;
 
     @NotNull
     private String fileUrl;

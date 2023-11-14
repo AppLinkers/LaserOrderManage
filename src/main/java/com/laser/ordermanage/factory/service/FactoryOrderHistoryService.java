@@ -21,22 +21,22 @@ public class FactoryOrderHistoryService {
 
     @Transactional(readOnly = true)
     public PageResponse<FactoryGetOrderIsNewAndIsReIssueHistoryResponse> getOrderIsNewAndIsReIssueHistory(Pageable pageable, Boolean hasQuotation, Boolean isUrgent) {
-        Page<FactoryGetOrderIsNewAndIsReIssueHistoryResponse> reIssueNewOrderPage = orderRepository.findIsNewAndIsReIssueByFactory(pageable, hasQuotation, isUrgent);
+        Page<FactoryGetOrderIsNewAndIsReIssueHistoryResponse> factoryGetOrderIsNewAndIsReIssueHistoryResponsePage = orderRepository.findIsNewAndIsReIssueByFactory(pageable, hasQuotation, isUrgent);
 
-        return new PageResponse<>(reIssueNewOrderPage);
+        return new PageResponse<>(factoryGetOrderIsNewAndIsReIssueHistoryResponsePage);
     }
 
     @Transactional(readOnly = true)
     public PageResponse<FactoryGetOrderIsNewAndIsNewIssueHistoryResponse> getOrderIsNewAndIsNewIssueHistory(Pageable pageable, Boolean hasQuotation, Boolean isNewCustomer, Boolean isUrgent) {
-        Page<FactoryGetOrderIsNewAndIsNewIssueHistoryResponse> newIssueNewOrderPage = orderRepository.findIsNewAndIsNewIssueByFactory(pageable, hasQuotation, isNewCustomer, isUrgent);
+        Page<FactoryGetOrderIsNewAndIsNewIssueHistoryResponse> factoryGetOrderIsNewAndIsNewIssueHistoryResponsePage = orderRepository.findIsNewAndIsNewIssueByFactory(pageable, hasQuotation, isNewCustomer, isUrgent);
 
-        return new PageResponse<>(newIssueNewOrderPage);
+        return new PageResponse<>(factoryGetOrderIsNewAndIsNewIssueHistoryResponsePage);
     }
 
     @Transactional(readOnly = true)
     public PageResponse<FactoryGetOrderHistoryResponse> getOrderHistory(Pageable pageable, Boolean isCompleted, Boolean isUrgent, String dateCriterion, LocalDate startDate, LocalDate endDate, String query) {
-        Page<FactoryGetOrderHistoryResponse> factoryOrderPage = orderRepository.findByFactory(pageable, isCompleted, isUrgent, dateCriterion, startDate, endDate, query);
+        Page<FactoryGetOrderHistoryResponse> factoryGetOrderHistoryResponsePage = orderRepository.findByFactory(pageable, isCompleted, isUrgent, dateCriterion, startDate, endDate, query);
 
-        return new PageResponse<>(factoryOrderPage);
+        return new PageResponse<>(factoryGetOrderHistoryResponsePage);
     }
 }

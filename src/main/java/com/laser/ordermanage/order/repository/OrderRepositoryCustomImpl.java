@@ -3,7 +3,9 @@ package com.laser.ordermanage.order.repository;
 import com.laser.ordermanage.common.exception.CustomCommonException;
 import com.laser.ordermanage.common.exception.ErrorCode;
 import com.laser.ordermanage.customer.dto.response.CustomerGetOrderHistoryResponse;
+import com.laser.ordermanage.customer.dto.response.CustomerGetOrderIsCompletedHistoryResponse;
 import com.laser.ordermanage.customer.dto.response.QCustomerGetOrderHistoryResponse;
+import com.laser.ordermanage.customer.dto.response.QCustomerGetOrderIsCompletedHistoryResponse;
 import com.laser.ordermanage.factory.dto.response.*;
 import com.laser.ordermanage.order.domain.type.Stage;
 import com.querydsl.core.BooleanBuilder;
@@ -196,6 +198,37 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
                 );
 
         return PageableExecutionUtils.getPage(factoryGetOrderHistoryResponseList, pageable, countQuery::fetchOne);
+    }
+
+    @Override
+    public Page<CustomerGetOrderIsCompletedHistoryResponse> findIsCompletedByCustomer(String userName, Pageable pageable, String query) {
+        List<CustomerGetOrderIsCompletedHistoryResponse> customerGetOrderIsCompletedHistoryResponseList = queryFactory
+                .select(new QCustomerGetOrderIsCompletedHistoryResponse(
+                        order.id,
+                        order.name,
+                        order.imgUrl,
+                        order.createdAt
+                ))
+                .from(order)
+                .where(
+                        order.stage.eq(Stage.COMPLETED),
+                        order.customer.user.email.eq(userName),
+                        query == null ? null : order.name.contains(query)
+                )
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+        JPAQuery<Long> countQuery = queryFactory
+                .select(order.count())
+                .from(order)
+                .where(
+                        order.stage.eq(Stage.COMPLETED),
+                        order.customer.user.email.eq(userName),
+                        query == null ? null : order.name.contains(query)
+                );
+
+        return PageableExecutionUtils.getPage(customerGetOrderIsCompletedHistoryResponseList, pageable, countQuery::fetchOne);
     }
 
 

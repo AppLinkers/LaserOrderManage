@@ -1,12 +1,13 @@
 package com.laser.ordermanage.customer.service;
 
+import com.laser.ordermanage.common.paging.ListResponse;
 import com.laser.ordermanage.customer.domain.Customer;
 import com.laser.ordermanage.customer.domain.DeliveryAddress;
 import com.laser.ordermanage.customer.dto.request.CreateCustomerDeliveryAddressRequest;
+import com.laser.ordermanage.customer.dto.response.CustomerGetDeliveryAddressResponse;
 import com.laser.ordermanage.customer.repository.CustomerRepository;
 import com.laser.ordermanage.customer.repository.DeliveryAddressRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,8 +19,8 @@ public class CustomerDeliveryAddressService {
     private final DeliveryAddressRepository deliveryAddressRepository;
 
     @Transactional
-    public void createCustomerDeliveryAddress(User user, CreateCustomerDeliveryAddressRequest request) {
-        Customer customer = customerRepository.findFirstByUserEmail(user.getUsername());
+    public void createDeliveryAddress(String userName, CreateCustomerDeliveryAddressRequest request) {
+        Customer customer = customerRepository.findFirstByUserEmail(userName);
 
         DeliveryAddress defaultDeliveryAddress = deliveryAddressRepository.findFirstByCustomerAndIsDefaultTrue(customer);
         if (request.getIsDefault()) {
@@ -41,4 +42,8 @@ public class CustomerDeliveryAddressService {
         deliveryAddressRepository.save(deliveryAddress);
     }
 
+    @Transactional(readOnly = true)
+    public ListResponse<CustomerGetDeliveryAddressResponse> getDeliveryAddress(String userName) {
+        return new ListResponse<>(deliveryAddressRepository.findByCustomer(userName));
+    }
 }

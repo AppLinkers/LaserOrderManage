@@ -8,19 +8,19 @@ import java.util.List;
 @Getter
 public class PageResponse<T> {
 
-    private List<T> contents;
+    private final List<T> contents;
 
-    private Integer page;
+    private final Integer page;
 
-    private Integer size;
+    private final Integer size;
 
-    private Long totalElements;
+    private final Long totalElements;
 
-    private Integer totalPages;
+    private final Integer totalPages;
 
-    private Boolean first;
+    private final Boolean first;
 
-    private Boolean last;
+    private final Boolean last;
 
     public PageResponse(Page<T> contentPage) {
         this.contents = contentPage.getContent();

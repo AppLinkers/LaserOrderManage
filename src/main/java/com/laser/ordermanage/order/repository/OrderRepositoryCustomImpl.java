@@ -31,7 +31,7 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
 
     @Override
     public Page<CustomerGetOrderHistoryResponse> findByCustomer(String userName, Pageable pageable, List<String> stageRequestList, List<String> manufacturingRequestList, String query) {
-        List<CustomerGetOrderHistoryResponse> getCustomerOrderResList = queryFactory
+        List<CustomerGetOrderHistoryResponse> customerGetOrderHistoryResponseList = queryFactory
                 .select(new QCustomerGetOrderHistoryResponse(
                         order.id,
                         order.name,
@@ -65,7 +65,7 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
                         query == null ? null : order.name.contains(query)
                 );
 
-        return PageableExecutionUtils.getPage(getCustomerOrderResList, pageable, countQuery::fetchOne);
+        return PageableExecutionUtils.getPage(customerGetOrderHistoryResponseList, pageable, countQuery::fetchOne);
     }
 
     @Override

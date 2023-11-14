@@ -72,7 +72,7 @@ public class UserJoinService {
         }
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public UserJoinStatusResponse verifyEmail(VerifyEmailRequest verifyEmailRequest) {
         UserJoinStatusResponse response = checkDuplicatedEmail(verifyEmailRequest.getEmail());
 

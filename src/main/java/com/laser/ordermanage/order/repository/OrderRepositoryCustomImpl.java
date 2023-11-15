@@ -2,10 +2,7 @@ package com.laser.ordermanage.order.repository;
 
 import com.laser.ordermanage.common.exception.CustomCommonException;
 import com.laser.ordermanage.common.exception.ErrorCode;
-import com.laser.ordermanage.customer.dto.response.CustomerGetOrderHistoryResponse;
-import com.laser.ordermanage.customer.dto.response.CustomerGetOrderIsCompletedHistoryResponse;
-import com.laser.ordermanage.customer.dto.response.QCustomerGetOrderHistoryResponse;
-import com.laser.ordermanage.customer.dto.response.QCustomerGetOrderIsCompletedHistoryResponse;
+import com.laser.ordermanage.customer.dto.response.*;
 import com.laser.ordermanage.factory.dto.response.*;
 import com.laser.ordermanage.order.domain.type.Stage;
 import com.querydsl.core.BooleanBuilder;
@@ -23,7 +20,12 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 
+import static com.laser.ordermanage.customer.domain.QCustomer.customer;
+import static com.laser.ordermanage.customer.domain.QDeliveryAddress.deliveryAddress;
 import static com.laser.ordermanage.order.domain.QOrder.order;
+import static com.laser.ordermanage.order.domain.QOrderManufacturing.orderManufacturing;
+import static com.laser.ordermanage.order.domain.QOrderPostProcessing.orderPostProcessing;
+import static com.laser.ordermanage.user.domain.QUserEntity.userEntity;
 
 @RequiredArgsConstructor
 @Repository
@@ -229,6 +231,43 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
                 );
 
         return PageableExecutionUtils.getPage(customerGetOrderIsCompletedHistoryResponseList, pageable, countQuery::fetchOne);
+    }
+
+    @Override
+    public CustomerGetOrderCreateInformationResponse findCreateInformationByCustomerAndOrder(String userName, Long orderId) {
+        CustomerGetOrderCreateInformationResponse customerGetOrderCreateInformationResponse = queryFactory
+                .select(new QCustomerGetOrderCreateInformationResponse(
+                        order.id,
+                        order.name,
+                        orderManufacturing,
+                        orderPostProcessing,
+                        order.request,
+                        new QCustomerGetDeliveryAddressResponse(
+                                deliveryAddress.id,
+                                deliveryAddress.name,
+                                deliveryAddress.zipCode,
+                                deliveryAddress.address,
+                                deliveryAddress.detailAddress,
+                                deliveryAddress.receiver,
+                                deliveryAddress.phone1,
+                                deliveryAddress.phone2,
+                                deliveryAddress.isDefault,
+                                deliveryAddress.isDeleted
+                        )
+                ))
+                .from(order)
+                .leftJoin(order.customer, customer)
+                .leftJoin(customer.user, userEntity)
+                .leftJoin(order.manufacturing, orderManufacturing)
+                .leftJoin(order.postProcessing, orderPostProcessing)
+                .leftJoin(order.deliveryAddress, deliveryAddress)
+                .where(
+                        userEntity.email.eq(userName),
+                        order.id.eq(orderId)
+                )
+                .fetchOne();
+
+        return customerGetOrderCreateInformationResponse;
     }
 
 

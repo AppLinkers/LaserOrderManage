@@ -7,6 +7,9 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
@@ -24,4 +27,16 @@ public class OrderPostProcessing {
     @Convert(converter = BooleanToYNConverter.class)
     private Boolean isPlating;
 
+    public List<String> toValueList() {
+        List<String> valueList = new ArrayList<>();
+        if (isPainting) {
+            valueList.add("도색");
+        }
+
+        if (isPlating) {
+            valueList.add("도금");
+        }
+
+        return valueList;
+    }
 }

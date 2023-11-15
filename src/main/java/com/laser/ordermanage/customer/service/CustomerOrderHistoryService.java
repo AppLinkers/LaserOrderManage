@@ -1,9 +1,12 @@
 package com.laser.ordermanage.customer.service;
 
 import com.laser.ordermanage.common.paging.PageResponse;
+import com.laser.ordermanage.customer.dto.response.CustomerGetDrawingResponse;
+import com.laser.ordermanage.customer.dto.response.CustomerGetOrderCreateInformationResponse;
 import com.laser.ordermanage.customer.dto.response.CustomerGetOrderHistoryResponse;
 import com.laser.ordermanage.customer.dto.response.CustomerGetOrderIsCompletedHistoryResponse;
 import com.laser.ordermanage.order.repository.OrderRepositoryCustom;
+import com.laser.ordermanage.order.service.DrawingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -15,6 +18,8 @@ import java.util.List;
 @RequiredArgsConstructor
 @Service
 public class CustomerOrderHistoryService {
+
+    private final DrawingService drawingService;
 
     private final OrderRepositoryCustom orderRepository;
 
@@ -30,5 +35,14 @@ public class CustomerOrderHistoryService {
         Page<CustomerGetOrderIsCompletedHistoryResponse> customerGetOrderIsCompletedHistoryResponsePage = orderRepository.findIsCompletedByCustomer(userName, pageable, query);
 
         return new PageResponse<>(customerGetOrderIsCompletedHistoryResponsePage);
+    }
+
+    public CustomerGetOrderCreateInformationResponse getOrderCreateInformation(String userName, Long orderId) {
+        CustomerGetOrderCreateInformationResponse customerGetOrderCreateInformationResponse = orderRepository.findCreateInformationByCustomerAndOrder(userName, orderId);
+
+        List<CustomerGetDrawingResponse> customerGetDrawingResponseList = drawingService.getDrawingByCustomerAndOrder(userName, orderId);
+        customerGetOrderCreateInformationResponse.setDrawingList(customerGetDrawingResponseList);
+
+        return customerGetOrderCreateInformationResponse;
     }
 }

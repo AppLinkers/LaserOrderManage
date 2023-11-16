@@ -33,9 +33,9 @@ public class DrawingRepositoryCustomImpl implements DrawingRepositoryCustom{
                         drawing.ingredient
                 ))
                 .from(drawing)
-                .leftJoin(drawing.order, order)
-                .leftJoin(order.customer, customer)
-                .leftJoin(customer.user, userEntity)
+                .join(drawing.order, order)
+                .join(order.customer, customer)
+                .join(customer.user, userEntity)
                 .where(
                         userEntity.email.eq("user1@gmail.com"),
                         drawing.order.id.eq(orderId)

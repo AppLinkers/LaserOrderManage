@@ -256,11 +256,11 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
                         )
                 ))
                 .from(order)
-                .leftJoin(order.customer, customer)
-                .leftJoin(customer.user, userEntity)
-                .leftJoin(order.manufacturing, orderManufacturing)
-                .leftJoin(order.postProcessing, orderPostProcessing)
-                .leftJoin(order.deliveryAddress, deliveryAddress)
+                .join(order.customer, customer)
+                .join(customer.user, userEntity)
+                .join(order.manufacturing, orderManufacturing)
+                .join(order.postProcessing, orderPostProcessing)
+                .join(order.deliveryAddress, deliveryAddress)
                 .where(
                         userEntity.email.eq(userName),
                         order.id.eq(orderId)

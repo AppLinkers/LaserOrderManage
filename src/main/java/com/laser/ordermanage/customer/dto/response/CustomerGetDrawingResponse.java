@@ -1,6 +1,6 @@
 package com.laser.ordermanage.customer.dto.response;
 
-import com.laser.ordermanage.order.domain.type.FileType;
+import com.laser.ordermanage.order.domain.type.DrawingFileType;
 import com.laser.ordermanage.order.domain.type.Ingredient;
 import com.querydsl.core.annotations.QueryProjection;
 import lombok.Getter;
@@ -25,7 +25,7 @@ public class CustomerGetDrawingResponse {
     private final String ingredient;
 
     @QueryProjection
-    public CustomerGetDrawingResponse(Long id, String fileName, Long fileSize, FileType fileType, String fileUrl, String thumbnailUrl, Integer count, Ingredient ingredient) {
+    public CustomerGetDrawingResponse(Long id, String fileName, Long fileSize, DrawingFileType fileType, String fileUrl, String thumbnailUrl, Integer count, Ingredient ingredient) {
         this.id = id;
         this.fileName = fileName;
         this.fileSize = fileSize;

@@ -18,7 +18,6 @@ public class CustomerGetOrderIsCompletedHistoryResponse {
     private final LocalDate createdAt;
 
     @QueryProjection
-
     public CustomerGetOrderIsCompletedHistoryResponse(Long id, String name, String imgUrl, LocalDateTime createdAt) {
         this.id = id;
         this.name = name;

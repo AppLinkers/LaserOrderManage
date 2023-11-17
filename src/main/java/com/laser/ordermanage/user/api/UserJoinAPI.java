@@ -29,12 +29,12 @@ public class UserJoinAPI {
     }
 
     @PostMapping("/verify-email")
-    public ResponseEntity<?> verifyEmail(@RequestBody @Valid VerifyEmailRequest verifyEmailRequest) {
-        return ResponseEntity.ok().body(userJoinService.verifyEmail(verifyEmailRequest));
+    public ResponseEntity<?> verifyEmail(@RequestBody @Valid VerifyEmailRequest request) {
+        return ResponseEntity.ok().body(userJoinService.verifyEmail(request));
     }
 
     @PostMapping("/join/customer")
-    public ResponseEntity<?> joinCustomer(@RequestBody @Valid JoinCustomerRequest joinCustomerRequest) {
-        return ResponseEntity.ok().body(userJoinService.joinCustomer(joinCustomerRequest));
+    public ResponseEntity<?> joinCustomer(@RequestBody @Valid JoinCustomerRequest request) {
+        return ResponseEntity.ok().body(userJoinService.joinCustomer(request));
     }
 }

@@ -18,7 +18,7 @@ public class DeliveryAddress {
     private Long id;
 
     @NotNull
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.PERSIST)
     private Customer customer;
 
     @NotNull

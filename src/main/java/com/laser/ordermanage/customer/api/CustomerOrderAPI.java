@@ -20,11 +20,11 @@ public class CustomerOrderAPI {
     private final CustomerOrderService customerOrderService;
 
     @PostMapping("")
-    public ResponseEntity<?> createOrder(@RequestBody @Valid CreateCustomerOrderRequest createCustomerOrderRequest) {
+    public ResponseEntity<?> createOrder(@RequestBody @Valid CreateCustomerOrderRequest request) {
 
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        customerOrderService.createOrder(user, createCustomerOrderRequest);
+        customerOrderService.createOrder(user, request);
 
         return ResponseEntity.ok().build();
     }

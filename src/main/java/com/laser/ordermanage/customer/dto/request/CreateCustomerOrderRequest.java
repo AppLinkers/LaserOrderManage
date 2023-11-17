@@ -21,7 +21,7 @@ public class CreateCustomerOrderRequest {
     private List<String> postProcessing;
 
     @Valid
-    @Size(min = 1, message = "도면은 필수 사항입니다.")
+    @Size(min = 1, message = "도면은 최소한 한개 이상이어야 합니다.")
     @NotNull
     private List<CreateCustomerDrawingRequest> drawingList;
 

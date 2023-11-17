@@ -8,6 +8,7 @@ import com.laser.ordermanage.customer.domain.DeliveryAddress;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -49,25 +50,37 @@ public class Order extends CreatedAtEntity {
 
     @NotNull
     @Enumerated(value = EnumType.STRING)
-    private Stage stage;
+    private Stage stage = Stage.NEW;
 
     @NotNull
-    @OneToOne
+    @OneToOne(cascade = CascadeType.PERSIST)
     private OrderManufacturing manufacturing;
 
     @NotNull
-    @OneToOne
+    @OneToOne(cascade = CascadeType.PERSIST)
     private OrderPostProcessing postProcessing;
 
     private String request;
 
     @NotNull
     @Convert(converter = BooleanToYNConverter.class)
-    private Boolean isUrgent;
+    private Boolean isUrgent = Boolean.FALSE;
 
     private LocalDateTime completedAt;
 
     @NotNull
     @Convert(converter = BooleanToYNConverter.class)
     private Boolean isNewIssue;
+
+    @Builder
+    public Order(Customer customer, DeliveryAddress deliveryAddress, String name, String imgUrl, OrderManufacturing manufacturing, OrderPostProcessing postProcessing, String request, Boolean isNewIssue) {
+        this.customer = customer;
+        this.deliveryAddress = deliveryAddress;
+        this.name = name;
+        this.imgUrl = imgUrl;
+        this.manufacturing = manufacturing;
+        this.postProcessing = postProcessing;
+        this.request = request;
+        this.isNewIssue = isNewIssue;
+    }
 }

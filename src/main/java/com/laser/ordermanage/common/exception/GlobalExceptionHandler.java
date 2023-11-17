@@ -1,6 +1,7 @@
 package com.laser.ordermanage.common.exception;
 
 import jakarta.validation.ConstraintViolationException;
+import org.apache.tomcat.util.http.fileupload.impl.SizeLimitExceededException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -76,6 +77,12 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MissingServletRequestParameterException.class)
     public ResponseEntity<?> missingRequestParameterException(MissingServletRequestParameterException e) {
         CustomCommonException exception = new CustomCommonException(ErrorCode.MISSING_QUERY_PARAMETER, e.getParameterName());
+        return ResponseEntity.status(exception.getHttpStatus()).body(exception.toErrorResponse());
+    }
+
+    @ExceptionHandler(SizeLimitExceededException.class)
+    public ResponseEntity<?> sizeLimitExceededException(SizeLimitExceededException e) {
+        CustomCommonException exception = new CustomCommonException(ErrorCode.REQUEST_FILE_SIZE_EXCEED);
         return ResponseEntity.status(exception.getHttpStatus()).body(exception.toErrorResponse());
     }
 }

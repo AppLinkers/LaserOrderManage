@@ -1,6 +1,8 @@
 package com.laser.ordermanage.order.repository;
 
+import com.laser.ordermanage.customer.dto.response.CustomerGetOrderCreateInformationResponse;
 import com.laser.ordermanage.customer.dto.response.CustomerGetOrderHistoryResponse;
+import com.laser.ordermanage.customer.dto.response.CustomerGetOrderIsCompletedHistoryResponse;
 import com.laser.ordermanage.factory.dto.response.FactoryGetOrderHistoryResponse;
 import com.laser.ordermanage.factory.dto.response.FactoryGetOrderIsNewAndIsNewIssueHistoryResponse;
 import com.laser.ordermanage.factory.dto.response.FactoryGetOrderIsNewAndIsReIssueHistoryResponse;
@@ -19,4 +21,8 @@ public interface OrderRepositoryCustom {
     Page<FactoryGetOrderIsNewAndIsNewIssueHistoryResponse> findIsNewAndIsNewIssueByFactory(Pageable pageable, Boolean hasQuotation, Boolean isNewCustomer, Boolean isUrgent);
 
     Page<FactoryGetOrderHistoryResponse> findByFactory(Pageable pageable, Boolean isCompleted, Boolean isUrgent, String dateCriterion, LocalDate startDate, LocalDate endDate, String query);
+
+    Page<CustomerGetOrderIsCompletedHistoryResponse> findIsCompletedByCustomer(String username, Pageable pageable, String query);
+
+    CustomerGetOrderCreateInformationResponse findCreateInformationByCustomerAndOrder(String userName, Long orderId);
 }

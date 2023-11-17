@@ -6,5 +6,7 @@ import org.springframework.data.repository.CrudRepository;
 
 public interface DeliveryAddressRepository extends CrudRepository<DeliveryAddress, Long>, DeliveryAddressRepositoryCustom {
 
+    DeliveryAddress findFirstById(Long deliveryId);
+
     DeliveryAddress findFirstByCustomerAndIsDefaultTrue(Customer customer);
 }

@@ -52,6 +52,7 @@ public class WebSecurityConfig {
                         .requestMatchers("/user/logout").authenticated()
                         .requestMatchers("/customer/**").hasRole("CUSTOMER")
                         .requestMatchers("/factory/**").hasRole("FACTORY")
+                        .requestMatchers("/drawing/**").authenticated()
                         .anyRequest().authenticated()
         );
 

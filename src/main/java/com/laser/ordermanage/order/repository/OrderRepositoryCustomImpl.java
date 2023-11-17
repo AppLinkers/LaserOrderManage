@@ -2,8 +2,7 @@ package com.laser.ordermanage.order.repository;
 
 import com.laser.ordermanage.common.exception.CustomCommonException;
 import com.laser.ordermanage.common.exception.ErrorCode;
-import com.laser.ordermanage.customer.dto.response.CustomerGetOrderHistoryResponse;
-import com.laser.ordermanage.customer.dto.response.QCustomerGetOrderHistoryResponse;
+import com.laser.ordermanage.customer.dto.response.*;
 import com.laser.ordermanage.factory.dto.response.*;
 import com.laser.ordermanage.order.domain.type.Stage;
 import com.querydsl.core.BooleanBuilder;
@@ -14,17 +13,20 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
-import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 
+import static com.laser.ordermanage.customer.domain.QCustomer.customer;
+import static com.laser.ordermanage.customer.domain.QDeliveryAddress.deliveryAddress;
 import static com.laser.ordermanage.order.domain.QOrder.order;
+import static com.laser.ordermanage.order.domain.QOrderManufacturing.orderManufacturing;
+import static com.laser.ordermanage.order.domain.QOrderPostProcessing.orderPostProcessing;
+import static com.laser.ordermanage.user.domain.QUserEntity.userEntity;
 
 @RequiredArgsConstructor
-@Repository
 public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
 
     private final JPAQueryFactory queryFactory;
@@ -196,6 +198,74 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
                 );
 
         return PageableExecutionUtils.getPage(factoryGetOrderHistoryResponseList, pageable, countQuery::fetchOne);
+    }
+
+    @Override
+    public Page<CustomerGetOrderIsCompletedHistoryResponse> findIsCompletedByCustomer(String userName, Pageable pageable, String query) {
+        List<CustomerGetOrderIsCompletedHistoryResponse> customerGetOrderIsCompletedHistoryResponseList = queryFactory
+                .select(new QCustomerGetOrderIsCompletedHistoryResponse(
+                        order.id,
+                        order.name,
+                        order.imgUrl,
+                        order.createdAt
+                ))
+                .from(order)
+                .where(
+                        order.stage.eq(Stage.COMPLETED),
+                        order.customer.user.email.eq(userName),
+                        query == null ? null : order.name.contains(query)
+                )
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+        JPAQuery<Long> countQuery = queryFactory
+                .select(order.count())
+                .from(order)
+                .where(
+                        order.stage.eq(Stage.COMPLETED),
+                        order.customer.user.email.eq(userName),
+                        query == null ? null : order.name.contains(query)
+                );
+
+        return PageableExecutionUtils.getPage(customerGetOrderIsCompletedHistoryResponseList, pageable, countQuery::fetchOne);
+    }
+
+    @Override
+    public CustomerGetOrderCreateInformationResponse findCreateInformationByCustomerAndOrder(String userName, Long orderId) {
+        CustomerGetOrderCreateInformationResponse customerGetOrderCreateInformationResponse = queryFactory
+                .select(new QCustomerGetOrderCreateInformationResponse(
+                        order.id,
+                        order.name,
+                        orderManufacturing,
+                        orderPostProcessing,
+                        order.request,
+                        new QCustomerGetDeliveryAddressResponse(
+                                deliveryAddress.id,
+                                deliveryAddress.name,
+                                deliveryAddress.zipCode,
+                                deliveryAddress.address,
+                                deliveryAddress.detailAddress,
+                                deliveryAddress.receiver,
+                                deliveryAddress.phone1,
+                                deliveryAddress.phone2,
+                                deliveryAddress.isDefault,
+                                deliveryAddress.isDeleted
+                        )
+                ))
+                .from(order)
+                .join(order.customer, customer)
+                .join(customer.user, userEntity)
+                .join(order.manufacturing, orderManufacturing)
+                .join(order.postProcessing, orderPostProcessing)
+                .join(order.deliveryAddress, deliveryAddress)
+                .where(
+                        userEntity.email.eq(userName),
+                        order.id.eq(orderId)
+                )
+                .fetchOne();
+
+        return customerGetOrderCreateInformationResponse;
     }
 
 

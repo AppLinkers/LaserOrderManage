@@ -28,7 +28,8 @@ public class DeliveryAddressRepositoryCustomImpl implements DeliveryAddressRepos
                         deliveryAddress.receiver,
                         deliveryAddress.phone1,
                         deliveryAddress.phone2,
-                        deliveryAddress.isDefault
+                        deliveryAddress.isDefault,
+                        deliveryAddress.isDeleted
                 ))
                 .from(deliveryAddress)
                 .where(deliveryAddress.customer.user.email.eq(userName))

@@ -5,6 +5,7 @@ import com.laser.ordermanage.order.domain.type.Ingredient;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -42,4 +43,16 @@ public class Drawing {
     @NotNull
     @Enumerated(value = EnumType.STRING)
     private Ingredient ingredient;
+
+    @Builder
+    public Drawing(Order order, String fileName, Long fileSize, DrawingFileType fileType, String fileUrl, String thumbnailUrl, Integer count, String ingredient) {
+        this.order = order;
+        this.fileName = fileName;
+        this.fileSize = fileSize;
+        this.fileType = fileType;
+        this.fileUrl = fileUrl;
+        this.thumbnailUrl = thumbnailUrl;
+        this.count = count;
+        this.ingredient = Ingredient.valueOf(ingredient);
+    }
 }

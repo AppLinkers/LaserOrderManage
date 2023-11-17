@@ -4,7 +4,7 @@ import com.laser.ordermanage.common.paging.PageResponse;
 import com.laser.ordermanage.factory.dto.response.FactoryGetOrderHistoryResponse;
 import com.laser.ordermanage.factory.dto.response.FactoryGetOrderIsNewAndIsNewIssueHistoryResponse;
 import com.laser.ordermanage.factory.dto.response.FactoryGetOrderIsNewAndIsReIssueHistoryResponse;
-import com.laser.ordermanage.order.repository.OrderRepositoryCustom;
+import com.laser.ordermanage.order.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -17,7 +17,7 @@ import java.time.LocalDate;
 @Service
 public class FactoryOrderHistoryService {
 
-    private final OrderRepositoryCustom orderRepository;
+    private final OrderRepository orderRepository;
 
     @Transactional(readOnly = true)
     public PageResponse<FactoryGetOrderIsNewAndIsReIssueHistoryResponse> getOrderIsNewAndIsReIssueHistory(Pageable pageable, Boolean hasQuotation, Boolean isUrgent) {

@@ -5,7 +5,7 @@ import com.laser.ordermanage.customer.dto.response.CustomerGetDrawingResponse;
 import com.laser.ordermanage.customer.dto.response.CustomerGetOrderCreateInformationResponse;
 import com.laser.ordermanage.customer.dto.response.CustomerGetOrderHistoryResponse;
 import com.laser.ordermanage.customer.dto.response.CustomerGetOrderIsCompletedHistoryResponse;
-import com.laser.ordermanage.order.repository.OrderRepositoryCustom;
+import com.laser.ordermanage.order.repository.OrderRepository;
 import com.laser.ordermanage.order.service.DrawingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -21,7 +21,7 @@ public class CustomerOrderHistoryService {
 
     private final DrawingService drawingService;
 
-    private final OrderRepositoryCustom orderRepository;
+    private final OrderRepository orderRepository;
 
     @Transactional(readOnly = true)
     public PageResponse<CustomerGetOrderHistoryResponse> getOrderHistory(String userName, Pageable pageable, List<String> stageRequestList, List<String> manufacturingRequestList, String query) {

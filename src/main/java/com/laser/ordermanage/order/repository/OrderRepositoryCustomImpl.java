@@ -13,7 +13,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
-import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -28,7 +27,6 @@ import static com.laser.ordermanage.order.domain.QOrderPostProcessing.orderPostP
 import static com.laser.ordermanage.user.domain.QUserEntity.userEntity;
 
 @RequiredArgsConstructor
-@Repository
 public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
 
     private final JPAQueryFactory queryFactory;

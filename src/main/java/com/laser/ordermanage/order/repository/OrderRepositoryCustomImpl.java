@@ -47,8 +47,11 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
                         order.request
                 ))
                 .from(order)
+                .join(order.customer, customer)
+                .join(customer.user, userEntity)
+                .join(order.manufacturing, orderManufacturing)
                 .where(
-                        order.customer.user.email.eq(userName),
+                        userEntity.email.eq(userName),
                         eqStage(stageRequestList),
                         eqManufacturing(manufacturingRequestList),
                         query == null ? null : order.name.contains(query)
@@ -60,8 +63,11 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
         JPAQuery<Long> countQuery = queryFactory
                 .select(order.count())
                 .from(order)
+                .join(order.customer, customer)
+                .join(customer.user, userEntity)
+                .join(order.manufacturing, orderManufacturing)
                 .where(
-                        order.customer.user.email.eq(userName),
+                        userEntity.email.eq(userName),
                         eqStage(stageRequestList),
                         eqManufacturing(manufacturingRequestList),
                         query == null ? null : order.name.contains(query)
@@ -76,8 +82,8 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
                 .select(new QFactoryGetOrderIsNewAndIsReIssueHistoryResponse(
                         order.id,
                         order.name,
-                        order.customer.name,
-                        order.customer.companyName,
+                        customer.name,
+                        customer.companyName,
                         order.quotation_id.isNotNull(),
                         order.imgUrl,
                         order.isUrgent,
@@ -88,6 +94,7 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
                         order.request
                 ))
                 .from(order)
+                .join(order.customer, customer)
                 .where(
                         order.stage.eq(Stage.NEW),
                         order.isNewIssue.eq(Boolean.FALSE),
@@ -117,9 +124,9 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
                 .select(new QFactoryGetOrderIsNewAndIsNewIssueHistoryResponse(
                         order.id,
                         order.name,
-                        order.customer.name,
-                        order.customer.companyName,
-                        order.customer.isNew,
+                        customer.name,
+                        customer.companyName,
+                        customer.isNew,
                         order.quotation_id.isNotNull(),
                         order.imgUrl,
                         order.isUrgent,
@@ -130,6 +137,7 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
                         order.request
                 ))
                 .from(order)
+                .join(order.customer, customer)
                 .where(
                         order.stage.eq(Stage.NEW),
                         order.isNewIssue.eq(Boolean.TRUE),
@@ -161,8 +169,8 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
                 .select(new QFactoryGetOrderHistoryResponse(
                         order.id,
                         order.name,
-                        order.customer.name,
-                        order.customer.companyName,
+                        customer.name,
+                        customer.companyName,
                         order.imgUrl,
                         order.stage,
                         order.isUrgent,
@@ -173,13 +181,14 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
                         order.request
                 ))
                 .from(order)
+                .join(order.customer, customer)
                 .where(
                         eqIsCompleted(isCompleted),
                         eqIsUrgent(isUrgent),
                         searchDateFilter(dateCriterion, startDate, endDate),
                         query == null ? null : order.name.contains(query)
-                                .or(order.customer.name.contains(query))
-                                .or(order.customer.companyName.contains(query))
+                                .or(customer.name.contains(query))
+                                .or(customer.companyName.contains(query))
                 )
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
@@ -188,13 +197,14 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
         JPAQuery<Long> countQuery = queryFactory
                 .select(order.count())
                 .from(order)
+                .join(order.customer, customer)
                 .where(
                         eqIsCompleted(isCompleted),
                         eqIsUrgent(isUrgent),
                         searchDateFilter(dateCriterion, startDate, endDate),
                         query == null ? null : order.name.contains(query)
-                                .or(order.customer.name.contains(query))
-                                .or(order.customer.companyName.contains(query))
+                                .or(customer.name.contains(query))
+                                .or(customer.companyName.contains(query))
                 );
 
         return PageableExecutionUtils.getPage(factoryGetOrderHistoryResponseList, pageable, countQuery::fetchOne);
@@ -210,9 +220,11 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
                         order.createdAt
                 ))
                 .from(order)
+                .join(order.customer, customer)
+                .join(customer.user, userEntity)
                 .where(
                         order.stage.eq(Stage.COMPLETED),
-                        order.customer.user.email.eq(userName),
+                        userEntity.email.eq(userName),
                         query == null ? null : order.name.contains(query)
                 )
                 .offset(pageable.getOffset())
@@ -222,9 +234,11 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
         JPAQuery<Long> countQuery = queryFactory
                 .select(order.count())
                 .from(order)
+                .join(order.customer, customer)
+                .join(customer.user, userEntity)
                 .where(
                         order.stage.eq(Stage.COMPLETED),
-                        order.customer.user.email.eq(userName),
+                        userEntity.email.eq(userName),
                         query == null ? null : order.name.contains(query)
                 );
 
@@ -291,11 +305,11 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
 
         BooleanBuilder booleanBuilder = new BooleanBuilder();
         manufacturingRequestList.forEach(
-                manufacturing -> {
-                    switch (manufacturing) {
-                        case "laser-cutting" -> booleanBuilder.or(order.manufacturing.isLaserCutting.eq(Boolean.TRUE));
-                        case "bending" -> booleanBuilder.or(order.manufacturing.isBending.eq(Boolean.TRUE));
-                        case "welding-fabrication" -> booleanBuilder.or(order.manufacturing.isWeldingFabrication.eq(Boolean.TRUE));
+                manufacturingRequest -> {
+                    switch (manufacturingRequest) {
+                        case "laser-cutting" -> booleanBuilder.or(orderManufacturing.isLaserCutting.eq(Boolean.TRUE));
+                        case "bending" -> booleanBuilder.or(orderManufacturing.isBending.eq(Boolean.TRUE));
+                        case "welding-fabrication" -> booleanBuilder.or(orderManufacturing.isWeldingFabrication.eq(Boolean.TRUE));
                         default -> throw new CustomCommonException(ErrorCode.INVALID_PARAMETER, "manufacturing");
                     }
                 }
@@ -324,9 +338,9 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
 
         BooleanBuilder booleanBuilder = new BooleanBuilder();
         if (isNewCustomer) {
-            return booleanBuilder.and(order.customer.isNew);
+            return booleanBuilder.and(customer.isNew);
         } else {
-            return booleanBuilder.and(order.customer.isNew.not());
+            return booleanBuilder.and(customer.isNew.not());
         }
     }
 

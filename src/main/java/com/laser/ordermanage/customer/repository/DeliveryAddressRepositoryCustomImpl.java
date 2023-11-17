@@ -9,7 +9,9 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 
+import static com.laser.ordermanage.customer.domain.QCustomer.customer;
 import static com.laser.ordermanage.customer.domain.QDeliveryAddress.deliveryAddress;
+import static com.laser.ordermanage.user.domain.QUserEntity.userEntity;
 
 @RequiredArgsConstructor
 public class DeliveryAddressRepositoryCustomImpl implements DeliveryAddressRepositoryCustom{
@@ -32,7 +34,9 @@ public class DeliveryAddressRepositoryCustomImpl implements DeliveryAddressRepos
                         deliveryAddress.isDeleted
                 ))
                 .from(deliveryAddress)
-                .where(deliveryAddress.customer.user.email.eq(userName))
+                .join(deliveryAddress.customer, customer)
+                .join(customer.user, userEntity)
+                .where(userEntity.email.eq(userName))
                 .orderBy(new OrderSpecifier<>(Order.DESC, deliveryAddress.isDefault))
                 .fetch();
     }

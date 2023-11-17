@@ -38,7 +38,7 @@ public class DrawingRepositoryCustomImpl implements DrawingRepositoryCustom{
                 .join(customer.user, userEntity)
                 .where(
                         userEntity.email.eq("user1@gmail.com"),
-                        drawing.order.id.eq(orderId)
+                        order.id.eq(orderId)
                 )
                 .fetch();
 

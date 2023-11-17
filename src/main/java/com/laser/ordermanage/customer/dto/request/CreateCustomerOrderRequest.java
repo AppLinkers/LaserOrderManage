@@ -32,4 +32,8 @@ public class CreateCustomerOrderRequest {
 
     @NotNull
     private Boolean isNewIssue;
+
+    public String getOrderImgUrl() {
+        return this.drawingList.get(0).getThumbnailImgUrl();
+    }
 }

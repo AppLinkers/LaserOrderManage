@@ -26,16 +26,15 @@ public class CustomerOrderService {
     public void createOrder(User user, CreateCustomerOrderRequest createCustomerOrderRequest) {
         Customer customer = customerRepository.findFirstByUserEmail(user.getUsername());
         DeliveryAddress deliveryAddress = deliveryAddressRepository.findFirstById(createCustomerOrderRequest.getDeliveryAddressId());
+
         OrderManufacturing orderManufacturing = OrderManufacturing.ofRequest(createCustomerOrderRequest.getManufacturing());
         OrderPostProcessing orderPostProcessing = OrderPostProcessing.ofRequest(createCustomerOrderRequest.getPostProcessing());
-
-        String orderImgUrl = createCustomerOrderRequest.getDrawingList().get(0).getThumbnailImgUrl();
 
         Order order = Order.builder()
                 .customer(customer)
                 .deliveryAddress(deliveryAddress)
                 .name(createCustomerOrderRequest.getName())
-                .imgUrl(orderImgUrl)
+                .imgUrl(createCustomerOrderRequest.getOrderImgUrl())
                 .manufacturing(orderManufacturing)
                 .postProcessing(orderPostProcessing)
                 .request(createCustomerOrderRequest.getRequest())

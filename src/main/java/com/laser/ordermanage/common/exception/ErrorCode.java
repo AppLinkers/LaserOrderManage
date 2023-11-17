@@ -47,7 +47,8 @@ public enum ErrorCode {
     INTERNAL_SERVER_ERROR("-500", HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러 입니다."),
     UNKNOWN_ERROR("-501", HttpStatus.INTERNAL_SERVER_ERROR, "알 수 없는 오류가 발생했습니다."),
     UNABLE_TO_SEND_EMAIL("-502", HttpStatus.INTERNAL_SERVER_ERROR, "메일 전송이 불가능합니다."),
-    UNABLE_TO_AWS_S3_UPLOAD("-503", HttpStatus.INTERNAL_SERVER_ERROR, "AWS S3 에 파일 업로드가 불가능합니다.");
+    UNABLE_TO_AWS_S3_UPLOAD("-503", HttpStatus.INTERNAL_SERVER_ERROR, "AWS S3 에 파일 업로드가 불가능합니다."),
+    UNABLE_TO_EXTRACT_THUMBNAIL("-504", HttpStatus.INTERNAL_SERVER_ERROR, "썸네일 추출이 불가능합니다.");
 
     private final String code;
     private final HttpStatus httpStatus;

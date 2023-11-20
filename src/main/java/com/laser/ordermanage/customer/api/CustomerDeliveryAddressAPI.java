@@ -16,6 +16,12 @@ public class CustomerDeliveryAddressAPI {
 
     private final CustomerDeliveryAddressService customerDeliveryAddressService;
 
+    /**
+     * 고객 회원의 배송지 생성
+     * - 기본 배송지 설정
+     * - 고객 회원의 이메일 기준으로 고객 조회 및 배송지 데이터와 연관관계 매핑
+     * - 배송지 데이터 생성
+     */
     @PostMapping("")
     public ResponseEntity<?> createDeliveryAddress(@RequestBody @Valid CreateCustomerDeliveryAddressRequest request) {
 
@@ -26,6 +32,11 @@ public class CustomerDeliveryAddressAPI {
         return ResponseEntity.ok().build();
     }
 
+    /**
+     * 고객 회원의 배송지 목록 조회
+     * - 고객 회원의 이메일 기준으로 배송지 목록 조회
+     * - 기본 배송지 여부를 기준으로 정렬 수행
+     */
     @GetMapping("")
     public ResponseEntity<?> getDeliveryAddress() {
 

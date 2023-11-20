@@ -25,6 +25,12 @@ public class FactoryOrderHistoryAPI {
 
     private final FactoryOrderHistoryService factoryOrderHistoryService;
 
+    /**
+     * 견적 대기 단계 및 재 발행의 거래 목록 조회
+     * - page, size 기준으로 pagination 수행
+     * - has-quotation : 견적서 유무 기준
+     * - is-urgent : 거래 긴급 기준
+     */
     @GetMapping("/new/re-issue")
     public ResponseEntity<?> getOrderIsNewAndIsReIssueHistory(
             @RequestParam(value = "page", required = false, defaultValue = "1") Integer page,
@@ -39,6 +45,13 @@ public class FactoryOrderHistoryAPI {
         return ResponseEntity.ok(response);
     }
 
+    /**
+     * 견적 대기 단계 및 신규 발행의 거래 목록 조회
+     * - page, size 기준으로 pagination 수행
+     * - has-quotation : 견적서 유무 기준
+     * - is-new-customer : 거래의 고객 - 신규 고객 기준
+     * - is-urgent : 거래 긴급 기준
+     */
     @GetMapping("/new/new-issue")
     public ResponseEntity<?> getOrderIsNewAndIsNewIssueHistory(
             @RequestParam(value = "page", required = false, defaultValue = "1") Integer page,
@@ -54,6 +67,15 @@ public class FactoryOrderHistoryAPI {
         return ResponseEntity.ok(response);
     }
 
+    /**
+     * 거래 목록 조회
+     * - page, size 기준으로 pagination 수행
+     * - is-completed : 거래 완료 단계 기준
+     * - is-urgent : 거래 긴급 기준
+     * - date-criterion : (create, delivery) 날짜 기준 선택
+     * - start-date, end-date : date-criterion 의 날짜 기준
+     * - query : 거래 이름 및 고객 이름 및 고객 회사 이름 기준
+     */
     @GetMapping("")
     public ResponseEntity<?> getOrderHistory(
             @RequestParam(value = "page", required = false, defaultValue = "1") Integer page,

@@ -19,6 +19,13 @@ public class UserJoinAPI {
 
     private final UserJoinService userJoinService;
 
+    /**
+     * 이메일 인증 코드 생성 및 이메일 전송
+     * - 이메일 중복 검사 수행
+     * - 이메일 인증 코드 생성
+     * - 인증 코드 이메일 전송
+     * - Redis Verify Code 에 인증 코드 데이터 저장
+     */
     @PostMapping("/request-verify")
     public ResponseEntity<?> requestEmailVerify(
             @NotEmpty(message = "이메일은 필수 입력값입니다.")
@@ -28,13 +35,25 @@ public class UserJoinAPI {
         return ResponseEntity.ok().body(userJoinService.requestEmailVerify(email));
     }
 
+    /**
+     * 이메일 인증 코드 검증
+     * - 이메일 중복 검사 수행
+     * - 이메일 인증 코드 검증
+     */
     @PostMapping("/verify-email")
-    public ResponseEntity<?> verifyEmail(@RequestBody @Valid VerifyEmailRequest verifyEmailRequest) {
-        return ResponseEntity.ok().body(userJoinService.verifyEmail(verifyEmailRequest));
+    public ResponseEntity<?> verifyEmail(@RequestBody @Valid VerifyEmailRequest request) {
+        return ResponseEntity.ok().body(userJoinService.verifyEmail(request));
     }
 
+    /**
+     * 회원가입
+     * - 이메일 중복 검사 수행
+     * - 회원 데이터 생성
+     * - 고객 데이터 생성 및 회원 데이터와 연관관계 매핑
+     * - 기본 배송지 데이터 생성 및 고객 데이터와 연관관계 매핑
+     */
     @PostMapping("/join/customer")
-    public ResponseEntity<?> joinCustomer(@RequestBody @Valid JoinCustomerRequest joinCustomerRequest) {
-        return ResponseEntity.ok().body(userJoinService.joinCustomer(joinCustomerRequest));
+    public ResponseEntity<?> joinCustomer(@RequestBody @Valid JoinCustomerRequest request) {
+        return ResponseEntity.ok().body(userJoinService.joinCustomer(request));
     }
 }

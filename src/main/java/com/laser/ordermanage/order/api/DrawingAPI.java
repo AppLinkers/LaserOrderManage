@@ -19,6 +19,13 @@ public class DrawingAPI {
 
     private final DrawingService drawingService;
 
+    /**
+     * 도면 파일 업로드
+     * - 파일 확장자 확인 (DWG, DXF, PDF, PNG, JPG, JPEG)
+     * - 도면 파일 AWS S3 에 업로드
+     * - 도면 파일의 썸네일 이미지 추출
+     * - 썸네일 이미지 파일 AWS S3 에 업로드
+     */
     @PostMapping("")
     public ResponseEntity<?> uploadDrawingFile(@RequestBody MultipartFile file) {
         // File 확장자 확인

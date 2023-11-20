@@ -22,6 +22,14 @@ public class CustomerOrderHistoryAPI {
 
     private final CustomerOrderHistoryService customerOrderHistoryService;
 
+    /**
+     * 고객 회원의 거래 목록 조회
+     * - 고객 회원의 이메일 기준으로 거래 목록 조회
+     * - page, size 기준으로 pagination 수행
+     * - stageList : 거래 단계 기준
+     * - manufacturing : 거래 제조 서비스 기준
+     * - query : 거래 이름 기준
+     */
     @GetMapping("")
     public ResponseEntity<?> getOrderHistory(
             @RequestParam(value = "page", required = false, defaultValue = "1") Integer page,
@@ -39,6 +47,12 @@ public class CustomerOrderHistoryAPI {
         return ResponseEntity.ok(response);
     }
 
+    /**
+     * 고객 회원의 거래 완료 단계인 거래 목록 조회
+     * - 고객 회원의 이메일 기준으로 거래 완료 단계인 거래 목록 조회
+     * - page, size 기준으로 pagination 수행
+     * - query : 거래 이름 기준
+     */
     @GetMapping("/history")
     public ResponseEntity<?> getOrderIsCompletedHistory(
             @RequestParam(value = "page", required = false, defaultValue = "1") Integer page,
@@ -53,6 +67,11 @@ public class CustomerOrderHistoryAPI {
         return ResponseEntity.ok(response);
     }
 
+    /**
+     * 고객 회원의 특정 거래의 생성 정보 조회
+     * - 고객 회원의 이메일 및 거래 PK 기준으로 거래 생성 정보 조회
+     * - 고객 회원의 이메일 및 거래 PK 기준으로 도면 정보 조회
+     */
     @GetMapping("/history/{orderId}")
     public ResponseEntity<?> getOrderCreateInformation(@PathVariable Long orderId) {
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();

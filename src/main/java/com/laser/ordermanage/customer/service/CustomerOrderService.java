@@ -23,22 +23,22 @@ public class CustomerOrderService {
     private final CustomerRepository customerRepository;
 
     @Transactional
-    public void createOrder(User user, CreateCustomerOrderRequest createCustomerOrderRequest) {
+    public void createOrder(User user, CreateCustomerOrderRequest request) {
         Customer customer = customerRepository.findFirstByUserEmail(user.getUsername());
-        DeliveryAddress deliveryAddress = deliveryAddressRepository.findFirstById(createCustomerOrderRequest.getDeliveryAddressId());
+        DeliveryAddress deliveryAddress = deliveryAddressRepository.findFirstById(request.getDeliveryAddressId());
 
-        OrderManufacturing orderManufacturing = OrderManufacturing.ofRequest(createCustomerOrderRequest.getManufacturing());
-        OrderPostProcessing orderPostProcessing = OrderPostProcessing.ofRequest(createCustomerOrderRequest.getPostProcessing());
+        OrderManufacturing orderManufacturing = OrderManufacturing.ofRequest(request.getManufacturing());
+        OrderPostProcessing orderPostProcessing = OrderPostProcessing.ofRequest(request.getPostProcessing());
 
         Order order = Order.builder()
                 .customer(customer)
                 .deliveryAddress(deliveryAddress)
-                .name(createCustomerOrderRequest.getName())
-                .imgUrl(createCustomerOrderRequest.getOrderImgUrl())
+                .name(request.getName())
+                .imgUrl(request.getOrderImgUrl())
                 .manufacturing(orderManufacturing)
                 .postProcessing(orderPostProcessing)
-                .request(createCustomerOrderRequest.getRequest())
-                .isNewIssue(createCustomerOrderRequest.getIsNewIssue())
+                .request(request.getRequest())
+                .isNewIssue(request.getIsNewIssue())
                 .build();
 
         orderRepository.save(order);

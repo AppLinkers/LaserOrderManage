@@ -34,7 +34,6 @@ public class UserJoinService {
     private final MailService mailService;
 
     private final UserEntityRepository userRepository;
-    private final CustomerRepository customerRepository;
     private final DeliveryAddressRepository deliveryAddressRepository;
     private final VerifyCodeRedisRepository verifyCodeRedisRepository;
 
@@ -74,65 +73,61 @@ public class UserJoinService {
     }
 
     @Transactional
-    public UserJoinStatusResponse verifyEmail(VerifyEmailRequest verifyEmailRequest) {
-        UserJoinStatusResponse response = checkDuplicatedEmail(verifyEmailRequest.getEmail());
+    public UserJoinStatusResponse verifyEmail(VerifyEmailRequest request) {
+        UserJoinStatusResponse response = checkDuplicatedEmail(request.getEmail());
 
         if (response.getStatus().equals(JoinStatus.POSSIBLE.getCode())) {
-            VerifyCode verifyCode = verifyCodeRedisRepository.findById(verifyEmailRequest.getEmail())
+            VerifyCode verifyCode = verifyCodeRedisRepository.findById(request.getEmail())
                     .orElseThrow(() -> new CustomCommonException(ErrorCode.NOT_FOUND_VERIFY_CODE));
 
-            if (!verifyCode.getCode().equals(verifyEmailRequest.getCode())) {
+            if (!verifyCode.getCode().equals(request.getCode())) {
                 throw new CustomCommonException(ErrorCode.INVALID_VERIFY_CODE);
             }
 
             // 인증 완료 후, 인증 코드 삭제
-            verifyCodeRedisRepository.deleteById(verifyEmailRequest.getEmail());
+            verifyCodeRedisRepository.deleteById(request.getEmail());
         }
 
         return response;
     }
 
     @Transactional
-    public UserJoinStatusResponse joinCustomer(JoinCustomerRequest joinCustomerRequest) {
-        UserJoinStatusResponse response = checkDuplicatedEmail(joinCustomerRequest.getEmail());
+    public UserJoinStatusResponse joinCustomer(JoinCustomerRequest request) {
+        UserJoinStatusResponse response = checkDuplicatedEmail(request.getEmail());
 
         if (response.getStatus().equals(JoinStatus.POSSIBLE.getCode())) {
             UserEntity user = UserEntity.builder()
-                    .email(joinCustomerRequest.getEmail())
-                    .password(passwordEncoder.encode(joinCustomerRequest.getPassword()))
+                    .email(request.getEmail())
+                    .password(passwordEncoder.encode(request.getPassword()))
                     .role(Role.ROLE_CUSTOMER)
-                    .phone(joinCustomerRequest.getPhone())
-                    .zipCode(joinCustomerRequest.getZipCode())
-                    .address(joinCustomerRequest.getAddress())
-                    .detailAddress(joinCustomerRequest.getDetailAddress())
+                    .phone(request.getPhone())
+                    .zipCode(request.getZipCode())
+                    .address(request.getAddress())
+                    .detailAddress(request.getDetailAddress())
                     .build();
-
-            UserEntity savedUser = userRepository.save(user);
 
             Customer customer = Customer.builder()
-                    .user(savedUser)
-                    .name(joinCustomerRequest.getName())
-                    .companyName(joinCustomerRequest.getCompanyName())
+                    .user(user)
+                    .name(request.getName())
+                    .companyName(request.getCompanyName())
                     .build();
 
-            Customer savedCustomer = customerRepository.save(customer);
-
             DeliveryAddress deliveryAddress = DeliveryAddress.builder()
-                    .customer(savedCustomer)
-                    .name(savedCustomer.getName())
-                    .zipCode(savedUser.getZipCode())
-                    .address(savedUser.getAddress())
-                    .detailAddress(savedUser.getDetailAddress())
-                    .receiver(savedCustomer.getName())
-                    .phone1(savedUser.getPhone())
-                    .phone2(savedUser.getPhone())
+                    .customer(customer)
+                    .name(customer.getName())
+                    .zipCode(user.getZipCode())
+                    .address(user.getAddress())
+                    .detailAddress(user.getDetailAddress())
+                    .receiver(customer.getName())
+                    .phone1(user.getPhone())
+                    .phone2(user.getPhone())
                     .isDefault(Boolean.TRUE)
                     .build();
 
             deliveryAddressRepository.save(deliveryAddress);
 
             response = UserJoinStatusResponse.builderWithUserEntity()
-                    .userEntity(savedUser)
+                    .userEntity(user)
                     .status(JoinStatus.COMPLETED)
                     .buildWithUserEntity();
         }
@@ -142,7 +137,7 @@ public class UserJoinService {
 
 
     private UserJoinStatusResponse checkDuplicatedEmail(String email) {
-        return userRepository.findByEmail(email)
+        return userRepository.findFirstByEmail(email)
                 .map(userEntity -> UserJoinStatusResponse.builderWithUserEntity()
                         .userEntity(userEntity)
                         .status(JoinStatus.IMPOSSIBLE)

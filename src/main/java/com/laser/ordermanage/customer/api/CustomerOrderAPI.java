@@ -19,12 +19,20 @@ public class CustomerOrderAPI {
 
     private final CustomerOrderService customerOrderService;
 
+    /**
+     * 고객 회원의 거래 생성
+     * - 고객 회원의 이메일 기준으로 고객 조회 및 거래 데이터와 연관관계 매핑
+     * - 배송지 PK 기준으로 배송지 조회 및 거래 데이터와 연관관계 매핑
+     * - 제조 서비스 및 후처리 서비스 데이터 생성 및 거래 데이터와 연관관계 매핑
+     * - 도면 데이터 생성 및 거래 데이터와 연관관계 매핑
+     * - 거래 데이터 생성
+     */
     @PostMapping("")
-    public ResponseEntity<?> createOrder(@RequestBody @Valid CreateCustomerOrderRequest createCustomerOrderRequest) {
+    public ResponseEntity<?> createOrder(@RequestBody @Valid CreateCustomerOrderRequest request) {
 
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        customerOrderService.createOrder(user, createCustomerOrderRequest);
+        customerOrderService.createOrder(user, request);
 
         return ResponseEntity.ok().build();
     }

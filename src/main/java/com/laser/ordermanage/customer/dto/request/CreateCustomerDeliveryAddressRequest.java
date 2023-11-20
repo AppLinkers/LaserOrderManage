@@ -1,6 +1,7 @@
 package com.laser.ordermanage.customer.dto.request;
 
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import lombok.Getter;
 
@@ -21,7 +22,7 @@ public class CreateCustomerDeliveryAddressRequest {
     private String detailAddress;
 
     @NotEmpty(message = "수신자는 필수 입력값입니다.")
-    @Pattern(regexp = "^.{0,10}$", message = "배송지 이름의 최대 글자수는 10자입니다.")
+    @Pattern(regexp = "^.{0,10}$", message = "수신자의 최대 글자수는 10자입니다.")
     private String receiver;
 
     @NotEmpty(message = "연락처는 필수 입력값입니다.")
@@ -31,6 +32,7 @@ public class CreateCustomerDeliveryAddressRequest {
     @Pattern(regexp = "^\\d{3}\\d{3,4}\\d{4}$", message = "연락처 형식에 맞지 않습니다.")
     private String phone2;
 
+    @NotNull
     private Boolean isDefault;
 
 }

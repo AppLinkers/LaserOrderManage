@@ -7,5 +7,5 @@ import java.util.Optional;
 
 public interface UserEntityRepository extends CrudRepository<UserEntity, Long> {
 
-    Optional<UserEntity> findByEmail(String email);
+    Optional<UserEntity> findFirstByEmail(String email);
 }

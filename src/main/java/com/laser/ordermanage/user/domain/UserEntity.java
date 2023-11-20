@@ -1,9 +1,11 @@
 package com.laser.ordermanage.user.domain;
 
+import com.laser.ordermanage.common.entity.CreatedAtEntity;
 import com.laser.ordermanage.user.domain.type.Role;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
@@ -17,7 +19,7 @@ import java.util.Collection;
 @Table(name = "user_table")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-public class UserEntity implements UserDetails {
+public class UserEntity extends CreatedAtEntity implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -37,12 +39,23 @@ public class UserEntity implements UserDetails {
     private String phone;
 
     @NotNull
-    private String zoneCode;
+    private String zipCode;
 
     @NotNull
     private String address;
 
     private String detailAddress;
+
+    @Builder
+    public UserEntity(String email, String password, Role role, String phone, String zipCode, String address, String detailAddress) {
+        this.email = email;
+        this.password = password;
+        this.role = role;
+        this.phone = phone;
+        this.zipCode = zipCode;
+        this.address = address;
+        this.detailAddress = detailAddress;
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

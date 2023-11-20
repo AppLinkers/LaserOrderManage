@@ -2,8 +2,7 @@ package com.laser.ordermanage.order.repository;
 
 import com.laser.ordermanage.common.exception.CustomCommonException;
 import com.laser.ordermanage.common.exception.ErrorCode;
-import com.laser.ordermanage.customer.dto.response.CustomerGetOrderHistoryResponse;
-import com.laser.ordermanage.customer.dto.response.QCustomerGetOrderHistoryResponse;
+import com.laser.ordermanage.customer.dto.response.*;
 import com.laser.ordermanage.factory.dto.response.*;
 import com.laser.ordermanage.order.domain.type.Stage;
 import com.querydsl.core.BooleanBuilder;
@@ -14,24 +13,27 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
-import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 
+import static com.laser.ordermanage.customer.domain.QCustomer.customer;
+import static com.laser.ordermanage.customer.domain.QDeliveryAddress.deliveryAddress;
 import static com.laser.ordermanage.order.domain.QOrder.order;
+import static com.laser.ordermanage.order.domain.QOrderManufacturing.orderManufacturing;
+import static com.laser.ordermanage.order.domain.QOrderPostProcessing.orderPostProcessing;
+import static com.laser.ordermanage.user.domain.QUserEntity.userEntity;
 
 @RequiredArgsConstructor
-@Repository
 public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
 
     private final JPAQueryFactory queryFactory;
 
     @Override
     public Page<CustomerGetOrderHistoryResponse> findByCustomer(String userName, Pageable pageable, List<String> stageRequestList, List<String> manufacturingRequestList, String query) {
-        List<CustomerGetOrderHistoryResponse> getCustomerOrderResList = queryFactory
+        List<CustomerGetOrderHistoryResponse> customerGetOrderHistoryResponseList = queryFactory
                 .select(new QCustomerGetOrderHistoryResponse(
                         order.id,
                         order.name,
@@ -45,8 +47,11 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
                         order.request
                 ))
                 .from(order)
+                .join(order.customer, customer)
+                .join(customer.user, userEntity)
+                .join(order.manufacturing, orderManufacturing)
                 .where(
-                        order.customer.user.email.eq(userName),
+                        userEntity.email.eq(userName),
                         eqStage(stageRequestList),
                         eqManufacturing(manufacturingRequestList),
                         query == null ? null : order.name.contains(query)
@@ -58,14 +63,17 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
         JPAQuery<Long> countQuery = queryFactory
                 .select(order.count())
                 .from(order)
+                .join(order.customer, customer)
+                .join(customer.user, userEntity)
+                .join(order.manufacturing, orderManufacturing)
                 .where(
-                        order.customer.user.email.eq(userName),
+                        userEntity.email.eq(userName),
                         eqStage(stageRequestList),
                         eqManufacturing(manufacturingRequestList),
                         query == null ? null : order.name.contains(query)
                 );
 
-        return PageableExecutionUtils.getPage(getCustomerOrderResList, pageable, countQuery::fetchOne);
+        return PageableExecutionUtils.getPage(customerGetOrderHistoryResponseList, pageable, countQuery::fetchOne);
     }
 
     @Override
@@ -74,8 +82,8 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
                 .select(new QFactoryGetOrderIsNewAndIsReIssueHistoryResponse(
                         order.id,
                         order.name,
-                        order.customer.name,
-                        order.customer.companyName,
+                        customer.name,
+                        customer.companyName,
                         order.quotation_id.isNotNull(),
                         order.imgUrl,
                         order.isUrgent,
@@ -86,6 +94,7 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
                         order.request
                 ))
                 .from(order)
+                .join(order.customer, customer)
                 .where(
                         order.stage.eq(Stage.NEW),
                         order.isNewIssue.eq(Boolean.FALSE),
@@ -115,9 +124,9 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
                 .select(new QFactoryGetOrderIsNewAndIsNewIssueHistoryResponse(
                         order.id,
                         order.name,
-                        order.customer.name,
-                        order.customer.companyName,
-                        order.customer.isNew,
+                        customer.name,
+                        customer.companyName,
+                        customer.isNew,
                         order.quotation_id.isNotNull(),
                         order.imgUrl,
                         order.isUrgent,
@@ -128,6 +137,7 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
                         order.request
                 ))
                 .from(order)
+                .join(order.customer, customer)
                 .where(
                         order.stage.eq(Stage.NEW),
                         order.isNewIssue.eq(Boolean.TRUE),
@@ -159,8 +169,8 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
                 .select(new QFactoryGetOrderHistoryResponse(
                         order.id,
                         order.name,
-                        order.customer.name,
-                        order.customer.companyName,
+                        customer.name,
+                        customer.companyName,
                         order.imgUrl,
                         order.stage,
                         order.isUrgent,
@@ -171,13 +181,14 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
                         order.request
                 ))
                 .from(order)
+                .join(order.customer, customer)
                 .where(
                         eqIsCompleted(isCompleted),
                         eqIsUrgent(isUrgent),
                         searchDateFilter(dateCriterion, startDate, endDate),
                         query == null ? null : order.name.contains(query)
-                                .or(order.customer.name.contains(query))
-                                .or(order.customer.companyName.contains(query))
+                                .or(customer.name.contains(query))
+                                .or(customer.companyName.contains(query))
                 )
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
@@ -186,16 +197,89 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
         JPAQuery<Long> countQuery = queryFactory
                 .select(order.count())
                 .from(order)
+                .join(order.customer, customer)
                 .where(
                         eqIsCompleted(isCompleted),
                         eqIsUrgent(isUrgent),
                         searchDateFilter(dateCriterion, startDate, endDate),
                         query == null ? null : order.name.contains(query)
-                                .or(order.customer.name.contains(query))
-                                .or(order.customer.companyName.contains(query))
+                                .or(customer.name.contains(query))
+                                .or(customer.companyName.contains(query))
                 );
 
         return PageableExecutionUtils.getPage(factoryGetOrderHistoryResponseList, pageable, countQuery::fetchOne);
+    }
+
+    @Override
+    public Page<CustomerGetOrderIsCompletedHistoryResponse> findIsCompletedByCustomer(String userName, Pageable pageable, String query) {
+        List<CustomerGetOrderIsCompletedHistoryResponse> customerGetOrderIsCompletedHistoryResponseList = queryFactory
+                .select(new QCustomerGetOrderIsCompletedHistoryResponse(
+                        order.id,
+                        order.name,
+                        order.imgUrl,
+                        order.createdAt
+                ))
+                .from(order)
+                .join(order.customer, customer)
+                .join(customer.user, userEntity)
+                .where(
+                        order.stage.eq(Stage.COMPLETED),
+                        userEntity.email.eq(userName),
+                        query == null ? null : order.name.contains(query)
+                )
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+        JPAQuery<Long> countQuery = queryFactory
+                .select(order.count())
+                .from(order)
+                .join(order.customer, customer)
+                .join(customer.user, userEntity)
+                .where(
+                        order.stage.eq(Stage.COMPLETED),
+                        userEntity.email.eq(userName),
+                        query == null ? null : order.name.contains(query)
+                );
+
+        return PageableExecutionUtils.getPage(customerGetOrderIsCompletedHistoryResponseList, pageable, countQuery::fetchOne);
+    }
+
+    @Override
+    public CustomerGetOrderCreateInformationResponse findCreateInformationByCustomerAndOrder(String userName, Long orderId) {
+        CustomerGetOrderCreateInformationResponse customerGetOrderCreateInformationResponse = queryFactory
+                .select(new QCustomerGetOrderCreateInformationResponse(
+                        order.id,
+                        order.name,
+                        orderManufacturing,
+                        orderPostProcessing,
+                        order.request,
+                        new QCustomerGetDeliveryAddressResponse(
+                                deliveryAddress.id,
+                                deliveryAddress.name,
+                                deliveryAddress.zipCode,
+                                deliveryAddress.address,
+                                deliveryAddress.detailAddress,
+                                deliveryAddress.receiver,
+                                deliveryAddress.phone1,
+                                deliveryAddress.phone2,
+                                deliveryAddress.isDefault,
+                                deliveryAddress.isDeleted
+                        )
+                ))
+                .from(order)
+                .join(order.customer, customer)
+                .join(customer.user, userEntity)
+                .join(order.manufacturing, orderManufacturing)
+                .join(order.postProcessing, orderPostProcessing)
+                .join(order.deliveryAddress, deliveryAddress)
+                .where(
+                        userEntity.email.eq(userName),
+                        order.id.eq(orderId)
+                )
+                .fetchOne();
+
+        return customerGetOrderCreateInformationResponse;
     }
 
 
@@ -221,11 +305,11 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
 
         BooleanBuilder booleanBuilder = new BooleanBuilder();
         manufacturingRequestList.forEach(
-                manufacturing -> {
-                    switch (manufacturing) {
-                        case "laser-cutting" -> booleanBuilder.or(order.manufacturing.isLaserCutting.eq(Boolean.TRUE));
-                        case "bending" -> booleanBuilder.or(order.manufacturing.isBending.eq(Boolean.TRUE));
-                        case "welding-fabrication" -> booleanBuilder.or(order.manufacturing.isWeldingFabrication.eq(Boolean.TRUE));
+                manufacturingRequest -> {
+                    switch (manufacturingRequest) {
+                        case "laser-cutting" -> booleanBuilder.or(orderManufacturing.isLaserCutting.eq(Boolean.TRUE));
+                        case "bending" -> booleanBuilder.or(orderManufacturing.isBending.eq(Boolean.TRUE));
+                        case "welding-fabrication" -> booleanBuilder.or(orderManufacturing.isWeldingFabrication.eq(Boolean.TRUE));
                         default -> throw new CustomCommonException(ErrorCode.INVALID_PARAMETER, "manufacturing");
                     }
                 }
@@ -254,9 +338,9 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
 
         BooleanBuilder booleanBuilder = new BooleanBuilder();
         if (isNewCustomer) {
-            return booleanBuilder.and(order.customer.isNew);
+            return booleanBuilder.and(customer.isNew);
         } else {
-            return booleanBuilder.and(order.customer.isNew.not());
+            return booleanBuilder.and(customer.isNew.not());
         }
     }
 

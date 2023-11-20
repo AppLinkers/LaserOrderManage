@@ -28,7 +28,7 @@ public enum DrawingFileType {
             Collections.unmodifiableMap(Stream.of(values())
                     .collect(Collectors.toMap(DrawingFileType::getExtension, Function.identity())));
 
-    public static DrawingFileType ofRequest(String request) {
+    public static DrawingFileType ofExtension(String request) {
         return Optional.ofNullable(extensionMap.get(request)).orElseThrow(() -> new CustomCommonException(ErrorCode.INVALID_FILE_EXTENSION));
     }
 }

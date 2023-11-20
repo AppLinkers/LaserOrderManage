@@ -12,9 +12,12 @@ public class CreateCustomerDrawingRequest {
 
     private String fileName;
 
+    private Long fileSize;
+
+    private String fileType;
+
     private String fileUrl;
 
-    private Long fileSize;
 
     @Min(value = 1, message = "수량은 1 이상, 100 이하의 정수 입니다.")
     @Max(value = 100, message = "수량은 1 이상, 100 이하의 정수 입니다.")

@@ -45,14 +45,14 @@ public class Drawing {
     private Ingredient ingredient;
 
     @Builder
-    public Drawing(Order order, String fileName, Long fileSize, DrawingFileType fileType, String fileUrl, String thumbnailUrl, Integer count, String ingredient) {
+    public Drawing(Order order, String fileName, Long fileSize, String fileType, String fileUrl, String thumbnailUrl, Integer count, String ingredient) {
         this.order = order;
         this.fileName = fileName;
         this.fileSize = fileSize;
-        this.fileType = fileType;
+        this.fileType = DrawingFileType.ofExtension(fileType);
         this.fileUrl = fileUrl;
         this.thumbnailUrl = thumbnailUrl;
         this.count = count;
-        this.ingredient = Ingredient.valueOf(ingredient);
+        this.ingredient = Ingredient.ofName(ingredient);
     }
 }

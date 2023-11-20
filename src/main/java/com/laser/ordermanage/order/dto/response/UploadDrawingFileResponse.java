@@ -13,7 +13,10 @@ public class UploadDrawingFileResponse {
 
     private final String fileName;
 
+    private final Long fileSize;
+
+    private final String fileType;
+
     private final String fileUrl;
 
-    private final Long fileSize;
 }

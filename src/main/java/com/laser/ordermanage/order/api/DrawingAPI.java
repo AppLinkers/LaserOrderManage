@@ -29,7 +29,7 @@ public class DrawingAPI {
     @PostMapping("")
     public ResponseEntity<?> uploadDrawingFile(@RequestBody MultipartFile file) {
         // File 확장자 확인
-        DrawingFileType fileType = DrawingFileType.ofRequest(FileUtil.getExtension(file));
+        DrawingFileType fileType = DrawingFileType.ofExtension(FileUtil.getExtension(file));
 
         String fileName = file.getOriginalFilename();
         Long fileSize = file.getSize();
@@ -53,6 +53,7 @@ public class DrawingAPI {
         UploadDrawingFileResponse uploadDrawingFileResponse = UploadDrawingFileResponse.builder()
                 .thumbnailImgUrl(thumbnailFileUrl)
                 .fileName(fileName)
+                .fileType(fileType.getExtension())
                 .fileUrl(drawingFileUrl)
                 .fileSize(fileSize)
                 .build();

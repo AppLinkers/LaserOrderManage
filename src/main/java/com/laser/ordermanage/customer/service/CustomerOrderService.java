@@ -5,20 +5,26 @@ import com.laser.ordermanage.customer.domain.DeliveryAddress;
 import com.laser.ordermanage.customer.dto.request.CreateCustomerOrderRequest;
 import com.laser.ordermanage.customer.repository.CustomerRepository;
 import com.laser.ordermanage.customer.repository.DeliveryAddressRepository;
+import com.laser.ordermanage.order.domain.Drawing;
 import com.laser.ordermanage.order.domain.Order;
 import com.laser.ordermanage.order.domain.OrderManufacturing;
 import com.laser.ordermanage.order.domain.OrderPostProcessing;
+import com.laser.ordermanage.order.repository.DrawingRepository;
 import com.laser.ordermanage.order.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @RequiredArgsConstructor
 @Service
 public class CustomerOrderService {
 
     private final DeliveryAddressRepository deliveryAddressRepository;
+    private final DrawingRepository drawingRepository;
     private final OrderRepository orderRepository;
     private final CustomerRepository customerRepository;
 
@@ -41,7 +47,27 @@ public class CustomerOrderService {
                 .isNewIssue(request.getIsNewIssue())
                 .build();
 
-        orderRepository.save(order);
+        Order createdOrder = orderRepository.save(order);
+
+        List<Drawing> drawingList = new ArrayList<>();
+        request.getDrawingList().forEach(
+                drawingRequest -> {
+                    drawingList.add(
+                            Drawing.builder()
+                                    .order(createdOrder)
+                                    .fileName(drawingRequest.getFileName())
+                                    .fileSize(drawingRequest.getFileSize())
+                                    .fileType(drawingRequest.getFileType())
+                                    .fileUrl(drawingRequest.getFileUrl())
+                                    .thumbnailUrl(drawingRequest.getThumbnailImgUrl())
+                                    .count(drawingRequest.getCount())
+                                    .ingredient(drawingRequest.getIngredient())
+                                    .build()
+                    );
+                }
+        );
+
+        drawingRepository.saveAll(drawingList);
     }
 
 }

@@ -3,7 +3,7 @@ package com.laser.ordermanage.order.service;
 import com.laser.ordermanage.common.cloud.aws.S3Service;
 import com.laser.ordermanage.common.util.CADUtil;
 import com.laser.ordermanage.customer.dto.response.CustomerGetDrawingResponse;
-import com.laser.ordermanage.order.repository.DrawingRepositoryCustom;
+import com.laser.ordermanage.order.repository.DrawingRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -21,7 +21,7 @@ public class DrawingService {
 
     private final S3Service s3Service;
 
-    private final DrawingRepositoryCustom drawingRepository;
+    private final DrawingRepository drawingRepository;
 
     @Transactional(readOnly = true)
     public List<CustomerGetDrawingResponse> getDrawingByCustomerAndOrder(String userName, Long orderId) {

@@ -22,6 +22,7 @@ public enum ErrorCode {
 
     REQUEST_FILE_SIZE_EXCEED("-008", HttpStatus.BAD_REQUEST, "요청 파일의 크기가 100MB를 초과합니다."),
     INVALID_FILE_EXTENSION("-009", HttpStatus.BAD_REQUEST, "지원하지 않는 파일 형식입니다."),
+    INVALID_INGREDIENT("-010", HttpStatus.BAD_REQUEST, "지원하지 않는 재료입니다."),
 
     // 401 UNAUTHORIZED 인증 자격 정보가 유효하지 않음
     UNAUTHORIZED("-100", HttpStatus.UNAUTHORIZED, "인증 자격 정보가 유효하지 않습니다."),

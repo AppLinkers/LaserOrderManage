@@ -1,17 +1,20 @@
 package com.laser.ordermanage.order.api;
 
 import com.laser.ordermanage.common.util.FileUtil;
+import com.laser.ordermanage.common.validation.constraints.ValidFile;
 import com.laser.ordermanage.order.domain.type.DrawingFileType;
 import com.laser.ordermanage.order.dto.response.UploadDrawingFileResponse;
 import com.laser.ordermanage.order.service.DrawingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+@Validated
 @RequiredArgsConstructor
 @RequestMapping("/drawing")
 @RestController
@@ -27,7 +30,7 @@ public class DrawingAPI {
      * - 썸네일 이미지 파일 AWS S3 에 업로드
      */
     @PostMapping("")
-    public ResponseEntity<?> uploadDrawingFile(@RequestBody MultipartFile file) {
+    public ResponseEntity<?> uploadDrawingFile(@RequestParam @ValidFile(message = "도면 파일은 필수 입력값입니다.") MultipartFile file) {
         // File 확장자 확인
         DrawingFileType fileType = DrawingFileType.ofExtension(FileUtil.getExtension(file));
 

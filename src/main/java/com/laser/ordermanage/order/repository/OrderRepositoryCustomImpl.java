@@ -21,10 +21,13 @@ import java.util.List;
 
 import static com.laser.ordermanage.customer.domain.QCustomer.customer;
 import static com.laser.ordermanage.customer.domain.QDeliveryAddress.deliveryAddress;
+import static com.laser.ordermanage.order.domain.QDrawing.drawing;
 import static com.laser.ordermanage.order.domain.QOrder.order;
 import static com.laser.ordermanage.order.domain.QOrderManufacturing.orderManufacturing;
 import static com.laser.ordermanage.order.domain.QOrderPostProcessing.orderPostProcessing;
 import static com.laser.ordermanage.user.domain.QUserEntity.userEntity;
+import static com.querydsl.core.group.GroupBy.groupBy;
+import static com.querydsl.core.group.GroupBy.list;
 
 @RequiredArgsConstructor
 public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
@@ -247,39 +250,55 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
 
     @Override
     public CustomerGetOrderCreateInformationResponse findCreateInformationByCustomerAndOrder(String userName, Long orderId) {
-        CustomerGetOrderCreateInformationResponse customerGetOrderCreateInformationResponse = queryFactory
-                .select(new QCustomerGetOrderCreateInformationResponse(
-                        order.id,
-                        order.name,
-                        orderManufacturing,
-                        orderPostProcessing,
-                        order.request,
-                        new QCustomerGetDeliveryAddressResponse(
-                                deliveryAddress.id,
-                                deliveryAddress.name,
-                                deliveryAddress.zipCode,
-                                deliveryAddress.address,
-                                deliveryAddress.detailAddress,
-                                deliveryAddress.receiver,
-                                deliveryAddress.phone1,
-                                deliveryAddress.phone2,
-                                deliveryAddress.isDefault,
-                                deliveryAddress.isDeleted
-                        )
-                ))
-                .from(order)
+        List<CustomerGetOrderCreateInformationResponse> customerGetOrderCreateInformationResponseList = queryFactory
+                .selectFrom(order)
                 .join(order.customer, customer)
                 .join(customer.user, userEntity)
                 .join(order.manufacturing, orderManufacturing)
                 .join(order.postProcessing, orderPostProcessing)
+                .join(drawing).on(order.id.eq(drawing.order.id))
                 .join(order.deliveryAddress, deliveryAddress)
                 .where(
                         userEntity.email.eq(userName),
                         order.id.eq(orderId)
                 )
-                .fetchOne();
+                .transform(
+                        groupBy(order.id).list(
+                                new QCustomerGetOrderCreateInformationResponse(
+                                        order.id,
+                                        order.name,
+                                        orderManufacturing,
+                                        orderPostProcessing,
+                                        list(
+                                                new QCustomerGetDrawingResponse(
+                                                        drawing.id,
+                                                        drawing.fileName,
+                                                        drawing.fileSize,
+                                                        drawing.fileType,
+                                                        drawing.fileUrl,
+                                                        drawing.thumbnailUrl,
+                                                        drawing.count,
+                                                        drawing.ingredient
+                                                )
+                                        ),
+                                        order.request,
+                                        new QCustomerGetDeliveryAddressResponse(
+                                                deliveryAddress.id,
+                                                deliveryAddress.name,
+                                                deliveryAddress.zipCode,
+                                                deliveryAddress.address,
+                                                deliveryAddress.detailAddress,
+                                                deliveryAddress.receiver,
+                                                deliveryAddress.phone1,
+                                                deliveryAddress.phone2,
+                                                deliveryAddress.isDefault,
+                                                deliveryAddress.isDeleted
+                                        )
+                                )
+                        )
+                );
 
-        return customerGetOrderCreateInformationResponse;
+        return customerGetOrderCreateInformationResponseList.isEmpty() ? null : customerGetOrderCreateInformationResponseList.get(0);
     }
 
 

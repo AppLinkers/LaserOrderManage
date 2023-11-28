@@ -44,8 +44,11 @@ public class Drawing {
     @Enumerated(value = EnumType.STRING)
     private Ingredient ingredient;
 
+    @NotNull
+    private Integer thickness;
+
     @Builder
-    public Drawing(Order order, String fileName, Long fileSize, String fileType, String fileUrl, String thumbnailUrl, Integer count, String ingredient) {
+    public Drawing(Order order, String fileName, Long fileSize, String fileType, String fileUrl, String thumbnailUrl, Integer count, String ingredient, Integer thickness) {
         this.order = order;
         this.fileName = fileName;
         this.fileSize = fileSize;
@@ -53,6 +56,7 @@ public class Drawing {
         this.fileUrl = fileUrl;
         this.thumbnailUrl = thumbnailUrl;
         this.count = count;
-        this.ingredient = Ingredient.ofName(ingredient);
+        this.ingredient = Ingredient.ofValue(ingredient);
+        this.thickness = thickness;
     }
 }

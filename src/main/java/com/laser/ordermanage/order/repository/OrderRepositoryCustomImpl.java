@@ -278,7 +278,8 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
                                                         drawing.fileUrl,
                                                         drawing.thumbnailUrl,
                                                         drawing.count,
-                                                        drawing.ingredient
+                                                        drawing.ingredient,
+                                                        drawing.thickness
                                                 )
                                         ),
                                         order.request,

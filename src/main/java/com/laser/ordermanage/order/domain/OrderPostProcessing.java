@@ -32,11 +32,11 @@ public class OrderPostProcessing {
     public List<String> toValueList() {
         List<String> valueList = new ArrayList<>();
         if (isPainting) {
-            valueList.add("도색");
+            valueList.add("painting");
         }
 
         if (isPlating) {
-            valueList.add("도금");
+            valueList.add("plating");
         }
 
         return valueList;

@@ -62,6 +62,7 @@ public class CustomerOrderService {
                                     .thumbnailUrl(drawingRequest.getThumbnailImgUrl())
                                     .count(drawingRequest.getCount())
                                     .ingredient(drawingRequest.getIngredient())
+                                    .thickness(drawingRequest.getThickness())
                                     .build()
                     );
                 }

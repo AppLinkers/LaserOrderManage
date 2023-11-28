@@ -24,8 +24,10 @@ public class CustomerGetDrawingResponse {
 
     private final String ingredient;
 
+    private final Integer thickness;
+
     @QueryProjection
-    public CustomerGetDrawingResponse(Long id, String fileName, Long fileSize, DrawingFileType fileType, String fileUrl, String thumbnailUrl, Integer count, Ingredient ingredient) {
+    public CustomerGetDrawingResponse(Long id, String fileName, Long fileSize, DrawingFileType fileType, String fileUrl, String thumbnailUrl, Integer count, Ingredient ingredient, Integer thickness) {
         this.id = id;
         this.fileName = fileName;
         this.fileSize = fileSize;
@@ -33,6 +35,7 @@ public class CustomerGetDrawingResponse {
         this.fileUrl = fileUrl;
         this.thumbnailUrl = thumbnailUrl;
         this.count = count;
-        this.ingredient = ingredient.getName();
+        this.ingredient = ingredient.getValue();
+        this.thickness = thickness;
     }
 }

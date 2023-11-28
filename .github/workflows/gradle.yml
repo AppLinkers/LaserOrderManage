@@ -4,11 +4,12 @@
 # documentation.
 # This workflow will build a Java project with Gradle and cache/restore any dependencies to improve the workflow execution time
 # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-java-with-gradle
-
+# Workflow의 이름을 지정합니다.
 name: Java CI with Gradle
 
 on:
   push:
+    # main branch에 push(merge)될 경우 실행됩니다.
     branches: [ "main" ]
 
 permissions:
@@ -17,22 +18,37 @@ permissions:
 jobs:
   build:
 
+    # build를 진행할 운영체제를 선택합니다.
     runs-on: ubuntu-latest
 
     steps:
+      # github submodule을 사용합니다.
       - uses: actions/checkout@v3
         with:
           token: ${{secrets.ACTION_TOKEN}}
           submodules: true
+      # JDK를 17 버전으로 셋팅합니다.
       - name: Set up JDK 17
         uses: actions/setup-java@v3
         with:
           java-version: '17'
           distribution: 'temurin'
+      # Gradle을 캐싱해둡니다 -> 빌드 속도가 증가하는 효과가 있습니다.
+      - name: Gradle Caching
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+      # Build 수행
       - name: Build with Gradle
         uses: gradle/gradle-build-action@bd5760595778326ba7f1441bcf7e88b49de61a25 # v2.6.0
         with:
           arguments: build
+      # build report 파일 압축
       - name: Compress all report files
         if: ${{ failure() }}
         run: |
@@ -45,12 +61,14 @@ jobs:
             cp -r $dir report_files/$module_path/$(basename $(dirname $dir))
           done
           tar czvf report_files_$TIMESTAMP.tar.gz report_files
+      # build 실패 시, report 파일 업로드
       - name: Upload Error Report Files To Artifacts
         if: ${{ failure() }}
         uses: actions/upload-artifact@v2
         with:
           name: report_files
           path: report_files_*.tar.gz
+      # 배포에 필요한 여러 설정 파일과 프로젝트 빌드파일을 zip 파일로 모아줍니다.
       - name: Make Directory
         run: mkdir -p deploy
       - name: Copy Jar
@@ -59,15 +77,19 @@ jobs:
         run: cp appspec.yml ./deploy
       - name: Copy scprits
         run: cp scripts/** ./deploy
+      - name: Copy docker
+        run: cp docker/** ./deploy
       - name: Make zip file
         run: zip -r ./ordermanage.zip ./deploy/*
         shell: bash
+      # AWS에 연결해줍니다.
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ap-northeast-2
+      # S3에 프로젝트 파일을 업로드 합니다.
       - name: Upload to S3
         run: aws s3 cp --region ap-northeast-2 ./ordermanage.zip s3://ordermanage-deploy/
 

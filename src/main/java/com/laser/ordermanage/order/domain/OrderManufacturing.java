@@ -36,15 +36,15 @@ public class OrderManufacturing {
     public List<String> toValueList() {
         List<String> valueList = new ArrayList<>();
         if (isLaserCutting) {
-            valueList.add("레이저 가공");
+            valueList.add("laser-cutting");
         }
 
         if (isBending) {
-            valueList.add("절곡");
+            valueList.add("bending");
         }
 
         if (isWeldingFabrication) {
-            valueList.add("용접 및 제작");
+            valueList.add("welding-fabrication");
         }
 
         return valueList;

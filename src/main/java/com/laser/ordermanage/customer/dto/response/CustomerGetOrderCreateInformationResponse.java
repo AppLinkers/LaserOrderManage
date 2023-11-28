@@ -27,11 +27,12 @@ public class CustomerGetOrderCreateInformationResponse {
     private final CustomerGetDeliveryAddressResponse deliveryAddress;
 
     @QueryProjection
-    public CustomerGetOrderCreateInformationResponse(Long id, String name, OrderManufacturing manufacturing, OrderPostProcessing postProcessing, String request, CustomerGetDeliveryAddressResponse deliveryAddress) {
+    public CustomerGetOrderCreateInformationResponse(Long id, String name, OrderManufacturing manufacturing, OrderPostProcessing postProcessing, List<CustomerGetDrawingResponse> drawingList, String request, CustomerGetDeliveryAddressResponse deliveryAddress) {
         this.id = id;
         this.name = name;
         this.manufacturingList = manufacturing.toValueList();
         this.postProcessingList = postProcessing.toValueList();
+        this.drawingList = drawingList;
         this.request = request;
         this.deliveryAddress = deliveryAddress;
     }

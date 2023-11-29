@@ -11,3 +11,8 @@ services:
       - "8081:8080"
     # 컨테이너의 이름
     container_name: order-manage-server-blue
+
+networks:
+  default:
+    external:
+      name: order-manage-server-bridge

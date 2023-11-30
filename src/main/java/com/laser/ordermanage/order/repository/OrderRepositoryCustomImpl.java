@@ -134,7 +134,7 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
                         customer.name,
                         customer.companyName,
                         customer.isNew,
-                        order.quotation.isNotNull(),
+                        quotation.isNotNull(),
                         order.imgUrl,
                         order.isUrgent,
                         order.manufacturing,

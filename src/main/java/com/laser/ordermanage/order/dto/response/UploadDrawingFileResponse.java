@@ -9,7 +9,7 @@ import lombok.Getter;
 @AllArgsConstructor
 public class UploadDrawingFileResponse {
 
-    private final String thumbnailImgUrl;
+    private final String thumbnailUrl;
 
     private final String fileName;
 

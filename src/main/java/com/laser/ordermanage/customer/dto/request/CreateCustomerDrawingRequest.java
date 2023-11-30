@@ -8,7 +8,7 @@ import lombok.Getter;
 @Getter
 public class CreateCustomerDrawingRequest {
 
-    private String thumbnailImgUrl;
+    private String thumbnailUrl;
 
     private String fileName;
 

@@ -25,6 +25,7 @@ import static com.laser.ordermanage.order.domain.QDrawing.drawing;
 import static com.laser.ordermanage.order.domain.QOrder.order;
 import static com.laser.ordermanage.order.domain.QOrderManufacturing.orderManufacturing;
 import static com.laser.ordermanage.order.domain.QOrderPostProcessing.orderPostProcessing;
+import static com.laser.ordermanage.order.domain.QQuotation.quotation;
 import static com.laser.ordermanage.user.domain.QUserEntity.userEntity;
 import static com.querydsl.core.group.GroupBy.groupBy;
 import static com.querydsl.core.group.GroupBy.list;
@@ -45,14 +46,15 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
                         order.isUrgent,
                         order.manufacturing,
                         order.createdAt,
-                        order.quotation_delivery_date,
-                        order.quotation_total_cost,
+                        quotation.deliveryDate,
+                        quotation.totalCost,
                         order.request
                 ))
                 .from(order)
                 .join(order.customer, customer)
                 .join(customer.user, userEntity)
                 .join(order.manufacturing, orderManufacturing)
+                .join(order.quotation, quotation)
                 .where(
                         userEntity.email.eq(userName),
                         eqStage(stageRequestList),
@@ -87,17 +89,18 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
                         order.name,
                         customer.name,
                         customer.companyName,
-                        order.quotation_id.isNotNull(),
+                        quotation.isNotNull(),
                         order.imgUrl,
                         order.isUrgent,
                         order.manufacturing,
                         order.createdAt,
-                        order.quotation_delivery_date,
-                        order.quotation_total_cost,
+                        quotation.deliveryDate,
+                        quotation.totalCost,
                         order.request
                 ))
                 .from(order)
                 .join(order.customer, customer)
+                .join(order.quotation, quotation)
                 .where(
                         order.stage.eq(Stage.NEW),
                         order.isNewIssue.eq(Boolean.FALSE),
@@ -111,6 +114,7 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
         JPAQuery<Long> countQuery = queryFactory
                 .select(order.count())
                 .from(order)
+                .join(order.quotation, quotation)
                 .where(
                         order.stage.eq(Stage.NEW),
                         order.isNewIssue.eq(Boolean.FALSE),
@@ -130,17 +134,18 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
                         customer.name,
                         customer.companyName,
                         customer.isNew,
-                        order.quotation_id.isNotNull(),
+                        order.quotation.isNotNull(),
                         order.imgUrl,
                         order.isUrgent,
                         order.manufacturing,
                         order.createdAt,
-                        order.quotation_delivery_date,
-                        order.quotation_total_cost,
+                        quotation.deliveryDate,
+                        quotation.totalCost,
                         order.request
                 ))
                 .from(order)
                 .join(order.customer, customer)
+                .join(order.quotation, quotation)
                 .where(
                         order.stage.eq(Stage.NEW),
                         order.isNewIssue.eq(Boolean.TRUE),
@@ -155,6 +160,7 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
         JPAQuery<Long> countQuery = queryFactory
                 .select(order.count())
                 .from(order)
+                .join(order.quotation, quotation)
                 .where(
                         order.stage.eq(Stage.NEW),
                         order.isNewIssue.eq(Boolean.TRUE),
@@ -179,12 +185,13 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
                         order.isUrgent,
                         order.manufacturing,
                         order.createdAt,
-                        order.quotation_delivery_date,
-                        order.quotation_total_cost,
+                        quotation.deliveryDate,
+                        quotation.totalCost,
                         order.request
                 ))
                 .from(order)
                 .join(order.customer, customer)
+                .join(order.quotation, quotation)
                 .where(
                         eqIsCompleted(isCompleted),
                         eqIsUrgent(isUrgent),
@@ -201,6 +208,7 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
                 .select(order.count())
                 .from(order)
                 .join(order.customer, customer)
+                .join(order.quotation, quotation)
                 .where(
                         eqIsCompleted(isCompleted),
                         eqIsUrgent(isUrgent),
@@ -345,9 +353,9 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
 
         BooleanBuilder booleanBuilder = new BooleanBuilder();
         if (hasQuotation) {
-            return booleanBuilder.and(order.quotation_id.isNotNull());
+            return booleanBuilder.and(quotation.isNotNull());
         } else {
-            return booleanBuilder.and(order.quotation_id.isNull());
+            return booleanBuilder.and(quotation.isNull());
         }
     }
 
@@ -398,8 +406,8 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
 
             return booleanBuilder.and(isGoeStartDate).and(isLoeEndDate);
         } else if (dateCriterion.equals("delivery")) {
-            BooleanExpression isGoeStartDate = order.quotation_delivery_date.goe(startDate);
-            BooleanExpression isLoeEndDate = order.quotation_delivery_date.loe(endDate);
+            BooleanExpression isGoeStartDate = quotation.deliveryDate.goe(startDate);
+            BooleanExpression isLoeEndDate = quotation.deliveryDate.loe(endDate);
 
             return booleanBuilder.and(isGoeStartDate).and(isLoeEndDate);
         }

@@ -1,9 +1,9 @@
 package com.laser.ordermanage.customer.repository;
 
-import com.laser.ordermanage.customer.dto.response.CustomerGetDeliveryAddressResponse;
+import com.laser.ordermanage.customer.dto.response.GetDeliveryAddressResponse;
 
 import java.util.List;
 
 public interface DeliveryAddressRepositoryCustom {
-    List<CustomerGetDeliveryAddressResponse> findByCustomer(String userName);
+    List<GetDeliveryAddressResponse> findByCustomer(String userName);
 }

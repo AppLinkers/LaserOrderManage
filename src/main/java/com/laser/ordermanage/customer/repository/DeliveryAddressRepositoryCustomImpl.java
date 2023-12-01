@@ -1,7 +1,7 @@
 package com.laser.ordermanage.customer.repository;
 
-import com.laser.ordermanage.customer.dto.response.CustomerGetDeliveryAddressResponse;
-import com.laser.ordermanage.customer.dto.response.QCustomerGetDeliveryAddressResponse;
+import com.laser.ordermanage.customer.dto.response.GetDeliveryAddressResponse;
+import com.laser.ordermanage.customer.dto.response.QGetDeliveryAddressResponse;
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -19,9 +19,9 @@ public class DeliveryAddressRepositoryCustomImpl implements DeliveryAddressRepos
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public List<CustomerGetDeliveryAddressResponse> findByCustomer(String userName) {
+    public List<GetDeliveryAddressResponse> findByCustomer(String userName) {
         return queryFactory
-                .select(new QCustomerGetDeliveryAddressResponse(
+                .select(new QGetDeliveryAddressResponse(
                         deliveryAddress.id,
                         deliveryAddress.name,
                         deliveryAddress.zipCode,

@@ -20,7 +20,7 @@ public class DeliveryAddressRepositoryCustomImpl implements DeliveryAddressRepos
 
     @Override
     public List<GetDeliveryAddressResponse> findByCustomer(String userName) {
-        return queryFactory
+        List<GetDeliveryAddressResponse> getDeliveryAddressResponseList = queryFactory
                 .select(new QGetDeliveryAddressResponse(
                         deliveryAddress.id,
                         deliveryAddress.name,
@@ -39,6 +39,8 @@ public class DeliveryAddressRepositoryCustomImpl implements DeliveryAddressRepos
                 .where(userEntity.email.eq(userName))
                 .orderBy(new OrderSpecifier<>(Order.DESC, deliveryAddress.isDefault))
                 .fetch();
+
+        return getDeliveryAddressResponseList;
     }
 
 }

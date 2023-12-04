@@ -43,6 +43,7 @@ public enum ErrorCode {
     // 404 NOT_FOUND 리소스가 존재하지 않음
     NOT_FOUND("-400", HttpStatus.NOT_FOUND, "리소스가 존재하지 않습니다."),
     NOT_FOUND_VERIFY_CODE("-401", HttpStatus.NOT_FOUND, "이메일에 해당하는 인증 코드가 존재하지 않습니다."),
+    NOT_FOUND_ENTITY("-402", HttpStatus.NOT_FOUND, " 엔티티가 존재하지 않습니다."),
 
     // 500 INTERNAL SERVER ERROR 서버 에러
     INTERNAL_SERVER_ERROR("-500", HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러 입니다."),

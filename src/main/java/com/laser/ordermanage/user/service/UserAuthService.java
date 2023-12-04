@@ -9,7 +9,9 @@ import com.laser.ordermanage.common.exception.ErrorCode;
 import com.laser.ordermanage.common.security.jwt.component.JwtProvider;
 import com.laser.ordermanage.common.security.jwt.dto.TokenInfo;
 import com.laser.ordermanage.common.util.NetworkUtil;
+import com.laser.ordermanage.user.domain.UserEntity;
 import com.laser.ordermanage.user.dto.request.LoginRequest;
+import com.laser.ordermanage.user.repository.UserEntityRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -17,6 +19,7 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 @Service
@@ -26,8 +29,15 @@ public class UserAuthService {
     private final BlackListRedisRepository blackListRedisRepository;
     private final RefreshTokenRedisRepository refreshTokenRedisRepository;
 
+    private final UserEntityRepository userRepository;
+
     private final JwtProvider jwtProvider;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
+
+    @Transactional(readOnly = true)
+    public UserEntity findUserByEmail(String email) {
+        return userRepository.findFirstByEmail(email).orElseThrow(() -> new CustomCommonException(ErrorCode.NOT_FOUND_ENTITY, "user"));
+    }
 
     public TokenInfo login(HttpServletRequest httpServletRequest, LoginRequest request) {
 

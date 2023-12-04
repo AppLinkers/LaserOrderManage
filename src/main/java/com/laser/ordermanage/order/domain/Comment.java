@@ -5,6 +5,7 @@ import com.laser.ordermanage.user.domain.UserEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -27,4 +28,11 @@ public class Comment extends CreatedAtEntity {
 
     @NotNull
     private String content;
+
+    @Builder
+    public Comment(UserEntity user, Order order, String content) {
+        this.user = user;
+        this.order = order;
+        this.content = content;
+    }
 }

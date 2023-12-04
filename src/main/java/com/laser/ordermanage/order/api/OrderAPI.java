@@ -1,14 +1,13 @@
 package com.laser.ordermanage.order.api;
 
+import com.laser.ordermanage.order.dto.request.CreateCommentRequest;
 import com.laser.ordermanage.order.service.OrderService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
 @RequestMapping("/order")
@@ -41,4 +40,22 @@ public class OrderAPI {
 
         return ResponseEntity.ok(orderService.getOrderComment(user, orderId));
     }
+
+    /**
+     * 거래에 댓글 작성
+     * - 거래 PK에 해당하는 거래에 댓글 데이터 생성
+     */
+    @PostMapping("/{order-id}/comment")
+    public ResponseEntity<?> createOrderComment(
+            @PathVariable("order-id") Long orderId,
+            @RequestBody @Valid CreateCommentRequest request
+    ) {
+
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        orderService.createOrderComment(user.getUsername(), orderId, request);
+
+        return ResponseEntity.ok().build();
+    }
+
 }

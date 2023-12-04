@@ -9,10 +9,10 @@ import com.laser.ordermanage.factory.dto.response.FactoryGetOrderIsNewAndIsReIss
 import com.laser.ordermanage.order.dto.response.GetOrderDetailResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.userdetails.User;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 public interface OrderRepositoryCustom {
 
@@ -28,5 +28,7 @@ public interface OrderRepositoryCustom {
 
     CustomerGetOrderCreateInformationResponse findCreateInformationByCustomerAndOrder(String userName, Long orderId);
 
-    GetOrderDetailResponse findDetailByUserAndOrder(User user, Long orderId);
+    GetOrderDetailResponse findDetailByOrder(Long orderId);
+
+    Optional<String> findUserEmailById(Long orderId);
 }

@@ -8,20 +8,18 @@ import com.laser.ordermanage.order.domain.type.Stage;
 import com.laser.ordermanage.order.dto.response.*;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.dsl.BooleanExpression;
-import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
 
 import static com.laser.ordermanage.customer.domain.QCustomer.customer;
 import static com.laser.ordermanage.customer.domain.QDeliveryAddress.deliveryAddress;
@@ -316,7 +314,7 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
     }
 
     @Override
-    public GetOrderDetailResponse findDetailByUserAndOrder(User user, Long orderId) {
+    public GetOrderDetailResponse findDetailByOrder(Long orderId) {
         List<GetOrderDetailResponse> getOrderDetailResponseList = queryFactory
                 .selectFrom(order)
                 .join(order.customer, customer)
@@ -326,7 +324,6 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
                 .leftJoin(order.quotation, quotation)
                 .leftJoin(order.purchaseOrder, purchaseOrder)
                 .where(order.id.eq(orderId))
-                .where(userEntity.email.eq(user.getUsername()).or(isUserRoleFactory(user)))
                 .transform(
                         groupBy(order.id).list(
                                new QGetOrderDetailResponse(
@@ -391,6 +388,19 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
                 );
 
         return getOrderDetailResponseList.isEmpty() ? null : getOrderDetailResponseList.get(0);
+    }
+
+    @Override
+    public Optional<String> findUserEmailById(Long orderId) {
+        String userEmail = queryFactory
+                .select(userEntity.email)
+                .from(order)
+                .join(order.customer, customer)
+                .join(customer.user, userEntity)
+                .where(order.id.eq(orderId))
+                .fetchOne();
+
+        return Optional.ofNullable(userEmail);
     }
 
 
@@ -495,9 +505,5 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
             return booleanBuilder.and(isGoeStartDate).and(isLoeEndDate);
         }
         return null;
-    }
-
-    private BooleanExpression isUserRoleFactory(User user) {
-        return Expressions.asBoolean(user.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_FACTORY"))).isTrue();
     }
 }

@@ -5,14 +5,18 @@ import com.laser.ordermanage.common.exception.ErrorCode;
 import com.laser.ordermanage.customer.dto.response.*;
 import com.laser.ordermanage.factory.dto.response.*;
 import com.laser.ordermanage.order.domain.type.Stage;
+import com.laser.ordermanage.order.dto.response.*;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.User;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -25,6 +29,8 @@ import static com.laser.ordermanage.order.domain.QDrawing.drawing;
 import static com.laser.ordermanage.order.domain.QOrder.order;
 import static com.laser.ordermanage.order.domain.QOrderManufacturing.orderManufacturing;
 import static com.laser.ordermanage.order.domain.QOrderPostProcessing.orderPostProcessing;
+import static com.laser.ordermanage.order.domain.QPurchaseOrder.purchaseOrder;
+import static com.laser.ordermanage.order.domain.QQuotation.quotation;
 import static com.laser.ordermanage.user.domain.QUserEntity.userEntity;
 import static com.querydsl.core.group.GroupBy.groupBy;
 import static com.querydsl.core.group.GroupBy.list;
@@ -45,14 +51,15 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
                         order.isUrgent,
                         order.manufacturing,
                         order.createdAt,
-                        order.quotation_delivery_date,
-                        order.quotation_total_cost,
+                        quotation.deliveryDate,
+                        quotation.totalCost,
                         order.request
                 ))
                 .from(order)
                 .join(order.customer, customer)
                 .join(customer.user, userEntity)
                 .join(order.manufacturing, orderManufacturing)
+                .join(order.quotation, quotation)
                 .where(
                         userEntity.email.eq(userName),
                         eqStage(stageRequestList),
@@ -87,17 +94,18 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
                         order.name,
                         customer.name,
                         customer.companyName,
-                        order.quotation_id.isNotNull(),
+                        quotation.isNotNull(),
                         order.imgUrl,
                         order.isUrgent,
                         order.manufacturing,
                         order.createdAt,
-                        order.quotation_delivery_date,
-                        order.quotation_total_cost,
+                        quotation.deliveryDate,
+                        quotation.totalCost,
                         order.request
                 ))
                 .from(order)
                 .join(order.customer, customer)
+                .join(order.quotation, quotation)
                 .where(
                         order.stage.eq(Stage.NEW),
                         order.isNewIssue.eq(Boolean.FALSE),
@@ -111,6 +119,7 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
         JPAQuery<Long> countQuery = queryFactory
                 .select(order.count())
                 .from(order)
+                .join(order.quotation, quotation)
                 .where(
                         order.stage.eq(Stage.NEW),
                         order.isNewIssue.eq(Boolean.FALSE),
@@ -130,17 +139,18 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
                         customer.name,
                         customer.companyName,
                         customer.isNew,
-                        order.quotation_id.isNotNull(),
+                        quotation.isNotNull(),
                         order.imgUrl,
                         order.isUrgent,
                         order.manufacturing,
                         order.createdAt,
-                        order.quotation_delivery_date,
-                        order.quotation_total_cost,
+                        quotation.deliveryDate,
+                        quotation.totalCost,
                         order.request
                 ))
                 .from(order)
                 .join(order.customer, customer)
+                .join(order.quotation, quotation)
                 .where(
                         order.stage.eq(Stage.NEW),
                         order.isNewIssue.eq(Boolean.TRUE),
@@ -155,6 +165,7 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
         JPAQuery<Long> countQuery = queryFactory
                 .select(order.count())
                 .from(order)
+                .join(order.quotation, quotation)
                 .where(
                         order.stage.eq(Stage.NEW),
                         order.isNewIssue.eq(Boolean.TRUE),
@@ -179,12 +190,13 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
                         order.isUrgent,
                         order.manufacturing,
                         order.createdAt,
-                        order.quotation_delivery_date,
-                        order.quotation_total_cost,
+                        quotation.deliveryDate,
+                        quotation.totalCost,
                         order.request
                 ))
                 .from(order)
                 .join(order.customer, customer)
+                .join(order.quotation, quotation)
                 .where(
                         eqIsCompleted(isCompleted),
                         eqIsUrgent(isUrgent),
@@ -201,6 +213,7 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
                 .select(order.count())
                 .from(order)
                 .join(order.customer, customer)
+                .join(order.quotation, quotation)
                 .where(
                         eqIsCompleted(isCompleted),
                         eqIsUrgent(isUrgent),
@@ -270,7 +283,7 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
                                         orderManufacturing,
                                         orderPostProcessing,
                                         list(
-                                                new QCustomerGetDrawingResponse(
+                                                new QGetDrawingResponse(
                                                         drawing.id,
                                                         drawing.fileName,
                                                         drawing.fileSize,
@@ -283,7 +296,7 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
                                                 )
                                         ),
                                         order.request,
-                                        new QCustomerGetDeliveryAddressResponse(
+                                        new QGetDeliveryAddressResponse(
                                                 deliveryAddress.id,
                                                 deliveryAddress.name,
                                                 deliveryAddress.zipCode,
@@ -300,6 +313,84 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
                 );
 
         return customerGetOrderCreateInformationResponseList.isEmpty() ? null : customerGetOrderCreateInformationResponseList.get(0);
+    }
+
+    @Override
+    public GetOrderDetailResponse findDetailByUserAndOrder(User user, Long orderId) {
+        List<GetOrderDetailResponse> getOrderDetailResponseList = queryFactory
+                .selectFrom(order)
+                .join(order.customer, customer)
+                .join(customer.user, userEntity)
+                .join(drawing).on(order.id.eq(drawing.order.id))
+                .join(order.deliveryAddress, deliveryAddress)
+                .leftJoin(order.quotation, quotation)
+                .leftJoin(order.purchaseOrder, purchaseOrder)
+                .where(order.id.eq(orderId))
+                .where(userEntity.email.eq(user.getUsername()).or(isUserRoleFactory(user)))
+                .transform(
+                        groupBy(order.id).list(
+                               new QGetOrderDetailResponse(
+                                       new QGetCustomerResponse(
+                                              customer.id,
+                                              customer.name,
+                                              customer.companyName,
+                                              userEntity.phone,
+                                              userEntity.email
+                                       ),
+                                       new QGetOrderResponse(
+                                              order.id,
+                                              order.name,
+                                              order.isUrgent,
+                                              order.stage,
+                                              order.manufacturing,
+                                              order.postProcessing,
+                                              list(
+                                                      new QGetDrawingResponse(
+                                                              drawing.id,
+                                                              drawing.fileName,
+                                                              drawing.fileSize,
+                                                              drawing.fileType,
+                                                              drawing.fileUrl,
+                                                              drawing.thumbnailUrl,
+                                                              drawing.count,
+                                                              drawing.ingredient,
+                                                              drawing.thickness
+                                                      )
+                                              ),
+                                              order.request,
+                                               new QGetDeliveryAddressResponse(
+                                                       deliveryAddress.id,
+                                                       deliveryAddress.name,
+                                                       deliveryAddress.zipCode,
+                                                       deliveryAddress.address,
+                                                       deliveryAddress.detailAddress,
+                                                       deliveryAddress.receiver,
+                                                       deliveryAddress.phone1,
+                                                       deliveryAddress.phone2,
+                                                       deliveryAddress.isDefault,
+                                                       deliveryAddress.isDeleted
+                                               ),
+                                               order.createdAt
+                                       ),
+                                       new QGetQuotationResponse(
+                                               quotation.id,
+                                               quotation.fileUrl,
+                                               quotation.totalCost,
+                                               quotation.deliveryDate,
+                                               quotation.createdAt
+                                       ),
+                                       new QGetPurchaseOrderResponse(
+                                               purchaseOrder.id,
+                                               purchaseOrder.inspectionPeriod,
+                                               purchaseOrder.inspectionCondition,
+                                               purchaseOrder.paymentDate,
+                                               purchaseOrder.createdAt
+                                       )
+                               )
+                        )
+                );
+
+        return getOrderDetailResponseList.isEmpty() ? null : getOrderDetailResponseList.get(0);
     }
 
 
@@ -345,9 +436,9 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
 
         BooleanBuilder booleanBuilder = new BooleanBuilder();
         if (hasQuotation) {
-            return booleanBuilder.and(order.quotation_id.isNotNull());
+            return booleanBuilder.and(quotation.isNotNull());
         } else {
-            return booleanBuilder.and(order.quotation_id.isNull());
+            return booleanBuilder.and(quotation.isNull());
         }
     }
 
@@ -398,11 +489,15 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
 
             return booleanBuilder.and(isGoeStartDate).and(isLoeEndDate);
         } else if (dateCriterion.equals("delivery")) {
-            BooleanExpression isGoeStartDate = order.quotation_delivery_date.goe(startDate);
-            BooleanExpression isLoeEndDate = order.quotation_delivery_date.loe(endDate);
+            BooleanExpression isGoeStartDate = quotation.deliveryDate.goe(startDate);
+            BooleanExpression isLoeEndDate = quotation.deliveryDate.loe(endDate);
 
             return booleanBuilder.and(isGoeStartDate).and(isLoeEndDate);
         }
         return null;
+    }
+
+    private BooleanExpression isUserRoleFactory(User user) {
+        return Expressions.asBoolean(user.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_FACTORY"))).isTrue();
     }
 }

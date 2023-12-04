@@ -4,7 +4,7 @@ import com.laser.ordermanage.common.paging.ListResponse;
 import com.laser.ordermanage.customer.domain.Customer;
 import com.laser.ordermanage.customer.domain.DeliveryAddress;
 import com.laser.ordermanage.customer.dto.request.CreateCustomerDeliveryAddressRequest;
-import com.laser.ordermanage.customer.dto.response.CustomerGetDeliveryAddressResponse;
+import com.laser.ordermanage.customer.dto.response.GetDeliveryAddressResponse;
 import com.laser.ordermanage.customer.repository.CustomerRepository;
 import com.laser.ordermanage.customer.repository.DeliveryAddressRepository;
 import lombok.RequiredArgsConstructor;
@@ -43,7 +43,7 @@ public class CustomerDeliveryAddressService {
     }
 
     @Transactional(readOnly = true)
-    public ListResponse<CustomerGetDeliveryAddressResponse> getDeliveryAddress(String userName) {
+    public ListResponse<GetDeliveryAddressResponse> getDeliveryAddress(String userName) {
         return new ListResponse<>(deliveryAddressRepository.findByCustomer(userName));
     }
 }

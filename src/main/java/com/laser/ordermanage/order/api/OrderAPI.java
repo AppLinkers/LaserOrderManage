@@ -18,7 +18,8 @@ public class OrderAPI {
 
     /**
      * 거래의 상세 정보 조회
-     * - 현재 로그인한 회원 권한 정보 및 거래 PK 기준으로 거래 상세 정보 조회
+     * - 거래에 대한 현재 로그인한 회원의 접근 권한 확인 (공장 or 거래의 고객 회원)
+     * - 거래 PK 기준으로 거래 상세 정보 조회
      * - 거래 상세 정보 : 고객 정보, 거래 기본 정보, 도면 정보, 견적서 정보, 발주서 정보
      */
     @GetMapping("/{order-id}/detail")
@@ -26,23 +27,29 @@ public class OrderAPI {
 
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        return ResponseEntity.ok(orderService.getOrderDetail(user, orderId));
+        orderService.checkCustomerOfOrderOrFactory(user, orderId);
+
+        return ResponseEntity.ok(orderService.getOrderDetail(orderId));
     }
 
     /**
      * 거래의 댓글 목록 조회
-     * - 현재 로그인한 회원 권한 정보 및 거래 PK 기준으로 거래의 댓글 목록 조회
+     * - 거래에 대한 현재 로그인한 회원의 접근 권한 확인 (공장 or 거래의 고객 회원)
+     * - 거래 PK 기준으로 거래의 댓글 목록 조회
      */
     @GetMapping("/{order-id}/comment")
     public ResponseEntity<?> getOrderComment(@PathVariable("order-id") Long orderId) {
 
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        return ResponseEntity.ok(orderService.getOrderComment(user, orderId));
+        orderService.checkCustomerOfOrderOrFactory(user, orderId);
+
+        return ResponseEntity.ok(orderService.getOrderComment(orderId));
     }
 
     /**
      * 거래에 댓글 작성
+     * - 거래에 대한 현재 로그인한 회원의 접근 권한 확인 (공장 or 거래의 고객 회원)
      * - 거래 PK에 해당하는 거래에 댓글 데이터 생성
      */
     @PostMapping("/{order-id}/comment")
@@ -52,6 +59,8 @@ public class OrderAPI {
     ) {
 
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        orderService.checkCustomerOfOrderOrFactory(user, orderId);
 
         orderService.createOrderComment(user.getUsername(), orderId, request);
 

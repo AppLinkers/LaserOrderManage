@@ -69,8 +69,7 @@ public class CustomerOrderHistoryAPI {
 
     /**
      * 고객 회원의 특정 거래의 생성 정보 조회
-     * - 고객 회원의 이메일 및 거래 PK 기준으로 거래 생성 정보 조회
-     * - 고객 회원의 이메일 및 거래 PK 기준으로 도면 정보 조회
+     * - 고객 회원의 이메일 및 거래 PK 기준으로 거래 생성 정보 및 도면 정보 조회
      */
     @GetMapping("/history/{orderId}")
     public ResponseEntity<?> getOrderCreateInformation(@PathVariable Long orderId) {

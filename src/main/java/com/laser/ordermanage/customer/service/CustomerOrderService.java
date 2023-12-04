@@ -59,7 +59,7 @@ public class CustomerOrderService {
                                     .fileSize(drawingRequest.getFileSize())
                                     .fileType(drawingRequest.getFileType())
                                     .fileUrl(drawingRequest.getFileUrl())
-                                    .thumbnailUrl(drawingRequest.getThumbnailImgUrl())
+                                    .thumbnailUrl(drawingRequest.getThumbnailUrl())
                                     .count(drawingRequest.getCount())
                                     .ingredient(drawingRequest.getIngredient())
                                     .thickness(drawingRequest.getThickness())

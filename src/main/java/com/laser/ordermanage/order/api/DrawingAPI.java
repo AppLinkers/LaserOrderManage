@@ -39,22 +39,22 @@ public class DrawingAPI {
         // 도면 파일 업로드
         String drawingFileUrl = drawingService.uploadDrawingFile(file);
 
-        String thumbnailFileUrl;
+        String thumbnailUrl;
         if (fileType.equals(DrawingFileType.DWG) || fileType.equals(DrawingFileType.DXF)) {
             // 썸네일 추출
-            String tempThumbnailFileUrl = drawingService.extractThumbnail(file);
+            String tempThumbnailUrl = drawingService.extractThumbnail(file);
 
             // 썸네일 파일 업로드
-            thumbnailFileUrl = drawingService.uploadThumbnailFile(tempThumbnailFileUrl);
+            thumbnailUrl = drawingService.uploadThumbnailFile(tempThumbnailUrl);
 
         } else {
             // TODO: pdf, png, jpg, jpeg 파일 썸네일 추출 기능
             // 썸네일 파일 업로드
-            thumbnailFileUrl = "https://ordermanage-drawing.s3.ap-northeast-2.amazonaws.com/ce429eb7-3319-45ba-b0b9-48bc6c77cf79_exception.png";
+            thumbnailUrl = "https://ordermanage-drawing.s3.ap-northeast-2.amazonaws.com/ce429eb7-3319-45ba-b0b9-48bc6c77cf79_exception.png";
         }
 
         UploadDrawingFileResponse uploadDrawingFileResponse = UploadDrawingFileResponse.builder()
-                .thumbnailImgUrl(thumbnailFileUrl)
+                .thumbnailUrl(thumbnailUrl)
                 .fileName(fileName)
                 .fileType(fileType.getExtension())
                 .fileUrl(drawingFileUrl)

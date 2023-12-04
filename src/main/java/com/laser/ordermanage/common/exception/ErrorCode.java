@@ -39,6 +39,7 @@ public enum ErrorCode {
     // 403 FORBIDDEN 인증 필요
     FORBIDDEN("-300", HttpStatus.FORBIDDEN, "인증이 필요합니다."),
     DENIED_ACCESS("-301", HttpStatus.FORBIDDEN, "해당 요청에 대한 접근 권한이 없습니다."),
+    DENIED_ACCESS_TO_ENTITY("-302", HttpStatus.FORBIDDEN, " 엔티티에 접근 권한이 없습니다."),
 
     // 404 NOT_FOUND 리소스가 존재하지 않음
     NOT_FOUND("-400", HttpStatus.NOT_FOUND, "리소스가 존재하지 않습니다."),

@@ -35,7 +35,7 @@ public class UserAuthService {
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
 
     @Transactional(readOnly = true)
-    public UserEntity findUserByEmail(String email) {
+    public UserEntity getUserByEmail(String email) {
         return userRepository.findFirstByEmail(email).orElseThrow(() -> new CustomCommonException(ErrorCode.NOT_FOUND_ENTITY, "user"));
     }
 

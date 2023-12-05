@@ -3,48 +3,50 @@ package com.laser.ordermanage.order.domain;
 import com.laser.ordermanage.order.domain.type.DrawingFileType;
 import com.laser.ordermanage.order.domain.type.Ingredient;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
+@Table(name = "drawing")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 public class Drawing {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", updatable = false)
     private Long id;
 
-    @NotNull
     @ManyToOne
+    @JoinColumn(name = "order_id", nullable = false, updatable = false)
     private Order order;
 
-    @NotNull
+    @Column(name = "file_name", nullable = false)
     private String fileName;
 
-    @NotNull
+    @Column(name = "file_size", nullable = false)
     private Long fileSize;
 
-    @NotNull
     @Enumerated(value = EnumType.STRING)
+    @Column(name = "file_type", nullable = false, length = 5)
     private DrawingFileType fileType;
 
-    @NotNull
+    @Column(name = "file_url", nullable = false)
     private String fileUrl;
 
-    @NotNull
+    @Column(name = "thumbnail_url", nullable = false)
     private String thumbnailUrl;
 
+    @Column(name = "count")
     private Integer count;
 
-    @NotNull
     @Enumerated(value = EnumType.STRING)
+    @Column(name = "ingredient", nullable = false, length = 5)
     private Ingredient ingredient;
 
-    @NotNull
+    @Column(name = "thickness", nullable = false)
     private Integer thickness;
 
     @Builder

@@ -2,54 +2,53 @@ package com.laser.ordermanage.customer.domain;
 
 import com.laser.ordermanage.common.converter.BooleanToYNConverter;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
+@Table(name = "delivery_address")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 public class DeliveryAddress {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", updatable = false)
     private Long id;
 
-    @NotNull
     @ManyToOne(cascade = CascadeType.PERSIST)
+    @JoinColumn(name = "customer_id", nullable = false, updatable = false)
     private Customer customer;
 
-    @NotNull
+    @Column(name = "name", nullable = false, length = 20)
     private String name;
 
-    @NotNull
+    @Column(name = "zip_code", nullable = false, length = 5)
     private String zipCode;
 
-    @NotNull
+    @Column(name = "address", nullable = false)
     private String address;
 
+    @Column(name = "detail_address")
     private String detailAddress;
 
-    @NotNull
+    @Column(name = "receiver", nullable = false, length = 10)
     private String receiver;
 
-    @NotNull
+    @Column(name = "phone1", nullable = false, length = 11)
     private String phone1;
 
+    @Column(name = "phone2", length = 11)
     private String phone2;
 
-    @NotNull
     @Convert(converter = BooleanToYNConverter.class)
+    @Column(name = "is_default", nullable = false, length = 1)
     private Boolean isDefault;
 
-    public void disableDefault() {
-        this.isDefault = Boolean.FALSE;
-    }
-
-    @NotNull
     @Convert(converter = BooleanToYNConverter.class)
+    @Column(name = "is_deleted", nullable = false, length = 1)
     private Boolean isDeleted = Boolean.FALSE;
 
     @Builder
@@ -63,5 +62,9 @@ public class DeliveryAddress {
         this.phone1 = phone1;
         this.phone2 = phone2;
         this.isDefault = isDefault;
+    }
+
+    public void disableDefault() {
+        this.isDefault = Boolean.FALSE;
     }
 }

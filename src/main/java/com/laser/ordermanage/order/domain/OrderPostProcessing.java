@@ -4,7 +4,6 @@ import com.laser.ordermanage.common.converter.BooleanToYNConverter;
 import com.laser.ordermanage.common.exception.CustomCommonException;
 import com.laser.ordermanage.common.exception.ErrorCode;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,20 +12,22 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
+@Table(name = "order_post_processing")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 public class OrderPostProcessing {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", updatable = false)
     private Long id;
 
-    @NotNull
     @Convert(converter = BooleanToYNConverter.class)
+    @Column(name = "is_painting", nullable = false, length = 1)
     private Boolean isPainting = Boolean.FALSE;
 
-    @NotNull
     @Convert(converter = BooleanToYNConverter.class)
+    @Column(name = "is_plating", nullable = false, length = 1)
     private Boolean isPlating = Boolean.FALSE;
 
     public List<String> toValueList() {

@@ -3,7 +3,6 @@ package com.laser.ordermanage.user.domain;
 import com.laser.ordermanage.common.entity.CreatedAtEntity;
 import com.laser.ordermanage.user.domain.type.Role;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -23,27 +22,29 @@ public class UserEntity extends CreatedAtEntity implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", updatable = false)
     private Long id;
 
-    @NotNull
+    @Column(name = "email", nullable = false, unique = true)
     private String email;
 
-    @NotNull
+    @Column(name = "password", nullable = false)
     private String password;
 
-    @NotNull
     @Enumerated(value = EnumType.STRING)
+    @Column(name = "role", nullable = false, updatable = false, length = 13)
     private Role role;
 
-    @NotNull
+    @Column(name = "phone", nullable = false, length = 11)
     private String phone;
 
-    @NotNull
+    @Column(name = "zip_code", nullable = false)
     private String zipCode;
 
-    @NotNull
+    @Column(name = "address", nullable = false)
     private String address;
 
+    @Column(name = "detail_address")
     private String detailAddress;
 
     @Builder

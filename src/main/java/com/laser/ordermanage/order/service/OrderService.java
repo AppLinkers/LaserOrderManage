@@ -63,7 +63,7 @@ public class OrderService {
     }
 
     @Transactional(readOnly = true)
-    public void checkCustomerOfOrderOrFactory(User user, Long orderId) {
+    public void checkAuthorityCustomerOfOrderOrFactory(User user, Long orderId) {
         if (user.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_FACTORY"))) {
             return;
         }

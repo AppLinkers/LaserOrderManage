@@ -4,7 +4,6 @@ import com.laser.ordermanage.common.converter.BooleanToYNConverter;
 import com.laser.ordermanage.common.exception.CustomCommonException;
 import com.laser.ordermanage.common.exception.ErrorCode;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,24 +12,26 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
+@Table(name = "order_manufacturing")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 public class OrderManufacturing {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", updatable = false)
     private Long id;
 
-    @NotNull
     @Convert(converter = BooleanToYNConverter.class)
+    @Column(name = "is_laser_cutting", nullable = false, length = 1)
     private Boolean isLaserCutting = Boolean.FALSE;
 
-    @NotNull
     @Convert(converter = BooleanToYNConverter.class)
+    @Column(name = "is_bending", nullable = false, length = 1)
     private Boolean isBending = Boolean.FALSE;
 
-    @NotNull
     @Convert(converter = BooleanToYNConverter.class)
+    @Column(name = "is_welding_fabrication", nullable = false, length = 1)
     private Boolean isWeldingFabrication = Boolean.FALSE;
 
     public List<String> toValueList() {

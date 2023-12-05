@@ -6,7 +6,6 @@ import com.laser.ordermanage.customer.domain.Customer;
 import com.laser.ordermanage.customer.domain.DeliveryAddress;
 import com.laser.ordermanage.order.domain.type.Stage;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -22,50 +21,55 @@ public class Order extends CreatedAtEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", updatable = false)
     private Long id;
 
-    @NotNull
     @ManyToOne
+    @JoinColumn(name = "customer_id", nullable = false)
     private Customer customer;
 
-    @NotNull
     @ManyToOne
+    @JoinColumn(name = "delivery_address_id", nullable = false)
     private DeliveryAddress deliveryAddress;
 
-    @NotNull
+    @Column(name = "name", nullable = false, length = 20)
     private String name;
 
-    @NotNull
+    @Column(name = "img_url", nullable = false)
     private String imgUrl;
 
-    @NotNull
     @Enumerated(value = EnumType.STRING)
+    @Column(name = "stage", nullable = false, length = 5)
     private Stage stage = Stage.NEW;
 
-    @NotNull
     @OneToOne(cascade = CascadeType.PERSIST)
+    @JoinColumn(name = "manufacturing_id", nullable = false)
     private OrderManufacturing manufacturing;
 
-    @NotNull
     @OneToOne(cascade = CascadeType.PERSIST)
+    @JoinColumn(name = "post_processing_id", nullable = false)
     private OrderPostProcessing postProcessing;
 
+    @Column(name = "request")
     private String request;
 
-    @NotNull
     @Convert(converter = BooleanToYNConverter.class)
+    @Column(name = "is_urgent", nullable = false, length = 1)
     private Boolean isUrgent = Boolean.FALSE;
 
+    @Column(name = "completed_at", updatable = false)
     private LocalDateTime completedAt;
 
-    @NotNull
     @Convert(converter = BooleanToYNConverter.class)
+    @Column(name = "is_new_issue", nullable = false, length = 1)
     private Boolean isNewIssue;
 
     @OneToOne
+    @JoinColumn(name = "quotation_id")
     private Quotation quotation;
 
     @OneToOne
+    @JoinColumn(name = "purchase_order_id")
     private PurchaseOrder purchaseOrder;
 
     @Builder

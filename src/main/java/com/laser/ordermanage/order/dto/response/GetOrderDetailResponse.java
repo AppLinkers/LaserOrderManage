@@ -7,13 +7,13 @@ import lombok.Getter;
 @Getter
 public class GetOrderDetailResponse {
 
-    private GetCustomerResponse customer;
+    private final GetCustomerResponse customer;
 
-    private GetOrderResponse order;
+    private final GetOrderResponse order;
 
-    private GetQuotationResponse quotation;
+    private final GetQuotationResponse quotation;
 
-    private GetPurchaseOrderResponse purchaseOrder;
+    private final GetPurchaseOrderResponse purchaseOrder;
 
     @QueryProjection
     public GetOrderDetailResponse(GetCustomerResponse customer, GetOrderResponse order, GetQuotationResponse quotation, GetPurchaseOrderResponse purchaseOrder) {

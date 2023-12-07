@@ -375,14 +375,14 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
                                                quotation.totalCost,
                                                quotation.deliveryDate,
                                                quotation.createdAt
-                                       ),
+                                       ).skipNulls(),
                                        new QGetPurchaseOrderResponse(
                                                purchaseOrder.id,
                                                purchaseOrder.inspectionPeriod,
                                                purchaseOrder.inspectionCondition,
                                                purchaseOrder.paymentDate,
                                                purchaseOrder.createdAt
-                                       )
+                                       ).skipNulls()
                                )
                         )
                 );

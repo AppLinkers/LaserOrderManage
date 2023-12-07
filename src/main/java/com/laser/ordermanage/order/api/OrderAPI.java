@@ -27,7 +27,7 @@ public class OrderAPI {
 
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        orderService.checkCustomerOfOrderOrFactory(user, orderId);
+        orderService.checkAuthorityCustomerOfOrderOrFactory(user, orderId);
 
         return ResponseEntity.ok(orderService.getOrderDetail(orderId));
     }
@@ -42,7 +42,7 @@ public class OrderAPI {
 
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        orderService.checkCustomerOfOrderOrFactory(user, orderId);
+        orderService.checkAuthorityCustomerOfOrderOrFactory(user, orderId);
 
         return ResponseEntity.ok(orderService.getOrderComment(orderId));
     }
@@ -60,7 +60,7 @@ public class OrderAPI {
 
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        orderService.checkCustomerOfOrderOrFactory(user, orderId);
+        orderService.checkAuthorityCustomerOfOrderOrFactory(user, orderId);
 
         orderService.createOrderComment(user.getUsername(), orderId, request);
 

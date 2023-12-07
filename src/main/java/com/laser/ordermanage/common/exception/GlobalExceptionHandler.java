@@ -20,24 +20,24 @@ import java.util.List;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(CustomCommonException.class)
-    public ResponseEntity<?> customCommonException(CustomCommonException e) {
+    public ResponseEntity<?> handleCustomCommonException(CustomCommonException e) {
         return ResponseEntity.status(e.getHttpStatus()).body(e.toErrorResponse());
     }
 
     @ExceptionHandler(BadCredentialsException.class)
-    public ResponseEntity<?> badCredentialException(BadCredentialsException e) {
+    public ResponseEntity<?> handleBadCredentialException(BadCredentialsException e) {
         CustomCommonException exception = new CustomCommonException(ErrorCode.INVALID_CREDENTIALS);
         return ResponseEntity.badRequest().body(exception.toErrorResponse());
     }
 
     @ExceptionHandler(AccessDeniedException.class)
-    public ResponseEntity<?> accessDeniedException(Authentication e) {
+    public ResponseEntity<?> handleAccessDeniedException(Authentication e) {
         CustomCommonException exception = new CustomCommonException(ErrorCode.DENIED_ACCESS);
         return ResponseEntity.status(exception.getHttpStatus()).body(exception.toErrorResponse());
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<?> methodArgumentNotValidException(MethodArgumentNotValidException e) {
+    public ResponseEntity<?> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
         List<ObjectError> objectErrorList = e.getBindingResult().getAllErrors();
 
         StringBuilder sb = new StringBuilder();
@@ -51,7 +51,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(ConstraintViolationException.class)
-    public ResponseEntity<?> constraintViolationException(ConstraintViolationException e) {
+    public ResponseEntity<?> handleConstraintViolationException(ConstraintViolationException e) {
         StringBuilder sb = new StringBuilder();
         e.getConstraintViolations().forEach(
                 constraintViolation -> sb.append(constraintViolation.getMessage())
@@ -63,25 +63,25 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
-    public ResponseEntity<?> methodArgumentTypeMismatchException(MethodArgumentTypeMismatchException e) {
+    public ResponseEntity<?> handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException e) {
         CustomCommonException exception = new CustomCommonException(ErrorCode.INVALID_PARAMETER_TYPE, e.getName());
         return ResponseEntity.status(exception.getHttpStatus()).body(exception.toErrorResponse());
     }
 
     @ExceptionHandler(MissingRequestCookieException.class)
-    public ResponseEntity<?> missingRequestCookieException(MissingRequestCookieException e) {
+    public ResponseEntity<?> handleMissingRequestCookieException(MissingRequestCookieException e) {
         CustomCommonException exception = new CustomCommonException(ErrorCode.MISSING_COOKIE, e.getCookieName());
         return ResponseEntity.status(exception.getHttpStatus()).body(exception.toErrorResponse());
     }
 
     @ExceptionHandler(MissingServletRequestParameterException.class)
-    public ResponseEntity<?> missingRequestParameterException(MissingServletRequestParameterException e) {
+    public ResponseEntity<?> handleMissingRequestParameterException(MissingServletRequestParameterException e) {
         CustomCommonException exception = new CustomCommonException(ErrorCode.MISSING_QUERY_PARAMETER, e.getParameterName());
         return ResponseEntity.status(exception.getHttpStatus()).body(exception.toErrorResponse());
     }
 
     @ExceptionHandler(SizeLimitExceededException.class)
-    public ResponseEntity<?> sizeLimitExceededException(SizeLimitExceededException e) {
+    public ResponseEntity<?> handleSizeLimitExceededException(SizeLimitExceededException e) {
         CustomCommonException exception = new CustomCommonException(ErrorCode.REQUEST_FILE_SIZE_EXCEED);
         return ResponseEntity.status(exception.getHttpStatus()).body(exception.toErrorResponse());
     }

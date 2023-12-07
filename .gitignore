@@ -23,6 +23,7 @@ local.properties
 # ignore yml file
 application-dev.yml
 application-prod.yml
+application-test.yml
 
 # ignore data.sl file
 data.sql

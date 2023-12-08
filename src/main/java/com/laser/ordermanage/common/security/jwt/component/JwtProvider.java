@@ -1,10 +1,10 @@
 package com.laser.ordermanage.common.security.jwt.component;
 
+import com.laser.ordermanage.common.cache.redis.repository.BlackListRedisRepository;
 import com.laser.ordermanage.common.constants.ExpireTime;
 import com.laser.ordermanage.common.exception.CustomCommonException;
 import com.laser.ordermanage.common.exception.ErrorCode;
 import com.laser.ordermanage.common.security.jwt.dto.TokenInfo;
-import com.laser.ordermanage.common.cache.redis.repository.BlackListRedisRepository;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -53,25 +53,13 @@ public class JwtProvider {
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.joining(","));
 
-        long now = (new Date()).getTime();
+        Date now = new Date();
 
         // Access JWT Token 생성
-        String accessToken = Jwts.builder()
-                .setSubject(authentication.getName())
-                .claim(AUTHORITIES_KEY, authorities)
-                .claim("type", TYPE_ACCESS)
-                .setExpiration(new Date(now + ExpireTime.ACCESS_TOKEN_EXPIRE_TIME))
-                .signWith(key, SignatureAlgorithm.HS256)
-                .compact();
+        String accessToken = generateJWT(authentication.getName(), authorities, TYPE_ACCESS, now, ExpireTime.ACCESS_TOKEN_EXPIRE_TIME);
 
         // Refresh JWT Token 생성
-        String refreshToken = Jwts.builder()
-                .setSubject(authentication.getName())
-                .claim(AUTHORITIES_KEY, authorities)
-                .claim("type", TYPE_REFRESH)
-                .setExpiration(new Date(now + ExpireTime.REFRESH_TOKEN_EXPIRE_TIME))
-                .signWith(key, SignatureAlgorithm.HS256)
-                .compact();
+        String refreshToken = generateJWT(authentication.getName(), authorities, TYPE_REFRESH, now, ExpireTime.REFRESH_TOKEN_EXPIRE_TIME);
 
         return TokenInfo.builder()
                 .role(authorities)
@@ -91,25 +79,11 @@ public class JwtProvider {
 
         Date now = new Date();
 
-        //Generate AccessToken
-        String accessToken = Jwts.builder()
-                .setSubject(name)
-                .claim(AUTHORITIES_KEY, authorities)
-                .claim("type", TYPE_ACCESS)
-                .setIssuedAt(now)   //토큰 발행 시간 정보
-                .setExpiration(new Date(now.getTime() + ExpireTime.ACCESS_TOKEN_EXPIRE_TIME))  //토큰 만료 시간 설정
-                .signWith(key, SignatureAlgorithm.HS256)
-                .compact();
+        // Access JWT Token 생성
+        String accessToken = generateJWT(name, authorities, TYPE_ACCESS, now, ExpireTime.ACCESS_TOKEN_EXPIRE_TIME);
 
-        //Generate RefreshToken
-        String refreshToken = Jwts.builder()
-                .setSubject(name)
-                .claim(AUTHORITIES_KEY, authorities)
-                .claim("type", TYPE_REFRESH)
-                .setIssuedAt(now)   //토큰 발행 시간 정보
-                .setExpiration(new Date(now.getTime() + ExpireTime.REFRESH_TOKEN_EXPIRE_TIME)) //토큰 만료 시간 설정
-                .signWith(key, SignatureAlgorithm.HS256)
-                .compact();
+        // Refresh JWT Token 생성
+        String refreshToken = generateJWT(name, authorities, TYPE_REFRESH, now, ExpireTime.REFRESH_TOKEN_EXPIRE_TIME);
 
         return TokenInfo.builder()
                 .role(authorities)
@@ -120,14 +94,21 @@ public class JwtProvider {
                 .build();
     }
 
+    public String generateJWT(String subject, String authorities, String type, Date issuedAt, long expireTime) {
+        return Jwts.builder()
+                .setSubject(subject)
+                .claim(AUTHORITIES_KEY, authorities)
+                .claim("type", type)
+                .setIssuedAt(issuedAt)
+                .setExpiration(new Date(issuedAt.getTime() + expireTime)) //토큰 만료 시간 설정
+                .signWith(key, SignatureAlgorithm.HS256)
+                .compact();
+    }
+
     // JWT 토큰을 복호화하여 토큰에 들어있는 정보를 꺼내는 메서드
-    public Authentication getAuthentication(ServletRequest request, String jwtToken) {
+    public Authentication getAuthentication(String jwtToken) {
         // 토큰 복호화
         Claims claims = parseClaims(jwtToken);
-
-        if (claims.get(AUTHORITIES_KEY) == null) {
-            request.setAttribute("exception", ErrorCode.UNAUTHORIZED_JWT_TOKEN.getCode());
-        }
 
         // 클레임에서 권한 정보 가져오기
         Collection<? extends GrantedAuthority> authorities =
@@ -143,7 +124,13 @@ public class JwtProvider {
     // 토큰 정보를 검증하는 메서드
     public boolean validateToken(ServletRequest request, String token) {
         try {
-            Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
+            Claims claims = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
+
+            if (claims.get(AUTHORITIES_KEY).toString().isBlank()) {
+                request.setAttribute("exception", ErrorCode.UNAUTHORIZED_JWT_TOKEN.getCode());
+                return false;
+            }
+
             // access token 이 black list 에 저장되어 있는지 확인
             if (blackListRedisRepository.findByAccessToken(token).isPresent()) {
                 request.setAttribute("exception", ErrorCode.INVALID_ACCESS_JWT_TOKEN.getCode());
@@ -163,7 +150,11 @@ public class JwtProvider {
 
     public boolean validateToken(String token) {
         try {
-            Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
+            Claims claims = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
+
+            if (claims.get(AUTHORITIES_KEY).toString().isBlank()) {
+                throw new CustomCommonException(ErrorCode.UNAUTHORIZED_JWT_TOKEN);
+            }
             return true;
         } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException | IllegalArgumentException e) {
             throw new CustomCommonException(ErrorCode.INVALID_JWT_TOKEN);

@@ -30,7 +30,7 @@ public class Drawing {
     private Long fileSize;
 
     @Enumerated(value = EnumType.STRING)
-    @Column(name = "file_type", nullable = false, length = 5)
+    @Column(name = "file_type", nullable = false)
     private DrawingFileType fileType;
 
     @Column(name = "file_url", nullable = false)
@@ -43,7 +43,7 @@ public class Drawing {
     private Integer count;
 
     @Enumerated(value = EnumType.STRING)
-    @Column(name = "ingredient", nullable = false, length = 5)
+    @Column(name = "ingredient", nullable = false)
     private Ingredient ingredient;
 
     @Column(name = "thickness", nullable = false)

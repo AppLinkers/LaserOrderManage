@@ -27,15 +27,23 @@ repositories {
 }
 
 dependencies {
-	runtimeOnly 'com.mysql:mysql-connector-j'
+    runtimeOnly 'com.mysql:mysql-connector-j'
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
+	testCompileOnly 'org.projectlombok:lombok'
+	testAnnotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.security:spring-security-test'
+
+	// h2
+	implementation 'com.h2database:h2'
+
+	// test-containers
+	testImplementation group: 'org.testcontainers', name: 'testcontainers', version: '1.17.2'
 
 	// validation
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
@@ -70,7 +78,12 @@ tasks.named('test') {
 task copyPrivate(type: Copy) {
 	copy {
 		from './laser-ordermanage-server-submodule-config'
-		include '*.yml', '*.sql'
+		include 'application-prod.yml', '*.sql'
 		into 'src/main/resources'
+	}
+	copy {
+		from './laser-ordermanage-server-submodule-config'
+		include 'application-test.yml', '*.sql'
+		into 'src/test/resources'
 	}
 }

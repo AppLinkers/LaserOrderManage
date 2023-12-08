@@ -87,7 +87,7 @@ public class UserAuthAPI {
 
     private ResponseCookie removeResponseCookie() {
         return ResponseCookie.from("refreshToken", null)
-                .maxAge(ExpireTime.REFRESH_TOKEN_EXPIRE_TIME_FOR_REDIS_AND_COOKIE)
+                .maxAge(0)
                 .path("/") // 모든 곳에서 쿠키열람이 가능하도록 설정
                 .secure(false) // true : https 환경에서만 쿠키가 발동합니다.
                 .sameSite(Cookie.SameSite.NONE.attributeValue()) // 동일 사이트과 크로스 사이트에 모두 쿠키 전송이 가능합니다.

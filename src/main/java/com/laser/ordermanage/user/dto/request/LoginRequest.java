@@ -2,6 +2,7 @@ package com.laser.ordermanage.user.dto.request;
 
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
+import lombok.Builder;
 import lombok.Getter;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 
@@ -18,5 +19,11 @@ public class LoginRequest {
 
     public UsernamePasswordAuthenticationToken toAuthentication() {
         return new UsernamePasswordAuthenticationToken(email, password);
+    }
+
+    @Builder
+    public LoginRequest(String email, String password) {
+        this.email = email;
+        this.password = password;
     }
 }

@@ -50,7 +50,6 @@ jobs:
           arguments: build
       # build report 파일 압축
       - name: Compress all report files
-        if: ${{ failure() }}
         run: |
           echo "Compressing all report files..."
           TIMESTAMP=$(date +%Y%m%d_%H%M%S)
@@ -63,7 +62,6 @@ jobs:
           tar czvf report_files_$TIMESTAMP.tar.gz report_files
       # build 실패 시, report 파일 업로드
       - name: Upload Error Report Files To Artifacts
-        if: ${{ failure() }}
         uses: actions/upload-artifact@v2
         with:
           name: report_files

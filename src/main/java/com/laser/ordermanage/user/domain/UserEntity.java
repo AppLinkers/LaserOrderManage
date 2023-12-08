@@ -32,7 +32,7 @@ public class UserEntity extends CreatedAtEntity implements UserDetails {
     private String password;
 
     @Enumerated(value = EnumType.STRING)
-    @Column(name = "role", nullable = false, updatable = false, length = 13)
+    @Column(name = "role", nullable = false, updatable = false)
     private Role role;
 
     @Column(name = "phone", nullable = false, length = 11)

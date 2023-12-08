@@ -3,7 +3,7 @@ package com.laser.ordermanage.user.integration;
 import com.laser.ordermanage.common.IntegrationTest;
 import com.laser.ordermanage.common.constants.ExpireTime;
 import com.laser.ordermanage.common.exception.ErrorCode;
-import com.laser.ordermanage.common.setup.security.jwt.JwtBuilder;
+import com.laser.ordermanage.common.security.jwt.setup.JwtBuilder;
 import com.laser.ordermanage.user.domain.type.Role;
 import com.laser.ordermanage.user.dto.request.LoginRequest;
 import com.laser.ordermanage.user.dto.response.TokenInfoResponse;

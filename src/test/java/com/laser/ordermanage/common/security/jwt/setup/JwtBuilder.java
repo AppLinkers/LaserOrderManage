@@ -1,4 +1,4 @@
-package com.laser.ordermanage.common.setup.security.jwt;
+package com.laser.ordermanage.common.security.jwt.setup;
 
 import com.laser.ordermanage.common.constants.ExpireTime;
 import com.laser.ordermanage.common.security.jwt.component.JwtProvider;

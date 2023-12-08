@@ -39,6 +39,12 @@ dependencies {
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.security:spring-security-test'
 
+	// h2
+	implementation 'com.h2database:h2'
+
+	// test-containers
+	testImplementation group: 'org.testcontainers', name: 'testcontainers', version: '1.17.2'
+
 	// validation
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 
@@ -72,7 +78,12 @@ tasks.named('test') {
 task copyPrivate(type: Copy) {
 	copy {
 		from './laser-ordermanage-server-submodule-config'
-		include '*.yml', '*.sql'
+		include 'application-prod.yml', '*.sql'
 		into 'src/main/resources'
+	}
+	copy {
+		from './laser-ordermanage-server-submodule-config'
+		include 'application-test.yml', '*.sql'
+		into 'src/test/resources'
 	}
 }

@@ -22,7 +22,7 @@ public class CustomerGetOrderHistoryResponse {
 
     private final Boolean isUrgent;
 
-    private final List<String> manufacturing;
+    private final List<String> manufacturingList;
 
     private final LocalDate createdAt;
 
@@ -40,7 +40,7 @@ public class CustomerGetOrderHistoryResponse {
         this.imgUrl = imgUrl;
         this.stage = stage.getValue();
         this.isUrgent = isUrgent;
-        this.manufacturing = manufacturing.toValueList();
+        this.manufacturingList = manufacturing.toValueList();
         this.createdAt = createdAt.toLocalDate();
         this.deliveryAt = deliveryAt;
         this.cost = cost;

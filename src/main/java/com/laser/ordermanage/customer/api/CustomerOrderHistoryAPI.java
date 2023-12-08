@@ -34,8 +34,8 @@ public class CustomerOrderHistoryAPI {
     public ResponseEntity<?> getOrderHistory(
             @RequestParam(value = "page", required = false, defaultValue = "1") Integer page,
             @RequestParam(value = "size", required = false, defaultValue = "10") Integer size,
-            @RequestParam(value = "stage", required = false) List<String> stageList,
-            @RequestParam(value = "manufacturing", required = false) List<String> manufacturingList,
+            @RequestParam(value = "stage-list", required = false) List<String> stageList,
+            @RequestParam(value = "manufacturing-list", required = false) List<String> manufacturingList,
             @RequestParam(value = "query", required = false) String query) {
 
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();

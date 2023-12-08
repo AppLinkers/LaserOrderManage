@@ -37,6 +37,7 @@ public class CommentRepositoryCustomImpl implements CommentRepositoryCustom{
                 .leftJoin(factory).on(factory.user.id.eq(userEntity.id))
                 .leftJoin(customer).on(customer.user.id.eq(userEntity.id))
                 .join(comment.order, order)
+                .where(order.id.eq(orderId))
                 .orderBy(comment.createdAt.asc())
                 .fetch();
 

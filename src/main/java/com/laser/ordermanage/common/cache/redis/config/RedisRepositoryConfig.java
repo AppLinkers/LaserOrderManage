@@ -10,7 +10,7 @@ import org.springframework.data.redis.repository.configuration.EnableRedisReposi
 
 @RequiredArgsConstructor
 @Configuration
-@EnableRedisRepositories
+@EnableRedisRepositories(basePackages = "com.laser.ordermanage.common.cache.redis.repository")
 public class RedisRepositoryConfig {
 
     private final RedisProperties redisProperties;

@@ -39,7 +39,7 @@ public class Order extends CreatedAtEntity {
     private String imgUrl;
 
     @Enumerated(value = EnumType.STRING)
-    @Column(name = "stage", nullable = false, length = 5)
+    @Column(name = "stage", nullable = false)
     private Stage stage = Stage.NEW;
 
     @OneToOne(cascade = CascadeType.PERSIST)

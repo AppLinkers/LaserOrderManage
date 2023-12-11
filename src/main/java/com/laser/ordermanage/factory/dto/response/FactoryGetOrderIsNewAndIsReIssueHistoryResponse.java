@@ -25,7 +25,7 @@ public class FactoryGetOrderIsNewAndIsReIssueHistoryResponse {
 
     private final Boolean isUrgent;
 
-    private final List<String> manufacturing;
+    private final List<String> manufacturingList;
 
     private final LocalDate createdAt;
 
@@ -44,7 +44,7 @@ public class FactoryGetOrderIsNewAndIsReIssueHistoryResponse {
         this.hasQuotation = hasQuotation;
         this.imgUrl = imgUrl;
         this.isUrgent = isUrgent;
-        this.manufacturing = orderManufacturing.toValueList();
+        this.manufacturingList = orderManufacturing.toValueList();
         this.createdAt = createdAt.toLocalDate();
         this.deliveryAt = deliveryAt;
         this.cost = cost;

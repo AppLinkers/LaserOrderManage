@@ -51,6 +51,7 @@ public class OrderAPI {
      * 거래에 댓글 작성
      * - 거래에 대한 현재 로그인한 회원의 접근 권한 확인 (공장 or 거래의 고객 회원)
      * - 거래 PK에 해당하는 거래에 댓글 데이터 생성
+     * - 댓글 수신자 (공장 or 고객) 에게 메일 전송
      */
     @PostMapping("/{order-id}/comment")
     public ResponseEntity<?> createOrderComment(

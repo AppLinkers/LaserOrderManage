@@ -2,6 +2,7 @@ package com.laser.ordermanage.order.service;
 
 import com.laser.ordermanage.common.exception.CustomCommonException;
 import com.laser.ordermanage.common.exception.ErrorCode;
+import com.laser.ordermanage.common.mail.MailService;
 import com.laser.ordermanage.common.paging.ListResponse;
 import com.laser.ordermanage.order.domain.Comment;
 import com.laser.ordermanage.order.domain.Order;
@@ -11,6 +12,7 @@ import com.laser.ordermanage.order.dto.response.GetOrderDetailResponse;
 import com.laser.ordermanage.order.repository.CommentRepository;
 import com.laser.ordermanage.order.repository.OrderRepository;
 import com.laser.ordermanage.user.domain.UserEntity;
+import com.laser.ordermanage.user.domain.type.Role;
 import com.laser.ordermanage.user.service.UserAuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -26,6 +28,7 @@ public class OrderService {
     private final OrderRepository orderRepository;
 
     private final UserAuthService userAuthService;
+    private final MailService mailService;
 
     @Transactional(readOnly = true)
     public Order getOrderById(Long orderId) {
@@ -60,6 +63,37 @@ public class OrderService {
                 .build();
 
         commentRepository.save(comment);
+
+        String toEmail = null;
+        String title = null;
+
+        if (user.getRole().equals(Role.ROLE_FACTORY)) {
+            toEmail = order.getCustomer().getUser().getEmail();
+
+            StringBuilder sbTitle = new StringBuilder();
+            sbTitle.append("[댓글] 고객님, ")
+                    .append(order.getName())
+                    .append(" 거래에 댓글이 작성되었습니다.");
+            title = sbTitle.toString();
+        } else if (user.getRole().equals(Role.ROLE_CUSTOMER)) {
+            toEmail = "admin@kumoh.org";
+
+            StringBuilder sbTitle = new StringBuilder();
+            sbTitle.append("[댓글] ")
+                    .append(order.getCustomer().getName())
+                    .append(" - ")
+                    .append(order.getName())
+                    .append(" 거래에 댓글이 작성되었습니다.");
+            title = sbTitle.toString();
+        }
+
+        StringBuilder sbContent = new StringBuilder();
+        sbContent.append(order.getName())
+                .append(" 거래에 새로운 댓글이 작성되었습니다.");
+        String content = sbContent.toString();
+
+        mailService.sendEmail(toEmail, title, content);
+
     }
 
     @Transactional(readOnly = true)

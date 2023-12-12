@@ -22,6 +22,12 @@ public class Quotation extends CreatedAtEntity {
     @Column(name = "total_cost", nullable = false)
     private Long totalCost;
 
+    @Column(name = "file_name", nullable = false)
+    private String fileName;
+
+    @Column(name = "file_size", nullable = false)
+    private Long fileSize;
+
     @Column(name = "file_url", nullable = false)
     private String fileUrl;
 

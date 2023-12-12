@@ -371,6 +371,7 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
                                        ),
                                        new QGetQuotationResponse(
                                                quotation.id,
+                                               quotation.fileName,
                                                quotation.fileUrl,
                                                quotation.totalCost,
                                                quotation.deliveryDate,

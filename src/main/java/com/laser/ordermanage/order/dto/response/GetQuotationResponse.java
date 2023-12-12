@@ -11,6 +11,8 @@ public class GetQuotationResponse {
 
     private final Long id;
 
+    private final String fileName;
+
     private final String fileUrl;
 
     private final Long totalCost;
@@ -20,8 +22,9 @@ public class GetQuotationResponse {
     private final LocalDateTime createdAt;
 
     @QueryProjection
-    public GetQuotationResponse(Long id, String fileUrl, Long totalCost, LocalDate deliveryDate, LocalDateTime createdAt) {
+    public GetQuotationResponse(Long id, String fileName, String fileUrl, Long totalCost, LocalDate deliveryDate, LocalDateTime createdAt) {
         this.id = id;
+        this.fileName = fileName;
         this.fileUrl = fileUrl;
         this.totalCost = totalCost;
         this.deliveryDate = deliveryDate;

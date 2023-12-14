@@ -6,18 +6,7 @@ import jakarta.validation.constraints.NotEmpty;
 import lombok.Getter;
 
 @Getter
-public class CreateCustomerDrawingRequest {
-
-    private String thumbnailUrl;
-
-    private String fileName;
-
-    private Long fileSize;
-
-    private String fileType;
-
-    private String fileUrl;
-
+public class UpdateCustomerDrawingRequest {
     @Min(value = 1, message = "수량은 1 이상, 100 이하의 정수 입니다.")
     @Max(value = 100, message = "수량은 1 이상, 100 이하의 정수 입니다.")
     private Integer count;

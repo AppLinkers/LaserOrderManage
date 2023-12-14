@@ -8,6 +8,7 @@ import com.laser.ordermanage.customer.domain.DeliveryAddress;
 import com.laser.ordermanage.customer.dto.request.CreateCustomerDrawingRequest;
 import com.laser.ordermanage.customer.dto.request.CreateCustomerOrderRequest;
 import com.laser.ordermanage.customer.dto.request.CustomerUpdateOrderDeliveryAddressRequest;
+import com.laser.ordermanage.customer.dto.request.UpdateCustomerDrawingRequest;
 import com.laser.ordermanage.customer.repository.CustomerRepository;
 import com.laser.ordermanage.order.domain.Drawing;
 import com.laser.ordermanage.order.domain.Order;
@@ -15,8 +16,8 @@ import com.laser.ordermanage.order.domain.OrderManufacturing;
 import com.laser.ordermanage.order.domain.OrderPostProcessing;
 import com.laser.ordermanage.order.repository.DrawingRepository;
 import com.laser.ordermanage.order.repository.OrderRepository;
+import com.laser.ordermanage.order.service.DrawingService;
 import com.laser.ordermanage.order.service.OrderService;
-import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
@@ -29,14 +30,13 @@ import java.util.List;
 @Service
 public class CustomerOrderService {
 
-    private final EntityManager entityManager;
-
     private final DrawingRepository drawingRepository;
     private final OrderRepository orderRepository;
     private final CustomerRepository customerRepository;
 
     private final OrderService orderService;
     private final CustomerDeliveryAddressService customerDeliveryAddressService;
+    private final DrawingService drawingService;
     private final MailService mailService;
 
     @Transactional
@@ -99,8 +99,6 @@ public class CustomerOrderService {
 
     @Transactional(readOnly = true)
     public void sendEmailForUpdateOrderDeliveryAddress(Order order) {
-        String toEmail = "admin@kumoh.org";
-
         StringBuilder sbTitle = new StringBuilder();
         sbTitle.append("[거래 배송지 수정] ")
                 .append(order.getCustomer().getName())
@@ -116,14 +114,14 @@ public class CustomerOrderService {
                 .append(" 거래 배송지가 수정되었습니다.");
         String content = sbContent.toString();
 
-        mailService.sendEmail(toEmail, title, content);
+        mailService.sendEmailToFactory(title, content);
     }
 
     @Transactional
     public Order createOrderDrawing(Long orderId, CreateCustomerDrawingRequest request) {
         Order order = orderService.getOrderById(orderId);
 
-        if (!order.enableCreateDrawing()) {
+        if (!order.enableManageDrawing()) {
             throw new CustomCommonException(ErrorCode.INVALID_ORDER_STAGE, order.getStage().getValue());
         }
 
@@ -146,8 +144,6 @@ public class CustomerOrderService {
 
     @Transactional(readOnly = true)
     public void sendEmailForCreateOrderDrawing(Order order) {
-        String toEmail = "admin@kumoh.org";
-
         StringBuilder sbTitle = new StringBuilder();
         sbTitle.append("[거래 도면 추가] ")
                 .append(order.getCustomer().getName())
@@ -163,6 +159,50 @@ public class CustomerOrderService {
                 .append(" 거래 도면이 추가되었습니다.");
         String content = sbContent.toString();
 
-        mailService.sendEmail(toEmail, title, content);
+        mailService.sendEmailToFactory(title, content);
+    }
+
+    @Transactional
+    public Order updateOrderDrawing(Long orderId, Long drawingId, UpdateCustomerDrawingRequest request) {
+        Order order = orderService.getOrderById(orderId);
+
+        if (!order.enableManageDrawing()) {
+            throw new CustomCommonException(ErrorCode.INVALID_ORDER_STAGE, order.getStage().getValue());
+        }
+
+        Drawing drawing = drawingService.getDrawingByOrderAndId(order, drawingId);
+
+        drawing.updateDrawingProperties(request);
+
+        return order;
+    }
+
+    @Transactional(readOnly = true)
+    public void sendEmailForUpdateOrderDrawing(Order order) {
+        StringBuilder sbTitle = new StringBuilder();
+        sbTitle.append("[거래 도면 항목 수정] ")
+                .append(order.getCustomer().getName())
+                .append(" - ")
+                .append(order.getName())
+                .append(" 거래의 도면 항목이 수정되었습니다.");
+        String title = sbTitle.toString();
+
+        StringBuilder sbContent = new StringBuilder();
+        sbContent.append(order.getCustomer().getName())
+                .append(" 고객님의 ")
+                .append(order.getName())
+                .append(" 거래 도면 항목이 수정되었습니다.");
+        String content = sbContent.toString();
+
+        mailService.sendEmailToFactory(title, content);
+    }
+
+    @Transactional(readOnly = true)
+    public void checkAuthorityOfOrder(User user, Long orderId) {
+        if (orderService.getUserEmailByOrder(orderId).equals(user.getUsername())) {
+            return;
+        }
+
+        throw new CustomCommonException(ErrorCode.DENIED_ACCESS_TO_ENTITY, "order");
     }
 }

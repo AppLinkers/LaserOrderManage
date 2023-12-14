@@ -1,5 +1,6 @@
 package com.laser.ordermanage.order.domain;
 
+import com.laser.ordermanage.customer.dto.request.UpdateCustomerDrawingRequest;
 import com.laser.ordermanage.order.domain.type.DrawingFileType;
 import com.laser.ordermanage.order.domain.type.Ingredient;
 import jakarta.persistence.*;
@@ -60,5 +61,11 @@ public class Drawing {
         this.count = count;
         this.ingredient = Ingredient.ofValue(ingredient);
         this.thickness = thickness;
+    }
+
+    public void updateDrawingProperties(UpdateCustomerDrawingRequest request) {
+        this.count = request.getCount();
+        this.ingredient = Ingredient.ofValue(request.getIngredient());
+        this.thickness = request.getThickness();
     }
 }

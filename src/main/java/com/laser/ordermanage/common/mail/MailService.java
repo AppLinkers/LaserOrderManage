@@ -23,6 +23,11 @@ public class MailService {
         }
     }
 
+    // 공장에게 메일 전송
+    public void sendEmailToFactory(String title, String text) {
+        sendEmail("admin@kumoh.org", title, text);
+    }
+
     // 발신할 이메일 데이터 세팅
     private SimpleMailMessage createEmailForm(String toEmail, String title, String text) {
         SimpleMailMessage message = new SimpleMailMessage();

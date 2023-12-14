@@ -3,6 +3,7 @@ package com.laser.ordermanage.customer.api;
 import com.laser.ordermanage.customer.dto.request.CreateCustomerDrawingRequest;
 import com.laser.ordermanage.customer.dto.request.CreateCustomerOrderRequest;
 import com.laser.ordermanage.customer.dto.request.CustomerUpdateOrderDeliveryAddressRequest;
+import com.laser.ordermanage.customer.dto.request.UpdateCustomerDrawingRequest;
 import com.laser.ordermanage.customer.service.CustomerDeliveryAddressService;
 import com.laser.ordermanage.customer.service.CustomerOrderService;
 import com.laser.ordermanage.order.domain.Order;
@@ -56,7 +57,7 @@ public class CustomerOrderAPI {
 
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        orderService.checkAuthorityCustomerOfOrder(user, orderId);
+        customerOrderService.checkAuthorityOfOrder(user, orderId);
 
         customerDeliveryAddressService.checkAuthorityCustomerOfDeliveryAddress(user, request.getDeliveryAddressId());
 
@@ -68,11 +69,11 @@ public class CustomerOrderAPI {
     }
 
     /**
-     * 도면 추가
+     * 도면 항목 추가
      * - path parameter {order-id} 에 해당하는 거래 조회
      * - 거래에 대한 현재 로그인한 회원의 접근 권한 확인 (거래의 고객 회원)
-     * - 거래 도면 추가 가능 단계 확인 (견적 대기, 견적 승인, 제작 중)
-     * - 거래 도면 추가
+     * - 거래 도면 항목 추가 가능 단계 확인 (견적 대기, 견적 승인, 제작 중)
+     * - 거래 도면 항목 추가
      * - 공장에게 메일 전송
      */
     @PostMapping("/{order-id}/drawing")
@@ -82,11 +83,37 @@ public class CustomerOrderAPI {
 
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        orderService.checkAuthorityCustomerOfOrder(user, orderId);
+        customerOrderService.checkAuthorityOfOrder(user, orderId);
 
         Order order = customerOrderService.createOrderDrawing(orderId, request);
 
         customerOrderService.sendEmailForCreateOrderDrawing(order);
+
+        return ResponseEntity.ok().build();
+    }
+
+    /**
+     * 도면 항목 수정
+     * - path parameter {order-id} 에 해당하는 거래 조회
+     * - 거래에 대한 현재 로그인한 회원의 접근 권한 확인 (거래의 고객 회원)
+     * - path parameter {drawing-id} 에 해당하는 도면 항목 조회
+     * - 거래 도면 항목 수정 가능 단계 확인 (견적 대기, 견적 승인, 제작 중)
+     * - 거래 도면 항목 수정
+     * - 공장에게 메일 전송
+     */
+    @PutMapping("/{order-id}/drawing/{drawing-id}")
+    public ResponseEntity<?> updateOrderDrawing(
+        @PathVariable("order-id") Long orderId,
+        @PathVariable("drawing-id") Long drawingId,
+        @RequestBody @Valid UpdateCustomerDrawingRequest request) {
+
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        customerOrderService.checkAuthorityOfOrder(user, orderId);
+
+        Order order = customerOrderService.updateOrderDrawing(orderId, drawingId, request);
+
+        customerOrderService.sendEmailForUpdateOrderDrawing(order);
 
         return ResponseEntity.ok().build();
     }

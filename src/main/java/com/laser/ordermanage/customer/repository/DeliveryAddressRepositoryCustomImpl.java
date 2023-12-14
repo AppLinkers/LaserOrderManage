@@ -8,6 +8,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
+import java.util.Optional;
 
 import static com.laser.ordermanage.customer.domain.QCustomer.customer;
 import static com.laser.ordermanage.customer.domain.QDeliveryAddress.deliveryAddress;
@@ -41,6 +42,19 @@ public class DeliveryAddressRepositoryCustomImpl implements DeliveryAddressRepos
                 .fetch();
 
         return getDeliveryAddressResponseList;
+    }
+
+    @Override
+    public Optional<String> findUserEmailById(Long deliveryAddressId) {
+        String userEmail = queryFactory
+                .select(userEntity.email)
+                .from(deliveryAddress)
+                .join(deliveryAddress.customer, customer)
+                .join(customer.user, userEntity)
+                .where(deliveryAddress.id.eq(deliveryAddressId))
+                .fetchOne();
+
+        return Optional.ofNullable(userEmail);
     }
 
 }

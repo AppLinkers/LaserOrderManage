@@ -108,4 +108,13 @@ public class OrderService {
 
         throw new CustomCommonException(ErrorCode.DENIED_ACCESS_TO_ENTITY, "order");
     }
+
+    @Transactional(readOnly = true)
+    public void checkAuthorityCustomerOfOrder(User user, Long orderId) {
+        if (this.getUserEmailByOrder(orderId).equals(user.getUsername())) {
+            return;
+        }
+
+        throw new CustomCommonException(ErrorCode.DENIED_ACCESS_TO_ENTITY, "order");
+    }
 }

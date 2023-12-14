@@ -45,7 +45,8 @@ public class Order extends CreatedAtEntity {
     @Column(name = "stage", nullable = false)
     private Stage stage = Stage.NEW;
 
-    private static final EnumSet<Stage> ENABLE_UPDATE_STAGE_LIST = EnumSet.of(Stage.NEW, Stage.QUOTE_APPROVAL, Stage.IN_PRODUCTION, Stage.SHIPPING);
+    private static final EnumSet<Stage> ENABLE_UPDATE_IS_URGENT_STAGE_LIST = EnumSet.of(Stage.NEW, Stage.QUOTE_APPROVAL, Stage.IN_PRODUCTION, Stage.SHIPPING);
+    private static final EnumSet<Stage> ENABLE_UPDATE_DELIVERY_ADDRESS_STAGE_LIST = EnumSet.of(Stage.NEW, Stage.QUOTE_APPROVAL, Stage.IN_PRODUCTION);
 
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     @JoinColumn(name = "manufacturing_id", nullable = false)
@@ -90,10 +91,18 @@ public class Order extends CreatedAtEntity {
     }
 
     public boolean enableUpdateIsUrgent() {
-        return ENABLE_UPDATE_STAGE_LIST.contains(this.stage);
+        return ENABLE_UPDATE_IS_URGENT_STAGE_LIST.contains(this.stage);
     }
 
     public void updateIsUrgent(Boolean isUrgent) {
         this.isUrgent = isUrgent;
+    }
+
+    public boolean enableUpdateDeliveryAddress() {
+        return ENABLE_UPDATE_DELIVERY_ADDRESS_STAGE_LIST.contains(this.stage);
+    }
+
+    public void updateDeliveryAddress(DeliveryAddress deliveryAddress) {
+        this.deliveryAddress = deliveryAddress;
     }
 }

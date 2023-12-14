@@ -18,7 +18,7 @@ public class DeliveryAddress {
     @Column(name = "id", updatable = false)
     private Long id;
 
-    @ManyToOne(cascade = CascadeType.PERSIST)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     @JoinColumn(name = "customer_id", nullable = false, updatable = false)
     private Customer customer;
 

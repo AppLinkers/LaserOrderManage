@@ -4,9 +4,11 @@ import com.laser.ordermanage.customer.domain.Customer;
 import com.laser.ordermanage.customer.domain.DeliveryAddress;
 import org.springframework.data.repository.CrudRepository;
 
+import java.util.Optional;
+
 public interface DeliveryAddressRepository extends CrudRepository<DeliveryAddress, Long>, DeliveryAddressRepositoryCustom {
 
-    DeliveryAddress findFirstById(Long deliveryId);
+    Optional<DeliveryAddress> findFirstById(Long deliveryId);
 
     DeliveryAddress findFirstByCustomerAndIsDefaultTrue(Customer customer);
 }

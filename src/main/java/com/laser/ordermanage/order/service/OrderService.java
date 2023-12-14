@@ -32,7 +32,7 @@ public class OrderService {
 
     @Transactional(readOnly = true)
     public Order getOrderById(Long orderId) {
-        return orderRepository.findById(orderId).orElseThrow(() -> new CustomCommonException(ErrorCode.NOT_FOUND_ENTITY, "order"));
+        return orderRepository.findFirstById(orderId).orElseThrow(() -> new CustomCommonException(ErrorCode.NOT_FOUND_ENTITY, "order"));
     }
 
     @Transactional(readOnly = true)

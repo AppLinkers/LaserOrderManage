@@ -10,13 +10,16 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.DynamicUpdate;
 
 import java.time.LocalDateTime;
+import java.util.EnumSet;
 
 @Entity
 @Table(name = "order_table")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
+@DynamicUpdate
 public class Order extends CreatedAtEntity {
 
     @Id
@@ -24,11 +27,11 @@ public class Order extends CreatedAtEntity {
     @Column(name = "id", updatable = false)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "customer_id", nullable = false)
     private Customer customer;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "delivery_address_id", nullable = false)
     private DeliveryAddress deliveryAddress;
 
@@ -42,11 +45,13 @@ public class Order extends CreatedAtEntity {
     @Column(name = "stage", nullable = false)
     private Stage stage = Stage.NEW;
 
-    @OneToOne(cascade = CascadeType.PERSIST)
+    private static final EnumSet<Stage> ENABLE_UPDATE_STAGE_LIST = EnumSet.of(Stage.NEW, Stage.QUOTE_APPROVAL, Stage.IN_PRODUCTION, Stage.SHIPPING);
+
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     @JoinColumn(name = "manufacturing_id", nullable = false)
     private OrderManufacturing manufacturing;
 
-    @OneToOne(cascade = CascadeType.PERSIST)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     @JoinColumn(name = "post_processing_id", nullable = false)
     private OrderPostProcessing postProcessing;
 
@@ -64,11 +69,11 @@ public class Order extends CreatedAtEntity {
     @Column(name = "is_new_issue", nullable = false, length = 1)
     private Boolean isNewIssue;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "quotation_id")
     private Quotation quotation;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "purchase_order_id")
     private PurchaseOrder purchaseOrder;
 
@@ -82,5 +87,13 @@ public class Order extends CreatedAtEntity {
         this.postProcessing = postProcessing;
         this.request = request;
         this.isNewIssue = isNewIssue;
+    }
+
+    public boolean enableUpdateIsUrgent() {
+        return ENABLE_UPDATE_STAGE_LIST.contains(this.stage);
+    }
+
+    public void updateIsUrgent(Boolean isUrgent) {
+        this.isUrgent = isUrgent;
     }
 }

@@ -197,6 +197,45 @@ public class CustomerOrderService {
         mailService.sendEmailToFactory(title, content);
     }
 
+    @Transactional
+    public Order deleteOrderDrawing(Long orderId, Long drawingId) {
+        Order order = orderService.getOrderById(orderId);
+
+        if (!order.enableManageDrawing()) {
+            throw new CustomCommonException(ErrorCode.INVALID_ORDER_STAGE, order.getStage().getValue());
+        }
+
+        if (drawingService.countDrawingByOrder(order).equals(1)) {
+            throw new CustomCommonException(ErrorCode.LAST_DRAWING_DELETE);
+        }
+
+        Drawing drawing = drawingService.getDrawingByOrderAndId(order, drawingId);
+
+        drawingRepository.delete(drawing);
+
+        return order;
+    }
+
+    @Transactional(readOnly = true)
+    public void sendEmailForDeleteOrderDrawing(Order order) {
+        StringBuilder sbTitle = new StringBuilder();
+        sbTitle.append("[거래 도면 삭제] ")
+                .append(order.getCustomer().getName())
+                .append(" - ")
+                .append(order.getName())
+                .append(" 거래의 도면이 삭제되었습니다.");
+        String title = sbTitle.toString();
+
+        StringBuilder sbContent = new StringBuilder();
+        sbContent.append(order.getCustomer().getName())
+                .append(" 고객님의 ")
+                .append(order.getName())
+                .append(" 거래 도면이 삭제되었습니다.");
+        String content = sbContent.toString();
+
+        mailService.sendEmailToFactory(title, content);
+    }
+
     @Transactional(readOnly = true)
     public void checkAuthorityOfOrder(User user, Long orderId) {
         if (orderService.getUserEmailByOrder(orderId).equals(user.getUsername())) {

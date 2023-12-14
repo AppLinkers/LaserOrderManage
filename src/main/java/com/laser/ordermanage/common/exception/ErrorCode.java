@@ -24,6 +24,7 @@ public enum ErrorCode {
     INVALID_FILE_EXTENSION("-009", HttpStatus.BAD_REQUEST, "지원하지 않는 파일 형식입니다."),
     INVALID_INGREDIENT("-010", HttpStatus.BAD_REQUEST, "지원하지 않는 재료입니다."),
     INVALID_ORDER_STAGE("-011", HttpStatus.BAD_REQUEST, " 단계의 거래는 해당 요청을 수행할 수 없습니다."),
+    LAST_DRAWING_DELETE("-012", HttpStatus.BAD_REQUEST, "거래에는 최소 하나의 도면이 필요합니다.마지막 도면은 삭제할 수 없습니다."),
 
     // 401 UNAUTHORIZED 인증 자격 정보가 유효하지 않음
     UNAUTHORIZED("-100", HttpStatus.UNAUTHORIZED, "인증 자격 정보가 유효하지 않습니다."),

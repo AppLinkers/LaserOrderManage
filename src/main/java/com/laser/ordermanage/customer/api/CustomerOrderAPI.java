@@ -96,8 +96,8 @@ public class CustomerOrderAPI {
      * 도면 항목 수정
      * - path parameter {order-id} 에 해당하는 거래 조회
      * - 거래에 대한 현재 로그인한 회원의 접근 권한 확인 (거래의 고객 회원)
-     * - path parameter {drawing-id} 에 해당하는 도면 항목 조회
      * - 거래 도면 항목 수정 가능 단계 확인 (견적 대기, 견적 승인, 제작 중)
+     * - path parameter {drawing-id} 에 해당하는 도면 항목 조회
      * - 거래 도면 항목 수정
      * - 공장에게 메일 전송
      */
@@ -114,6 +114,31 @@ public class CustomerOrderAPI {
         Order order = customerOrderService.updateOrderDrawing(orderId, drawingId, request);
 
         customerOrderService.sendEmailForUpdateOrderDrawing(order);
+
+        return ResponseEntity.ok().build();
+    }
+
+    /**
+     * 도면 삭제
+     * - path parameter {order-id} 에 해당하는 거래 조회
+     * - 거래에 대한 현재 로그인한 회원의 접근 권한 확인 (거래의 고객 회원)
+     * - 거래 도면 항목 삭제 가능 단계 확인 (견적 대기, 견적 승인, 제작 중)
+     * - 거래 도면 개수 조건 확인 (1개 초과)
+     * - path parameter {drawing-id} 에 해당하는 도면 삭제
+     * - 공장에게 메일 전송
+     */
+    @DeleteMapping("/{order-id}/drawing/{drawing-id}")
+    public ResponseEntity<?> deleteOrderDrawing(
+            @PathVariable("order-id") Long orderId,
+            @PathVariable("drawing-id") Long drawingId) {
+
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        customerOrderService.checkAuthorityOfOrder(user, orderId);
+
+        Order order = customerOrderService.deleteOrderDrawing(orderId, drawingId);
+
+        customerOrderService.sendEmailForDeleteOrderDrawing(order);
 
         return ResponseEntity.ok().build();
     }

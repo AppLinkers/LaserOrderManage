@@ -29,6 +29,11 @@ public class DrawingService {
         return drawingRepository.findFirstByOrderAndId(order, drawingId).orElseThrow(() -> new CustomCommonException(ErrorCode.NOT_FOUND_ENTITY, "drawing"));
     }
 
+    @Transactional(readOnly = true)
+    public Integer countDrawingByOrder(Order order) {
+        return drawingRepository.countByOrder(order);
+    }
+
     public String extractThumbnail(MultipartFile multipartFile) {
         return CADUtil.extractThumbnail(multipartFile, tempFolderPath);
     }

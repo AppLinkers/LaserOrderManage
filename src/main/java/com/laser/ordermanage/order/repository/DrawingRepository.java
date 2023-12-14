@@ -8,4 +8,6 @@ import java.util.Optional;
 
 public interface DrawingRepository extends CrudRepository<Drawing, Long> {
     Optional<Drawing> findFirstByOrderAndId(Order order, Long id);
+
+    Integer countByOrder(Order order);
 }

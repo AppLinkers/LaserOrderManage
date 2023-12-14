@@ -20,7 +20,7 @@ public class Drawing {
     @Column(name = "id", updatable = false)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id", nullable = false, updatable = false)
     private Order order;
 

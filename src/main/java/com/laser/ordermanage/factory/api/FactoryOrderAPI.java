@@ -1,12 +1,16 @@
 package com.laser.ordermanage.factory.api;
 
+import com.laser.ordermanage.factory.dto.request.FactoryCreateOrUpdateOrderQuotationRequest;
 import com.laser.ordermanage.factory.dto.request.FactoryUpdateOrderIsUrgentRequest;
+import com.laser.ordermanage.factory.dto.response.FactoryCreateOrUpdateOrderQuotationResponse;
 import com.laser.ordermanage.factory.service.FactoryOrderService;
 import com.laser.ordermanage.order.domain.Order;
+import com.laser.ordermanage.order.service.OrderService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RequiredArgsConstructor
 @RequestMapping("/factory/order")
@@ -14,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 public class FactoryOrderAPI {
 
     private final FactoryOrderService factoryOrderService;
+    private final OrderService orderService;
 
     /**
      * 거래 긴급 설정
@@ -32,5 +37,32 @@ public class FactoryOrderAPI {
         factoryOrderService.sendMailForUpdateOrderIsUrgent(order);
 
         return ResponseEntity.ok().build();
+    }
+
+    /**
+     * 거래 견적서 작성 및 수정
+     * - path parameter {order-id} 에 해당하는 거래 조회
+     * - 거래 견적서 작성 및 수정 가능 단계 확인 (견적 대기)
+     * - 거래 견적서 작성 및 수정
+     * - 거래의 고객에게 메일 전송
+     */
+    @PutMapping("/{order-id}/quotation")
+    public ResponseEntity<?> createOrUpdateOrderQuotation(
+        @PathVariable("order-id") Long orderId,
+        @RequestParam(required = false) MultipartFile file,
+        @RequestPart(value = "quotation") @Valid FactoryCreateOrUpdateOrderQuotationRequest request) {
+
+        Order order = orderService.getOrderById(orderId);
+        FactoryCreateOrUpdateOrderQuotationResponse response;
+
+        if (order.hasQuotation()) {
+            response = factoryOrderService.updateOrderQuotation(order, file, request);
+            factoryOrderService.sendMailForUpdateOrderQuotation(order);
+        } else {
+            response = factoryOrderService.createOrderQuotation(order, file, request);
+            factoryOrderService.sendMailForCreateOrderQuotation(order);
+        }
+
+        return ResponseEntity.ok(response);
     }
 }

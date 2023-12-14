@@ -30,7 +30,7 @@ public class CustomerCreateOrderRequest {
     @NotNull(message = "주소지 선택은 필수 사항입니다.")
     private Long deliveryAddressId;
 
-    @NotNull
+    @NotNull(message = "신규 발급 유무는 필수 사항입니다.")
     private Boolean isNewIssue;
 
     public String getOrderImgUrl() {

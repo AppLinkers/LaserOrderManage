@@ -32,7 +32,7 @@ public class CustomerCreateDeliveryAddressRequest {
     @Pattern(regexp = "^\\d{3}\\d{3,4}\\d{4}$", message = "연락처 형식에 맞지 않습니다.")
     private String phone2;
 
-    @NotNull
+    @NotNull(message = "배송기 기본 여부는 필수 사항입니다.")
     private Boolean isDefault;
 
 }

@@ -111,4 +111,15 @@ public class Order extends CreatedAtEntity {
         return ENABLE_MANAGE_DRAWING_STAGE_LIST.contains(this.stage);
     }
 
+    public boolean hasQuotation() {
+        return quotation != null;
+    }
+
+    public boolean enableManageQuotation() {
+        return this.stage.equals(Stage.NEW);
+    }
+
+    public void createQuotation(Quotation quotation) {
+        this.quotation = quotation;
+    }
 }

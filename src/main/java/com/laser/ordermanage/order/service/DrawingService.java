@@ -39,7 +39,7 @@ public class DrawingService {
     }
 
     public String uploadDrawingFile(MultipartFile multipartFile) {
-        return s3Service.upload(multipartFile);
+        return s3Service.upload("drawing", multipartFile);
     }
 
     public String uploadThumbnailFile(String tempThumbnailFileUrl) {

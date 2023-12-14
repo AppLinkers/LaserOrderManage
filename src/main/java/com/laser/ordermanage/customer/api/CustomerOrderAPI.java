@@ -1,5 +1,6 @@
 package com.laser.ordermanage.customer.api;
 
+import com.laser.ordermanage.customer.dto.request.CreateCustomerDrawingRequest;
 import com.laser.ordermanage.customer.dto.request.CreateCustomerOrderRequest;
 import com.laser.ordermanage.customer.dto.request.CustomerUpdateOrderDeliveryAddressRequest;
 import com.laser.ordermanage.customer.service.CustomerDeliveryAddressService;
@@ -62,6 +63,30 @@ public class CustomerOrderAPI {
         Order order = customerOrderService.updateOrderDeliveryAddress(orderId, request);
 
         customerOrderService.sendEmailForUpdateOrderDeliveryAddress(order);
+
+        return ResponseEntity.ok().build();
+    }
+
+    /**
+     * 도면 추가
+     * - path parameter {order-id} 에 해당하는 거래 조회
+     * - 거래에 대한 현재 로그인한 회원의 접근 권한 확인 (거래의 고객 회원)
+     * - 거래 도면 추가 가능 단계 확인 (견적 대기, 견적 승인, 제작 중)
+     * - 거래 도면 추가
+     * - 공장에게 메일 전송
+     */
+    @PostMapping("/{order-id}/drawing")
+    public ResponseEntity<?> createOrderDrawing(
+        @PathVariable("order-id") Long orderId,
+        @RequestBody @Valid CreateCustomerDrawingRequest request) {
+
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        orderService.checkAuthorityCustomerOfOrder(user, orderId);
+
+        Order order = customerOrderService.createOrderDrawing(orderId, request);
+
+        customerOrderService.sendEmailForCreateOrderDrawing(order);
 
         return ResponseEntity.ok().build();
     }

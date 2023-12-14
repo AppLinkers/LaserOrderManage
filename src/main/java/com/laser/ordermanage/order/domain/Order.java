@@ -47,6 +47,7 @@ public class Order extends CreatedAtEntity {
 
     private static final EnumSet<Stage> ENABLE_UPDATE_IS_URGENT_STAGE_LIST = EnumSet.of(Stage.NEW, Stage.QUOTE_APPROVAL, Stage.IN_PRODUCTION, Stage.SHIPPING);
     private static final EnumSet<Stage> ENABLE_UPDATE_DELIVERY_ADDRESS_STAGE_LIST = EnumSet.of(Stage.NEW, Stage.QUOTE_APPROVAL, Stage.IN_PRODUCTION);
+    private static final EnumSet<Stage> ENABLE_CREATE_DRAWING_STAGE_LIST = EnumSet.of(Stage.NEW, Stage.QUOTE_APPROVAL, Stage.IN_PRODUCTION);
 
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     @JoinColumn(name = "manufacturing_id", nullable = false)
@@ -105,4 +106,9 @@ public class Order extends CreatedAtEntity {
     public void updateDeliveryAddress(DeliveryAddress deliveryAddress) {
         this.deliveryAddress = deliveryAddress;
     }
+
+    public boolean enableCreateDrawing() {
+        return ENABLE_CREATE_DRAWING_STAGE_LIST.contains(this.stage);
+    }
+
 }

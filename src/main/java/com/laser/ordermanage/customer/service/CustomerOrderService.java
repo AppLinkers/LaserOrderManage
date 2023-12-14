@@ -5,6 +5,7 @@ import com.laser.ordermanage.common.exception.ErrorCode;
 import com.laser.ordermanage.common.mail.MailService;
 import com.laser.ordermanage.customer.domain.Customer;
 import com.laser.ordermanage.customer.domain.DeliveryAddress;
+import com.laser.ordermanage.customer.dto.request.CreateCustomerDrawingRequest;
 import com.laser.ordermanage.customer.dto.request.CreateCustomerOrderRequest;
 import com.laser.ordermanage.customer.dto.request.CustomerUpdateOrderDeliveryAddressRequest;
 import com.laser.ordermanage.customer.repository.CustomerRepository;
@@ -113,6 +114,53 @@ public class CustomerOrderService {
                 .append(" 고객님의 ")
                 .append(order.getName())
                 .append(" 거래 배송지가 수정되었습니다.");
+        String content = sbContent.toString();
+
+        mailService.sendEmail(toEmail, title, content);
+    }
+
+    @Transactional
+    public Order createOrderDrawing(Long orderId, CreateCustomerDrawingRequest request) {
+        Order order = orderService.getOrderById(orderId);
+
+        if (!order.enableCreateDrawing()) {
+            throw new CustomCommonException(ErrorCode.INVALID_ORDER_STAGE, order.getStage().getValue());
+        }
+
+        Drawing drawing = Drawing.builder()
+                .order(order)
+                .fileName(request.getFileName())
+                .fileSize(request.getFileSize())
+                .fileType(request.getFileType())
+                .fileUrl(request.getFileUrl())
+                .thumbnailUrl(request.getThumbnailUrl())
+                .count(request.getCount())
+                .ingredient(request.getIngredient())
+                .thickness(request.getThickness())
+                .build();
+
+        drawingRepository.save(drawing);
+
+        return order;
+    }
+
+    @Transactional(readOnly = true)
+    public void sendEmailForCreateOrderDrawing(Order order) {
+        String toEmail = "admin@kumoh.org";
+
+        StringBuilder sbTitle = new StringBuilder();
+        sbTitle.append("[거래 도면 추가] ")
+                .append(order.getCustomer().getName())
+                .append(" - ")
+                .append(order.getName())
+                .append(" 거래의 도면이 추가되었습니다.");
+        String title = sbTitle.toString();
+
+        StringBuilder sbContent = new StringBuilder();
+        sbContent.append(order.getCustomer().getName())
+                .append(" 고객님의 ")
+                .append(order.getName())
+                .append(" 거래 도면이 추가되었습니다.");
         String content = sbContent.toString();
 
         mailService.sendEmail(toEmail, title, content);

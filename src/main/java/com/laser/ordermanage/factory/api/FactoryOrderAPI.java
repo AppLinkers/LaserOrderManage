@@ -2,6 +2,7 @@ package com.laser.ordermanage.factory.api;
 
 import com.laser.ordermanage.factory.dto.request.FactoryUpdateOrderIsUrgentRequest;
 import com.laser.ordermanage.factory.service.FactoryOrderService;
+import com.laser.ordermanage.order.domain.Order;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -26,7 +27,9 @@ public class FactoryOrderAPI {
         @PathVariable("order-id") Long orderId,
         @RequestBody @Valid FactoryUpdateOrderIsUrgentRequest request) {
 
-        factoryOrderService.updateOrderIsUrgent(orderId, request);
+        Order order = factoryOrderService.updateOrderIsUrgent(orderId, request);
+
+        factoryOrderService.sendMailForUpdateOrderIsUrgent(order);
 
         return ResponseEntity.ok().build();
     }

@@ -18,7 +18,7 @@ public class FactoryOrderService {
     private final MailService mailService;
 
     @Transactional
-    public void updateOrderIsUrgent(Long orderId, FactoryUpdateOrderIsUrgentRequest request) {
+    public Order updateOrderIsUrgent(Long orderId, FactoryUpdateOrderIsUrgentRequest request) {
         Order order = orderService.getOrderById(orderId);
 
         if (!order.enableUpdateIsUrgent()) {
@@ -27,12 +27,17 @@ public class FactoryOrderService {
 
         order.updateIsUrgent(request.getIsUrgent());
 
+        return order;
+    }
+
+    @Transactional(readOnly = true)
+    public void sendMailForUpdateOrderIsUrgent(Order order) {
         String toEmail = order.getCustomer().getUser().getEmail();
 
         StringBuilder sbTitle = new StringBuilder();
         StringBuilder sbContent = new StringBuilder();
 
-        if (request.getIsUrgent()) {
+        if (order.getIsUrgent()) {
             sbTitle.append("[거래 긴급 설정] ")
                     .append(order.getName())
                     .append(" 거래의 긴급이 설정 되었습니다.");

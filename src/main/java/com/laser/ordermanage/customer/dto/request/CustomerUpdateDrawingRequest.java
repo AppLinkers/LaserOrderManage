@@ -6,7 +6,7 @@ import jakarta.validation.constraints.NotEmpty;
 import lombok.Getter;
 
 @Getter
-public class UpdateCustomerDrawingRequest {
+public class CustomerUpdateDrawingRequest {
     @Min(value = 1, message = "수량은 1 이상, 100 이하의 정수 입니다.")
     @Max(value = 100, message = "수량은 1 이상, 100 이하의 정수 입니다.")
     private Integer count;

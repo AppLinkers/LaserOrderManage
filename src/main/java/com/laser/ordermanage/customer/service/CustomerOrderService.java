@@ -5,10 +5,10 @@ import com.laser.ordermanage.common.exception.ErrorCode;
 import com.laser.ordermanage.common.mail.MailService;
 import com.laser.ordermanage.customer.domain.Customer;
 import com.laser.ordermanage.customer.domain.DeliveryAddress;
-import com.laser.ordermanage.customer.dto.request.CreateCustomerDrawingRequest;
-import com.laser.ordermanage.customer.dto.request.CreateCustomerOrderRequest;
+import com.laser.ordermanage.customer.dto.request.CustomerCreateDrawingRequest;
+import com.laser.ordermanage.customer.dto.request.CustomerCreateOrderRequest;
+import com.laser.ordermanage.customer.dto.request.CustomerUpdateDrawingRequest;
 import com.laser.ordermanage.customer.dto.request.CustomerUpdateOrderDeliveryAddressRequest;
-import com.laser.ordermanage.customer.dto.request.UpdateCustomerDrawingRequest;
 import com.laser.ordermanage.customer.repository.CustomerRepository;
 import com.laser.ordermanage.order.domain.Drawing;
 import com.laser.ordermanage.order.domain.Order;
@@ -40,7 +40,7 @@ public class CustomerOrderService {
     private final MailService mailService;
 
     @Transactional
-    public void createOrder(User user, CreateCustomerOrderRequest request) {
+    public void createOrder(User user, CustomerCreateOrderRequest request) {
         Customer customer = customerRepository.findFirstByUserEmail(user.getUsername());
         DeliveryAddress deliveryAddress = customerDeliveryAddressService.getDeliveryAddress(request.getDeliveryAddressId());
 
@@ -118,7 +118,7 @@ public class CustomerOrderService {
     }
 
     @Transactional
-    public Order createOrderDrawing(Long orderId, CreateCustomerDrawingRequest request) {
+    public Drawing createOrderDrawing(Long orderId, CustomerCreateDrawingRequest request) {
         Order order = orderService.getOrderById(orderId);
 
         if (!order.enableManageDrawing()) {
@@ -137,9 +137,9 @@ public class CustomerOrderService {
                 .thickness(request.getThickness())
                 .build();
 
-        drawingRepository.save(drawing);
+        Drawing savedDrawing = drawingRepository.save(drawing);
 
-        return order;
+        return savedDrawing;
     }
 
     @Transactional(readOnly = true)
@@ -163,7 +163,7 @@ public class CustomerOrderService {
     }
 
     @Transactional
-    public Order updateOrderDrawing(Long orderId, Long drawingId, UpdateCustomerDrawingRequest request) {
+    public Order updateOrderDrawing(Long orderId, Long drawingId, CustomerUpdateDrawingRequest request) {
         Order order = orderService.getOrderById(orderId);
 
         if (!order.enableManageDrawing()) {

@@ -10,7 +10,7 @@ import lombok.Getter;
 import java.util.List;
 
 @Getter
-public class CreateCustomerOrderRequest {
+public class CustomerCreateOrderRequest {
 
     @NotEmpty(message = "거래 이름은 필수 입력값입니다.")
     @Pattern(regexp = "^.{0,20}$", message = "거래 이름의 최대 글자수는 20자입니다.")
@@ -23,7 +23,7 @@ public class CreateCustomerOrderRequest {
     @Valid
     @Size(min = 1, message = "도면은 최소한 한개 이상이어야 합니다.")
     @NotNull
-    private List<CreateCustomerDrawingRequest> drawingList;
+    private List<CustomerCreateDrawingRequest> drawingList;
 
     private String request;
 

@@ -6,7 +6,7 @@ import jakarta.validation.constraints.NotEmpty;
 import lombok.Getter;
 
 @Getter
-public class CreateCustomerDrawingRequest {
+public class CustomerCreateDrawingRequest {
 
     private String thumbnailUrl;
 

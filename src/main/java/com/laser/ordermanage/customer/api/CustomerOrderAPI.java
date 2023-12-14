@@ -1,13 +1,14 @@
 package com.laser.ordermanage.customer.api;
 
-import com.laser.ordermanage.customer.dto.request.CreateCustomerDrawingRequest;
-import com.laser.ordermanage.customer.dto.request.CreateCustomerOrderRequest;
+import com.laser.ordermanage.customer.dto.request.CustomerCreateDrawingRequest;
+import com.laser.ordermanage.customer.dto.request.CustomerCreateOrderRequest;
+import com.laser.ordermanage.customer.dto.request.CustomerUpdateDrawingRequest;
 import com.laser.ordermanage.customer.dto.request.CustomerUpdateOrderDeliveryAddressRequest;
-import com.laser.ordermanage.customer.dto.request.UpdateCustomerDrawingRequest;
+import com.laser.ordermanage.customer.dto.response.CustomerCreateDrawingResponse;
 import com.laser.ordermanage.customer.service.CustomerDeliveryAddressService;
 import com.laser.ordermanage.customer.service.CustomerOrderService;
+import com.laser.ordermanage.order.domain.Drawing;
 import com.laser.ordermanage.order.domain.Order;
-import com.laser.ordermanage.order.service.OrderService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +22,6 @@ import org.springframework.web.bind.annotation.*;
 public class CustomerOrderAPI {
 
     private final CustomerOrderService customerOrderService;
-    private final OrderService orderService;
     private final CustomerDeliveryAddressService customerDeliveryAddressService;
 
     /**
@@ -33,7 +33,7 @@ public class CustomerOrderAPI {
      * - 거래 데이터 생성
      */
     @PostMapping("")
-    public ResponseEntity<?> createOrder(@RequestBody @Valid CreateCustomerOrderRequest request) {
+    public ResponseEntity<?> createOrder(@RequestBody @Valid CustomerCreateOrderRequest request) {
 
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
@@ -79,17 +79,21 @@ public class CustomerOrderAPI {
     @PostMapping("/{order-id}/drawing")
     public ResponseEntity<?> createOrderDrawing(
         @PathVariable("order-id") Long orderId,
-        @RequestBody @Valid CreateCustomerDrawingRequest request) {
+        @RequestBody @Valid CustomerCreateDrawingRequest request) {
 
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         customerOrderService.checkAuthorityOfOrder(user, orderId);
 
-        Order order = customerOrderService.createOrderDrawing(orderId, request);
+        Drawing drawing = customerOrderService.createOrderDrawing(orderId, request);
 
-        customerOrderService.sendEmailForCreateOrderDrawing(order);
+        customerOrderService.sendEmailForCreateOrderDrawing(drawing.getOrder());
 
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(
+                CustomerCreateDrawingResponse.builder()
+                        .id(drawing.getId())
+                        .build()
+        );
     }
 
     /**
@@ -105,7 +109,7 @@ public class CustomerOrderAPI {
     public ResponseEntity<?> updateOrderDrawing(
         @PathVariable("order-id") Long orderId,
         @PathVariable("drawing-id") Long drawingId,
-        @RequestBody @Valid UpdateCustomerDrawingRequest request) {
+        @RequestBody @Valid CustomerUpdateDrawingRequest request) {
 
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 

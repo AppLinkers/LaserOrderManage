@@ -5,7 +5,7 @@ import com.laser.ordermanage.common.exception.ErrorCode;
 import com.laser.ordermanage.common.paging.ListResponse;
 import com.laser.ordermanage.customer.domain.Customer;
 import com.laser.ordermanage.customer.domain.DeliveryAddress;
-import com.laser.ordermanage.customer.dto.request.CreateCustomerDeliveryAddressRequest;
+import com.laser.ordermanage.customer.dto.request.CustomerCreateDeliveryAddressRequest;
 import com.laser.ordermanage.customer.dto.response.GetDeliveryAddressResponse;
 import com.laser.ordermanage.customer.repository.CustomerRepository;
 import com.laser.ordermanage.customer.repository.DeliveryAddressRepository;
@@ -26,7 +26,7 @@ public class CustomerDeliveryAddressService {
     }
 
     @Transactional
-    public void createDeliveryAddress(String userName, CreateCustomerDeliveryAddressRequest request) {
+    public void createDeliveryAddress(String userName, CustomerCreateDeliveryAddressRequest request) {
         Customer customer = customerRepository.findFirstByUserEmail(userName);
 
         DeliveryAddress defaultDeliveryAddress = deliveryAddressRepository.findFirstByCustomerAndIsDefaultTrue(customer);

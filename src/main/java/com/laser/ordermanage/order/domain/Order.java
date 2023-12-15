@@ -122,4 +122,48 @@ public class Order extends CreatedAtEntity {
     public void createQuotation(Quotation quotation) {
         this.quotation = quotation;
     }
+
+    public boolean enableApproveQuotation() {
+        return this.stage.equals(Stage.NEW);
+    }
+
+    public void approveQuotation() {
+        this.stage = Stage.QUOTE_APPROVAL;
+    }
+
+    public boolean hasPurchaseOrder() {
+        return purchaseOrder != null;
+    }
+
+    public boolean enableManagePurchaseOrder() {
+        return this.stage.equals(Stage.QUOTE_APPROVAL);
+    }
+
+    public void createPurchaseOrder(PurchaseOrder purchaseOrder) {
+        this.purchaseOrder = purchaseOrder;
+    }
+
+    public boolean enableApprovePurchaseOrder() {
+        return this.stage.equals(Stage.QUOTE_APPROVAL);
+    }
+
+    public void approvePurchaseOrder() {
+        this.stage = Stage.IN_PRODUCTION;
+    }
+
+    public boolean enableChangeStageToShipping() {
+        return this.stage.equals(Stage.IN_PRODUCTION);
+    }
+
+    public void changeStageToShipping() {
+        this.stage = Stage.SHIPPING;
+    }
+
+    public boolean enableChangeStageToCompleted() {
+        return this.stage.equals(Stage.SHIPPING);
+    }
+
+    public void changeStageToCompleted() {
+        this.stage = Stage.COMPLETED;
+    }
 }

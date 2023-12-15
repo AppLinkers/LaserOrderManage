@@ -65,4 +65,37 @@ public class FactoryOrderAPI {
 
         return ResponseEntity.ok(response);
     }
+
+    /**
+     * 발주서 승인
+     * - path parameter {order-id} 에 해당하는 거래 조회
+     * - 거래 발주서 승인 가능 단계 확인 (견적 승인)
+     * - 거래 발주서 유무 확인
+     * - 거래 단계 변경 : 견적 승인 -> 제작 중
+     * - 거래의 고객에게 메일 전송
+     */
+    @PutMapping("/{order-id}/purchase-order")
+    public ResponseEntity<?> approvePurchaseOrder(@PathVariable("order-id") Long orderId) {
+
+        Order order = factoryOrderService.approvePurchaseOrder(orderId);
+
+        factoryOrderService.sendEmailForApprovePurchaseOrder(order);
+        return ResponseEntity.ok().build();
+    }
+
+    /**
+     * 거래 제작 완료
+     * - path parameter {order-id} 에 해당하는 거래 조회
+     * - 거래 제작 완료 가능 단계 확인 (제작 중)
+     * - 거래 단계 변경 : 제작 중 -> 배송 중
+     * - 거래의 고객에게 메일 전송
+     */
+    @PutMapping("/{order-id}/stage/shipping")
+    public ResponseEntity<?> changeStageToShipping(@PathVariable("order-id") Long orderId) {
+
+        Order order = factoryOrderService.changeStageToShipping(orderId);
+
+        factoryOrderService.sendEmailForChangeStageToShipping(order);
+        return ResponseEntity.ok().build();
+    }
 }

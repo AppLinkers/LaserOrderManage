@@ -150,4 +150,12 @@ public class Order extends CreatedAtEntity {
     public void approvePurchaseOrder() {
         this.stage = Stage.IN_PRODUCTION;
     }
+
+    public boolean enableChangeStageToShipping() {
+        return this.stage.equals(Stage.IN_PRODUCTION);
+    }
+
+    public void changeStageToShipping() {
+        this.stage = Stage.SHIPPING;
+    }
 }

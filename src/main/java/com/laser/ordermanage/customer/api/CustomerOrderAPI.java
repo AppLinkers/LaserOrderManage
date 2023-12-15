@@ -146,4 +146,26 @@ public class CustomerOrderAPI {
 
         return ResponseEntity.ok().build();
     }
+
+    /**
+     * 견적서 승인
+     * - path parameter {order-id} 에 해당하는 거래 조회
+     * - 거래에 대한 현재 로그인한 회원의 접근 권한 확인 (거래의 고객 회원)
+     * - 거래 견적서 승인 가능 단계 확인 (견적 대기)
+     * - 거래 견적서 유무 확인
+     * - 거래 단계 변경 : 견적 대기 -> 견적 승인
+     * - 공장에게 메일 전송
+     */
+    @PutMapping("/{order-id}/quotation")
+    public ResponseEntity<?> approveQuotation(@PathVariable("order-id") Long orderId) {
+
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        customerOrderService.checkAuthorityOfOrder(user, orderId);
+
+        Order order = customerOrderService.approveQuotation(orderId);
+
+        customerOrderService.sendEmailForApproveQuotation(order);
+        return ResponseEntity.ok().build();
+    }
 }

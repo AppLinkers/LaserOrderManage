@@ -244,4 +244,41 @@ public class CustomerOrderService {
 
         throw new CustomCommonException(ErrorCode.DENIED_ACCESS_TO_ENTITY, "order");
     }
+
+    @Transactional
+    public Order approveQuotation(Long orderId) {
+        Order order = orderService.getOrderById(orderId);
+
+        if (!order.enableApproveQuotation()) {
+            throw new CustomCommonException(ErrorCode.INVALID_ORDER_STAGE, order.getStage().getValue());
+        }
+
+        if (!order.hasQuotation()) {
+            throw new CustomCommonException(ErrorCode.MISSING_QUOTATION);
+        }
+
+        order.approveQuotation();
+
+        return order;
+    }
+
+    @Transactional(readOnly = true)
+    public void sendEmailForApproveQuotation(Order order) {
+        StringBuilder sbTitle = new StringBuilder();
+        sbTitle.append("[거래 견적서 승인] ")
+                .append(order.getCustomer().getName())
+                .append(" - ")
+                .append(order.getName())
+                .append(" 거래의 견적서가 승인되었습니다.");
+        String title = sbTitle.toString();
+
+        StringBuilder sbContent = new StringBuilder();
+        sbContent.append(order.getCustomer().getName())
+                .append(" 고객님의 ")
+                .append(order.getName())
+                .append(" 거래 견적서가 승인되었습니다.");
+        String content = sbContent.toString();
+
+        mailService.sendEmailToFactory(title, content);
+    }
 }

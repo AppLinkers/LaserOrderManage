@@ -122,4 +122,12 @@ public class Order extends CreatedAtEntity {
     public void createQuotation(Quotation quotation) {
         this.quotation = quotation;
     }
+
+    public boolean enableApproveQuotation() {
+        return this.stage.equals(Stage.NEW);
+    }
+
+    public void approveQuotation() {
+        this.stage = Stage.QUOTE_APPROVAL;
+    }
 }

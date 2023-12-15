@@ -38,6 +38,7 @@ public class DeliveryAddressRepositoryCustomImpl implements DeliveryAddressRepos
                 .join(deliveryAddress.customer, customer)
                 .join(customer.user, userEntity)
                 .where(userEntity.email.eq(userName))
+                .orderBy(deliveryAddress.createdAt.desc())
                 .orderBy(new OrderSpecifier<>(Order.DESC, deliveryAddress.isDefault))
                 .fetch();
 

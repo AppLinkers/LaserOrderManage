@@ -64,6 +64,7 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
                         eqManufacturing(manufacturingRequestList),
                         query == null ? null : order.name.contains(query)
                 )
+                .orderBy(order.createdAt.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
@@ -110,6 +111,7 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
                         eqHasQuotation(hasQuotation),
                         eqIsUrgent(isUrgent)
                 )
+                .orderBy(order.createdAt.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
@@ -156,6 +158,7 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
                         eqIsNewCustomer(isNewCustomer),
                         eqIsUrgent(isUrgent)
                 )
+                .orderBy(order.createdAt.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
@@ -203,6 +206,7 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
                                 .or(customer.name.contains(query))
                                 .or(customer.companyName.contains(query))
                 )
+                .orderBy(order.createdAt.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
@@ -241,6 +245,7 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
                         userEntity.email.eq(userName),
                         query == null ? null : order.name.contains(query)
                 )
+                .orderBy(order.createdAt.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();

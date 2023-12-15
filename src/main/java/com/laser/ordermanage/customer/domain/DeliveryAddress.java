@@ -1,6 +1,7 @@
 package com.laser.ordermanage.customer.domain;
 
 import com.laser.ordermanage.common.converter.BooleanToYNConverter;
+import com.laser.ordermanage.common.entity.CreatedAtEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -11,7 +12,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "delivery_address")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-public class DeliveryAddress {
+public class DeliveryAddress extends CreatedAtEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

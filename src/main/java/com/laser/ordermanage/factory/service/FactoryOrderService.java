@@ -171,6 +171,42 @@ public class FactoryOrderService {
         mailService.sendEmail(toEmail, title, content);
     }
 
+    @Transactional
+    public Order approvePurchaseOrder(Long orderId) {
+        Order order = orderService.getOrderById(orderId);
+
+        if (!order.enableApprovePurchaseOrder()) {
+            throw new CustomCommonException(ErrorCode.INVALID_ORDER_STAGE, order.getStage().getValue());
+        }
+
+        if (!order.hasPurchaseOrder()) {
+            throw new CustomCommonException(ErrorCode.MISSING_PURCHASE_ORDER);
+        }
+
+        order.approvePurchaseOrder();
+
+        return order;
+    }
+
+    @Transactional(readOnly = true)
+    public void sendEmailForApprovePurchaseOrder(Order order) {
+        String toEmail = order.getCustomer().getUser().getEmail();
+
+        StringBuilder sbTitle = new StringBuilder();
+        sbTitle.append("[거래 발주서 승인] 고객님, ")
+                .append(order.getName())
+                .append(" 거래의 발주서가 승인되었습니다.");
+        String title = sbTitle.toString();
+
+        StringBuilder sbContent = new StringBuilder();
+        sbContent.append("고객님, ")
+                .append(order.getName())
+                .append(" 거래의 발주서가 승인되었습니다.");
+        String content = sbContent.toString();
+
+        mailService.sendEmail(toEmail, title, content);
+    }
+
     public String uploadQuotationFile(MultipartFile multipartFile) {
         return s3Service.upload("quotation", multipartFile);
     }

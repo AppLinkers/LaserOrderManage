@@ -27,6 +27,7 @@ public enum ErrorCode {
     LAST_DRAWING_DELETE("-012", HttpStatus.BAD_REQUEST, "거래에는 최소 하나의 도면이 필요합니다.마지막 도면은 삭제할 수 없습니다."),
     MISSING_QUOTATION_FILE("-013", HttpStatus.BAD_REQUEST, "견적서 최초 작성 시, 견적서 파일은 필수 사항입니다."),
     MISSING_QUOTATION("-014", HttpStatus.BAD_REQUEST, "거래의 견적서가 존재하지 않습니다."),
+    MISSING_PURCHASE_ORDER("-015", HttpStatus.BAD_REQUEST, "거래의 발주서가 존재하지 않습니다."),
 
     // 401 UNAUTHORIZED 인증 자격 정보가 유효하지 않음
     UNAUTHORIZED("-100", HttpStatus.UNAUTHORIZED, "인증 자격 정보가 유효하지 않습니다."),

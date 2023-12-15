@@ -103,7 +103,7 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
                 ))
                 .from(order)
                 .join(order.customer, customer)
-                .join(order.quotation, quotation)
+                .leftJoin(order.quotation, quotation)
                 .where(
                         order.stage.eq(Stage.NEW),
                         order.isNewIssue.eq(Boolean.FALSE),
@@ -117,7 +117,7 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
         JPAQuery<Long> countQuery = queryFactory
                 .select(order.count())
                 .from(order)
-                .join(order.quotation, quotation)
+                .leftJoin(order.quotation, quotation)
                 .where(
                         order.stage.eq(Stage.NEW),
                         order.isNewIssue.eq(Boolean.FALSE),
@@ -148,7 +148,7 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
                 ))
                 .from(order)
                 .join(order.customer, customer)
-                .join(order.quotation, quotation)
+                .leftJoin(order.quotation, quotation)
                 .where(
                         order.stage.eq(Stage.NEW),
                         order.isNewIssue.eq(Boolean.TRUE),
@@ -163,7 +163,7 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
         JPAQuery<Long> countQuery = queryFactory
                 .select(order.count())
                 .from(order)
-                .join(order.quotation, quotation)
+                .leftJoin(order.quotation, quotation)
                 .where(
                         order.stage.eq(Stage.NEW),
                         order.isNewIssue.eq(Boolean.TRUE),
@@ -194,7 +194,7 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
                 ))
                 .from(order)
                 .join(order.customer, customer)
-                .join(order.quotation, quotation)
+                .leftJoin(order.quotation, quotation)
                 .where(
                         eqIsCompleted(isCompleted),
                         eqIsUrgent(isUrgent),
@@ -211,7 +211,7 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
                 .select(order.count())
                 .from(order)
                 .join(order.customer, customer)
-                .join(order.quotation, quotation)
+                .leftJoin(order.quotation, quotation)
                 .where(
                         eqIsCompleted(isCompleted),
                         eqIsUrgent(isUrgent),

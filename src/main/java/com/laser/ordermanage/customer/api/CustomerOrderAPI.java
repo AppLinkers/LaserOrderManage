@@ -1,14 +1,13 @@
 package com.laser.ordermanage.customer.api;
 
-import com.laser.ordermanage.customer.dto.request.CustomerCreateDrawingRequest;
-import com.laser.ordermanage.customer.dto.request.CustomerCreateOrderRequest;
-import com.laser.ordermanage.customer.dto.request.CustomerUpdateDrawingRequest;
-import com.laser.ordermanage.customer.dto.request.CustomerUpdateOrderDeliveryAddressRequest;
+import com.laser.ordermanage.customer.dto.request.*;
 import com.laser.ordermanage.customer.dto.response.CustomerCreateDrawingResponse;
+import com.laser.ordermanage.customer.dto.response.CustomerCreateOrUpdateOrderPurchaseOrderResponse;
 import com.laser.ordermanage.customer.service.CustomerDeliveryAddressService;
 import com.laser.ordermanage.customer.service.CustomerOrderService;
 import com.laser.ordermanage.order.domain.Drawing;
 import com.laser.ordermanage.order.domain.Order;
+import com.laser.ordermanage.order.service.OrderService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 public class CustomerOrderAPI {
 
+    private final OrderService orderService;
     private final CustomerOrderService customerOrderService;
     private final CustomerDeliveryAddressService customerDeliveryAddressService;
 
@@ -167,5 +167,36 @@ public class CustomerOrderAPI {
 
         customerOrderService.sendEmailForApproveQuotation(order);
         return ResponseEntity.ok().build();
+    }
+
+    /**
+     * 거래 발주서 작성 및 수정
+     * - path parameter {order-id} 에 해당하는 거래 조회
+     * - 거래에 대한 현재 로그인한 회원의 접근 권한 확인 (거래의 고객 회원)
+     * - 거래 발주서 작성 및 수정 가능 단계 확인 (견적 승인)
+     * - 거래 발주서 작성 및 수정
+     * - 공장에게 메일 전송
+     */
+    @PutMapping("/{order-id}/purchase-order")
+    public ResponseEntity<?> createOrUpdateOrderPurchaseOrder(
+        @PathVariable("order-id") Long orderId,
+        @RequestBody @Valid CustomerCreateOrUpdateOrderPurchaseOrderRequest request) {
+
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        customerOrderService.checkAuthorityOfOrder(user, orderId);
+
+        Order order = orderService.getOrderById(orderId);
+        CustomerCreateOrUpdateOrderPurchaseOrderResponse response;
+
+        if (order.hasPurchaseOrder()) {
+            response = customerOrderService.updateOrderPurchaseOrder(order, request);
+            customerOrderService.sendMailForUpdateOrderPurchaseOrder(order);
+        } else {
+            response = customerOrderService.createOrderPurchaseOrder(order, request);
+            customerOrderService.sendMailForCreateOrderPurchaseOrder(order);
+        }
+
+        return ResponseEntity.ok(response);
     }
 }

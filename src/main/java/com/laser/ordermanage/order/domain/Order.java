@@ -130,4 +130,16 @@ public class Order extends CreatedAtEntity {
     public void approveQuotation() {
         this.stage = Stage.QUOTE_APPROVAL;
     }
+
+    public boolean hasPurchaseOrder() {
+        return purchaseOrder != null;
+    }
+
+    public boolean enableManagePurchaseOrder() {
+        return this.stage.equals(Stage.QUOTE_APPROVAL);
+    }
+
+    public void createPurchaseOrder(PurchaseOrder purchaseOrder) {
+        this.purchaseOrder = purchaseOrder;
+    }
 }

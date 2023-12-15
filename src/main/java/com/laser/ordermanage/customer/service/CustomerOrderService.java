@@ -5,17 +5,13 @@ import com.laser.ordermanage.common.exception.ErrorCode;
 import com.laser.ordermanage.common.mail.MailService;
 import com.laser.ordermanage.customer.domain.Customer;
 import com.laser.ordermanage.customer.domain.DeliveryAddress;
-import com.laser.ordermanage.customer.dto.request.CustomerCreateDrawingRequest;
-import com.laser.ordermanage.customer.dto.request.CustomerCreateOrderRequest;
-import com.laser.ordermanage.customer.dto.request.CustomerUpdateDrawingRequest;
-import com.laser.ordermanage.customer.dto.request.CustomerUpdateOrderDeliveryAddressRequest;
+import com.laser.ordermanage.customer.dto.request.*;
+import com.laser.ordermanage.customer.dto.response.CustomerCreateOrUpdateOrderPurchaseOrderResponse;
 import com.laser.ordermanage.customer.repository.CustomerRepository;
-import com.laser.ordermanage.order.domain.Drawing;
-import com.laser.ordermanage.order.domain.Order;
-import com.laser.ordermanage.order.domain.OrderManufacturing;
-import com.laser.ordermanage.order.domain.OrderPostProcessing;
+import com.laser.ordermanage.order.domain.*;
 import com.laser.ordermanage.order.repository.DrawingRepository;
 import com.laser.ordermanage.order.repository.OrderRepository;
+import com.laser.ordermanage.order.repository.PurchaseOrderRepository;
 import com.laser.ordermanage.order.service.DrawingService;
 import com.laser.ordermanage.order.service.OrderService;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +29,7 @@ public class CustomerOrderService {
     private final DrawingRepository drawingRepository;
     private final OrderRepository orderRepository;
     private final CustomerRepository customerRepository;
+    private final PurchaseOrderRepository purchaseOrderRepository;
 
     private final OrderService orderService;
     private final CustomerDeliveryAddressService customerDeliveryAddressService;
@@ -277,6 +274,81 @@ public class CustomerOrderService {
                 .append(" 고객님의 ")
                 .append(order.getName())
                 .append(" 거래 견적서가 승인되었습니다.");
+        String content = sbContent.toString();
+
+        mailService.sendEmailToFactory(title, content);
+    }
+
+    @Transactional
+    public CustomerCreateOrUpdateOrderPurchaseOrderResponse createOrderPurchaseOrder(Order order, CustomerCreateOrUpdateOrderPurchaseOrderRequest request) {
+        if (!order.enableManagePurchaseOrder()) {
+            throw new CustomCommonException(ErrorCode.INVALID_ORDER_STAGE, order.getStage().getValue());
+        }
+
+        PurchaseOrder purchaseOrder = PurchaseOrder.builder()
+                .inspectionPeriod(request.getInspectionPeriod())
+                .inspectionCondition(request.getInspectionCondition())
+                .paymentDate(request.getPaymentDate())
+                .build();
+
+        PurchaseOrder savedPurchaseOrder = purchaseOrderRepository.save(purchaseOrder);
+        order.createPurchaseOrder(savedPurchaseOrder);
+
+        return CustomerCreateOrUpdateOrderPurchaseOrderResponse.builder()
+                .id(savedPurchaseOrder.getId())
+                .build();
+    }
+
+    @Transactional(readOnly = true)
+    public void sendMailForCreateOrderPurchaseOrder(Order order) {
+        StringBuilder sbTitle = new StringBuilder();
+        sbTitle.append("[거래 발주서 작성] ")
+                .append(order.getCustomer().getName())
+                .append(" - ")
+                .append(order.getName())
+                .append(" 거래의 발주서가 작성되었습니다.");
+        String title = sbTitle.toString();
+
+        StringBuilder sbContent = new StringBuilder();
+        sbContent.append(order.getCustomer().getName())
+                .append(" 고객님의 ")
+                .append(order.getName())
+                .append(" 거래 발주서가 작성되었습니다.");
+        String content = sbContent.toString();
+
+        mailService.sendEmailToFactory(title, content);
+    }
+
+    @Transactional
+    public CustomerCreateOrUpdateOrderPurchaseOrderResponse updateOrderPurchaseOrder(Order order, CustomerCreateOrUpdateOrderPurchaseOrderRequest request) {
+        if (!order.enableManagePurchaseOrder()) {
+            throw new CustomCommonException(ErrorCode.INVALID_ORDER_STAGE, order.getStage().getValue());
+        }
+
+        PurchaseOrder purchaseOrder = order.getPurchaseOrder();
+
+        purchaseOrder.updatePurchaseOrderProperties(request);
+
+        return CustomerCreateOrUpdateOrderPurchaseOrderResponse.builder()
+                .id(purchaseOrder.getId())
+                .build();
+    }
+
+    @Transactional(readOnly = true)
+    public void sendMailForUpdateOrderPurchaseOrder(Order order) {
+        StringBuilder sbTitle = new StringBuilder();
+        sbTitle.append("[거래 발주서 수정] ")
+                .append(order.getCustomer().getName())
+                .append(" - ")
+                .append(order.getName())
+                .append(" 거래의 발주서가 수정되었습니다.");
+        String title = sbTitle.toString();
+
+        StringBuilder sbContent = new StringBuilder();
+        sbContent.append(order.getCustomer().getName())
+                .append(" 고객님의 ")
+                .append(order.getName())
+                .append(" 거래 발주서가 수정되었습니다.");
         String content = sbContent.toString();
 
         mailService.sendEmailToFactory(title, content);

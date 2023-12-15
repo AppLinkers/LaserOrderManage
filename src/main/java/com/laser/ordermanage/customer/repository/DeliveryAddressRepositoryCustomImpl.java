@@ -2,8 +2,6 @@ package com.laser.ordermanage.customer.repository;
 
 import com.laser.ordermanage.customer.dto.response.GetDeliveryAddressResponse;
 import com.laser.ordermanage.customer.dto.response.QGetDeliveryAddressResponse;
-import com.querydsl.core.types.Order;
-import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 
@@ -38,8 +36,7 @@ public class DeliveryAddressRepositoryCustomImpl implements DeliveryAddressRepos
                 .join(deliveryAddress.customer, customer)
                 .join(customer.user, userEntity)
                 .where(userEntity.email.eq(userName))
-                .orderBy(deliveryAddress.createdAt.desc())
-                .orderBy(new OrderSpecifier<>(Order.DESC, deliveryAddress.isDefault))
+                .orderBy(deliveryAddress.isDefault.desc(), deliveryAddress.createdAt.desc())
                 .fetch();
 
         return getDeliveryAddressResponseList;

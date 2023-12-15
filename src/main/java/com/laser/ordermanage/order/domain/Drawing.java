@@ -1,5 +1,6 @@
 package com.laser.ordermanage.order.domain;
 
+import com.laser.ordermanage.customer.dto.request.CustomerUpdateDrawingRequest;
 import com.laser.ordermanage.order.domain.type.DrawingFileType;
 import com.laser.ordermanage.order.domain.type.Ingredient;
 import jakarta.persistence.*;
@@ -19,7 +20,7 @@ public class Drawing {
     @Column(name = "id", updatable = false)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id", nullable = false, updatable = false)
     private Order order;
 
@@ -60,5 +61,11 @@ public class Drawing {
         this.count = count;
         this.ingredient = Ingredient.ofValue(ingredient);
         this.thickness = thickness;
+    }
+
+    public void updateDrawingProperties(CustomerUpdateDrawingRequest request) {
+        this.count = request.getCount();
+        this.ingredient = Ingredient.ofValue(request.getIngredient());
+        this.thickness = request.getThickness();
     }
 }

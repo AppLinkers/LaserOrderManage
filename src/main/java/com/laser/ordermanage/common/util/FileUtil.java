@@ -25,8 +25,4 @@ public class FileUtil {
         }
     }
 
-    public static void deleteFile(String filePath) {
-
-    }
-
 }

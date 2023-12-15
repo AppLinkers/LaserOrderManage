@@ -1,16 +1,20 @@
 package com.laser.ordermanage.customer.api;
 
-import com.laser.ordermanage.customer.dto.request.CreateCustomerOrderRequest;
+import com.laser.ordermanage.customer.dto.request.CustomerCreateDrawingRequest;
+import com.laser.ordermanage.customer.dto.request.CustomerCreateOrderRequest;
+import com.laser.ordermanage.customer.dto.request.CustomerUpdateDrawingRequest;
+import com.laser.ordermanage.customer.dto.request.CustomerUpdateOrderDeliveryAddressRequest;
+import com.laser.ordermanage.customer.dto.response.CustomerCreateDrawingResponse;
+import com.laser.ordermanage.customer.service.CustomerDeliveryAddressService;
 import com.laser.ordermanage.customer.service.CustomerOrderService;
+import com.laser.ordermanage.order.domain.Drawing;
+import com.laser.ordermanage.order.domain.Order;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
 @RequestMapping("/customer/order")
@@ -18,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class CustomerOrderAPI {
 
     private final CustomerOrderService customerOrderService;
+    private final CustomerDeliveryAddressService customerDeliveryAddressService;
 
     /**
      * 고객 회원의 거래 생성
@@ -28,11 +33,116 @@ public class CustomerOrderAPI {
      * - 거래 데이터 생성
      */
     @PostMapping("")
-    public ResponseEntity<?> createOrder(@RequestBody @Valid CreateCustomerOrderRequest request) {
+    public ResponseEntity<?> createOrder(@RequestBody @Valid CustomerCreateOrderRequest request) {
 
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         customerOrderService.createOrder(user, request);
+
+        return ResponseEntity.ok().build();
+    }
+
+    /**
+     * 거래 배송지 수정
+     * - path parameter {order-id} 에 해당하는 거래 조회
+     * - 거래에 대한 현재 로그인한 회원의 접근 권한 확인 (거래의 고객 회원)
+     * - 거래 배송지 수정 가능 단계 확인 (견적 대기, 견적 승인, 제작 중, 배송 중)
+     * - 거래 배송지를 deliveryAddressId 에 맞춰서 설정
+     * - 공장에게 메일 전송
+     */
+    @PutMapping("/{order-id}/delivery-address")
+    public ResponseEntity<?> updateOrderDeliveryAddress(
+            @PathVariable("order-id") Long orderId,
+            @RequestBody @Valid CustomerUpdateOrderDeliveryAddressRequest request) {
+
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        customerOrderService.checkAuthorityOfOrder(user, orderId);
+
+        customerDeliveryAddressService.checkAuthorityCustomerOfDeliveryAddress(user, request.getDeliveryAddressId());
+
+        Order order = customerOrderService.updateOrderDeliveryAddress(orderId, request);
+
+        customerOrderService.sendEmailForUpdateOrderDeliveryAddress(order);
+
+        return ResponseEntity.ok().build();
+    }
+
+    /**
+     * 도면 항목 추가
+     * - path parameter {order-id} 에 해당하는 거래 조회
+     * - 거래에 대한 현재 로그인한 회원의 접근 권한 확인 (거래의 고객 회원)
+     * - 거래 도면 항목 추가 가능 단계 확인 (견적 대기, 견적 승인, 제작 중)
+     * - 거래 도면 항목 추가
+     * - 공장에게 메일 전송
+     */
+    @PostMapping("/{order-id}/drawing")
+    public ResponseEntity<?> createOrderDrawing(
+        @PathVariable("order-id") Long orderId,
+        @RequestBody @Valid CustomerCreateDrawingRequest request) {
+
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        customerOrderService.checkAuthorityOfOrder(user, orderId);
+
+        Drawing drawing = customerOrderService.createOrderDrawing(orderId, request);
+
+        customerOrderService.sendEmailForCreateOrderDrawing(drawing.getOrder());
+
+        return ResponseEntity.ok(
+                CustomerCreateDrawingResponse.builder()
+                        .id(drawing.getId())
+                        .build()
+        );
+    }
+
+    /**
+     * 도면 항목 수정
+     * - path parameter {order-id} 에 해당하는 거래 조회
+     * - 거래에 대한 현재 로그인한 회원의 접근 권한 확인 (거래의 고객 회원)
+     * - 거래 도면 항목 수정 가능 단계 확인 (견적 대기, 견적 승인, 제작 중)
+     * - path parameter {drawing-id} 에 해당하는 도면 항목 조회
+     * - 거래 도면 항목 수정
+     * - 공장에게 메일 전송
+     */
+    @PutMapping("/{order-id}/drawing/{drawing-id}")
+    public ResponseEntity<?> updateOrderDrawing(
+        @PathVariable("order-id") Long orderId,
+        @PathVariable("drawing-id") Long drawingId,
+        @RequestBody @Valid CustomerUpdateDrawingRequest request) {
+
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        customerOrderService.checkAuthorityOfOrder(user, orderId);
+
+        Order order = customerOrderService.updateOrderDrawing(orderId, drawingId, request);
+
+        customerOrderService.sendEmailForUpdateOrderDrawing(order);
+
+        return ResponseEntity.ok().build();
+    }
+
+    /**
+     * 도면 삭제
+     * - path parameter {order-id} 에 해당하는 거래 조회
+     * - 거래에 대한 현재 로그인한 회원의 접근 권한 확인 (거래의 고객 회원)
+     * - 거래 도면 항목 삭제 가능 단계 확인 (견적 대기, 견적 승인, 제작 중)
+     * - 거래 도면 개수 조건 확인 (1개 초과)
+     * - path parameter {drawing-id} 에 해당하는 도면 삭제
+     * - 공장에게 메일 전송
+     */
+    @DeleteMapping("/{order-id}/drawing/{drawing-id}")
+    public ResponseEntity<?> deleteOrderDrawing(
+            @PathVariable("order-id") Long orderId,
+            @PathVariable("drawing-id") Long drawingId) {
+
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        customerOrderService.checkAuthorityOfOrder(user, orderId);
+
+        Order order = customerOrderService.deleteOrderDrawing(orderId, drawingId);
+
+        customerOrderService.sendEmailForDeleteOrderDrawing(order);
 
         return ResponseEntity.ok().build();
     }

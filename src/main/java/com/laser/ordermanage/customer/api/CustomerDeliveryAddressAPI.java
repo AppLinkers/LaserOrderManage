@@ -1,6 +1,6 @@
 package com.laser.ordermanage.customer.api;
 
-import com.laser.ordermanage.customer.dto.request.CreateCustomerDeliveryAddressRequest;
+import com.laser.ordermanage.customer.dto.request.CustomerCreateDeliveryAddressRequest;
 import com.laser.ordermanage.customer.service.CustomerDeliveryAddressService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +23,7 @@ public class CustomerDeliveryAddressAPI {
      * - 배송지 데이터 생성
      */
     @PostMapping("")
-    public ResponseEntity<?> createDeliveryAddress(@RequestBody @Valid CreateCustomerDeliveryAddressRequest request) {
+    public ResponseEntity<?> createDeliveryAddress(@RequestBody @Valid CustomerCreateDeliveryAddressRequest request) {
 
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 

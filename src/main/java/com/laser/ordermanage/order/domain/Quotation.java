@@ -1,8 +1,10 @@
 package com.laser.ordermanage.order.domain;
 
 import com.laser.ordermanage.common.entity.CreatedAtEntity;
+import com.laser.ordermanage.factory.dto.request.FactoryCreateOrUpdateOrderQuotationRequest;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -33,4 +35,24 @@ public class Quotation extends CreatedAtEntity {
 
     @Column(name = "delivery_date", nullable = false)
     private LocalDate deliveryDate;
+
+    @Builder
+    public Quotation(Long totalCost, String fileName, Long fileSize, String fileUrl, LocalDate deliveryDate) {
+        this.totalCost = totalCost;
+        this.fileName = fileName;
+        this.fileSize = fileSize;
+        this.fileUrl = fileUrl;
+        this.deliveryDate = deliveryDate;
+    }
+
+    public void updateFile(String fileName, Long fileSize, String fileUrl) {
+        this.fileName = fileName;
+        this.fileSize = fileSize;
+        this.fileUrl = fileUrl;
+    }
+
+    public void updateQuotationProperties(FactoryCreateOrUpdateOrderQuotationRequest request) {
+        this.totalCost = request.getTotalCost();
+        this.deliveryDate = request.getDeliveryDate();
+    }
 }

@@ -32,7 +32,7 @@ public class OrderService {
 
     @Transactional(readOnly = true)
     public Order getOrderById(Long orderId) {
-        return orderRepository.findById(orderId).orElseThrow(() -> new CustomCommonException(ErrorCode.NOT_FOUND_ENTITY, "order"));
+        return orderRepository.findFirstById(orderId).orElseThrow(() -> new CustomCommonException(ErrorCode.NOT_FOUND_ENTITY, "order"));
     }
 
     @Transactional(readOnly = true)
@@ -64,8 +64,13 @@ public class OrderService {
 
         commentRepository.save(comment);
 
-        String toEmail = null;
-        String title = null;
+        String toEmail;
+        String title;
+
+        StringBuilder sbContent = new StringBuilder();
+        sbContent.append(order.getName())
+                .append(" 거래에 새로운 댓글이 작성되었습니다.");
+        String content = sbContent.toString();
 
         if (user.getRole().equals(Role.ROLE_FACTORY)) {
             toEmail = order.getCustomer().getUser().getEmail();
@@ -75,9 +80,9 @@ public class OrderService {
                     .append(order.getName())
                     .append(" 거래에 댓글이 작성되었습니다.");
             title = sbTitle.toString();
-        } else if (user.getRole().equals(Role.ROLE_CUSTOMER)) {
-            toEmail = "admin@kumoh.org";
 
+            mailService.sendEmail(toEmail, title, content);
+        } else if (user.getRole().equals(Role.ROLE_CUSTOMER)) {
             StringBuilder sbTitle = new StringBuilder();
             sbTitle.append("[댓글] ")
                     .append(order.getCustomer().getName())
@@ -85,14 +90,9 @@ public class OrderService {
                     .append(order.getName())
                     .append(" 거래에 댓글이 작성되었습니다.");
             title = sbTitle.toString();
+
+            mailService.sendEmailToFactory(title, content);
         }
-
-        StringBuilder sbContent = new StringBuilder();
-        sbContent.append(order.getName())
-                .append(" 거래에 새로운 댓글이 작성되었습니다.");
-        String content = sbContent.toString();
-
-        mailService.sendEmail(toEmail, title, content);
 
     }
 

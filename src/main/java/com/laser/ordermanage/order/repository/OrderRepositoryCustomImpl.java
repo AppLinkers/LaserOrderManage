@@ -57,7 +57,7 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
                 .join(order.customer, customer)
                 .join(customer.user, userEntity)
                 .join(order.manufacturing, orderManufacturing)
-                .join(order.quotation, quotation)
+                .leftJoin(order.quotation, quotation)
                 .where(
                         userEntity.email.eq(userName),
                         eqStage(stageRequestList),

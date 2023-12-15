@@ -353,4 +353,37 @@ public class CustomerOrderService {
 
         mailService.sendEmailToFactory(title, content);
     }
+
+    @Transactional
+    public Order changeStageToCompleted(Long orderId) {
+        Order order = orderService.getOrderById(orderId);
+
+        if (!order.enableChangeStageToCompleted()) {
+            throw new CustomCommonException(ErrorCode.INVALID_ORDER_STAGE, order.getStage().getValue());
+        }
+
+        order.changeStageToCompleted();
+
+        return order;
+    }
+
+    @Transactional(readOnly = true)
+    public void sendEmailForChangeStageToCompleted(Order order) {
+        StringBuilder sbTitle = new StringBuilder();
+        sbTitle.append("[거래 완료] ")
+                .append(order.getCustomer().getName())
+                .append(" - ")
+                .append(order.getName())
+                .append(" 거래가 완료 되었습니다.");
+        String title = sbTitle.toString();
+
+        StringBuilder sbContent = new StringBuilder();
+        sbContent.append(order.getCustomer().getName())
+                .append(" 고객님의 ")
+                .append(order.getName())
+                .append(" 거래가 완료 되었습니다.");
+        String content = sbContent.toString();
+
+        mailService.sendEmailToFactory(title, content);
+    }
 }

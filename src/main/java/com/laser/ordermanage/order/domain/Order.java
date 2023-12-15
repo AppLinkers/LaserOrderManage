@@ -158,4 +158,12 @@ public class Order extends CreatedAtEntity {
     public void changeStageToShipping() {
         this.stage = Stage.SHIPPING;
     }
+
+    public boolean enableChangeStageToCompleted() {
+        return this.stage.equals(Stage.SHIPPING);
+    }
+
+    public void changeStageToCompleted() {
+        this.stage = Stage.COMPLETED;
+    }
 }

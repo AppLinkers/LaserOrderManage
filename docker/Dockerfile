@@ -2,10 +2,9 @@
 FROM openjdk:17-alpine
 
 ### ASPOSE
-RUN apt-get update
-RUN apt-get install -y apt-utils
-RUN apt-get install -y libgdiplus
-RUN apt-get install -y libc6-dev
+RUN apk add install -y apt-utils
+RUN apk add install -y libgdiplus
+RUN apk add install -y libc6-dev
 
 ### Dockerfile 내에서 사용할 변수 JAR_FILE을 정의한다.
 ARG JAR_FILE=/*.jar

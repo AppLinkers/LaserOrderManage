@@ -1,5 +1,7 @@
 package com.laser.ordermanage.factory.api;
 
+import com.laser.ordermanage.common.exception.CustomCommonException;
+import com.laser.ordermanage.common.exception.ErrorCode;
 import com.laser.ordermanage.factory.dto.request.FactoryCreateOrUpdateOrderQuotationRequest;
 import com.laser.ordermanage.factory.dto.request.FactoryUpdateOrderIsUrgentRequest;
 import com.laser.ordermanage.factory.dto.response.FactoryCreateOrUpdateOrderQuotationResponse;
@@ -43,6 +45,7 @@ public class FactoryOrderAPI {
      * 거래 견적서 작성 및 수정
      * - path parameter {order-id} 에 해당하는 거래 조회
      * - 거래 견적서 작성 및 수정 가능 단계 확인 (견적 대기)
+     * - 거래 견적서의 납기일이 거래 생성일 이후인지 확인
      * - 거래 견적서 작성 및 수정
      * - 거래의 고객에게 메일 전송
      */
@@ -54,6 +57,14 @@ public class FactoryOrderAPI {
 
         Order order = orderService.getOrderById(orderId);
         FactoryCreateOrUpdateOrderQuotationResponse response;
+
+        if (!order.enableManageQuotation()) {
+            throw new CustomCommonException(ErrorCode.INVALID_ORDER_STAGE, order.getStage().getValue());
+        }
+
+        if (order.getCreatedAt().toLocalDate().isAfter(request.getDeliveryDate())) {
+            throw new CustomCommonException(ErrorCode.INVALID_FIELDS, "견적서의 납기일은 거래 생성일 이후이어야 합니다.");
+        }
 
         if (order.hasQuotation()) {
             response = factoryOrderService.updateOrderQuotation(order, file, request);

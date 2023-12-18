@@ -72,10 +72,6 @@ public class FactoryOrderService {
 
     @Transactional
     public FactoryCreateOrUpdateOrderQuotationResponse createOrderQuotation(Order order, MultipartFile file, FactoryCreateOrUpdateOrderQuotationRequest request) {
-        if (!order.enableManageQuotation()) {
-            throw new CustomCommonException(ErrorCode.INVALID_ORDER_STAGE, order.getStage().getValue());
-        }
-
         // 도면 파일 유무 확인
         if (file == null || file.isEmpty()) {
             throw new CustomCommonException(ErrorCode.MISSING_QUOTATION_FILE);
@@ -126,10 +122,6 @@ public class FactoryOrderService {
 
     @Transactional
     public FactoryCreateOrUpdateOrderQuotationResponse updateOrderQuotation(Order order, MultipartFile file, FactoryCreateOrUpdateOrderQuotationRequest request) {
-        if (!order.enableManageQuotation()) {
-            throw new CustomCommonException(ErrorCode.INVALID_ORDER_STAGE, order.getStage().getValue());
-        }
-
         Quotation quotation = order.getQuotation();
 
         // 도면 파일 유무 확인

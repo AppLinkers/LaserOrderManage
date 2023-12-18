@@ -29,7 +29,7 @@ public class FactoryOrderAPI {
      * - 거래 긴급을 isUrgent 에 맞춰서 설정
      * - 거래의 고객에게 메일 전송
      */
-    @PutMapping("/{order-id}/urgent")
+    @PatchMapping("/{order-id}/urgent")
     public ResponseEntity<?> updateOrderIsUrgent(
         @PathVariable("order-id") Long orderId,
         @RequestBody @Valid FactoryUpdateOrderIsUrgentRequest request) {
@@ -85,7 +85,7 @@ public class FactoryOrderAPI {
      * - 거래 단계 변경 : 견적 승인 -> 제작 중
      * - 거래의 고객에게 메일 전송
      */
-    @PutMapping("/{order-id}/purchase-order")
+    @PatchMapping("/{order-id}/purchase-order")
     public ResponseEntity<?> approvePurchaseOrder(@PathVariable("order-id") Long orderId) {
 
         Order order = factoryOrderService.approvePurchaseOrder(orderId);
@@ -101,7 +101,7 @@ public class FactoryOrderAPI {
      * - 거래 단계 변경 : 제작 중 -> 배송 중
      * - 거래의 고객에게 메일 전송
      */
-    @PutMapping("/{order-id}/stage/shipping")
+    @PatchMapping("/{order-id}/stage/shipping")
     public ResponseEntity<?> changeStageToShipping(@PathVariable("order-id") Long orderId) {
 
         Order order = factoryOrderService.changeStageToShipping(orderId);

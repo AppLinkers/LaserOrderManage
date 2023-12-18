@@ -52,7 +52,7 @@ public class CustomerOrderAPI {
      * - 거래 배송지를 deliveryAddressId 에 맞춰서 설정
      * - 공장에게 메일 전송
      */
-    @PutMapping("/{order-id}/delivery-address")
+    @PatchMapping("/{order-id}/delivery-address")
     public ResponseEntity<?> updateOrderDeliveryAddress(
             @PathVariable("order-id") Long orderId,
             @RequestBody @Valid CustomerUpdateOrderDeliveryAddressRequest request) {
@@ -107,7 +107,7 @@ public class CustomerOrderAPI {
      * - 거래 도면 항목 수정
      * - 공장에게 메일 전송
      */
-    @PutMapping("/{order-id}/drawing/{drawing-id}")
+    @PatchMapping("/{order-id}/drawing/{drawing-id}")
     public ResponseEntity<?> updateOrderDrawing(
         @PathVariable("order-id") Long orderId,
         @PathVariable("drawing-id") Long drawingId,
@@ -158,7 +158,7 @@ public class CustomerOrderAPI {
      * - 거래 단계 변경 : 견적 대기 -> 견적 승인
      * - 공장에게 메일 전송
      */
-    @PutMapping("/{order-id}/quotation")
+    @PatchMapping("/{order-id}/quotation")
     public ResponseEntity<?> approveQuotation(@PathVariable("order-id") Long orderId) {
 
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -219,7 +219,7 @@ public class CustomerOrderAPI {
      * - 거래 단계 변경 : 배송 중 -> 거래 완료
      * - 공장에게 메일 전송
      */
-    @PutMapping("/{order-id}/stage/completed")
+    @PatchMapping("/{order-id}/stage/completed")
     public ResponseEntity<?> changeStageToCompleted(@PathVariable("order-id") Long orderId) {
 
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();

@@ -281,10 +281,6 @@ public class CustomerOrderService {
 
     @Transactional
     public CustomerCreateOrUpdateOrderPurchaseOrderResponse createOrderPurchaseOrder(Order order, CustomerCreateOrUpdateOrderPurchaseOrderRequest request) {
-        if (!order.enableManagePurchaseOrder()) {
-            throw new CustomCommonException(ErrorCode.INVALID_ORDER_STAGE, order.getStage().getValue());
-        }
-
         PurchaseOrder purchaseOrder = PurchaseOrder.builder()
                 .inspectionPeriod(request.getInspectionPeriod())
                 .inspectionCondition(request.getInspectionCondition())
@@ -321,10 +317,6 @@ public class CustomerOrderService {
 
     @Transactional
     public CustomerCreateOrUpdateOrderPurchaseOrderResponse updateOrderPurchaseOrder(Order order, CustomerCreateOrUpdateOrderPurchaseOrderRequest request) {
-        if (!order.enableManagePurchaseOrder()) {
-            throw new CustomCommonException(ErrorCode.INVALID_ORDER_STAGE, order.getStage().getValue());
-        }
-
         PurchaseOrder purchaseOrder = order.getPurchaseOrder();
 
         purchaseOrder.updatePurchaseOrderProperties(request);

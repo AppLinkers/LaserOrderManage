@@ -5,6 +5,7 @@ import com.laser.ordermanage.common.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 
@@ -14,6 +15,7 @@ public class MailService {
 
     private final JavaMailSender emailSender;
 
+    @Async("mailExecutor")
     public void sendEmail(String toEmail, String title, String text) {
         SimpleMailMessage emailForm = createEmailForm(toEmail, title, text);
         try {
@@ -24,8 +26,14 @@ public class MailService {
     }
 
     // 공장에게 메일 전송
+    @Async("mailExecutor")
     public void sendEmailToFactory(String title, String text) {
-        sendEmail("admin@kumoh.org", title, text);
+        SimpleMailMessage emailForm = createEmailForm("admin@kumoh.org", title, text);
+        try {
+            emailSender.send(emailForm);
+        } catch (RuntimeException e) {
+            throw new CustomCommonException(ErrorCode.UNABLE_TO_SEND_EMAIL);
+        }
     }
 
     // 발신할 이메일 데이터 세팅

@@ -1,5 +1,7 @@
 package com.laser.ordermanage.customer.api;
 
+import com.laser.ordermanage.common.exception.CustomCommonException;
+import com.laser.ordermanage.common.exception.ErrorCode;
 import com.laser.ordermanage.customer.dto.request.*;
 import com.laser.ordermanage.customer.dto.response.CustomerCreateDrawingResponse;
 import com.laser.ordermanage.customer.dto.response.CustomerCreateOrUpdateOrderPurchaseOrderResponse;
@@ -174,6 +176,7 @@ public class CustomerOrderAPI {
      * - path parameter {order-id} 에 해당하는 거래 조회
      * - 거래에 대한 현재 로그인한 회원의 접근 권한 확인 (거래의 고객 회원)
      * - 거래 발주서 작성 및 수정 가능 단계 확인 (견적 승인)
+     * - 거래 발주서의 검수 기간 및 지급일이 거래의 견적서 납기일 이후인지 확인
      * - 거래 발주서 작성 및 수정
      * - 공장에게 메일 전송
      */
@@ -188,6 +191,14 @@ public class CustomerOrderAPI {
 
         Order order = orderService.getOrderById(orderId);
         CustomerCreateOrUpdateOrderPurchaseOrderResponse response;
+
+        if (!order.enableManagePurchaseOrder()) {
+            throw new CustomCommonException(ErrorCode.INVALID_ORDER_STAGE, order.getStage().getValue());
+        }
+
+        if (order.getQuotation().getDeliveryDate().isAfter(request.getInspectionPeriod()) || order.getQuotation().getDeliveryDate().isAfter(request.getPaymentDate())) {
+            throw new CustomCommonException(ErrorCode.INVALID_FIELDS, "발주서의 검수기간 및 지급일검은 거래 납기일 이후이어야 합니다.");
+        }
 
         if (order.hasPurchaseOrder()) {
             response = customerOrderService.updateOrderPurchaseOrder(order, request);

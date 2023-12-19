@@ -16,7 +16,7 @@ import java.util.Collection;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-@RedisHash(value = "refresh", timeToLive = ExpireTime.REFRESH_TOKEN_EXPIRE_TIME_FOR_REDIS_AND_COOKIE)
+@RedisHash(value = "refresh", timeToLive = ExpireTime.REFRESH_TOKEN_EXPIRE_TIME_FOR_REDIS)
 public class RefreshToken {
 
     @Id

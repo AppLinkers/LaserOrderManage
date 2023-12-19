@@ -3,21 +3,20 @@ package com.laser.ordermanage.user.integration;
 import com.laser.ordermanage.common.IntegrationTest;
 import com.laser.ordermanage.common.constants.ExpireTime;
 import com.laser.ordermanage.common.exception.ErrorCode;
+import com.laser.ordermanage.common.security.jwt.dto.TokenInfo;
 import com.laser.ordermanage.common.security.jwt.setup.JwtBuilder;
 import com.laser.ordermanage.user.domain.type.Role;
 import com.laser.ordermanage.user.dto.request.LoginRequest;
-import com.laser.ordermanage.user.dto.response.TokenInfoResponse;
 import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 
-import java.util.Objects;
-
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class UserAuthIntegrationTest extends IntegrationTest {
 
@@ -45,8 +44,9 @@ public class UserAuthIntegrationTest extends IntegrationTest {
                 .andExpect(jsonPath("role").value(Role.ROLE_CUSTOMER.toString()))
                 .andExpect(jsonPath("grantType").value("Bearer"))
                 .andExpect(jsonPath("accessToken").exists())
-                .andExpect(cookie().exists("refreshToken"))
-                .andExpect(jsonPath("accessTokenExpirationTime").value(ExpireTime.ACCESS_TOKEN_EXPIRE_TIME));
+                .andExpect(jsonPath("refreshToken").exists())
+                .andExpect(jsonPath("accessTokenExpirationTime").value(ExpireTime.ACCESS_TOKEN_EXPIRE_TIME))
+                .andExpect(jsonPath("refreshTokenExpirationTime").value(ExpireTime.REFRESH_TOKEN_EXPIRE_TIME));
 
     }
 
@@ -107,7 +107,9 @@ public class UserAuthIntegrationTest extends IntegrationTest {
                 .password("user1-password")
                 .build();
 
-        String refreshToken = Objects.requireNonNull(requestLogin(request).andReturn().getResponse().getCookie("refreshToken")).getValue();
+        String response = requestLogin(request).andReturn().getResponse().getContentAsString();
+
+        String refreshToken = objectMapper.readValue(response, TokenInfo.class).getRefreshToken();
 
         // when
         final ResultActions resultActions = requestReIssue(refreshToken);
@@ -118,8 +120,9 @@ public class UserAuthIntegrationTest extends IntegrationTest {
                 .andExpect(jsonPath("role").value(Role.ROLE_CUSTOMER.toString()))
                 .andExpect(jsonPath("grantType").value("Bearer"))
                 .andExpect(jsonPath("accessToken").exists())
-                .andExpect(cookie().exists("refreshToken"))
-                .andExpect(jsonPath("accessTokenExpirationTime").value(ExpireTime.ACCESS_TOKEN_EXPIRE_TIME));
+                .andExpect(jsonPath("refreshToken").exists())
+                .andExpect(jsonPath("accessTokenExpirationTime").value(ExpireTime.ACCESS_TOKEN_EXPIRE_TIME))
+                .andExpect(jsonPath("refreshTokenExpirationTime").value(ExpireTime.REFRESH_TOKEN_EXPIRE_TIME));
     }
 
     /**
@@ -253,7 +256,9 @@ public class UserAuthIntegrationTest extends IntegrationTest {
                 .password("user1-password")
                 .build();
 
-        String refreshToken = Objects.requireNonNull(requestLogin(request).andReturn().getResponse().getCookie("refreshToken")).getValue();
+        String response = requestLogin(request).andReturn().getResponse().getContentAsString();
+
+        String refreshToken = objectMapper.readValue(response, TokenInfo.class).getRefreshToken();
 
         // when
         final ResultActions resultActions = requestReIssueWithDifferentIpAddress(refreshToken);
@@ -279,17 +284,14 @@ public class UserAuthIntegrationTest extends IntegrationTest {
 
         String response = requestLogin(request).andReturn().getResponse().getContentAsString();
 
-        String accessToken = objectMapper.readValue(response, TokenInfoResponse.class).getAccessToken();
+        String accessToken = objectMapper.readValue(response, TokenInfo.class).getAccessToken();
 
         // when
         final ResultActions resultActions = requestLogout(accessToken);
 
         // then
         resultActions
-                .andExpect(status().isOk())
-                .andExpect(cookie().exists("refreshToken"))
-                .andExpect(cookie().value("refreshToken", ""))
-                .andExpect(cookie().maxAge("refreshToken", 0));
+                .andExpect(status().isOk());
 
     }
 

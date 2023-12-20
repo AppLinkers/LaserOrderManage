@@ -22,7 +22,6 @@ public class UserAuthAPI {
      * - 비밀번호 일치 여부 검증
      * - Access Token, Refresh Token 생성
      * - Redis 에 Refresh Token 데이터 저장
-     * - 쿠키에 Refresh Token 설정
      * - Token 정보 반환
      */
     @PostMapping("/login")

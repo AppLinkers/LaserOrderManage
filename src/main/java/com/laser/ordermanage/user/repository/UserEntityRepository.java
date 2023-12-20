@@ -5,7 +5,7 @@ import org.springframework.data.repository.CrudRepository;
 
 import java.util.Optional;
 
-public interface UserEntityRepository extends CrudRepository<UserEntity, Long> {
+public interface UserEntityRepository extends CrudRepository<UserEntity, Long>, UserEntityRepositoryCustom{
 
     Optional<UserEntity> findFirstByEmail(String email);
 }

@@ -36,6 +36,7 @@ public class JwtProvider {
     private static final String BEARER_TYPE = "Bearer";
     private static final String TYPE_ACCESS = "access";
     private static final String TYPE_REFRESH = "refresh";
+    private static final String TYPE_PASSWORD_CHECK = "passwordCheck";
 
     private final BlackListRedisRepository blackListRedisRepository;
     private final Key key;
@@ -72,7 +73,7 @@ public class JwtProvider {
     }
 
     //name, authorities 를 가지고 AccessToken, RefreshToken 을 생성하는 메서드
-    public TokenInfo generateToken(String name, Collection<? extends GrantedAuthority> inputAuthorities) {
+    public TokenInfo generateToken(String email, Collection<? extends GrantedAuthority> inputAuthorities) {
         //권한 가져오기
         String authorities = inputAuthorities.stream()
                 .map(GrantedAuthority::getAuthority)
@@ -81,10 +82,10 @@ public class JwtProvider {
         Date now = new Date();
 
         // Access JWT Token 생성
-        String accessToken = generateJWT(name, authorities, TYPE_ACCESS, now, ExpireTime.ACCESS_TOKEN_EXPIRE_TIME);
+        String accessToken = generateJWT(email, authorities, TYPE_ACCESS, now, ExpireTime.ACCESS_TOKEN_EXPIRE_TIME);
 
         // Refresh JWT Token 생성
-        String refreshToken = generateJWT(name, authorities, TYPE_REFRESH, now, ExpireTime.REFRESH_TOKEN_EXPIRE_TIME);
+        String refreshToken = generateJWT(email, authorities, TYPE_REFRESH, now, ExpireTime.REFRESH_TOKEN_EXPIRE_TIME);
 
         return TokenInfo.builder()
                 .role(authorities)
@@ -94,6 +95,20 @@ public class JwtProvider {
                 .refreshToken(refreshToken)
                 .refreshTokenExpirationTime(ExpireTime.REFRESH_TOKEN_EXPIRE_TIME)
                 .build();
+    }
+
+    // 비밀번호 변경 인증 토큰 생성
+    public String generateChangePasswordToken(String email) {
+
+        Date now = new Date();
+
+        return Jwts.builder()
+                .setSubject(email)
+                .claim("type", TYPE_PASSWORD_CHECK)
+                .setIssuedAt(now)
+                .setExpiration(new Date(now.getTime() + ExpireTime.CHANGE_PASSWORD_TOKEN_EXPIRE_TIME))
+                .signWith(key, SignatureAlgorithm.HS256)
+                .compact();
     }
 
     public String generateJWT(String subject, String authorities, String type, Date issuedAt, long expireTime) {

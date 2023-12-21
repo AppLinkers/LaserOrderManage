@@ -43,6 +43,23 @@ public class UserEntityRepositoryCustomImpl implements UserEntityRepositoryCusto
         return getUserEmailResponseList;
     }
 
+    @Override
+    public String findNameByEmail(String email) {
+        String name = queryFactory
+                .select(new CaseBuilder()
+                        .when(factory.isNotNull())
+                        .then(factory.companyName)
+                        .otherwise(customer.name)
+                )
+                .from(userEntity)
+                .leftJoin(factory).on(factory.user.id.eq(userEntity.id))
+                .leftJoin(customer).on(customer.user.id.eq(userEntity.id))
+                .where(userEntity.email.eq(email))
+                .fetchOne();
+
+        return name;
+    }
+
     private BooleanBuilder eqName(QFactory factory, QCustomer customer, String name) {
         BooleanBuilder booleanBuilder = new BooleanBuilder();
 

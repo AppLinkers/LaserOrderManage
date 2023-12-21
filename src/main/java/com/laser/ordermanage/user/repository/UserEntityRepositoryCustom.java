@@ -7,4 +7,6 @@ import java.util.List;
 public interface UserEntityRepositoryCustom {
 
     List<GetUserEmailResponse> findEmailByNameAndPhone(String name, String phone);
+
+    String findNameByEmail(String email);
 }

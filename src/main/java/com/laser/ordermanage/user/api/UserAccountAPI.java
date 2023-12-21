@@ -1,5 +1,6 @@
 package com.laser.ordermanage.user.api;
 
+import com.laser.ordermanage.user.dto.request.GetPasswordRequest;
 import com.laser.ordermanage.user.dto.request.GetUserEmailRequest;
 import com.laser.ordermanage.user.service.UserAccountService;
 import jakarta.validation.Valid;
@@ -33,13 +34,26 @@ public class UserAccountAPI {
      * - Redis Verify Code 에 인증 코드 데이터 저장
      */
     @PostMapping("/password/request-verify")
-    public ResponseEntity<?> requestEmailVerifyForGetPassword(
+    public ResponseEntity<?> requestEmailVerifyForFindPassword(
             @NotEmpty(message = "이메일은 필수 입력값입니다.")
             @Pattern(regexp = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+.[A-Za-z]{2,6}$", message = "이메일 형식에 맞지 않습니다.")
             @RequestParam(value = "email") String email
     ) {
 
-        userAccountService.requestEmailVerifyForGetPassword(email);
+        userAccountService.requestEmailVerifyForFindPassword(email);
+
+        return ResponseEntity.ok().build();
+    }
+
+    /**
+     * 비밀번호 찾기
+     * - 이메일 기준으로 사용자 조회
+     * - 이메일 인증 코드 검증
+     */
+    @PostMapping("/password/verify-email")
+    public ResponseEntity<?> VerifyEmailForFindPassword(@RequestBody @Valid GetPasswordRequest request) {
+
+        userAccountService.verifyEmailForFindPassword(request);
 
         return ResponseEntity.ok().build();
     }

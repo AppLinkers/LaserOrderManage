@@ -90,4 +90,8 @@ public class UserEntity extends CreatedAtEntity implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
+
+    public void changePassword(String password) {
+        this.password = password;
+    }
 }

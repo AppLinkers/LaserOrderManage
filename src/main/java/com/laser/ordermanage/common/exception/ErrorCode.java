@@ -41,6 +41,8 @@ public enum ErrorCode {
 
     INVALID_VERIFY_CODE("-107", HttpStatus.UNAUTHORIZED, "인증 코드 정보가 유효하지 않습니다."),
 
+    INVALID_CHANGE_PASSWORD_JWT_TOKEN("-108", HttpStatus.UNAUTHORIZED, "Change Password JWT 토큰 정보가 유효하지 않습니다."),
+
     // 403 FORBIDDEN 인증 필요
     FORBIDDEN("-300", HttpStatus.FORBIDDEN, "인증이 필요합니다."),
     DENIED_ACCESS("-301", HttpStatus.FORBIDDEN, "해당 요청에 대한 접근 권한이 없습니다."),

@@ -1,15 +1,14 @@
 package com.laser.ordermanage.user.api;
 
+import com.laser.ordermanage.user.dto.request.ChangePasswordRequest;
 import com.laser.ordermanage.user.dto.request.GetUserEmailRequest;
 import com.laser.ordermanage.user.dto.request.RequestPasswordChangeRequest;
 import com.laser.ordermanage.user.service.UserAccountService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
 @RequestMapping("/user")
@@ -37,6 +36,25 @@ public class UserAccountAPI {
     public ResponseEntity<?> requestPasswordChangeWithOutAuthentication(@RequestBody @Valid RequestPasswordChangeRequest request) {
 
         userAccountService.requestPasswordChange(request);
+
+        return ResponseEntity.ok().build();
+    }
+
+    /**
+     * 비밀번호 변경
+     * - Request Header 에 존재하는 Change Password Token 추출 및 검증 수행
+     * - Redis 에 있는 Change Password Token 조회
+     * - Change Password Token 의 이메일 기준으로 사용자 조회
+     * - 해당 사용자 비밀번호 변경
+     * - Redis 에 있는 Change Password Token 삭제
+     */
+    @PatchMapping("/password")
+    public ResponseEntity<?> changePassword(
+            HttpServletRequest httpServletRequest,
+            @RequestBody @Valid ChangePasswordRequest request
+    ) {
+
+        userAccountService.changePassword(httpServletRequest, request);
 
         return ResponseEntity.ok().build();
     }

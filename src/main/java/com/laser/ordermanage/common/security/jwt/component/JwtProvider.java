@@ -5,6 +5,7 @@ import com.laser.ordermanage.common.constants.ExpireTime;
 import com.laser.ordermanage.common.exception.CustomCommonException;
 import com.laser.ordermanage.common.exception.ErrorCode;
 import com.laser.ordermanage.common.security.jwt.dto.TokenInfo;
+import com.laser.ordermanage.user.domain.type.Role;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -34,9 +35,10 @@ public class JwtProvider {
     private static final String AUTHORITIES_KEY = "auth";
     private static final String AUTHORIZATION_HEADER = "Authorization";
     private static final String BEARER_TYPE = "Bearer";
+    private static final String TYPE_KEY = "type";
     private static final String TYPE_ACCESS = "access";
     private static final String TYPE_REFRESH = "refresh";
-    private static final String TYPE_PASSWORD_CHECK = "passwordCheck";
+    private static final String TYPE_CHANGE_PASSWORD = "changePassword";
 
     private final BlackListRedisRepository blackListRedisRepository;
     private final Key key;
@@ -104,7 +106,8 @@ public class JwtProvider {
 
         return Jwts.builder()
                 .setSubject(email)
-                .claim("type", TYPE_PASSWORD_CHECK)
+                .claim(AUTHORITIES_KEY, Role.ROLE_USER)
+                .claim(TYPE_KEY, TYPE_CHANGE_PASSWORD)
                 .setIssuedAt(now)
                 .setExpiration(new Date(now.getTime() + ExpireTime.CHANGE_PASSWORD_TOKEN_EXPIRE_TIME))
                 .signWith(key, SignatureAlgorithm.HS256)
@@ -115,7 +118,7 @@ public class JwtProvider {
         return Jwts.builder()
                 .setSubject(subject)
                 .claim(AUTHORITIES_KEY, authorities)
-                .claim("type", type)
+                .claim(TYPE_KEY, type)
                 .setIssuedAt(issuedAt)
                 .setExpiration(new Date(issuedAt.getTime() + expireTime)) //토큰 만료 시간 설정
                 .signWith(key, SignatureAlgorithm.HS256)
@@ -154,12 +157,12 @@ public class JwtProvider {
                 return false;
             }
             return true;
-        } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException | IllegalArgumentException e) {
-            request.setAttribute("exception", ErrorCode.INVALID_JWT_TOKEN.getCode());
         } catch (ExpiredJwtException e) {
             request.setAttribute("exception", ErrorCode.EXPIRED_JWT_TOKEN.getCode());
         } catch (UnsupportedJwtException e) {
             request.setAttribute("exception", ErrorCode.UNSUPPORTED_JWT_TOKEN.getCode());
+        } catch (Exception e) {
+            request.setAttribute("exception", ErrorCode.INVALID_JWT_TOKEN.getCode());
         }
 
         return false;
@@ -199,13 +202,18 @@ public class JwtProvider {
     }
 
     public boolean isAccessToken(String token) {
-        String type = (String) Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody().get("type");
+        String type = (String) Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody().get(TYPE_KEY);
         return type.equals(TYPE_ACCESS);
     }
 
     public boolean isRefreshToken(String token) {
-        String type = (String) Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody().get("type");
+        String type = (String) Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody().get(TYPE_KEY);
         return type.equals(TYPE_REFRESH);
+    }
+
+    public boolean isChangePasswordToken(String token) {
+        String type = (String) Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody().get(TYPE_KEY);
+        return type.equals(TYPE_CHANGE_PASSWORD);
     }
 
     // Request Header 에서 토큰 정보 추출

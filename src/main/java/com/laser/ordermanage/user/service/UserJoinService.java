@@ -20,6 +20,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.util.Random;
+
 @Service
 @RequiredArgsConstructor
 public class UserJoinService {
@@ -38,7 +42,7 @@ public class UserJoinService {
 
         if (response.getStatus().equals(JoinStatus.POSSIBLE.getCode())) {
             String title = "금오 M.T 회원가입 이메일 인증 번호";
-            String verifyCode = mailService.createVerifyCode();
+            String verifyCode = createVerifyCode();
             mailService.sendEmail(email, title, verifyCode);
             // 이메일 인증번호 Redis 에 저장
             verifyCodeRedisRepository.save(
@@ -126,5 +130,19 @@ public class UserJoinService {
                 .orElseGet(() -> UserJoinStatusResponse.builderWithOutUserEntity()
                         .status(JoinStatus.POSSIBLE)
                         .buildWithOutUserEntity());
+    }
+
+    private String createVerifyCode() {
+        int length = 6;
+        try {
+            Random random = SecureRandom.getInstanceStrong();
+            StringBuilder builder = new StringBuilder();
+            for (int i = 0; i < length; i++) {
+                builder.append(random.nextInt(10));
+            }
+            return builder.toString();
+        } catch (NoSuchAlgorithmException e) {
+            throw new CustomCommonException(ErrorCode.INTERNAL_SERVER_ERROR);
+        }
     }
 }

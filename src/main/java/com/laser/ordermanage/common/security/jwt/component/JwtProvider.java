@@ -5,7 +5,7 @@ import com.laser.ordermanage.common.constants.ExpireTime;
 import com.laser.ordermanage.common.exception.CustomCommonException;
 import com.laser.ordermanage.common.exception.ErrorCode;
 import com.laser.ordermanage.common.security.jwt.dto.TokenInfo;
-import com.laser.ordermanage.user.domain.type.Role;
+import com.laser.ordermanage.user.domain.UserEntity;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -100,13 +100,13 @@ public class JwtProvider {
     }
 
     // 비밀번호 변경 인증 토큰 생성
-    public String generateChangePasswordToken(String email) {
+    public String generateChangePasswordToken(UserEntity user) {
 
         Date now = new Date();
 
         return Jwts.builder()
-                .setSubject(email)
-                .claim(AUTHORITIES_KEY, Role.ROLE_USER)
+                .setSubject(user.getEmail())
+                .claim(AUTHORITIES_KEY, user.getRole())
                 .claim(TYPE_KEY, TYPE_CHANGE_PASSWORD)
                 .setIssuedAt(now)
                 .setExpiration(new Date(now.getTime() + ExpireTime.CHANGE_PASSWORD_TOKEN_EXPIRE_TIME))

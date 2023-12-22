@@ -46,7 +46,7 @@ public class UserAccountService {
     public void requestPasswordChange(RequestPasswordChangeRequest request) {
         UserEntity user = userAuthService.getUserByEmail(request.getEmail());
 
-        String changePasswordToken = jwtProvider.generateChangePasswordToken(user.getEmail());
+        String changePasswordToken = jwtProvider.generateChangePasswordToken(user);
 
         changePasswordTokenRedisRepository.save(
                 ChangePasswordToken.builder()

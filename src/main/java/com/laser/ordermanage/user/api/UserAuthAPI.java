@@ -28,7 +28,7 @@ public class UserAuthAPI {
     public ResponseEntity<?> login(HttpServletRequest httpServletRequest, @RequestBody @Valid LoginRequest request) {
         TokenInfo tokenInfo = userAuthService.login(httpServletRequest, request);
 
-        return ResponseEntity.ok().body(tokenInfo);
+        return ResponseEntity.ok(tokenInfo);
     }
 
     /**
@@ -43,7 +43,7 @@ public class UserAuthAPI {
     public ResponseEntity<?> reissue(HttpServletRequest httpServletRequest, @CookieValue(value = "refreshToken") String refreshTokenReq) {
         TokenInfo tokenInfo = userAuthService.reissue(httpServletRequest, refreshTokenReq);
 
-        return ResponseEntity.ok().body(tokenInfo);
+        return ResponseEntity.ok(tokenInfo);
     }
 
     /**

@@ -6,24 +6,19 @@ import com.laser.ordermanage.common.exception.CustomCommonException;
 import com.laser.ordermanage.common.exception.ErrorCode;
 import com.laser.ordermanage.common.mail.MailService;
 import com.laser.ordermanage.customer.domain.Customer;
-import com.laser.ordermanage.customer.repository.CustomerRepository;
 import com.laser.ordermanage.customer.domain.DeliveryAddress;
+import com.laser.ordermanage.customer.repository.DeliveryAddressRepository;
 import com.laser.ordermanage.user.domain.UserEntity;
 import com.laser.ordermanage.user.domain.type.Role;
 import com.laser.ordermanage.user.dto.request.JoinCustomerRequest;
 import com.laser.ordermanage.user.dto.request.VerifyEmailRequest;
 import com.laser.ordermanage.user.dto.response.UserJoinStatusResponse;
 import com.laser.ordermanage.user.dto.type.JoinStatus;
-import com.laser.ordermanage.customer.repository.DeliveryAddressRepository;
 import com.laser.ordermanage.user.repository.UserEntityRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
-import java.util.Random;
 
 @Service
 @RequiredArgsConstructor
@@ -43,7 +38,7 @@ public class UserJoinService {
 
         if (response.getStatus().equals(JoinStatus.POSSIBLE.getCode())) {
             String title = "금오 M.T 회원가입 이메일 인증 번호";
-            String verifyCode = createVerifyCode();
+            String verifyCode = mailService.createVerifyCode();
             mailService.sendEmail(email, title, verifyCode);
             // 이메일 인증번호 Redis 에 저장
             verifyCodeRedisRepository.save(
@@ -56,20 +51,6 @@ public class UserJoinService {
 
         return response;
 
-    }
-
-    private String createVerifyCode() {
-        int length = 6;
-        try {
-            Random random = SecureRandom.getInstanceStrong();
-            StringBuilder builder = new StringBuilder();
-            for (int i = 0; i < length; i++) {
-                builder.append(random.nextInt(10));
-            }
-            return builder.toString();
-        } catch (NoSuchAlgorithmException e) {
-            throw new CustomCommonException(ErrorCode.INTERNAL_SERVER_ERROR);
-        }
     }
 
     @Transactional

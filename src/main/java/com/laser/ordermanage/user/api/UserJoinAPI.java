@@ -32,7 +32,7 @@ public class UserJoinAPI {
             @Pattern(regexp = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+.[A-Za-z]{2,6}$", message = "이메일 형식에 맞지 않습니다.")
             @RequestParam(value = "email") String email
     ) {
-        return ResponseEntity.ok().body(userJoinService.requestEmailVerify(email));
+        return ResponseEntity.ok(userJoinService.requestEmailVerify(email));
     }
 
     /**
@@ -42,7 +42,7 @@ public class UserJoinAPI {
      */
     @PostMapping("/verify-email")
     public ResponseEntity<?> verifyEmail(@RequestBody @Valid VerifyEmailRequest request) {
-        return ResponseEntity.ok().body(userJoinService.verifyEmail(request));
+        return ResponseEntity.ok(userJoinService.verifyEmail(request));
     }
 
     /**
@@ -54,6 +54,6 @@ public class UserJoinAPI {
      */
     @PostMapping("/join/customer")
     public ResponseEntity<?> joinCustomer(@RequestBody @Valid JoinCustomerRequest request) {
-        return ResponseEntity.ok().body(userJoinService.joinCustomer(request));
+        return ResponseEntity.ok(userJoinService.joinCustomer(request));
     }
 }

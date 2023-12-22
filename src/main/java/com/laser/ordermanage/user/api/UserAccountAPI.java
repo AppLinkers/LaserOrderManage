@@ -55,7 +55,7 @@ public class UserAccountAPI {
     @GetMapping("/password/email-link")
     public ResponseEntity<?> requestPasswordChange(
             @NotEmpty(message = "base URL 은 필수 입력값입니다.")
-            @Pattern(regexp="^((http(s?))\\:\\/\\/)([0-9a-zA-Z\\-]+\\.)+[a-zA-Z]{2,6}(\\:[0-9]+)?(\\/\\S*)?$", message = "base URL 형식이 유효하지 않습니다.")
+            @Pattern(regexp = "^((http(s?))\\:\\/\\/)([0-9a-zA-Z\\-]+\\.)+[a-zA-Z]{2,6}(\\:[0-9]+)?(\\/\\S*)?$", message = "base URL 형식이 유효하지 않습니다.")
             @RequestParam(value = "base-url") String baseUrl
     ) {
 
@@ -86,6 +86,21 @@ public class UserAccountAPI {
     ) {
 
         userAccountService.changePassword(httpServletRequest, request);
+
+        return ResponseEntity.ok().build();
+    }
+
+    /**
+     * 사용자 이메일 알림 설정 변경
+     * - 이메일 기준으로 사용자 조회
+     * - 사용자의 이메일 알림 설정 변경
+     */
+    @PatchMapping("email-notification")
+    public ResponseEntity<?> changeEmailNotification(@RequestParam(value = "is-activate") Boolean isActivate) {
+
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        userAccountService.changeEmailNotification(user.getUsername(), isActivate);
 
         return ResponseEntity.ok().build();
     }

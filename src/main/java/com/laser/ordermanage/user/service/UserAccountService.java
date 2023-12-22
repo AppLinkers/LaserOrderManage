@@ -85,4 +85,11 @@ public class UserAccountService {
 
         user.changePassword(passwordEncoder.encode(request.getPassword()));
     }
+
+    @Transactional
+    public void changeEmailNotification(String email, Boolean isActivate) {
+        UserEntity user = userAuthService.getUserByEmail(email);
+
+        user.changeEmailNotification(isActivate);
+    }
 }

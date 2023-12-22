@@ -71,6 +71,18 @@ public class CustomerDeliveryAddressService {
         deliveryAddress.updateProperties(request);
     }
 
+    @Transactional
+    public void deleteDeliveryAddress(Long deliveryAddressId) {
+
+        DeliveryAddress deliveryAddress = this.getDeliveryAddress(deliveryAddressId);
+
+        if (deliveryAddress.isDefault()) {
+            throw new CustomCommonException(ErrorCode.DEFAULT_DELIVERY_ADDRESS_DELETE);
+        }
+
+        deliveryAddressRepository.delete(deliveryAddress);
+    }
+
     @Transactional(readOnly = true)
     public void checkAuthorityCustomerOfDeliveryAddress(User user, Long deliveryAddressId) {
         if (this.getUserEmailByOrder(deliveryAddressId).equals(user.getUsername())) {
@@ -79,5 +91,4 @@ public class CustomerDeliveryAddressService {
 
         throw new CustomCommonException(ErrorCode.DENIED_ACCESS_TO_ENTITY, "deliveryAddress");
     }
-
 }

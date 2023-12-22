@@ -76,4 +76,8 @@ public class DeliveryAddress extends CreatedAtEntity {
         this.phone2 = request.getPhone2();
         this.isDefault = request.getIsDefault();
     }
+
+    public boolean isDefault() {
+        return this.isDefault;
+    }
 }

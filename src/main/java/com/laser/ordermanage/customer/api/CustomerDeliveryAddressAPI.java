@@ -48,7 +48,7 @@ public class CustomerDeliveryAddressAPI {
     /**
      * 고객의 배송지 항목 수정
      * - path parameter {delivery-address-id} 에 해당하는 배송지 조회
-     * - 배송지 대한 현재 로그인한 회원의 접근 권한 확인 (배송지의 고객 회원)
+     * - 배송지에 대한 현재 로그인한 회원의 접근 권한 확인 (배송지의 고객 회원)
      * - 배송지 항목 수정 (기본 배송지 설정)
      */
     @PutMapping("{delivery-address-id}")
@@ -62,6 +62,25 @@ public class CustomerDeliveryAddressAPI {
         customerDeliveryAddressService.checkAuthorityCustomerOfDeliveryAddress(user, deliveryAddressId);
 
         customerDeliveryAddressService.updateDeliveryAddress(user.getUsername(), deliveryAddressId, request);
+
+        return ResponseEntity.ok().build();
+    }
+
+    /**
+     * 고객의 배송지 삭제
+     * - path parameter {delivery-address-id} 에 해당하는 배송지 조회
+     * - 배송지에 대한 현재 로그인한 회원의 접근 권한 확인 (배송지의 고객 회원)
+     * - 기본 배송지 삭제 시도 시, 에러 반환
+     * - 배송지 삭제
+     */
+    @DeleteMapping("{delivery-address-id}")
+    public ResponseEntity<?> deleteDeliveryAddress(@PathVariable("delivery-address-id") Long deliveryAddressId) {
+
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        customerDeliveryAddressService.checkAuthorityCustomerOfDeliveryAddress(user, deliveryAddressId);
+
+        customerDeliveryAddressService.deleteDeliveryAddress(deliveryAddressId);
 
         return ResponseEntity.ok().build();
     }

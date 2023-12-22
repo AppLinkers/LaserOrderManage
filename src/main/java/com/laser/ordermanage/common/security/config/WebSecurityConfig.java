@@ -48,7 +48,7 @@ public class WebSecurityConfig {
 
         http.authorizeRequests((authorizeRequests) ->
                 authorizeRequests
-                        .requestMatchers("/user/logout").authenticated()
+                        .requestMatchers("/user/logout", "/user/password").authenticated()
                         .requestMatchers("/user/**").permitAll()
                         .requestMatchers("/customer/**", "/drawing/**").hasRole("CUSTOMER")
                         .requestMatchers("/factory/**").hasRole("FACTORY")

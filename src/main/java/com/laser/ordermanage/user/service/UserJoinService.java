@@ -6,15 +6,14 @@ import com.laser.ordermanage.common.exception.CustomCommonException;
 import com.laser.ordermanage.common.exception.ErrorCode;
 import com.laser.ordermanage.common.mail.MailService;
 import com.laser.ordermanage.customer.domain.Customer;
-import com.laser.ordermanage.customer.repository.CustomerRepository;
 import com.laser.ordermanage.customer.domain.DeliveryAddress;
+import com.laser.ordermanage.customer.repository.DeliveryAddressRepository;
 import com.laser.ordermanage.user.domain.UserEntity;
 import com.laser.ordermanage.user.domain.type.Role;
 import com.laser.ordermanage.user.dto.request.JoinCustomerRequest;
 import com.laser.ordermanage.user.dto.request.VerifyEmailRequest;
 import com.laser.ordermanage.user.dto.response.UserJoinStatusResponse;
 import com.laser.ordermanage.user.dto.type.JoinStatus;
-import com.laser.ordermanage.customer.repository.DeliveryAddressRepository;
 import com.laser.ordermanage.user.repository.UserEntityRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -56,20 +55,6 @@ public class UserJoinService {
 
         return response;
 
-    }
-
-    private String createVerifyCode() {
-        int length = 6;
-        try {
-            Random random = SecureRandom.getInstanceStrong();
-            StringBuilder builder = new StringBuilder();
-            for (int i = 0; i < length; i++) {
-                builder.append(random.nextInt(10));
-            }
-            return builder.toString();
-        } catch (NoSuchAlgorithmException e) {
-            throw new CustomCommonException(ErrorCode.INTERNAL_SERVER_ERROR);
-        }
     }
 
     @Transactional
@@ -145,5 +130,19 @@ public class UserJoinService {
                 .orElseGet(() -> UserJoinStatusResponse.builderWithOutUserEntity()
                         .status(JoinStatus.POSSIBLE)
                         .buildWithOutUserEntity());
+    }
+
+    private String createVerifyCode() {
+        int length = 6;
+        try {
+            Random random = SecureRandom.getInstanceStrong();
+            StringBuilder builder = new StringBuilder();
+            for (int i = 0; i < length; i++) {
+                builder.append(random.nextInt(10));
+            }
+            return builder.toString();
+        } catch (NoSuchAlgorithmException e) {
+            throw new CustomCommonException(ErrorCode.INTERNAL_SERVER_ERROR);
+        }
     }
 }

@@ -5,6 +5,7 @@ import com.laser.ordermanage.common.constants.ExpireTime;
 import com.laser.ordermanage.common.exception.CustomCommonException;
 import com.laser.ordermanage.common.exception.ErrorCode;
 import com.laser.ordermanage.common.security.jwt.dto.TokenInfo;
+import com.laser.ordermanage.user.domain.UserEntity;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -34,8 +35,10 @@ public class JwtProvider {
     private static final String AUTHORITIES_KEY = "auth";
     private static final String AUTHORIZATION_HEADER = "Authorization";
     private static final String BEARER_TYPE = "Bearer";
+    private static final String TYPE_KEY = "type";
     private static final String TYPE_ACCESS = "access";
     private static final String TYPE_REFRESH = "refresh";
+    private static final String TYPE_CHANGE_PASSWORD = "changePassword";
 
     private final BlackListRedisRepository blackListRedisRepository;
     private final Key key;
@@ -72,7 +75,7 @@ public class JwtProvider {
     }
 
     //name, authorities 를 가지고 AccessToken, RefreshToken 을 생성하는 메서드
-    public TokenInfo generateToken(String name, Collection<? extends GrantedAuthority> inputAuthorities) {
+    public TokenInfo generateToken(String email, Collection<? extends GrantedAuthority> inputAuthorities) {
         //권한 가져오기
         String authorities = inputAuthorities.stream()
                 .map(GrantedAuthority::getAuthority)
@@ -81,10 +84,10 @@ public class JwtProvider {
         Date now = new Date();
 
         // Access JWT Token 생성
-        String accessToken = generateJWT(name, authorities, TYPE_ACCESS, now, ExpireTime.ACCESS_TOKEN_EXPIRE_TIME);
+        String accessToken = generateJWT(email, authorities, TYPE_ACCESS, now, ExpireTime.ACCESS_TOKEN_EXPIRE_TIME);
 
         // Refresh JWT Token 생성
-        String refreshToken = generateJWT(name, authorities, TYPE_REFRESH, now, ExpireTime.REFRESH_TOKEN_EXPIRE_TIME);
+        String refreshToken = generateJWT(email, authorities, TYPE_REFRESH, now, ExpireTime.REFRESH_TOKEN_EXPIRE_TIME);
 
         return TokenInfo.builder()
                 .role(authorities)
@@ -96,11 +99,26 @@ public class JwtProvider {
                 .build();
     }
 
+    // 비밀번호 변경 인증 토큰 생성
+    public String generateChangePasswordToken(UserEntity user) {
+
+        Date now = new Date();
+
+        return Jwts.builder()
+                .setSubject(user.getEmail())
+                .claim(AUTHORITIES_KEY, user.getRole())
+                .claim(TYPE_KEY, TYPE_CHANGE_PASSWORD)
+                .setIssuedAt(now)
+                .setExpiration(new Date(now.getTime() + ExpireTime.CHANGE_PASSWORD_TOKEN_EXPIRE_TIME))
+                .signWith(key, SignatureAlgorithm.HS256)
+                .compact();
+    }
+
     public String generateJWT(String subject, String authorities, String type, Date issuedAt, long expireTime) {
         return Jwts.builder()
                 .setSubject(subject)
                 .claim(AUTHORITIES_KEY, authorities)
-                .claim("type", type)
+                .claim(TYPE_KEY, type)
                 .setIssuedAt(issuedAt)
                 .setExpiration(new Date(issuedAt.getTime() + expireTime)) //토큰 만료 시간 설정
                 .signWith(key, SignatureAlgorithm.HS256)
@@ -139,12 +157,12 @@ public class JwtProvider {
                 return false;
             }
             return true;
-        } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException | IllegalArgumentException e) {
-            request.setAttribute("exception", ErrorCode.INVALID_JWT_TOKEN.getCode());
         } catch (ExpiredJwtException e) {
             request.setAttribute("exception", ErrorCode.EXPIRED_JWT_TOKEN.getCode());
         } catch (UnsupportedJwtException e) {
             request.setAttribute("exception", ErrorCode.UNSUPPORTED_JWT_TOKEN.getCode());
+        } catch (Exception e) {
+            request.setAttribute("exception", ErrorCode.INVALID_JWT_TOKEN.getCode());
         }
 
         return false;
@@ -184,13 +202,18 @@ public class JwtProvider {
     }
 
     public boolean isAccessToken(String token) {
-        String type = (String) Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody().get("type");
+        String type = (String) Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody().get(TYPE_KEY);
         return type.equals(TYPE_ACCESS);
     }
 
     public boolean isRefreshToken(String token) {
-        String type = (String) Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody().get("type");
+        String type = (String) Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody().get(TYPE_KEY);
         return type.equals(TYPE_REFRESH);
+    }
+
+    public boolean isChangePasswordToken(String token) {
+        String type = (String) Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody().get(TYPE_KEY);
+        return type.equals(TYPE_CHANGE_PASSWORD);
     }
 
     // Request Header 에서 토큰 정보 추출

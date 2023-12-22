@@ -40,7 +40,7 @@ dependencies {
 	testImplementation 'org.springframework.security:spring-security-test'
 
 	// h2
-	implementation 'com.h2database:h2'
+	testImplementation 'com.h2database:h2'
 
 	// test-containers
 	testImplementation group: 'org.testcontainers', name: 'testcontainers', version: '1.17.2'

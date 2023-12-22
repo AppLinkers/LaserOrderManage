@@ -135,7 +135,7 @@ public class FactoryOrderService {
             quotation.updateFile(fileName, fileSize, quotationFileUrl);
         }
 
-        quotation.updateQuotationProperties(request);
+        quotation.updateProperties(request);
 
         return FactoryCreateOrUpdateOrderQuotationResponse.builder()
                 .id(quotation.getId())

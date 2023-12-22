@@ -1,7 +1,9 @@
 package com.laser.ordermanage.user.domain;
 
+import com.laser.ordermanage.common.converter.BooleanToYNConverter;
 import com.laser.ordermanage.common.entity.CreatedAtEntity;
 import com.laser.ordermanage.user.domain.type.Role;
+import com.laser.ordermanage.user.dto.request.UpdateUserAccountRequest;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -47,6 +49,10 @@ public class UserEntity extends CreatedAtEntity implements UserDetails {
     @Column(name = "detail_address")
     private String detailAddress;
 
+    @Convert(converter = BooleanToYNConverter.class)
+    @Column(name = "email_notification", nullable = false, length = 1)
+    private Boolean emailNotification = Boolean.TRUE;
+
     @Builder
     public UserEntity(String email, String password, Role role, String phone, String zipCode, String address, String detailAddress) {
         this.email = email;
@@ -89,5 +95,20 @@ public class UserEntity extends CreatedAtEntity implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+    public void changePassword(String password) {
+        this.password = password;
+    }
+
+    public void changeEmailNotification(Boolean emailNotification) {
+        this.emailNotification = emailNotification;
+    }
+
+    public void updateProperties(UpdateUserAccountRequest request) {
+        this.phone = request.getPhone();
+        this.zipCode = request.getZipCode();
+        this.address = request.getAddress();
+        this.detailAddress = request.getDetailAddress();
     }
 }

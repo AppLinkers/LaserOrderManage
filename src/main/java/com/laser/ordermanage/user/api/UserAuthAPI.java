@@ -22,14 +22,13 @@ public class UserAuthAPI {
      * - 비밀번호 일치 여부 검증
      * - Access Token, Refresh Token 생성
      * - Redis 에 Refresh Token 데이터 저장
-     * - 쿠키에 Refresh Token 설정
      * - Token 정보 반환
      */
     @PostMapping("/login")
     public ResponseEntity<?> login(HttpServletRequest httpServletRequest, @RequestBody @Valid LoginRequest request) {
         TokenInfo tokenInfo = userAuthService.login(httpServletRequest, request);
 
-        return ResponseEntity.ok().body(tokenInfo);
+        return ResponseEntity.ok(tokenInfo);
     }
 
     /**
@@ -44,7 +43,7 @@ public class UserAuthAPI {
     public ResponseEntity<?> reissue(HttpServletRequest httpServletRequest, @CookieValue(value = "refreshToken") String refreshTokenReq) {
         TokenInfo tokenInfo = userAuthService.reissue(httpServletRequest, refreshTokenReq);
 
-        return ResponseEntity.ok().body(tokenInfo);
+        return ResponseEntity.ok(tokenInfo);
     }
 
     /**

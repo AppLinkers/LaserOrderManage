@@ -51,7 +51,7 @@ public class Quotation extends CreatedAtEntity {
         this.fileUrl = fileUrl;
     }
 
-    public void updateQuotationProperties(FactoryCreateOrUpdateOrderQuotationRequest request) {
+    public void updateProperties(FactoryCreateOrUpdateOrderQuotationRequest request) {
         this.totalCost = request.getTotalCost();
         this.deliveryDate = request.getDeliveryDate();
     }

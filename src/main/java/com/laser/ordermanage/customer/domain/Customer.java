@@ -46,4 +46,12 @@ public class Customer {
         this.user.updateProperties(request.getUser());
         this.companyName = request.getCompanyName();
     }
+
+    public boolean isNewCustomer() {
+        return this.isNew;
+    }
+
+    public void disableNewCustomer() {
+        this.isNew = Boolean.FALSE;
+    }
 }

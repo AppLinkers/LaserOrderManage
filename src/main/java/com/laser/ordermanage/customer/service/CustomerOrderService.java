@@ -357,6 +357,10 @@ public class CustomerOrderService {
 
         order.changeStageToCompleted();
 
+        if (order.getCustomer().isNewCustomer()) {
+            order.getCustomer().disableNewCustomer();
+        }
+
         return order;
     }
 

@@ -3,6 +3,7 @@ package com.laser.ordermanage.user.domain;
 import com.laser.ordermanage.common.converter.BooleanToYNConverter;
 import com.laser.ordermanage.common.entity.CreatedAtEntity;
 import com.laser.ordermanage.user.domain.type.Role;
+import com.laser.ordermanage.user.dto.request.UpdateUserAccountRequest;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -102,5 +103,12 @@ public class UserEntity extends CreatedAtEntity implements UserDetails {
 
     public void changeEmailNotification(Boolean emailNotification) {
         this.emailNotification = emailNotification;
+    }
+
+    public void updateProperties(UpdateUserAccountRequest request) {
+        this.phone = request.getPhone();
+        this.zipCode = request.getZipCode();
+        this.address = request.getAddress();
+        this.detailAddress = request.getDetailAddress();
     }
 }

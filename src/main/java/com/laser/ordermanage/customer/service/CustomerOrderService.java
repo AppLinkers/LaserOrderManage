@@ -319,7 +319,7 @@ public class CustomerOrderService {
     public CustomerCreateOrUpdateOrderPurchaseOrderResponse updateOrderPurchaseOrder(Order order, CustomerCreateOrUpdateOrderPurchaseOrderRequest request) {
         PurchaseOrder purchaseOrder = order.getPurchaseOrder();
 
-        purchaseOrder.updatePurchaseOrderProperties(request);
+        purchaseOrder.updateProperties(request);
 
         return CustomerCreateOrUpdateOrderPurchaseOrderResponse.builder()
                 .id(purchaseOrder.getId())

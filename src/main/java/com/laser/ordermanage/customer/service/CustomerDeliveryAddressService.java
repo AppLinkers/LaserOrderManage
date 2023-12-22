@@ -5,7 +5,7 @@ import com.laser.ordermanage.common.exception.ErrorCode;
 import com.laser.ordermanage.common.paging.ListResponse;
 import com.laser.ordermanage.customer.domain.Customer;
 import com.laser.ordermanage.customer.domain.DeliveryAddress;
-import com.laser.ordermanage.customer.dto.request.CustomerCreateDeliveryAddressRequest;
+import com.laser.ordermanage.customer.dto.request.CustomerCreateOrUpdateDeliveryAddressRequest;
 import com.laser.ordermanage.customer.dto.response.GetDeliveryAddressResponse;
 import com.laser.ordermanage.customer.repository.CustomerRepository;
 import com.laser.ordermanage.customer.repository.DeliveryAddressRepository;
@@ -26,11 +26,11 @@ public class CustomerDeliveryAddressService {
     }
 
     @Transactional
-    public void createDeliveryAddress(String userName, CustomerCreateDeliveryAddressRequest request) {
+    public void createDeliveryAddress(String userName, CustomerCreateOrUpdateDeliveryAddressRequest request) {
         Customer customer = customerRepository.findFirstByUserEmail(userName);
 
-        DeliveryAddress defaultDeliveryAddress = deliveryAddressRepository.findFirstByCustomerAndIsDefaultTrue(customer);
         if (request.getIsDefault()) {
+            DeliveryAddress defaultDeliveryAddress = deliveryAddressRepository.findFirstByCustomerAndIsDefaultTrue(customer);
             defaultDeliveryAddress.disableDefault();
         }
 
@@ -59,6 +59,18 @@ public class CustomerDeliveryAddressService {
         return deliveryAddressRepository.findFirstById(deliverAddressId).orElseThrow(() -> new CustomCommonException(ErrorCode.NOT_FOUND_ENTITY, "deliveryAddress"));
     }
 
+    @Transactional
+    public void updateDeliveryAddress(String email, Long deliveryAddressId, CustomerCreateOrUpdateDeliveryAddressRequest request) {
+        DeliveryAddress deliveryAddress = this.getDeliveryAddress(deliveryAddressId);
+
+        if (request.getIsDefault()) {
+            DeliveryAddress defaultDeliveryAddress = deliveryAddressRepository.findFirstByCustomer_User_EmailAndIsDefaultTrue(email);
+            defaultDeliveryAddress.disableDefault();
+        }
+
+        deliveryAddress.updateProperties(request);
+    }
+
     @Transactional(readOnly = true)
     public void checkAuthorityCustomerOfDeliveryAddress(User user, Long deliveryAddressId) {
         if (this.getUserEmailByOrder(deliveryAddressId).equals(user.getUsername())) {
@@ -67,6 +79,5 @@ public class CustomerDeliveryAddressService {
 
         throw new CustomCommonException(ErrorCode.DENIED_ACCESS_TO_ENTITY, "deliveryAddress");
     }
-
 
 }

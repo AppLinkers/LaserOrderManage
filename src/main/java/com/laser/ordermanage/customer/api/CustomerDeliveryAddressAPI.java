@@ -1,6 +1,6 @@
 package com.laser.ordermanage.customer.api;
 
-import com.laser.ordermanage.customer.dto.request.CustomerCreateDeliveryAddressRequest;
+import com.laser.ordermanage.customer.dto.request.CustomerCreateOrUpdateDeliveryAddressRequest;
 import com.laser.ordermanage.customer.service.CustomerDeliveryAddressService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -20,10 +20,10 @@ public class CustomerDeliveryAddressAPI {
      * 고객 회원의 배송지 생성
      * - 기본 배송지 설정
      * - 고객 회원의 이메일 기준으로 고객 조회 및 배송지 데이터와 연관관계 매핑
-     * - 배송지 데이터 생성
+     * - 배송지 데이터 생성 (기본 배송지 설정)
      */
     @PostMapping("")
-    public ResponseEntity<?> createDeliveryAddress(@RequestBody @Valid CustomerCreateDeliveryAddressRequest request) {
+    public ResponseEntity<?> createDeliveryAddress(@RequestBody @Valid CustomerCreateOrUpdateDeliveryAddressRequest request) {
 
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
@@ -43,5 +43,26 @@ public class CustomerDeliveryAddressAPI {
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         return ResponseEntity.ok(customerDeliveryAddressService.getDeliveryAddress(user.getUsername()));
+    }
+
+    /**
+     * 고객의 배송지 항목 수정
+     * - path parameter {delivery-address-id} 에 해당하는 배송지 조회
+     * - 배송지 대한 현재 로그인한 회원의 접근 권한 확인 (배송지의 고객 회원)
+     * - 배송지 항목 수정 (기본 배송지 설정)
+     */
+    @PutMapping("{delivery-address-id}")
+    public ResponseEntity<?> updateDeliveryAddress(
+            @PathVariable("delivery-address-id") Long deliveryAddressId,
+            @RequestBody @Valid CustomerCreateOrUpdateDeliveryAddressRequest request
+    ) {
+
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        customerDeliveryAddressService.checkAuthorityCustomerOfDeliveryAddress(user, deliveryAddressId);
+
+        customerDeliveryAddressService.updateDeliveryAddress(user.getUsername(), deliveryAddressId, request);
+
+        return ResponseEntity.ok().build();
     }
 }

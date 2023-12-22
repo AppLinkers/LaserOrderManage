@@ -11,4 +11,6 @@ public interface DeliveryAddressRepository extends CrudRepository<DeliveryAddres
     Optional<DeliveryAddress> findFirstById(Long deliveryId);
 
     DeliveryAddress findFirstByCustomerAndIsDefaultTrue(Customer customer);
+
+    DeliveryAddress findFirstByCustomer_User_EmailAndIsDefaultTrue(String email);
 }

@@ -26,7 +26,7 @@ public interface OrderRepositoryCustom {
 
     Page<CustomerGetOrderIsCompletedHistoryResponse> findIsCompletedByCustomer(String userName, Pageable pageable, String query);
 
-    CustomerGetOrderCreateInformationResponse findCreateInformationByCustomerAndOrder(String userName, Long orderId);
+    CustomerGetOrderCreateInformationResponse findCreateInformationByOrder(Long orderId);
 
     GetOrderDetailResponse findDetailByOrder(Long orderId);
 

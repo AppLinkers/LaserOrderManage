@@ -4,6 +4,7 @@ import com.laser.ordermanage.common.paging.PageResponse;
 import com.laser.ordermanage.customer.dto.response.CustomerGetOrderHistoryResponse;
 import com.laser.ordermanage.customer.dto.response.CustomerGetOrderIsCompletedHistoryResponse;
 import com.laser.ordermanage.customer.service.CustomerOrderHistoryService;
+import com.laser.ordermanage.customer.service.CustomerOrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -20,6 +21,7 @@ import java.util.List;
 @RestController
 public class CustomerOrderHistoryAPI {
 
+    private final CustomerOrderService customerOrderService;
     private final CustomerOrderHistoryService customerOrderHistoryService;
 
     /**
@@ -75,6 +77,8 @@ public class CustomerOrderHistoryAPI {
     public ResponseEntity<?> getOrderCreateInformation(@PathVariable Long orderId) {
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        return ResponseEntity.ok(customerOrderHistoryService.getOrderCreateInformation(user.getUsername(), orderId));
+        customerOrderService.checkAuthorityOfOrder(user, orderId);
+
+        return ResponseEntity.ok(customerOrderHistoryService.getOrderCreateInformation(orderId));
     }
 }

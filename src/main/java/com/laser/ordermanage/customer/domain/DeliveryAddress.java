@@ -48,10 +48,6 @@ public class DeliveryAddress extends CreatedAtEntity {
     @Column(name = "is_default", nullable = false, length = 1)
     private Boolean isDefault;
 
-    @Convert(converter = BooleanToYNConverter.class)
-    @Column(name = "is_deleted", nullable = false, length = 1)
-    private Boolean isDeleted = Boolean.FALSE;
-
     @Builder
     public DeliveryAddress(Customer customer, String name, String zipCode, String address, String detailAddress, String receiver, String phone1, String phone2, Boolean isDefault) {
         this.customer = customer;

@@ -3,6 +3,7 @@ package com.laser.ordermanage.customer.dto.response;
 import com.laser.ordermanage.order.domain.OrderManufacturing;
 import com.laser.ordermanage.order.domain.OrderPostProcessing;
 import com.laser.ordermanage.order.dto.response.GetDrawingResponse;
+import com.laser.ordermanage.order.dto.response.GetOrderDeliveryAddressResponse;
 import com.querydsl.core.annotations.QueryProjection;
 import lombok.Getter;
 
@@ -23,10 +24,10 @@ public class CustomerGetOrderCreateInformationResponse {
 
     private final String request;
 
-    private final GetDeliveryAddressResponse deliveryAddress;
+    private final GetOrderDeliveryAddressResponse deliveryAddress;
 
     @QueryProjection
-    public CustomerGetOrderCreateInformationResponse(Long id, String name, OrderManufacturing manufacturing, OrderPostProcessing postProcessing, List<GetDrawingResponse> drawingList, String request, GetDeliveryAddressResponse deliveryAddress) {
+    public CustomerGetOrderCreateInformationResponse(Long id, String name, OrderManufacturing manufacturing, OrderPostProcessing postProcessing, List<GetDrawingResponse> drawingList, String request, GetOrderDeliveryAddressResponse deliveryAddress) {
         this.id = id;
         this.name = name;
         this.manufacturingList = manufacturing.toValueList();

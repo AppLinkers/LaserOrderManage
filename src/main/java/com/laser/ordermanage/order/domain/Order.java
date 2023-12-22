@@ -31,9 +31,9 @@ public class Order extends CreatedAtEntity {
     @JoinColumn(name = "customer_id", nullable = false)
     private Customer customer;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     @JoinColumn(name = "delivery_address_id", nullable = false)
-    private DeliveryAddress deliveryAddress;
+    private OrderDeliveryAddress deliveryAddress;
 
     @Column(name = "name", nullable = false, length = 20)
     private String name;
@@ -80,7 +80,7 @@ public class Order extends CreatedAtEntity {
     private PurchaseOrder purchaseOrder;
 
     @Builder
-    public Order(Customer customer, DeliveryAddress deliveryAddress, String name, String imgUrl, OrderManufacturing manufacturing, OrderPostProcessing postProcessing, String request, Boolean isNewIssue) {
+    public Order(Customer customer, OrderDeliveryAddress deliveryAddress, String name, String imgUrl, OrderManufacturing manufacturing, OrderPostProcessing postProcessing, String request, Boolean isNewIssue) {
         this.customer = customer;
         this.deliveryAddress = deliveryAddress;
         this.name = name;
@@ -104,7 +104,7 @@ public class Order extends CreatedAtEntity {
     }
 
     public void updateDeliveryAddress(DeliveryAddress deliveryAddress) {
-        this.deliveryAddress = deliveryAddress;
+        this.deliveryAddress.updateProperties(deliveryAddress);
     }
 
     public boolean enableManageDrawing() {

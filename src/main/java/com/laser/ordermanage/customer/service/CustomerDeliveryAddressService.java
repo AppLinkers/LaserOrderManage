@@ -36,7 +36,7 @@ public class CustomerDeliveryAddressService {
 
         DeliveryAddress deliveryAddress = DeliveryAddress.builder()
                 .customer(customer)
-                .name(request.getDeliveryName())
+                .name(request.getName())
                 .zipCode(request.getZipCode())
                 .address(request.getAddress())
                 .detailAddress(request.getDetailAddress())

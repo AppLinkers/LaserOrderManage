@@ -39,7 +39,8 @@ public class CustomerOrderService {
     @Transactional
     public void createOrder(User user, CustomerCreateOrderRequest request) {
         Customer customer = customerRepository.findFirstByUserEmail(user.getUsername());
-        DeliveryAddress deliveryAddress = customerDeliveryAddressService.getDeliveryAddress(request.getDeliveryAddressId());
+
+        OrderDeliveryAddress deliveryAddress = OrderDeliveryAddress.ofRequest(request.getDeliveryAddress());
 
         OrderManufacturing orderManufacturing = OrderManufacturing.ofRequest(request.getManufacturing());
         OrderPostProcessing orderPostProcessing = OrderPostProcessing.ofRequest(request.getPostProcessing());

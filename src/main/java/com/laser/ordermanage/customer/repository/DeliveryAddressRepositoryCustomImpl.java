@@ -29,8 +29,7 @@ public class DeliveryAddressRepositoryCustomImpl implements DeliveryAddressRepos
                         deliveryAddress.receiver,
                         deliveryAddress.phone1,
                         deliveryAddress.phone2,
-                        deliveryAddress.isDefault,
-                        deliveryAddress.isDeleted
+                        deliveryAddress.isDefault
                 ))
                 .from(deliveryAddress)
                 .join(deliveryAddress.customer, customer)

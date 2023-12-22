@@ -1,5 +1,6 @@
 package com.laser.ordermanage.user.domain;
 
+import com.laser.ordermanage.common.converter.BooleanToYNConverter;
 import com.laser.ordermanage.common.entity.CreatedAtEntity;
 import com.laser.ordermanage.user.domain.type.Role;
 import jakarta.persistence.*;
@@ -47,6 +48,10 @@ public class UserEntity extends CreatedAtEntity implements UserDetails {
     @Column(name = "detail_address")
     private String detailAddress;
 
+    @Convert(converter = BooleanToYNConverter.class)
+    @Column(name = "email_notification", nullable = false, length = 1)
+    private Boolean emailNotification = Boolean.TRUE;
+
     @Builder
     public UserEntity(String email, String password, Role role, String phone, String zipCode, String address, String detailAddress) {
         this.email = email;
@@ -93,5 +98,9 @@ public class UserEntity extends CreatedAtEntity implements UserDetails {
 
     public void changePassword(String password) {
         this.password = password;
+    }
+
+    public void changeEmailNotification(Boolean emailNotification) {
+        this.emailNotification = emailNotification;
     }
 }

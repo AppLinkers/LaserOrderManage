@@ -7,10 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
 @RequestMapping("/factory/order-manager")
@@ -32,5 +29,18 @@ public class FactoryOrderManagerAPI {
         factoryOrderManagerService.createOrderManger(user.getUsername(), request);
 
         return ResponseEntity.ok().build();
+    }
+
+    /**
+     * 공장 회원의 거래 담당자 목록 조회
+     * - 공장 회원의 이메일 기준으로 거래 담당자 목록 조회
+     * - 거래 담당자 생성일을 기준으로 내림차순 정렬 수행
+     */
+    @GetMapping("")
+    public ResponseEntity<?> getOrderManager() {
+
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        return ResponseEntity.ok(factoryOrderManagerService.getOrderManager(user.getUsername()));
     }
 }

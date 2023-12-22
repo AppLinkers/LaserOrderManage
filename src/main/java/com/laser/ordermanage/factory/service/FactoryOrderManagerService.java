@@ -1,8 +1,10 @@
 package com.laser.ordermanage.factory.service;
 
+import com.laser.ordermanage.common.paging.ListResponse;
 import com.laser.ordermanage.factory.domain.Factory;
 import com.laser.ordermanage.factory.domain.OrderManager;
 import com.laser.ordermanage.factory.dto.request.FactoryCreateOrUpdateOrderManagerRequest;
+import com.laser.ordermanage.factory.dto.response.FactoryGetOrderManagerResponse;
 import com.laser.ordermanage.factory.repository.FactoryRepository;
 import com.laser.ordermanage.factory.repository.OrderManagerRepository;
 import lombok.RequiredArgsConstructor;
@@ -27,5 +29,10 @@ public class FactoryOrderManagerService {
                 .build();
 
         orderManagerRepository.save(orderManager);
+    }
+
+    @Transactional(readOnly = true)
+    public ListResponse<FactoryGetOrderManagerResponse> getOrderManager(String email) {
+        return new ListResponse<>(orderManagerRepository.findByFactory(email));
     }
 }

@@ -35,7 +35,7 @@ public class CustomerDeliveryAddressAPI {
     /**
      * 고객 회원의 배송지 목록 조회
      * - 고객 회원의 이메일 기준으로 배송지 목록 조회
-     * - 기본 배송지 여부를 기준으로 정렬 수행
+     * - 기본 배송지 여부 & 생성일을 기준으로 정렬 수행
      */
     @GetMapping("")
     public ResponseEntity<?> getDeliveryAddress() {

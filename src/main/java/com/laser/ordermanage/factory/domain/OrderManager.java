@@ -1,5 +1,6 @@
 package com.laser.ordermanage.factory.domain;
 
+import com.laser.ordermanage.common.entity.CreatedAtEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -10,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "order_manager")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-public class OrderManager {
+public class OrderManager extends CreatedAtEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

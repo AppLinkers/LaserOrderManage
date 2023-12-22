@@ -1,6 +1,8 @@
 package com.laser.ordermanage.user.repository;
 
 import com.laser.ordermanage.customer.domain.QCustomer;
+import com.laser.ordermanage.customer.dto.response.CustomerGetUserAccountResponse;
+import com.laser.ordermanage.customer.dto.response.QCustomerGetUserAccountResponse;
 import com.laser.ordermanage.factory.domain.QFactory;
 import com.laser.ordermanage.factory.dto.response.FactoryGetUserAccountResponse;
 import com.laser.ordermanage.factory.dto.response.QFactoryGetUserAccountResponse;
@@ -65,6 +67,27 @@ public class UserEntityRepositoryCustomImpl implements UserEntityRepositoryCusto
                 .fetchOne();
 
         return factoryGetUserAccountResponse;
+    }
+
+    @Override
+    public CustomerGetUserAccountResponse findUserAccountByCustomer(String email) {
+        CustomerGetUserAccountResponse customerGetUserAccountResponse = queryFactory
+                .select(new QCustomerGetUserAccountResponse(
+                        userEntity.email,
+                        customer.name,
+                        userEntity.phone,
+                        userEntity.zipCode,
+                        userEntity.address,
+                        userEntity.detailAddress,
+                        customer.companyName,
+                        userEntity.emailNotification
+                ))
+                .from(userEntity)
+                .leftJoin(customer).on(customer.user.id.eq(userEntity.id))
+                .where(userEntity.email.eq(email))
+                .fetchOne();
+
+        return customerGetUserAccountResponse;
     }
 
     private BooleanBuilder eqName(QFactory factory, QCustomer customer, String name) {

@@ -26,8 +26,8 @@ public class CustomerDeliveryAddressService {
     }
 
     @Transactional
-    public void createDeliveryAddress(String userName, CustomerCreateOrUpdateDeliveryAddressRequest request) {
-        Customer customer = customerRepository.findFirstByUserEmail(userName);
+    public void createDeliveryAddress(String email, CustomerCreateOrUpdateDeliveryAddressRequest request) {
+        Customer customer = customerRepository.findFirstByUserEmail(email);
 
         if (request.getIsDefault()) {
             DeliveryAddress defaultDeliveryAddress = deliveryAddressRepository.findFirstByCustomerAndIsDefaultTrue(customer);

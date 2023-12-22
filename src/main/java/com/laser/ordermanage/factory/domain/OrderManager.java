@@ -2,6 +2,7 @@ package com.laser.ordermanage.factory.domain;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -26,4 +27,10 @@ public class OrderManager {
     @Column(name = "phone", nullable = false, length = 11)
     private String phone;
 
+    @Builder
+    public OrderManager(Factory factory, String name, String phone) {
+        this.factory = factory;
+        this.name = name;
+        this.phone = phone;
+    }
 }

@@ -37,10 +37,31 @@ public class FactoryOrderManagerAPI {
      * - 거래 담당자 생성일을 기준으로 내림차순 정렬 수행
      */
     @GetMapping("")
-    public ResponseEntity<?> getOrderManager() {
+    public ResponseEntity<?> getOrderManagerList() {
 
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        return ResponseEntity.ok(factoryOrderManagerService.getOrderManager(user.getUsername()));
+        return ResponseEntity.ok(factoryOrderManagerService.getOrderManagerList(user.getUsername()));
+    }
+
+    /**
+     * 공장 회원의 거래 담당자 항목 수정
+     * - path parameter {order-manager-id} 에 해당하는 거래 담당자 조회
+     * - 거래 담당자에 대한 현재 로그인한 회원의 접근 권한 확인 (거래 담당자의 공장 회원)
+     * - 거래 담당자 항목 수정
+     */
+    @PutMapping("{order-manager-id}")
+    public ResponseEntity<?> updateOrderManager(
+            @PathVariable("order-manager-id") Long orderManagerId,
+            @RequestBody @Valid FactoryCreateOrUpdateOrderManagerRequest request
+    ) {
+
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        factoryOrderManagerService.checkAuthorityFactoryOfOrderManager(user, orderManagerId);
+
+        factoryOrderManagerService.updateOrderManager(orderManagerId, request);
+
+        return ResponseEntity.ok().build();
     }
 }

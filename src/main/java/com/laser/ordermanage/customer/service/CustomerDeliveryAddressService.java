@@ -21,7 +21,7 @@ public class CustomerDeliveryAddressService {
     private final CustomerRepository customerRepository;
     private final DeliveryAddressRepository deliveryAddressRepository;
 
-    private String getUserEmailByOrder(Long deliveryAddressId) {
+    private String getUserEmailByDeliveryAddress(Long deliveryAddressId) {
         return deliveryAddressRepository.findUserEmailById(deliveryAddressId).orElseThrow(() -> new CustomCommonException(ErrorCode.NOT_FOUND_ENTITY, "deliveryAddress"));
     }
 
@@ -50,7 +50,7 @@ public class CustomerDeliveryAddressService {
     }
 
     @Transactional(readOnly = true)
-    public ListResponse<CustomerGetDeliveryAddressResponse> getDeliveryAddress(String userName) {
+    public ListResponse<CustomerGetDeliveryAddressResponse> getDeliveryAddressList(String userName) {
         return new ListResponse<>(deliveryAddressRepository.findByCustomer(userName));
     }
 
@@ -85,7 +85,7 @@ public class CustomerDeliveryAddressService {
 
     @Transactional(readOnly = true)
     public void checkAuthorityCustomerOfDeliveryAddress(User user, Long deliveryAddressId) {
-        if (this.getUserEmailByOrder(deliveryAddressId).equals(user.getUsername())) {
+        if (this.getUserEmailByDeliveryAddress(deliveryAddressId).equals(user.getUsername())) {
             return;
         }
 

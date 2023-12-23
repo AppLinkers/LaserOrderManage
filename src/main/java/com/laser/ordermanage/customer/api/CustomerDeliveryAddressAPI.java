@@ -38,11 +38,11 @@ public class CustomerDeliveryAddressAPI {
      * - 기본 배송지 여부 & 생성일을 기준으로 정렬 수행
      */
     @GetMapping("")
-    public ResponseEntity<?> getDeliveryAddress() {
+    public ResponseEntity<?> getDeliveryAddressList() {
 
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        return ResponseEntity.ok(customerDeliveryAddressService.getDeliveryAddress(user.getUsername()));
+        return ResponseEntity.ok(customerDeliveryAddressService.getDeliveryAddressList(user.getUsername()));
     }
 
     /**

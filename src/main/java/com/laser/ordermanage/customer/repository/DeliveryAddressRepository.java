@@ -8,7 +8,7 @@ import java.util.Optional;
 
 public interface DeliveryAddressRepository extends CrudRepository<DeliveryAddress, Long>, DeliveryAddressRepositoryCustom {
 
-    Optional<DeliveryAddress> findFirstById(Long deliveryId);
+    Optional<DeliveryAddress> findFirstById(Long deliveryAddressId);
 
     DeliveryAddress findFirstByCustomerAndIsDefaultTrue(Customer customer);
 

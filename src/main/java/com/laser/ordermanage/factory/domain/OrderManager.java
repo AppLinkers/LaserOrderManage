@@ -1,6 +1,7 @@
 package com.laser.ordermanage.factory.domain;
 
 import com.laser.ordermanage.common.entity.CreatedAtEntity;
+import com.laser.ordermanage.factory.dto.request.FactoryCreateOrUpdateOrderManagerRequest;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -33,5 +34,10 @@ public class OrderManager extends CreatedAtEntity {
         this.factory = factory;
         this.name = name;
         this.phone = phone;
+    }
+
+    public void updateProperties(FactoryCreateOrUpdateOrderManagerRequest request) {
+        this.name = request.getName();
+        this.phone = request.getPhone();
     }
 }

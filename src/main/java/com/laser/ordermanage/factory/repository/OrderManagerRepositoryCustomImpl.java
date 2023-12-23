@@ -6,6 +6,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
+import java.util.Optional;
 
 import static com.laser.ordermanage.factory.domain.QFactory.factory;
 import static com.laser.ordermanage.factory.domain.QOrderManager.orderManager;
@@ -31,5 +32,18 @@ public class OrderManagerRepositoryCustomImpl implements OrderManagerRepositoryC
                 .fetch();
 
         return factoryGetOrderManagerResponseList;
+    }
+
+    @Override
+    public Optional<String> findUserEmailById(Long orderManagerId) {
+        String userEmail = queryFactory
+                .select(userEntity.email)
+                .from(orderManager)
+                .join(orderManager.factory, factory)
+                .join(factory.user, userEntity)
+                .where(orderManager.id.eq(orderManagerId))
+                .fetchOne();
+
+        return Optional.ofNullable(userEmail);
     }
 }

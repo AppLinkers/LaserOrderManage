@@ -8,5 +8,5 @@ import java.util.Optional;
 public interface DeliveryAddressRepositoryCustom {
     List<CustomerGetDeliveryAddressResponse> findByCustomer(String email);
 
-    Optional<String> findUserEmailById(Long orderId);
+    Optional<String> findUserEmailById(Long deliveryAddressId);
 }

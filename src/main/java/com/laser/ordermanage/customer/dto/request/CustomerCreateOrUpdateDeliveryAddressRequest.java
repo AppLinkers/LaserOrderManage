@@ -6,7 +6,7 @@ import jakarta.validation.constraints.Pattern;
 import lombok.Getter;
 
 @Getter
-public class CustomerCreateDeliveryAddressRequest {
+public class CustomerCreateOrUpdateDeliveryAddressRequest {
 
     @NotEmpty(message = "배송지 이름은 필수 입력값입니다.")
     @Pattern(regexp = "^.{0,20}$", message = "배송지 이름의 최대 글자수는 20자입니다.")

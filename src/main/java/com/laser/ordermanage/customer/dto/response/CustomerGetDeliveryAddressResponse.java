@@ -4,7 +4,7 @@ import com.querydsl.core.annotations.QueryProjection;
 import lombok.Getter;
 
 @Getter
-public class GetDeliveryAddressResponse {
+public class CustomerGetDeliveryAddressResponse {
 
     private final Long id;
 
@@ -25,7 +25,7 @@ public class GetDeliveryAddressResponse {
     private final Boolean isDefault;
 
     @QueryProjection
-    public GetDeliveryAddressResponse(Long id, String name, String zipCode, String address, String detailAddress, String receiver, String phone1, String phone2, Boolean isDefault) {
+    public CustomerGetDeliveryAddressResponse(Long id, String name, String zipCode, String address, String detailAddress, String receiver, String phone1, String phone2, Boolean isDefault) {
         this.id = id;
         this.name = name;
         this.zipCode = zipCode;

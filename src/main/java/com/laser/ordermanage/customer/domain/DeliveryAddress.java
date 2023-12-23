@@ -2,6 +2,7 @@ package com.laser.ordermanage.customer.domain;
 
 import com.laser.ordermanage.common.converter.BooleanToYNConverter;
 import com.laser.ordermanage.common.entity.CreatedAtEntity;
+import com.laser.ordermanage.customer.dto.request.CustomerCreateOrUpdateDeliveryAddressRequest;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -63,5 +64,20 @@ public class DeliveryAddress extends CreatedAtEntity {
 
     public void disableDefault() {
         this.isDefault = Boolean.FALSE;
+    }
+
+    public void updateProperties(CustomerCreateOrUpdateDeliveryAddressRequest request) {
+        this.name = request.getName();
+        this.zipCode = request.getZipCode();
+        this.address = request.getAddress();
+        this.detailAddress = request.getDetailAddress();
+        this.receiver = request.getReceiver();
+        this.phone1 = request.getPhone1();
+        this.phone2 = request.getPhone2();
+        this.isDefault = request.getIsDefault();
+    }
+
+    public boolean isDefault() {
+        return this.isDefault;
     }
 }

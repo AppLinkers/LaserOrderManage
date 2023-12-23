@@ -64,4 +64,22 @@ public class FactoryOrderManagerAPI {
 
         return ResponseEntity.ok().build();
     }
+
+    /**
+     * 공장 회원의 거래 담당자 삭제
+     * - path parameter {order-manager-id} 에 해당하는 거래 담당자 조회
+     * - 거래 담당자에 대한 현재 로그인한 회원의 접근 권한 확인 (거래 담당자의 공장 회원)
+     * - 거래 담당자 삭제
+     */
+    @DeleteMapping("{order-manager-id}")
+    public ResponseEntity<?> deleteOrderManager(@PathVariable("order-manager-id") Long orderManagerId) {
+
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        factoryOrderManagerService.checkAuthorityFactoryOfOrderManager(user, orderManagerId);
+
+        factoryOrderManagerService.deleteOrderManager(orderManagerId);
+
+        return ResponseEntity.ok().build();
+    }
 }

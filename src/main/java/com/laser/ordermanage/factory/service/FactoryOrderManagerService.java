@@ -55,6 +55,14 @@ public class FactoryOrderManagerService {
         orderManager.updateProperties(request);
     }
 
+    @Transactional
+    public void deleteOrderManager(Long orderManagerId) {
+
+        OrderManager orderManager = this.getOrderManager(orderManagerId);
+
+        orderManagerRepository.delete(orderManager);
+    }
+
     @Transactional(readOnly = true)
     public void checkAuthorityFactoryOfOrderManager(User user, Long orderManagerId) {
         if (this.getUserEmailByOrderManager(orderManagerId).equals(user.getUsername())) {

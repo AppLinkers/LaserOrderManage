@@ -39,6 +39,7 @@ public class UserAuthService {
         return userRepository.findFirstByEmail(email).orElseThrow(() -> new CustomCommonException(ErrorCode.NOT_FOUND_ENTITY, "user"));
     }
 
+    @Transactional
     public TokenInfo login(HttpServletRequest httpServletRequest, LoginRequest request) {
 
         // 1. Login ID/PW 를 기반으로 Authentication 객체 생성
@@ -56,7 +57,7 @@ public class UserAuthService {
         refreshTokenRedisRepository.save(RefreshToken.builder()
                 .id(authentication.getName())
                 .ip(NetworkUtil.getClientIp(httpServletRequest))
-                .authorities(authentication.getAuthorities())
+                .role(response.getRole())
                 .refreshToken(response.getRefreshToken())
                 .build());
 
@@ -72,13 +73,13 @@ public class UserAuthService {
                 String currentIpAddress = NetworkUtil.getClientIp(httpServletRequest);
                 if (refreshToken.getIp().equals(currentIpAddress)) {
                     // 3. Redis 에 저장된 RefreshToken 정보를 기반으로 JWT Token 생성
-                    TokenInfo response = jwtProvider.generateToken(refreshToken.getId(), refreshToken.getAuthorities());
+                    TokenInfo response = jwtProvider.generateToken(refreshToken.getId(), refreshToken.getRole());
 
                     // 4. Redis RefreshToken update
                     refreshTokenRedisRepository.save(RefreshToken.builder()
                             .id(refreshToken.getId())
                             .ip(currentIpAddress)
-                            .authorities(refreshToken.getAuthorities())
+                            .role(response.getRole())
                             .refreshToken(response.getRefreshToken())
                             .build());
 

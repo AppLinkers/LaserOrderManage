@@ -1,6 +1,5 @@
 package com.laser.ordermanage.user.dto.request;
 
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
 import lombok.Getter;
@@ -16,8 +15,8 @@ public class JoinCustomerRequest {
     @Pattern(regexp = "^(?=.*[a-zA-Z])(?=.*[~`!@#$%^&*()-])(?=.*[0-9]).{8,}$", message = "비밀번호는 8 자리 이상 영문, 숫자, 특수문자를 사용하세요.")
     private String password;
 
+    @NotEmpty(message = "이름은 필수 입력값입니다.")
     @Pattern(regexp = "^.{0,10}$", message = "이름의 최대 글자수는 10자입니다.")
-    @NotBlank(message = "이름은 필수 입력값입니다.")
     private String name;
 
     @Pattern(regexp = "^.{0,20}$", message = "회사 이름의 최대 글자수는 20자입니다.")

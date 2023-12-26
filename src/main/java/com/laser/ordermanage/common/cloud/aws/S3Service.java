@@ -37,9 +37,9 @@ public class S3Service {
         }
     }
 
-    public String upload(String filePath) {
+    public String upload(String folder, String filePath) {
         File file = new File(filePath);
-        String key = UUID.randomUUID() + "_" + file.getName();
+        String key = folder + "/" + UUID.randomUUID() + "_" + file.getName();
         try {
             RequestBody requestBody = RequestBody.fromFile(file);
             String fileUrl = putObject(requestBody, key);

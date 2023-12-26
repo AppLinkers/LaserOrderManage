@@ -40,7 +40,7 @@ public class UserJoinService {
     public UserJoinStatusResponse requestEmailVerify(String email) {
         UserJoinStatusResponse response = checkDuplicatedEmail(email);
 
-        if (response.getStatus().equals(JoinStatus.POSSIBLE.getCode())) {
+        if (JoinStatus.isPossible(response.getStatus())) {
             String title = "금오 M.T 회원가입 이메일 인증 번호";
             String verifyCode = createVerifyCode();
             mailService.sendEmail(email, title, verifyCode);
@@ -61,7 +61,7 @@ public class UserJoinService {
     public UserJoinStatusResponse verifyEmail(VerifyEmailRequest request) {
         UserJoinStatusResponse response = checkDuplicatedEmail(request.getEmail());
 
-        if (response.getStatus().equals(JoinStatus.POSSIBLE.getCode())) {
+        if (JoinStatus.isPossible(response.getStatus())) {
             VerifyCode verifyCode = verifyCodeRedisRepository.findById(request.getEmail())
                     .orElseThrow(() -> new CustomCommonException(ErrorCode.NOT_FOUND_VERIFY_CODE));
 
@@ -80,7 +80,7 @@ public class UserJoinService {
     public UserJoinStatusResponse joinCustomer(JoinCustomerRequest request) {
         UserJoinStatusResponse response = checkDuplicatedEmail(request.getEmail());
 
-        if (response.getStatus().equals(JoinStatus.POSSIBLE.getCode())) {
+        if (JoinStatus.isPossible(response.getStatus())) {
             UserEntity user = UserEntity.builder()
                     .email(request.getEmail())
                     .password(passwordEncoder.encode(request.getPassword()))

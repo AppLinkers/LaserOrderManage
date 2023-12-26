@@ -41,7 +41,7 @@ public class UserAuthIntegrationTest extends IntegrationTest {
         // then
         resultActions
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("role").value(Role.ROLE_CUSTOMER.toString()))
+                .andExpect(jsonPath("role").value(Role.ROLE_CUSTOMER.name()))
                 .andExpect(jsonPath("grantType").value("Bearer"))
                 .andExpect(jsonPath("accessToken").exists())
                 .andExpect(jsonPath("refreshToken").exists())
@@ -117,7 +117,7 @@ public class UserAuthIntegrationTest extends IntegrationTest {
         // then
         resultActions
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("role").value(Role.ROLE_CUSTOMER.toString()))
+                .andExpect(jsonPath("role").value(Role.ROLE_CUSTOMER.name()))
                 .andExpect(jsonPath("grantType").value("Bearer"))
                 .andExpect(jsonPath("accessToken").exists())
                 .andExpect(jsonPath("refreshToken").exists())

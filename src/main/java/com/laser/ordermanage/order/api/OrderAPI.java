@@ -1,5 +1,6 @@
 package com.laser.ordermanage.order.api;
 
+import com.laser.ordermanage.order.domain.Comment;
 import com.laser.ordermanage.order.dto.request.CreateCommentRequest;
 import com.laser.ordermanage.order.service.OrderService;
 import jakarta.validation.Valid;
@@ -63,7 +64,9 @@ public class OrderAPI {
 
         orderService.checkAuthorityCustomerOfOrderOrFactory(user, orderId);
 
-        orderService.createOrderComment(user.getUsername(), orderId, request);
+        Comment comment = orderService.createOrderComment(user.getUsername(), orderId, request);
+
+        orderService.sendEmailForCreateOrderComment(comment);
 
         return ResponseEntity.ok().build();
     }

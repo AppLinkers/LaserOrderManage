@@ -29,10 +29,10 @@ public class CustomerOrderAPI {
     /**
      * 고객 회원의 거래 생성
      * - 고객 회원의 이메일 기준으로 고객 조회 및 거래 데이터와 연관관계 매핑
-     * - 배송지 PK 기준으로 배송지 조회 및 거래 데이터와 연관관계 매핑
+     * - 거래 배송지 데이터 생성 및 거래 데이터와 연관관계 매핑
      * - 제조 서비스 및 후처리 서비스 데이터 생성 및 거래 데이터와 연관관계 매핑
-     * - 도면 데이터 생성 및 거래 데이터와 연관관계 매핑
      * - 거래 데이터 생성
+     * - 도면 데이터 생성 및 거래 데이터와 연관관계 매핑
      */
     @PostMapping("")
     public ResponseEntity<?> createOrder(@RequestBody @Valid CustomerCreateOrderRequest request) {
@@ -190,15 +190,16 @@ public class CustomerOrderAPI {
         customerOrderService.checkAuthorityOfOrder(user, orderId);
 
         Order order = orderService.getOrderById(orderId);
-        CustomerCreateOrUpdateOrderPurchaseOrderResponse response;
 
         if (!order.enableManagePurchaseOrder()) {
             throw new CustomCommonException(ErrorCode.INVALID_ORDER_STAGE, order.getStage().getValue());
         }
 
         if (order.getQuotation().getDeliveryDate().isAfter(request.getInspectionPeriod()) || order.getQuotation().getDeliveryDate().isAfter(request.getPaymentDate())) {
-            throw new CustomCommonException(ErrorCode.INVALID_FIELDS, "발주서의 검수기간 및 지급일검은 거래 납기일 이후이어야 합니다.");
+            throw new CustomCommonException(ErrorCode.INVALID_FIELDS, "발주서의 검수기간 및 지급일은 거래 납기일 이후이어야 합니다.");
         }
+
+        CustomerCreateOrUpdateOrderPurchaseOrderResponse response;
 
         if (order.hasPurchaseOrder()) {
             response = customerOrderService.updateOrderPurchaseOrder(order, request);

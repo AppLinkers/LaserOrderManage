@@ -75,7 +75,7 @@ public class UserAccountService {
 
         String resolvedToken = (String)httpServletRequest.getAttribute("resolvedToken");
 
-        if (!StringUtils.hasText(resolvedToken) || !jwtProvider.isChangePasswordToken(resolvedToken)) {
+        if (!StringUtils.hasText(resolvedToken) || !jwtProvider.getType(resolvedToken).equals(JwtProvider.TYPE_CHANGE_PASSWORD)) {
             throw new CustomCommonException(ErrorCode.INVALID_CHANGE_PASSWORD_JWT_TOKEN);
         }
 

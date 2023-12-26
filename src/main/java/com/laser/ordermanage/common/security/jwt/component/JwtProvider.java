@@ -91,6 +91,13 @@ public class JwtProvider {
     }
 
     /**
+     * Jwt 토큰을 복호화
+     */
+    private Claims parseClaims(String token) {
+        return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
+    }
+
+    /**
      * JWT 토큰을 복호화하여 토큰에 들어있는 정보를 추출하여 Authentication 생성
      */
     public Authentication getAuthentication(String jwtToken) {
@@ -108,23 +115,23 @@ public class JwtProvider {
     // 토큰 정보를 검증하는 메서드
     public boolean validateToken(ServletRequest request, String token) {
         try {
-            Claims claims = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
+            Claims claims = parseClaims(token);
 
             if (claims.get(ROLE_KEY).toString().isBlank()) {
-                request.setAttribute("exception", ErrorCode.UNAUTHORIZED_JWT_TOKEN.getCode());
-                return false;
+                throw new CustomCommonException(ErrorCode.UNAUTHORIZED_JWT_TOKEN);
             }
 
             // access token 이 black list 에 저장되어 있는지 확인
             if (blackListRedisRepository.findByAccessToken(token).isPresent()) {
-                request.setAttribute("exception", ErrorCode.INVALID_ACCESS_JWT_TOKEN.getCode());
-                return false;
+                throw new CustomCommonException(ErrorCode.INVALID_ACCESS_JWT_TOKEN);
             }
             return true;
         } catch (ExpiredJwtException e) {
             request.setAttribute("exception", ErrorCode.EXPIRED_JWT_TOKEN.getCode());
         } catch (UnsupportedJwtException e) {
             request.setAttribute("exception", ErrorCode.UNSUPPORTED_JWT_TOKEN.getCode());
+        } catch (CustomCommonException e) {
+            request.setAttribute("exception", e.getErrorCode());
         } catch (Exception e) {
             request.setAttribute("exception", ErrorCode.INVALID_JWT_TOKEN.getCode());
         }
@@ -134,7 +141,7 @@ public class JwtProvider {
 
     public boolean validateToken(String token) {
         try {
-            Claims claims = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
+            Claims claims = parseClaims(token);
 
             if (claims.get(ROLE_KEY).toString().isBlank()) {
                 throw new CustomCommonException(ErrorCode.UNAUTHORIZED_JWT_TOKEN);
@@ -144,13 +151,11 @@ public class JwtProvider {
             throw new CustomCommonException(ErrorCode.EXPIRED_JWT_TOKEN);
         } catch (UnsupportedJwtException e) {
             throw new CustomCommonException(ErrorCode.UNSUPPORTED_JWT_TOKEN);
+        } catch (CustomCommonException e) {
+            throw e;
         } catch (Exception e) {
             throw new CustomCommonException(ErrorCode.INVALID_JWT_TOKEN);
         }
-    }
-
-    private Claims parseClaims(String token) {
-        return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
     }
 
     public Long getExpiration(String token) {

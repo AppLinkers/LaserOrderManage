@@ -236,11 +236,9 @@ public class CustomerOrderService {
 
     @Transactional(readOnly = true)
     public void checkAuthorityOfOrder(User user, Long orderId) {
-        if (orderService.getUserEmailByOrder(orderId).equals(user.getUsername())) {
-            return;
+        if (!orderService.getUserEmailByOrder(orderId).equals(user.getUsername())) {
+            throw new CustomCommonException(ErrorCode.DENIED_ACCESS_TO_ENTITY, "order");
         }
-
-        throw new CustomCommonException(ErrorCode.DENIED_ACCESS_TO_ENTITY, "order");
     }
 
     @Transactional
@@ -282,18 +280,12 @@ public class CustomerOrderService {
 
     @Transactional
     public CustomerCreateOrUpdateOrderPurchaseOrderResponse createOrderPurchaseOrder(Order order, CustomerCreateOrUpdateOrderPurchaseOrderRequest request) {
-        PurchaseOrder purchaseOrder = PurchaseOrder.builder()
-                .inspectionPeriod(request.getInspectionPeriod())
-                .inspectionCondition(request.getInspectionCondition())
-                .paymentDate(request.getPaymentDate())
-                .build();
+        PurchaseOrder purchaseOrder = PurchaseOrder.ofRequest(request);
 
         PurchaseOrder savedPurchaseOrder = purchaseOrderRepository.save(purchaseOrder);
         order.createPurchaseOrder(savedPurchaseOrder);
 
-        return CustomerCreateOrUpdateOrderPurchaseOrderResponse.builder()
-                .id(savedPurchaseOrder.getId())
-                .build();
+        return CustomerCreateOrUpdateOrderPurchaseOrderResponse.from(savedPurchaseOrder);
     }
 
     @Transactional(readOnly = true)
@@ -322,9 +314,7 @@ public class CustomerOrderService {
 
         purchaseOrder.updateProperties(request);
 
-        return CustomerCreateOrUpdateOrderPurchaseOrderResponse.builder()
-                .id(purchaseOrder.getId())
-                .build();
+        return CustomerCreateOrUpdateOrderPurchaseOrderResponse.from(purchaseOrder);
     }
 
     @Transactional(readOnly = true)

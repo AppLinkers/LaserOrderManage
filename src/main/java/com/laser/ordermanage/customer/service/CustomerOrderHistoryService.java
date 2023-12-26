@@ -20,15 +20,15 @@ public class CustomerOrderHistoryService {
     private final OrderRepository orderRepository;
 
     @Transactional(readOnly = true)
-    public PageResponse<CustomerGetOrderHistoryResponse> getOrderHistory(String userName, Pageable pageable, List<String> stageRequestList, List<String> manufacturingRequestList, String query) {
-        Page<CustomerGetOrderHistoryResponse> customerGetOrderHistoryResponsePage = orderRepository.findByCustomer(userName, pageable, stageRequestList, manufacturingRequestList, query);
+    public PageResponse<CustomerGetOrderHistoryResponse> getOrderHistory(String email, Pageable pageable, List<String> stageRequestList, List<String> manufacturingRequestList, String query) {
+        Page<CustomerGetOrderHistoryResponse> customerGetOrderHistoryResponsePage = orderRepository.findByCustomer(email, pageable, stageRequestList, manufacturingRequestList, query);
 
         return new PageResponse<>(customerGetOrderHistoryResponsePage);
     }
 
     @Transactional
-    public PageResponse<CustomerGetOrderIsCompletedHistoryResponse> getOrderIsCompletedHistory(String userName, Pageable pageable, String query) {
-        Page<CustomerGetOrderIsCompletedHistoryResponse> customerGetOrderIsCompletedHistoryResponsePage = orderRepository.findIsCompletedByCustomer(userName, pageable, query);
+    public PageResponse<CustomerGetOrderIsCompletedHistoryResponse> getOrderIsCompletedHistory(String email, Pageable pageable, String query) {
+        Page<CustomerGetOrderIsCompletedHistoryResponse> customerGetOrderIsCompletedHistoryResponsePage = orderRepository.findIsCompletedByCustomer(email, pageable, query);
 
         return new PageResponse<>(customerGetOrderIsCompletedHistoryResponsePage);
     }

@@ -1,7 +1,7 @@
 package com.laser.ordermanage.customer.repository;
 
-import com.laser.ordermanage.customer.dto.response.GetDeliveryAddressResponse;
-import com.laser.ordermanage.customer.dto.response.QGetDeliveryAddressResponse;
+import com.laser.ordermanage.customer.dto.response.CustomerGetDeliveryAddressResponse;
+import com.laser.ordermanage.customer.dto.response.QCustomerGetDeliveryAddressResponse;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 
@@ -18,9 +18,9 @@ public class DeliveryAddressRepositoryCustomImpl implements DeliveryAddressRepos
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public List<GetDeliveryAddressResponse> findByCustomer(String userName) {
-        List<GetDeliveryAddressResponse> getDeliveryAddressResponseList = queryFactory
-                .select(new QGetDeliveryAddressResponse(
+    public List<CustomerGetDeliveryAddressResponse> findByCustomer(String email) {
+        List<CustomerGetDeliveryAddressResponse> customerGetDeliveryAddressResponseList = queryFactory
+                .select(new QCustomerGetDeliveryAddressResponse(
                         deliveryAddress.id,
                         deliveryAddress.name,
                         deliveryAddress.zipCode,
@@ -29,17 +29,16 @@ public class DeliveryAddressRepositoryCustomImpl implements DeliveryAddressRepos
                         deliveryAddress.receiver,
                         deliveryAddress.phone1,
                         deliveryAddress.phone2,
-                        deliveryAddress.isDefault,
-                        deliveryAddress.isDeleted
+                        deliveryAddress.isDefault
                 ))
                 .from(deliveryAddress)
                 .join(deliveryAddress.customer, customer)
                 .join(customer.user, userEntity)
-                .where(userEntity.email.eq(userName))
+                .where(userEntity.email.eq(email))
                 .orderBy(deliveryAddress.isDefault.desc(), deliveryAddress.createdAt.desc())
                 .fetch();
 
-        return getDeliveryAddressResponseList;
+        return customerGetDeliveryAddressResponseList;
     }
 
     @Override

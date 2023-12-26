@@ -33,7 +33,8 @@ public class CustomerOrderHistoryService {
         return new PageResponse<>(customerGetOrderIsCompletedHistoryResponsePage);
     }
 
-    public CustomerGetOrderCreateInformationResponse getOrderCreateInformation(String userName, Long orderId) {
-        return orderRepository.findCreateInformationByCustomerAndOrder(userName, orderId);
+    @Transactional
+    public CustomerGetOrderCreateInformationResponse getOrderCreateInformation(Long orderId) {
+        return orderRepository.findCreateInformationByOrder(orderId);
     }
 }

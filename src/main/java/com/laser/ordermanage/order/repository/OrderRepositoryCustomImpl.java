@@ -22,9 +22,9 @@ import java.util.List;
 import java.util.Optional;
 
 import static com.laser.ordermanage.customer.domain.QCustomer.customer;
-import static com.laser.ordermanage.customer.domain.QDeliveryAddress.deliveryAddress;
 import static com.laser.ordermanage.order.domain.QDrawing.drawing;
 import static com.laser.ordermanage.order.domain.QOrder.order;
+import static com.laser.ordermanage.order.domain.QOrderDeliveryAddress.orderDeliveryAddress;
 import static com.laser.ordermanage.order.domain.QOrderManufacturing.orderManufacturing;
 import static com.laser.ordermanage.order.domain.QOrderPostProcessing.orderPostProcessing;
 import static com.laser.ordermanage.order.domain.QPurchaseOrder.purchaseOrder;
@@ -265,17 +265,14 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
     }
 
     @Override
-    public CustomerGetOrderCreateInformationResponse findCreateInformationByCustomerAndOrder(String userName, Long orderId) {
+    public CustomerGetOrderCreateInformationResponse findCreateInformationByOrder(Long orderId) {
         List<CustomerGetOrderCreateInformationResponse> customerGetOrderCreateInformationResponseList = queryFactory
                 .selectFrom(order)
-                .join(order.customer, customer)
-                .join(customer.user, userEntity)
                 .join(order.manufacturing, orderManufacturing)
                 .join(order.postProcessing, orderPostProcessing)
                 .join(drawing).on(order.id.eq(drawing.order.id))
-                .join(order.deliveryAddress, deliveryAddress)
+                .join(order.deliveryAddress, orderDeliveryAddress)
                 .where(
-                        userEntity.email.eq(userName),
                         order.id.eq(orderId)
                 )
                 .transform(
@@ -299,17 +296,15 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
                                                 )
                                         ),
                                         order.request,
-                                        new QGetDeliveryAddressResponse(
-                                                deliveryAddress.id,
-                                                deliveryAddress.name,
-                                                deliveryAddress.zipCode,
-                                                deliveryAddress.address,
-                                                deliveryAddress.detailAddress,
-                                                deliveryAddress.receiver,
-                                                deliveryAddress.phone1,
-                                                deliveryAddress.phone2,
-                                                deliveryAddress.isDefault,
-                                                deliveryAddress.isDeleted
+                                        new QGetOrderDeliveryAddressResponse(
+                                                orderDeliveryAddress.id,
+                                                orderDeliveryAddress.name,
+                                                orderDeliveryAddress.zipCode,
+                                                orderDeliveryAddress.address,
+                                                orderDeliveryAddress.detailAddress,
+                                                orderDeliveryAddress.receiver,
+                                                orderDeliveryAddress.phone1,
+                                                orderDeliveryAddress.phone2
                                         )
                                 )
                         )
@@ -325,7 +320,7 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
                 .join(order.customer, customer)
                 .join(customer.user, userEntity)
                 .join(drawing).on(order.id.eq(drawing.order.id))
-                .join(order.deliveryAddress, deliveryAddress)
+                .join(order.deliveryAddress, orderDeliveryAddress)
                 .leftJoin(order.quotation, quotation)
                 .leftJoin(order.purchaseOrder, purchaseOrder)
                 .where(order.id.eq(orderId))
@@ -360,17 +355,15 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
                                                       )
                                               ),
                                               order.request,
-                                               new QGetDeliveryAddressResponse(
-                                                       deliveryAddress.id,
-                                                       deliveryAddress.name,
-                                                       deliveryAddress.zipCode,
-                                                       deliveryAddress.address,
-                                                       deliveryAddress.detailAddress,
-                                                       deliveryAddress.receiver,
-                                                       deliveryAddress.phone1,
-                                                       deliveryAddress.phone2,
-                                                       deliveryAddress.isDefault,
-                                                       deliveryAddress.isDeleted
+                                               new QGetOrderDeliveryAddressResponse(
+                                                       orderDeliveryAddress.id,
+                                                       orderDeliveryAddress.name,
+                                                       orderDeliveryAddress.zipCode,
+                                                       orderDeliveryAddress.address,
+                                                       orderDeliveryAddress.detailAddress,
+                                                       orderDeliveryAddress.receiver,
+                                                       orderDeliveryAddress.phone1,
+                                                       orderDeliveryAddress.phone2
                                                ),
                                                order.createdAt
                                        ),

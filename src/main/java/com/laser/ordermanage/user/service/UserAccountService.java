@@ -9,7 +9,6 @@ import com.laser.ordermanage.common.paging.ListResponse;
 import com.laser.ordermanage.common.security.jwt.component.JwtProvider;
 import com.laser.ordermanage.user.domain.UserEntity;
 import com.laser.ordermanage.user.dto.request.ChangePasswordRequest;
-import com.laser.ordermanage.user.dto.request.GetUserEmailRequest;
 import com.laser.ordermanage.user.dto.request.RequestPasswordChangeRequest;
 import com.laser.ordermanage.user.dto.response.GetUserEmailResponse;
 import com.laser.ordermanage.user.repository.UserEntityRepository;
@@ -38,8 +37,8 @@ public class UserAccountService {
     private final JwtProvider jwtProvider;
 
     @Transactional(readOnly = true)
-    public ListResponse<GetUserEmailResponse> getUserEmail(GetUserEmailRequest request) {
-        return new ListResponse<>(userRepository.findEmailByNameAndPhone(request.getName(), request.getPhone()));
+    public ListResponse<GetUserEmailResponse> getUserEmail(String name, String phone) {
+        return new ListResponse<>(userRepository.findEmailByNameAndPhone(name, phone));
     }
 
     @Transactional

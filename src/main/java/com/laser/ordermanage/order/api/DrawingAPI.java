@@ -42,10 +42,10 @@ public class DrawingAPI {
         String thumbnailUrl;
         if (fileType.equals(DrawingFileType.DWG) || fileType.equals(DrawingFileType.DXF)) {
             // 썸네일 추출
-            String tempThumbnailUrl = drawingService.extractThumbnail(file);
+            String tempThumbnailFilePath = drawingService.extractThumbnail(file);
 
             // 썸네일 파일 업로드
-            thumbnailUrl = drawingService.uploadThumbnailFile(tempThumbnailUrl);
+            thumbnailUrl = drawingService.uploadThumbnailFile(tempThumbnailFilePath);
 
         } else {
             // TODO: pdf, png, jpg, jpeg 파일 썸네일 추출 기능

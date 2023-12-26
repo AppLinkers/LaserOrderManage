@@ -8,9 +8,6 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
 import org.springframework.data.redis.core.index.Indexed;
-import org.springframework.security.core.GrantedAuthority;
-
-import java.util.Collection;
 
 @Builder
 @Getter
@@ -24,7 +21,7 @@ public class RefreshToken {
 
     private String ip;
 
-    private Collection<? extends GrantedAuthority> authorities;
+    private String role;
 
     @Indexed
     private String refreshToken;

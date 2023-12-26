@@ -42,7 +42,7 @@ public class DrawingService {
         return s3Service.upload("drawing", multipartFile);
     }
 
-    public String uploadThumbnailFile(String tempThumbnailFileUrl) {
-        return s3Service.upload(tempThumbnailFileUrl);
+    public String uploadThumbnailFile(String tempThumbnailFilePath) {
+        return s3Service.upload("drawing-thumbnail", tempThumbnailFilePath);
     }
 }

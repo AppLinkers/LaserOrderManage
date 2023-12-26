@@ -51,7 +51,7 @@ public class OrderService {
     }
 
     @Transactional
-    public void createOrderComment(String userName, Long orderId, CreateCommentRequest request) {
+    public Comment createOrderComment(String userName, Long orderId, CreateCommentRequest request) {
 
         UserEntity user = userAuthService.getUserByEmail(userName);
         Order order = this.getOrderById(orderId);
@@ -64,8 +64,13 @@ public class OrderService {
 
         commentRepository.save(comment);
 
-        String toEmail;
-        String title;
+        return comment;
+    }
+
+    @Transactional(readOnly = true)
+    public void sendEmailForCreateOrderComment(Comment comment) {
+        Order order = comment.getOrder();
+        UserEntity user = comment.getUser();
 
         StringBuilder sbContent = new StringBuilder();
         sbContent.append(order.getName())
@@ -73,13 +78,13 @@ public class OrderService {
         String content = sbContent.toString();
 
         if (user.getRole().equals(Role.ROLE_FACTORY)) {
-            toEmail = order.getCustomer().getUser().getEmail();
+            String toEmail = order.getCustomer().getUser().getEmail();
 
             StringBuilder sbTitle = new StringBuilder();
             sbTitle.append("[댓글] 고객님, ")
                     .append(order.getName())
                     .append(" 거래에 댓글이 작성되었습니다.");
-            title = sbTitle.toString();
+            String title = sbTitle.toString();
 
             mailService.sendEmail(toEmail, title, content);
         } else if (user.getRole().equals(Role.ROLE_CUSTOMER)) {
@@ -89,16 +94,15 @@ public class OrderService {
                     .append(" - ")
                     .append(order.getName())
                     .append(" 거래에 댓글이 작성되었습니다.");
-            title = sbTitle.toString();
+            String title = sbTitle.toString();
 
             mailService.sendEmailToFactory(title, content);
         }
-
     }
 
     @Transactional(readOnly = true)
     public void checkAuthorityCustomerOfOrderOrFactory(User user, Long orderId) {
-        if (user.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_FACTORY"))) {
+        if (user.getAuthorities().contains(new SimpleGrantedAuthority(Role.ROLE_FACTORY.name()))) {
             return;
         }
 

@@ -16,7 +16,7 @@ import java.util.Optional;
 
 public interface OrderRepositoryCustom {
 
-    Page<CustomerGetOrderHistoryResponse> findByCustomer(String userName, Pageable pageable, List<String> stageRequestList, List<String> manufacturingRequestList, String query);
+    Page<CustomerGetOrderHistoryResponse> findByCustomer(String email, Pageable pageable, List<String> stageRequestList, List<String> manufacturingRequestList, String query);
 
     Page<FactoryGetOrderIsNewAndIsReIssueHistoryResponse> findIsNewAndIsReIssueByFactory(Pageable pageable, Boolean hasQuotation, Boolean isUrgent);
 
@@ -24,7 +24,7 @@ public interface OrderRepositoryCustom {
 
     Page<FactoryGetOrderHistoryResponse> findByFactory(Pageable pageable, Boolean isCompleted, Boolean isUrgent, String dateCriterion, LocalDate startDate, LocalDate endDate, String query);
 
-    Page<CustomerGetOrderIsCompletedHistoryResponse> findIsCompletedByCustomer(String userName, Pageable pageable, String query);
+    Page<CustomerGetOrderIsCompletedHistoryResponse> findIsCompletedByCustomer(String email, Pageable pageable, String query);
 
     CustomerGetOrderCreateInformationResponse findCreateInformationByOrder(Long orderId);
 

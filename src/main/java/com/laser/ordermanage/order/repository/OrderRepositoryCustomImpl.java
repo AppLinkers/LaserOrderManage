@@ -39,7 +39,7 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public Page<CustomerGetOrderHistoryResponse> findByCustomer(String userName, Pageable pageable, List<String> stageRequestList, List<String> manufacturingRequestList, String query) {
+    public Page<CustomerGetOrderHistoryResponse> findByCustomer(String email, Pageable pageable, List<String> stageRequestList, List<String> manufacturingRequestList, String query) {
         List<CustomerGetOrderHistoryResponse> customerGetOrderHistoryResponseList = queryFactory
                 .select(new QCustomerGetOrderHistoryResponse(
                         order.id,
@@ -59,7 +59,7 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
                 .join(order.manufacturing, orderManufacturing)
                 .leftJoin(order.quotation, quotation)
                 .where(
-                        userEntity.email.eq(userName),
+                        userEntity.email.eq(email),
                         eqStage(stageRequestList),
                         eqManufacturing(manufacturingRequestList),
                         query == null ? null : order.name.contains(query)
@@ -76,7 +76,7 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
                 .join(customer.user, userEntity)
                 .join(order.manufacturing, orderManufacturing)
                 .where(
-                        userEntity.email.eq(userName),
+                        userEntity.email.eq(email),
                         eqStage(stageRequestList),
                         eqManufacturing(manufacturingRequestList),
                         query == null ? null : order.name.contains(query)
@@ -229,7 +229,7 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
     }
 
     @Override
-    public Page<CustomerGetOrderIsCompletedHistoryResponse> findIsCompletedByCustomer(String userName, Pageable pageable, String query) {
+    public Page<CustomerGetOrderIsCompletedHistoryResponse> findIsCompletedByCustomer(String email, Pageable pageable, String query) {
         List<CustomerGetOrderIsCompletedHistoryResponse> customerGetOrderIsCompletedHistoryResponseList = queryFactory
                 .select(new QCustomerGetOrderIsCompletedHistoryResponse(
                         order.id,
@@ -242,7 +242,7 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
                 .join(customer.user, userEntity)
                 .where(
                         order.stage.eq(Stage.COMPLETED),
-                        userEntity.email.eq(userName),
+                        userEntity.email.eq(email),
                         query == null ? null : order.name.contains(query)
                 )
                 .orderBy(order.createdAt.desc())
@@ -257,7 +257,7 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
                 .join(customer.user, userEntity)
                 .where(
                         order.stage.eq(Stage.COMPLETED),
-                        userEntity.email.eq(userName),
+                        userEntity.email.eq(email),
                         query == null ? null : order.name.contains(query)
                 );
 
@@ -493,15 +493,15 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
 
         BooleanBuilder booleanBuilder = new BooleanBuilder();
         if (dateCriterion.equals("create")) {
-            BooleanExpression isGoeStartDate = order.createdAt.goe(LocalDateTime.of(startDate, LocalTime.MIN));
-            BooleanExpression isLoeEndDate = order.createdAt.loe(LocalDateTime.of(endDate, LocalTime.MAX).withNano(0));
+            BooleanExpression isGreaterOrEqualToStartDate = order.createdAt.goe(LocalDateTime.of(startDate, LocalTime.MIN));
+            BooleanExpression isLessOrEqualToEndDate = order.createdAt.loe(LocalDateTime.of(endDate, LocalTime.MAX));
 
-            return booleanBuilder.and(isGoeStartDate).and(isLoeEndDate);
+            return booleanBuilder.and(isGreaterOrEqualToStartDate).and(isLessOrEqualToEndDate);
         } else if (dateCriterion.equals("delivery")) {
-            BooleanExpression isGoeStartDate = quotation.deliveryDate.goe(startDate);
-            BooleanExpression isLoeEndDate = quotation.deliveryDate.loe(endDate);
+            BooleanExpression isGreaterOrEqualToStartDate = quotation.deliveryDate.goe(startDate);
+            BooleanExpression isLessOrEqualToEndDate = quotation.deliveryDate.loe(endDate);
 
-            return booleanBuilder.and(isGoeStartDate).and(isLoeEndDate);
+            return booleanBuilder.and(isGreaterOrEqualToStartDate).and(isLessOrEqualToEndDate);
         }
         return null;
     }

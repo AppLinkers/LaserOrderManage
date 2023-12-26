@@ -50,8 +50,8 @@ public class CustomerDeliveryAddressService {
     }
 
     @Transactional(readOnly = true)
-    public ListResponse<CustomerGetDeliveryAddressResponse> getDeliveryAddressList(String userName) {
-        return new ListResponse<>(deliveryAddressRepository.findByCustomer(userName));
+    public ListResponse<CustomerGetDeliveryAddressResponse> getDeliveryAddressList(String email) {
+        return new ListResponse<>(deliveryAddressRepository.findByCustomer(email));
     }
 
     @Transactional(readOnly = true)
@@ -85,10 +85,8 @@ public class CustomerDeliveryAddressService {
 
     @Transactional(readOnly = true)
     public void checkAuthorityCustomerOfDeliveryAddress(User user, Long deliveryAddressId) {
-        if (this.getUserEmailByDeliveryAddress(deliveryAddressId).equals(user.getUsername())) {
-            return;
+        if (!this.getUserEmailByDeliveryAddress(deliveryAddressId).equals(user.getUsername())) {
+            throw new CustomCommonException(ErrorCode.DENIED_ACCESS_TO_ENTITY, "deliveryAddress");
         }
-
-        throw new CustomCommonException(ErrorCode.DENIED_ACCESS_TO_ENTITY, "deliveryAddress");
     }
 }

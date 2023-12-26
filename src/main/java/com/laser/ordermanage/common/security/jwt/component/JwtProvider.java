@@ -4,8 +4,8 @@ import com.laser.ordermanage.common.cache.redis.repository.BlackListRedisReposit
 import com.laser.ordermanage.common.constants.ExpireTime;
 import com.laser.ordermanage.common.exception.CustomCommonException;
 import com.laser.ordermanage.common.exception.ErrorCode;
-import com.laser.ordermanage.common.security.jwt.dto.TokenInfo;
 import com.laser.ordermanage.user.domain.UserEntity;
+import com.laser.ordermanage.user.dto.response.TokenInfoResponse;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -52,7 +52,7 @@ public class JwtProvider {
     /**
      * email, role 을 가지고 AccessToken, RefreshToken 을 생성
      */
-    public TokenInfo generateToken(String email, String role) {
+    public TokenInfoResponse generateToken(String email, String role) {
 
         Date now = new Date();
 
@@ -62,7 +62,7 @@ public class JwtProvider {
         // Refresh JWT Token 생성
         String refreshToken = generateJWT(email, role, TYPE_REFRESH, now, ExpireTime.REFRESH_TOKEN_EXPIRE_TIME);
 
-        return TokenInfo.builder()
+        return TokenInfoResponse.builder()
                 .role(role)
                 .grantType(BEARER_TYPE)
                 .accessToken(accessToken)

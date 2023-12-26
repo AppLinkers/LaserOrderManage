@@ -1,4 +1,4 @@
-package com.laser.ordermanage.common.security.jwt.dto;
+package com.laser.ordermanage.user.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -7,7 +7,7 @@ import lombok.Getter;
 @Builder
 @Getter
 @AllArgsConstructor
-public class TokenInfo {
+public class TokenInfoResponse {
 
     private String role;
     private String grantType;

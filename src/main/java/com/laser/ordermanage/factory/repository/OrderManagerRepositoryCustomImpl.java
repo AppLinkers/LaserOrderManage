@@ -21,6 +21,7 @@ public class OrderManagerRepositoryCustomImpl implements OrderManagerRepositoryC
     public List<FactoryGetOrderManagerResponse> findByFactory(String email) {
         List<FactoryGetOrderManagerResponse> factoryGetOrderManagerResponseList = queryFactory
                 .select(new QFactoryGetOrderManagerResponse(
+                        orderManager.id,
                         orderManager.name,
                         orderManager.phone
                 ))

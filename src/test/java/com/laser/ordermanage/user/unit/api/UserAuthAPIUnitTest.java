@@ -7,6 +7,7 @@ import com.laser.ordermanage.common.exception.ErrorCode;
 import com.laser.ordermanage.user.api.UserAuthAPI;
 import com.laser.ordermanage.user.domain.type.Role;
 import com.laser.ordermanage.user.dto.request.LoginRequest;
+import com.laser.ordermanage.user.dto.request.LoginRequestBuilder;
 import com.laser.ordermanage.user.dto.response.TokenInfoResponseBuilder;
 import com.laser.ordermanage.user.service.UserAuthService;
 import jakarta.servlet.http.Cookie;
@@ -48,10 +49,7 @@ public class UserAuthAPIUnitTest extends APIUnitTest {
     @Test
     public void 로그인_성공() throws Exception {
         // given
-        final LoginRequest request = LoginRequest.builder()
-                .email("user1@gmail.com")
-                .password("user1-password")
-                .build();
+        final LoginRequest request = LoginRequestBuilder.build();
 
         // stub
         when(userAuthService.login(any(), any())).thenReturn(TokenInfoResponseBuilder.build());
@@ -169,10 +167,7 @@ public class UserAuthAPIUnitTest extends APIUnitTest {
     @Test
     public void 로그인_실패_인증정보() throws Exception {
         // given
-        final LoginRequest invalidRequest = LoginRequest.builder()
-                .email("invalid-user@gmail.com")
-                .password("invalid-user1-password")
-                .build();
+        final LoginRequest invalidRequest = LoginRequestBuilder.invalidBuild();
 
         // stub
         when(userAuthService.login(any(), any())).thenThrow(new CustomCommonException(ErrorCode.INVALID_CREDENTIALS));

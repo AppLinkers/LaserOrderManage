@@ -6,6 +6,7 @@ import com.laser.ordermanage.common.exception.ErrorCode;
 import com.laser.ordermanage.common.security.jwt.setup.JwtBuilder;
 import com.laser.ordermanage.user.domain.type.Role;
 import com.laser.ordermanage.user.dto.request.LoginRequest;
+import com.laser.ordermanage.user.dto.request.LoginRequestBuilder;
 import com.laser.ordermanage.user.dto.response.TokenInfoResponse;
 import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.Test;
@@ -30,10 +31,7 @@ public class UserAuthIntegrationTest extends IntegrationTest {
     @Test
     public void 로그인_성공() throws Exception {
         // given
-        final LoginRequest request = LoginRequest.builder()
-                .email("user1@gmail.com")
-                .password("user1-password")
-                .build();
+        final LoginRequest request = LoginRequestBuilder.build();
 
         // when
         final ResultActions resultActions = requestLogin(request);

@@ -4,7 +4,7 @@ import com.laser.ordermanage.common.ServiceUnitTest;
 import com.laser.ordermanage.common.exception.CustomCommonException;
 import com.laser.ordermanage.common.exception.ErrorCode;
 import com.laser.ordermanage.user.domain.UserEntity;
-import com.laser.ordermanage.user.domain.type.Role;
+import com.laser.ordermanage.user.domain.UserEntityBuilder;
 import com.laser.ordermanage.user.repository.UserEntityRepository;
 import com.laser.ordermanage.user.service.UserAuthService;
 import org.assertj.core.api.Assertions;
@@ -30,15 +30,7 @@ public class UserAuthServiceUnitTest extends ServiceUnitTest {
     @Test
     public void getUserByEmailTest_성공() {
         // given
-        final UserEntity user = UserEntity.builder()
-                .email("user1@gmail.com")
-                .password("user1-password")
-                .role(Role.ROLE_CUSTOMER)
-                .phone("01011111111")
-                .zipCode("11111")
-                .address("고객 주소")
-                .detailAddress("고객 상세 주소")
-                .build();
+        final UserEntity user = UserEntityBuilder.build();
 
         // stub
         when(userRepository.findFirstByEmail(user.getEmail())).thenReturn(Optional.of(user));

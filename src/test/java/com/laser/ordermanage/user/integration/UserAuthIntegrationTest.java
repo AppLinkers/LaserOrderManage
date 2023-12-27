@@ -3,10 +3,10 @@ package com.laser.ordermanage.user.integration;
 import com.laser.ordermanage.common.IntegrationTest;
 import com.laser.ordermanage.common.constants.ExpireTime;
 import com.laser.ordermanage.common.exception.ErrorCode;
-import com.laser.ordermanage.common.security.jwt.dto.TokenInfo;
 import com.laser.ordermanage.common.security.jwt.setup.JwtBuilder;
 import com.laser.ordermanage.user.domain.type.Role;
 import com.laser.ordermanage.user.dto.request.LoginRequest;
+import com.laser.ordermanage.user.dto.response.TokenInfoResponse;
 import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -109,7 +109,7 @@ public class UserAuthIntegrationTest extends IntegrationTest {
 
         String response = requestLogin(request).andReturn().getResponse().getContentAsString();
 
-        String refreshToken = objectMapper.readValue(response, TokenInfo.class).getRefreshToken();
+        String refreshToken = objectMapper.readValue(response, TokenInfoResponse.class).getRefreshToken();
 
         // when
         final ResultActions resultActions = requestReIssue(refreshToken);
@@ -258,7 +258,7 @@ public class UserAuthIntegrationTest extends IntegrationTest {
 
         String response = requestLogin(request).andReturn().getResponse().getContentAsString();
 
-        String refreshToken = objectMapper.readValue(response, TokenInfo.class).getRefreshToken();
+        String refreshToken = objectMapper.readValue(response, TokenInfoResponse.class).getRefreshToken();
 
         // when
         final ResultActions resultActions = requestReIssueWithDifferentIpAddress(refreshToken);
@@ -284,7 +284,7 @@ public class UserAuthIntegrationTest extends IntegrationTest {
 
         String response = requestLogin(request).andReturn().getResponse().getContentAsString();
 
-        String accessToken = objectMapper.readValue(response, TokenInfo.class).getAccessToken();
+        String accessToken = objectMapper.readValue(response, TokenInfoResponse.class).getAccessToken();
 
         // when
         final ResultActions resultActions = requestLogout(accessToken);

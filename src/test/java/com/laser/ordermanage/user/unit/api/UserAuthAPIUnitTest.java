@@ -21,7 +21,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.web.context.WebApplicationContext;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -347,6 +347,49 @@ public class UserAuthAPIUnitTest extends APIUnitTest {
                 .andExpect(jsonPath("message").value(ErrorCode.UNSUPPORTED_JWT_TOKEN.getMessage()));
     }
 
+    /**
+     * 사용자 Access Token 을 활용한 로그아웃 성공
+     */
+    @Test
+    public void 로그아웃_성공() throws Exception {
+        // given
+        String accessToken = "access-token";
+
+        // stub
+        doNothing().when(userAuthService).logout(any());
+
+        // when
+        final ResultActions resultActions = requestLogout(accessToken);
+
+        // then
+        resultActions
+                .andExpect(status().isOk());
+
+    }
+
+    /**
+     * 사용자 Access Token 을 활용한 로그아웃 실패
+     * - 실패 사유 : 유효하지 않은 Access Token 을 사용함.
+     */
+    @Test
+    public void 로그아웃_실패_Invalid_Access_Token() throws Exception {
+        // given
+        String invalidAccessToken = "invalid-accessToken";
+
+        // stub
+        doThrow(new CustomCommonException(ErrorCode.INVALID_ACCESS_JWT_TOKEN)).when(userAuthService).logout(any());
+
+        // when
+        final ResultActions resultActions = requestLogout(invalidAccessToken);
+
+        // then
+        resultActions
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("httpStatus").value(ErrorCode.INVALID_ACCESS_JWT_TOKEN.getHttpStatus().name()))
+                .andExpect(jsonPath("errorCode").value(ErrorCode.INVALID_ACCESS_JWT_TOKEN.getCode()))
+                .andExpect(jsonPath("message").value(ErrorCode.INVALID_ACCESS_JWT_TOKEN.getMessage()));
+    }
+
     private ResultActions requestLogin(LoginRequest request) throws Exception {
         return mvc.perform(post("/user/login")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -364,6 +407,12 @@ public class UserAuthAPIUnitTest extends APIUnitTest {
 
     private ResultActions requestReIssueWithOutRefreshToken() throws Exception {
         return mvc.perform(post("/user/re-issue"))
+                .andDo(print());
+    }
+
+    private ResultActions requestLogout(String accessToken) throws Exception {
+        return mvc.perform(post("/user/logout")
+                        .header("Authorization", "Bearer " + accessToken))
                 .andDo(print());
     }
 

@@ -7,6 +7,7 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.validation.ObjectError;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingRequestCookieException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
@@ -83,6 +84,12 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(SizeLimitExceededException.class)
     public ResponseEntity<?> handleSizeLimitExceededException(SizeLimitExceededException e) {
         CustomCommonException exception = new CustomCommonException(ErrorCode.REQUEST_FILE_SIZE_EXCEED);
+        return ResponseEntity.status(exception.getHttpStatus()).body(exception.toErrorResponse());
+    }
+
+    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+    protected ResponseEntity<?> handleHttpRequestMethodNotSupportedException(HttpRequestMethodNotSupportedException e) {
+        CustomCommonException exception = new CustomCommonException(ErrorCode.METHOD_NOT_ALLOWED);
         return ResponseEntity.status(exception.getHttpStatus()).body(exception.toErrorResponse());
     }
 }

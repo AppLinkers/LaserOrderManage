@@ -54,6 +54,9 @@ public enum ErrorCode {
     NOT_FOUND_VERIFY_CODE("-401", HttpStatus.NOT_FOUND, "이메일에 해당하는 인증 코드가 존재하지 않습니다."),
     NOT_FOUND_ENTITY("-402", HttpStatus.NOT_FOUND, " 엔티티가 존재하지 않습니다."),
 
+    // 405 METHOD_NOT_ALLOWED 허용하지 않은 Http Method
+    METHOD_NOT_ALLOWED("-405", HttpStatus.METHOD_NOT_ALLOWED, "해당 요청에는 지원하지 않은 HTTP 메서드 입니다."),
+
     // 500 INTERNAL SERVER ERROR 서버 에러
     INTERNAL_SERVER_ERROR("-500", HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러 입니다."),
     UNKNOWN_ERROR("-501", HttpStatus.INTERNAL_SERVER_ERROR, "알 수 없는 오류가 발생했습니다."),

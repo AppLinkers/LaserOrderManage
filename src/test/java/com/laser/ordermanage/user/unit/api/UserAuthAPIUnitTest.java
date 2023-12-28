@@ -17,7 +17,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.ActiveProfiles;
+import org.springframework.security.test.context.support.WithAnonymousUser;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -28,7 +29,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@ActiveProfiles("test")
 @WebMvcTest(UserAuthAPI.class)
 public class UserAuthAPIUnitTest extends APIUnitTest {
 
@@ -189,7 +189,7 @@ public class UserAuthAPIUnitTest extends APIUnitTest {
     @Test
     public void Access_Token_재발급_성공() throws Exception {
         // given
-        String refreshToken = "refreshToken";
+        final String refreshToken = "refreshToken";
 
         // stub
         when(userAuthService.reissue(any(), any())).thenReturn(TokenInfoResponseBuilder.build());
@@ -234,7 +234,7 @@ public class UserAuthAPIUnitTest extends APIUnitTest {
     @Test
     public void Access_Token_재발급_실패_Invalid_JWT_Token() throws Exception {
         // given
-        String invalidJwtToken = "invalid-jwt-token";
+        final String invalidJwtToken = "invalid-jwt-token";
 
         // stub
         when(userAuthService.reissue(any(), any())).thenThrow(new CustomCommonException(ErrorCode.INVALID_JWT_TOKEN));
@@ -257,7 +257,7 @@ public class UserAuthAPIUnitTest extends APIUnitTest {
     @Test
     public void Access_Token_재발급_실패_Expired_JWT_Token() throws Exception {
         // given
-        String expiredJwtToken = "expired-jwt-token";
+        final String expiredJwtToken = "expired-jwt-token";
 
         // stub
         when(userAuthService.reissue(any(), any())).thenThrow(new CustomCommonException(ErrorCode.EXPIRED_JWT_TOKEN));
@@ -280,7 +280,7 @@ public class UserAuthAPIUnitTest extends APIUnitTest {
     @Test
     public void Access_Token_재발급_실패_Unauthorized_JWT_Token() throws Exception {
         // given
-        String unauthorizedJwtToken = "unauthorized-jwt-token";
+        final String unauthorizedJwtToken = "unauthorized-jwt-token";
 
         // stub
         when(userAuthService.reissue(any(), any())).thenThrow(new CustomCommonException(ErrorCode.UNAUTHORIZED_JWT_TOKEN));
@@ -303,7 +303,7 @@ public class UserAuthAPIUnitTest extends APIUnitTest {
     @Test
     public void Access_Token_재발급_실패_Invalid_Refresh_Token() throws Exception {
         // given
-        String invalidRefreshToken = "invalid-refreshToken";
+        final String invalidRefreshToken = "invalid-refreshToken";
 
         // stub
         when(userAuthService.reissue(any(), any())).thenThrow(new CustomCommonException(ErrorCode.INVALID_REFRESH_JWT_TOKEN));
@@ -326,7 +326,7 @@ public class UserAuthAPIUnitTest extends APIUnitTest {
     @Test
     public void Access_Token_재발급_실패_Unsupported_Refresh_Token() throws Exception {
         // given
-        String unsupportedRefreshToken = "unsupported-refreshToken";
+        final String unsupportedRefreshToken = "unsupported-refreshToken";
 
         // stub
         when(userAuthService.reissue(any(), any())).thenThrow(new CustomCommonException(ErrorCode.UNSUPPORTED_JWT_TOKEN));
@@ -346,6 +346,7 @@ public class UserAuthAPIUnitTest extends APIUnitTest {
      * 사용자 Access Token 을 활용한 로그아웃 성공
      */
     @Test
+    @WithMockUser
     public void 로그아웃_성공() throws Exception {
         // given
         String accessToken = "access-token";
@@ -359,7 +360,27 @@ public class UserAuthAPIUnitTest extends APIUnitTest {
         // then
         resultActions
                 .andExpect(status().isOk());
+    }
 
+    /**
+     * 사용자 Access Token 을 활용한 로그아웃 실패
+     * - 실패 사유 : 인증 정보 (Authentication) 없음.
+     */
+    @Test
+    @WithAnonymousUser
+    public void 로그아웃_실패_Anonymous_User() throws Exception {
+        // given
+        String accessToken = "access-token";
+
+        // when
+        final ResultActions resultActions = requestLogout(accessToken);
+
+        // then
+        resultActions
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("httpStatus").value(ErrorCode.MISSING_JWT_TOKEN.getHttpStatus().name()))
+                .andExpect(jsonPath("errorCode").value(ErrorCode.MISSING_JWT_TOKEN.getCode()))
+                .andExpect(jsonPath("message").value(ErrorCode.MISSING_JWT_TOKEN.getMessage()));
     }
 
     /**
@@ -367,6 +388,7 @@ public class UserAuthAPIUnitTest extends APIUnitTest {
      * - 실패 사유 : 유효하지 않은 Access Token 을 사용함.
      */
     @Test
+    @WithMockUser
     public void 로그아웃_실패_Invalid_Access_Token() throws Exception {
         // given
         String invalidAccessToken = "invalid-accessToken";

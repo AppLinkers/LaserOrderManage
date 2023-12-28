@@ -1,5 +1,6 @@
 package com.laser.ordermanage.common.security.config;
 
+import com.laser.ordermanage.common.exception.filter.JwtExceptionFilter;
 import com.laser.ordermanage.common.security.jwt.component.JwtProvider;
 import com.laser.ordermanage.common.security.jwt.filter.JwtAuthFilter;
 import lombok.RequiredArgsConstructor;
@@ -53,7 +54,7 @@ public class WebSecurityConfig {
 
         http.sessionManagement((sessionManagement) -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
-        http.authorizeRequests((authorizeRequests) ->
+        http.authorizeHttpRequests((authorizeRequests) ->
                 authorizeRequests
                         .requestMatchers("/user/logout", "/user/password").authenticated()
                         .requestMatchers("/user/**").permitAll()
@@ -63,6 +64,7 @@ public class WebSecurityConfig {
         );
 
         http.addFilterBefore(new JwtAuthFilter(jwtProvider), UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(new JwtExceptionFilter(), JwtAuthFilter.class);
 
         http.exceptionHandling(handler -> handler.accessDeniedHandler(accessDeniedHandler));
         http.exceptionHandling(handler -> handler.authenticationEntryPoint(authenticationEntryPoint));

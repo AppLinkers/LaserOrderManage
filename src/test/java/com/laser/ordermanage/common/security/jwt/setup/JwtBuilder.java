@@ -13,10 +13,6 @@ public class JwtBuilder {
 
     private final JwtProvider jwtProvider;
 
-    public String accessJwtBuild() {
-        return jwtProvider.generateJWT("user1@gmail.com", "ROLE_CUSTOMER", "access", new Date(), ExpireTime.ACCESS_TOKEN_EXPIRE_TIME);
-    }
-
     public String refreshJwtBuild() {
         return jwtProvider.generateJWT("user1@gmail.com", "ROLE_CUSTOMER", "refresh", new Date(), ExpireTime.REFRESH_TOKEN_EXPIRE_TIME);
     }

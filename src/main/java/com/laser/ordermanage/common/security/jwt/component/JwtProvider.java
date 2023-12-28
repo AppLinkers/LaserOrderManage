@@ -9,7 +9,6 @@ import com.laser.ordermanage.user.dto.response.TokenInfoResponse;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import jakarta.servlet.ServletRequest;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -112,8 +111,7 @@ public class JwtProvider {
         return new UsernamePasswordAuthenticationToken(principal, "", authorities);
     }
 
-    // 토큰 정보를 검증하는 메서드
-    public boolean validateToken(ServletRequest request, String token) {
+    public boolean validateToken(String token) {
         try {
             Claims claims = parseClaims(token);
 
@@ -122,30 +120,10 @@ public class JwtProvider {
             }
 
             // access token 이 black list 에 저장되어 있는지 확인
-            if (blackListRedisRepository.findByAccessToken(token).isPresent()) {
+            if (getType(token).equals(TYPE_ACCESS) && blackListRedisRepository.findByAccessToken(token).isPresent()) {
                 throw new CustomCommonException(ErrorCode.INVALID_ACCESS_JWT_TOKEN);
             }
-            return true;
-        } catch (ExpiredJwtException e) {
-            request.setAttribute("exception", ErrorCode.EXPIRED_JWT_TOKEN.getCode());
-        } catch (UnsupportedJwtException e) {
-            request.setAttribute("exception", ErrorCode.UNSUPPORTED_JWT_TOKEN.getCode());
-        } catch (CustomCommonException e) {
-            request.setAttribute("exception", e.getErrorCode());
-        } catch (Exception e) {
-            request.setAttribute("exception", ErrorCode.INVALID_JWT_TOKEN.getCode());
-        }
 
-        return false;
-    }
-
-    public boolean validateToken(String token) {
-        try {
-            Claims claims = parseClaims(token);
-
-            if (claims.get(ROLE_KEY).toString().isBlank()) {
-                throw new CustomCommonException(ErrorCode.UNAUTHORIZED_JWT_TOKEN);
-            }
             return true;
         } catch (ExpiredJwtException e) {
             throw new CustomCommonException(ErrorCode.EXPIRED_JWT_TOKEN);
@@ -177,10 +155,11 @@ public class JwtProvider {
         if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(BEARER_TYPE)) {
             try {
                 return bearerToken.substring(7);
-            } catch (StringIndexOutOfBoundsException e) {}
+            } catch (StringIndexOutOfBoundsException e) {
+                throw new CustomCommonException(ErrorCode.MISSING_JWT_TOKEN);
+            }
         }
 
-        request.setAttribute("exception", ErrorCode.MISSING_JWT_TOKEN.getCode());
         return null;
     }
 }

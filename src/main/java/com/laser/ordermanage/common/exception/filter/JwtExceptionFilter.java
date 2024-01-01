@@ -10,6 +10,8 @@ import org.springframework.http.MediaType;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.nio.charset.StandardCharsets;
 
 public class JwtExceptionFilter extends OncePerRequestFilter {
     @Override
@@ -27,10 +29,15 @@ public class JwtExceptionFilter extends OncePerRequestFilter {
 
         ObjectMapper objectMapper = new ObjectMapper();
 
-        String responseBody = objectMapper.writeValueAsString(e.toErrorResponse());
-        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-        response.setCharacterEncoding("UTF-8");
-        response.setStatus(e.getHttpStatus().value());
-        response.getWriter().write(responseBody);
+        try (PrintWriter writer = response.getWriter()) {
+            String responseBody = objectMapper.writeValueAsString(e.toErrorResponse());
+
+            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+            response.setCharacterEncoding(StandardCharsets.UTF_8.name());
+            response.setStatus(e.getHttpStatus().value());
+
+            writer.write(responseBody);
+        }
+
     }
 }

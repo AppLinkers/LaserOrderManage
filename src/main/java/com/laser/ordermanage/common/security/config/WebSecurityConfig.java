@@ -33,8 +33,8 @@ import static org.springframework.security.config.Customizer.withDefaults;
 public class WebSecurityConfig {
 
     private final JwtProvider jwtProvider;
-    private final AccessDeniedHandler accessDeniedHandler;
     private final AuthenticationEntryPoint authenticationEntryPoint;
+    private final AccessDeniedHandler accessDeniedHandler;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -66,8 +66,8 @@ public class WebSecurityConfig {
         http.addFilterBefore(new JwtAuthFilter(jwtProvider), UsernamePasswordAuthenticationFilter.class);
         http.addFilterBefore(new JwtExceptionFilter(), JwtAuthFilter.class);
 
-        http.exceptionHandling(handler -> handler.accessDeniedHandler(accessDeniedHandler));
-        http.exceptionHandling(handler -> handler.authenticationEntryPoint(authenticationEntryPoint));
+        http.exceptionHandling(handler -> handler.authenticationEntryPoint(authenticationEntryPoint)); // 커스텀 인증 에러 처리 설정
+        http.exceptionHandling(handler -> handler.accessDeniedHandler(accessDeniedHandler)); // 커스텀 인가 에러 처리 설정
 
         return http.build();
 

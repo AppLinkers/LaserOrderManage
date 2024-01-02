@@ -23,7 +23,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserAuthService {
@@ -73,18 +72,11 @@ public class UserAuthService {
     public TokenInfoResponse reissue(HttpServletRequest httpServletRequest, String refreshTokenReq) {
         // 1. refresh token 인지 확인
         if (StringUtils.hasText(refreshTokenReq) && jwtProvider.validateToken(refreshTokenReq) && jwtProvider.getType(refreshTokenReq).equals(JwtProvider.TYPE_REFRESH)) {
-            log.info("reissue 메서드");
-            log.info(String.valueOf(StringUtils.hasText(refreshTokenReq)));
-            log.info(String.valueOf(jwtProvider.validateToken(refreshTokenReq)));
-            log.info(String.valueOf(jwtProvider.getType(refreshTokenReq).equals(JwtProvider.TYPE_REFRESH)));
             RefreshToken refreshToken = refreshTokenRedisRepository.findByRefreshToken(refreshTokenReq);
             if (refreshToken != null) {
-                log.info(refreshToken.getId());
-                log.info("refreshtoken not null");
                 // 2. 최초 로그인한 ip 와 같은지 확인 (처리 방식에 따라 재발급을 하지 않거나 메일 등의 알림을 주는 방법이 있음)
                 String currentIpAddress = NetworkUtil.getClientIp(httpServletRequest);
                 if (refreshToken.getIp().equals(currentIpAddress)) {
-                    log.info("refreshtoken ip diffrent address");
                     // 3. Redis 에 저장된 RefreshToken 정보를 기반으로 JWT Token 생성
                     TokenInfoResponse response = jwtProvider.generateToken(refreshToken.getId(), refreshToken.getRole());
 

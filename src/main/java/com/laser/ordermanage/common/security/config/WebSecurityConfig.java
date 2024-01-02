@@ -81,7 +81,6 @@ public class WebSecurityConfig {
         configuration.setAllowedHeaders(List.of("Authorization", "Content-Type"));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE"));
         configuration.setAllowCredentials(true);
-        configuration.addExposedHeader(SET_COOKIE);
 
         // URL 패턴에 따라 다른 CORS 구성을 적용할 수 있게 해줌
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

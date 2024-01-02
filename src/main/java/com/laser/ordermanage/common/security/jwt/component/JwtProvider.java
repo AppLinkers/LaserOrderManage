@@ -26,7 +26,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 
-@Slf4j
 @Component
 public class JwtProvider {
 

@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -34,6 +35,12 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<?> handleAccessDeniedException(Authentication e) {
         CustomCommonException exception = new CustomCommonException(ErrorCode.DENIED_ACCESS);
+        return ResponseEntity.status(exception.getHttpStatus()).body(exception.toErrorResponse());
+    }
+
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity<?> handleAuthenticationException(AuthenticationException e) {
+        CustomCommonException exception = new CustomCommonException(ErrorCode.MISSING_JWT_TOKEN);
         return ResponseEntity.status(exception.getHttpStatus()).body(exception.toErrorResponse());
     }
 

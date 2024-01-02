@@ -1,10 +1,13 @@
 package com.laser.ordermanage.common.security.config;
 
-import com.laser.ordermanage.common.security.jwt.filter.JwtAuthFilter;
+import com.laser.ordermanage.common.exception.filter.JwtExceptionFilter;
 import com.laser.ordermanage.common.security.jwt.component.JwtProvider;
+import com.laser.ordermanage.common.security.jwt.filter.JwtAuthFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -30,12 +33,17 @@ import static org.springframework.security.config.Customizer.withDefaults;
 public class WebSecurityConfig {
 
     private final JwtProvider jwtProvider;
-    private final AccessDeniedHandler accessDeniedHandler;
     private final AuthenticationEntryPoint authenticationEntryPoint;
+    private final AccessDeniedHandler accessDeniedHandler;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
+        return authenticationConfiguration.getAuthenticationManager();
     }
 
     @Bean
@@ -46,7 +54,7 @@ public class WebSecurityConfig {
 
         http.sessionManagement((sessionManagement) -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
-        http.authorizeRequests((authorizeRequests) ->
+        http.authorizeHttpRequests((authorizeRequests) ->
                 authorizeRequests
                         .requestMatchers("/user/logout", "/user/password").authenticated()
                         .requestMatchers("/user/**").permitAll()
@@ -56,9 +64,10 @@ public class WebSecurityConfig {
         );
 
         http.addFilterBefore(new JwtAuthFilter(jwtProvider), UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(new JwtExceptionFilter(), JwtAuthFilter.class);
 
-        http.exceptionHandling(handler -> handler.accessDeniedHandler(accessDeniedHandler));
-        http.exceptionHandling(handler -> handler.authenticationEntryPoint(authenticationEntryPoint));
+        http.exceptionHandling(handler -> handler.authenticationEntryPoint(authenticationEntryPoint)); // 커스텀 인증 에러 처리 설정
+        http.exceptionHandling(handler -> handler.accessDeniedHandler(accessDeniedHandler)); // 커스텀 인가 에러 처리 설정
 
         return http.build();
 

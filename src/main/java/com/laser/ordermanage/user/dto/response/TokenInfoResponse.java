@@ -1,18 +1,14 @@
 package com.laser.ordermanage.user.dto.response;
 
-import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Getter;
 
 @Builder
-@Getter
-@AllArgsConstructor
-public class TokenInfoResponse {
-
-    private String role;
-    private String grantType;
-    private String accessToken;
-    private Long accessTokenExpirationTime;
-    private String refreshToken;
-    private Long refreshTokenExpirationTime;
+public record TokenInfoResponse(
+        String role,
+        String grantType,
+        String accessToken,
+        Long accessTokenExpirationTime,
+        String refreshToken,
+        Long refreshTokenExpirationTime
+) {
 }

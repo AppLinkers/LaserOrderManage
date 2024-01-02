@@ -59,12 +59,12 @@ public class UserAuthService {
         refreshTokenRedisRepository.save(RefreshToken.builder()
                 .id(authentication.getName())
                 .ip(NetworkUtil.getClientIp(httpServletRequest))
-                .role(response.getRole())
-                .refreshToken(response.getRefreshToken())
+                .role(response.role())
+                .refreshToken(response.refreshToken())
                 .build());
 
         // 5. BlackList 에 저장되어 있는 항목 제거
-        blackListRedisRepository.findByAccessToken(response.getAccessToken()).ifPresent(blackListRedisRepository::delete);
+        blackListRedisRepository.findByAccessToken(response.accessToken()).ifPresent(blackListRedisRepository::delete);
 
         return response;
     }
@@ -84,8 +84,8 @@ public class UserAuthService {
                     refreshTokenRedisRepository.save(RefreshToken.builder()
                             .id(refreshToken.getId())
                             .ip(currentIpAddress)
-                            .role(response.getRole())
-                            .refreshToken(response.getRefreshToken())
+                            .role(response.role())
+                            .refreshToken(response.refreshToken())
                             .build());
 
                     return response;

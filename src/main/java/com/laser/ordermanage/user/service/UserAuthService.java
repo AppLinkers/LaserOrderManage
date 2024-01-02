@@ -78,8 +78,8 @@ public class UserAuthService {
             log.info(String.valueOf(jwtProvider.validateToken(refreshTokenReq)));
             log.info(String.valueOf(jwtProvider.getType(refreshTokenReq).equals(JwtProvider.TYPE_REFRESH)));
             RefreshToken refreshToken = refreshTokenRedisRepository.findByRefreshToken(refreshTokenReq);
-            log.info(refreshToken.getId());
             if (refreshToken != null) {
+                log.info(refreshToken.getId());
                 log.info("refreshtoken not null");
                 // 2. 최초 로그인한 ip 와 같은지 확인 (처리 방식에 따라 재발급을 하지 않거나 메일 등의 알림을 주는 방법이 있음)
                 String currentIpAddress = NetworkUtil.getClientIp(httpServletRequest);

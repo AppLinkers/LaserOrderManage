@@ -62,6 +62,9 @@ public class UserAuthService {
                 .refreshToken(response.getRefreshToken())
                 .build());
 
+        // 5. BlackList 에 저장되어 있는 항목 제거
+        blackListRedisRepository.findByAccessToken(response.getAccessToken()).ifPresent(blackListRedisRepository::delete);
+
         return response;
     }
 

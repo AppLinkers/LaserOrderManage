@@ -2,6 +2,7 @@ package com.laser.ordermanage.user.unit.service;
 
 import com.laser.ordermanage.common.ServiceUnitTest;
 import com.laser.ordermanage.common.cache.redis.dao.RefreshToken;
+import com.laser.ordermanage.common.cache.redis.repository.BlackListRedisRepository;
 import com.laser.ordermanage.common.cache.redis.repository.RefreshTokenRedisRepository;
 import com.laser.ordermanage.common.exception.CustomCommonException;
 import com.laser.ordermanage.common.exception.ErrorCode;
@@ -25,8 +26,11 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
 
@@ -39,6 +43,9 @@ public class UserAuthServiceUnitTest extends ServiceUnitTest {
 
     @Mock
     private RefreshTokenRedisRepository refreshTokenRedisRepository;
+
+    @Mock
+    private BlackListRedisRepository blackListRedisRepository;
 
     @Mock
     private UserEntityRepository userRepository;
@@ -261,5 +268,64 @@ public class UserAuthServiceUnitTest extends ServiceUnitTest {
         Assertions.assertThatThrownBy(() -> userAuthService.reissue(request, refreshToken.getRefreshToken()))
                 .isInstanceOf(CustomCommonException.class)
                 .hasMessage(ErrorCode.INVALID_REFRESH_JWT_TOKEN.getMessage());
+    }
+
+    /**
+     * 사용자 Access Token 을 활용한 로그아웃 성공
+     */
+    @Test
+    public void logout_성공() {
+        // given
+        final String accessToken = "accessToken";
+
+        request.setAttribute("resolvedToken", accessToken);
+
+        final Collection<? extends GrantedAuthority> authorities = Collections.singleton(new SimpleGrantedAuthority(Role.ROLE_CUSTOMER.name()));
+        final Authentication authentication = new UsernamePasswordAuthenticationToken("username", "", authorities);
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        // stub
+        when(jwtProvider.getType(accessToken)).thenReturn(JwtProvider.TYPE_ACCESS);
+
+        // when & then
+        userAuthService.logout(request);
+    }
+
+    /**
+     * 사용자 Access Token 을 활용한 로그아웃 실패
+     * - 실패 사유 : Access Token 의 값이 비어있음
+     */
+    @Test
+    public void logout_실패_Access_Token_값_존재() {
+        // given
+        final String emptyAccessToken = "";
+
+        request.setAttribute("resolvedToken", emptyAccessToken);
+
+        // when & then
+        Assertions.assertThatThrownBy(() -> userAuthService.logout(request))
+                .isInstanceOf(CustomCommonException.class)
+                .hasMessage(ErrorCode.INVALID_ACCESS_JWT_TOKEN.getMessage());
+    }
+
+
+    /**
+     * 사용자 Access Token 을 활용한 로그아웃 실패
+     * - 실패 사유 : Refresh Token 을 활용해 로그아웃 시도
+     */
+    @Test
+    public void logout_실패_Token_Type() {
+        // given
+        final String refreshToken = "refreshToken";
+
+        request.setAttribute("resolvedToken", refreshToken);
+
+        // stub
+        when(jwtProvider.getType(refreshToken)).thenReturn(JwtProvider.TYPE_REFRESH);
+
+        // when & then
+        Assertions.assertThatThrownBy(() -> userAuthService.logout(request))
+                .isInstanceOf(CustomCommonException.class)
+                .hasMessage(ErrorCode.INVALID_ACCESS_JWT_TOKEN.getMessage());
     }
 }

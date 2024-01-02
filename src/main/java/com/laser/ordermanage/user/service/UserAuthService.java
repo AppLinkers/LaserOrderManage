@@ -62,6 +62,9 @@ public class UserAuthService {
                 .refreshToken(response.getRefreshToken())
                 .build());
 
+        // 5. BlackList 에 저장되어 있는 항목 제거
+        blackListRedisRepository.findByAccessToken(response.getAccessToken()).ifPresent(blackListRedisRepository::delete);
+
         return response;
     }
 
@@ -104,7 +107,6 @@ public class UserAuthService {
 
             // 3. Redis 에서 해당 User email 로 저장된 Refresh Token 이 있는지 여부를 확인 후 있을 경우 삭제합니다.
             refreshTokenRedisRepository.deleteById(authentication.getName());
-
             // 4. Redis 에서 해당 Access Token 을 Black List 로 저장합니다.
             blackListRedisRepository.save(BlackList.builder()
                     .id(authentication.getName())

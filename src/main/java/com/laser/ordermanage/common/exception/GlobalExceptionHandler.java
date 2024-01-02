@@ -1,6 +1,7 @@
 package com.laser.ordermanage.common.exception;
 
 import jakarta.validation.ConstraintViolationException;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.tomcat.util.http.fileupload.impl.SizeLimitExceededException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -18,6 +19,7 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 
 import java.util.List;
 
+@Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -78,6 +80,8 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(MissingRequestCookieException.class)
     public ResponseEntity<?> handleMissingRequestCookieException(MissingRequestCookieException e) {
+        log.info("missing cookie");
+        e.printStackTrace();
         CustomCommonException exception = new CustomCommonException(ErrorCode.MISSING_COOKIE, e.getCookieName());
         return ResponseEntity.status(exception.getHttpStatus()).body(exception.toErrorResponse());
     }

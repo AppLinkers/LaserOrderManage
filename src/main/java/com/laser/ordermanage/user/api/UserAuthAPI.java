@@ -5,9 +5,11 @@ import com.laser.ordermanage.user.service.UserAuthService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+@Slf4j
 @RequiredArgsConstructor
 @RequestMapping("/user")
 @RestController
@@ -38,6 +40,8 @@ public class UserAuthAPI {
      */
     @PostMapping("/re-issue")
     public ResponseEntity<?> reissue(HttpServletRequest httpServletRequest, @CookieValue(value = "refreshToken") String refreshTokenReq) {
+        log.info("cookie exist");
+        log.info(refreshTokenReq);
         return ResponseEntity.ok(userAuthService.reissue(httpServletRequest, refreshTokenReq));
     }
 

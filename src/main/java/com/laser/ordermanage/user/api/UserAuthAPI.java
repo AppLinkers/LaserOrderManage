@@ -1,14 +1,15 @@
 package com.laser.ordermanage.user.api;
 
-import com.laser.ordermanage.common.security.jwt.dto.TokenInfo;
 import com.laser.ordermanage.user.dto.request.LoginRequest;
 import com.laser.ordermanage.user.service.UserAuthService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+@Slf4j
 @RequiredArgsConstructor
 @RequestMapping("/user")
 @RestController
@@ -26,9 +27,7 @@ public class UserAuthAPI {
      */
     @PostMapping("/login")
     public ResponseEntity<?> login(HttpServletRequest httpServletRequest, @RequestBody @Valid LoginRequest request) {
-        TokenInfo tokenInfo = userAuthService.login(httpServletRequest, request);
-
-        return ResponseEntity.ok(tokenInfo);
+        return ResponseEntity.ok(userAuthService.login(httpServletRequest, request));
     }
 
     /**
@@ -41,9 +40,9 @@ public class UserAuthAPI {
      */
     @PostMapping("/re-issue")
     public ResponseEntity<?> reissue(HttpServletRequest httpServletRequest, @CookieValue(value = "refreshToken") String refreshTokenReq) {
-        TokenInfo tokenInfo = userAuthService.reissue(httpServletRequest, refreshTokenReq);
-
-        return ResponseEntity.ok(tokenInfo);
+        log.info("cookie exist");
+        log.info(refreshTokenReq);
+        return ResponseEntity.ok(userAuthService.reissue(httpServletRequest, refreshTokenReq));
     }
 
     /**

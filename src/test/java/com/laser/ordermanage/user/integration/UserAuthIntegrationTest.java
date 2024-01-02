@@ -3,10 +3,11 @@ package com.laser.ordermanage.user.integration;
 import com.laser.ordermanage.common.IntegrationTest;
 import com.laser.ordermanage.common.constants.ExpireTime;
 import com.laser.ordermanage.common.exception.ErrorCode;
-import com.laser.ordermanage.common.security.jwt.dto.TokenInfo;
 import com.laser.ordermanage.common.security.jwt.setup.JwtBuilder;
 import com.laser.ordermanage.user.domain.type.Role;
 import com.laser.ordermanage.user.dto.request.LoginRequest;
+import com.laser.ordermanage.user.dto.request.LoginRequestBuilder;
+import com.laser.ordermanage.user.dto.response.TokenInfoResponse;
 import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,10 +31,7 @@ public class UserAuthIntegrationTest extends IntegrationTest {
     @Test
     public void 로그인_성공() throws Exception {
         // given
-        final LoginRequest request = LoginRequest.builder()
-                .email("user1@gmail.com")
-                .password("user1-password")
-                .build();
+        final LoginRequest request = LoginRequestBuilder.build();
 
         // when
         final ResultActions resultActions = requestLogin(request);
@@ -107,9 +105,9 @@ public class UserAuthIntegrationTest extends IntegrationTest {
                 .password("user1-password")
                 .build();
 
-        String response = requestLogin(request).andReturn().getResponse().getContentAsString();
+        final String response = requestLogin(request).andReturn().getResponse().getContentAsString();
 
-        String refreshToken = objectMapper.readValue(response, TokenInfo.class).getRefreshToken();
+        final String refreshToken = objectMapper.readValue(response, TokenInfoResponse.class).getRefreshToken();
 
         // when
         final ResultActions resultActions = requestReIssue(refreshToken);
@@ -151,7 +149,14 @@ public class UserAuthIntegrationTest extends IntegrationTest {
     @Test
     public void Access_Token_재발급_실패_Token_Type() throws Exception {
         // given
-        String accessToken = jwtBuilder.accessJwtBuild();
+        final LoginRequest request = LoginRequest.builder()
+                .email("user1@gmail.com")
+                .password("user1-password")
+                .build();
+
+        final String response = requestLogin(request).andReturn().getResponse().getContentAsString();
+
+        final String accessToken = objectMapper.readValue(response, TokenInfoResponse.class).getAccessToken();
 
         // when
         final ResultActions resultActions = requestReIssue(accessToken);
@@ -171,7 +176,7 @@ public class UserAuthIntegrationTest extends IntegrationTest {
     @Test
     public void Access_Token_재발급_실패_Empty_Refresh_Token() throws Exception {
         // given
-        String emptyRefreshToken = "";
+        final String emptyRefreshToken = "";
 
         // when
         final ResultActions resultActions = requestReIssue(emptyRefreshToken);
@@ -191,7 +196,7 @@ public class UserAuthIntegrationTest extends IntegrationTest {
     @Test
     public void Access_Token_재발급_실패_Invalid_Refresh_Token() throws Exception {
         // given
-        String invalidRefreshToken = jwtBuilder.invalidJwtBuild();
+        final String invalidRefreshToken = jwtBuilder.invalidJwtBuild();
 
         // when
         final ResultActions resultActions = requestReIssue(invalidRefreshToken);
@@ -211,7 +216,7 @@ public class UserAuthIntegrationTest extends IntegrationTest {
     @Test
     public void Access_Token_재발급_실패_Expired_Refresh_Token() throws Exception {
         // given
-        String expiredRefreshToken = jwtBuilder.expiredRefreshJwtBuild();
+        final String expiredRefreshToken = jwtBuilder.expiredRefreshJwtBuild();
 
         // when
         final ResultActions resultActions = requestReIssue(expiredRefreshToken);
@@ -231,7 +236,7 @@ public class UserAuthIntegrationTest extends IntegrationTest {
     @Test
     public void Access_Token_재발급_실패_Unauthorized_Refresh_Token() throws Exception {
         // given
-        String unauthorizedRefreshToken = jwtBuilder.unauthorizedRefreshJwtBuild();
+        final String unauthorizedRefreshToken = jwtBuilder.unauthorizedRefreshJwtBuild();
 
         // when
         final ResultActions resultActions = requestReIssue(unauthorizedRefreshToken);
@@ -256,9 +261,9 @@ public class UserAuthIntegrationTest extends IntegrationTest {
                 .password("user1-password")
                 .build();
 
-        String response = requestLogin(request).andReturn().getResponse().getContentAsString();
+        final String response = requestLogin(request).andReturn().getResponse().getContentAsString();
 
-        String refreshToken = objectMapper.readValue(response, TokenInfo.class).getRefreshToken();
+        final String refreshToken = objectMapper.readValue(response, TokenInfoResponse.class).getRefreshToken();
 
         // when
         final ResultActions resultActions = requestReIssueWithDifferentIpAddress(refreshToken);
@@ -282,9 +287,9 @@ public class UserAuthIntegrationTest extends IntegrationTest {
                 .password("user1-password")
                 .build();
 
-        String response = requestLogin(request).andReturn().getResponse().getContentAsString();
+        final String response = requestLogin(request).andReturn().getResponse().getContentAsString();
 
-        String accessToken = objectMapper.readValue(response, TokenInfo.class).getAccessToken();
+        final String accessToken = objectMapper.readValue(response, TokenInfoResponse.class).getAccessToken();
 
         // when
         final ResultActions resultActions = requestLogout(accessToken);
@@ -321,7 +326,7 @@ public class UserAuthIntegrationTest extends IntegrationTest {
     @Test
     public void 로그아웃_실패_Token_Type() throws Exception {
         // given
-        String refreshToken = jwtBuilder.refreshJwtBuild();
+        final String refreshToken = jwtBuilder.refreshJwtBuild();
 
         // when
         final ResultActions resultActions = requestLogout(refreshToken);
@@ -341,7 +346,7 @@ public class UserAuthIntegrationTest extends IntegrationTest {
     @Test
     public void 로그아웃_실패_Expired_Access_Token() throws Exception {
         // given
-        String expiredAccessToken = jwtBuilder.expiredAccessJwtBuild();
+        final String expiredAccessToken = jwtBuilder.expiredAccessJwtBuild();
 
         // when
         final ResultActions resultActions = requestLogout(expiredAccessToken);
@@ -361,7 +366,7 @@ public class UserAuthIntegrationTest extends IntegrationTest {
     @Test
     public void 로그아웃_실패_Unauthorized_Access_Token() throws Exception {
         // given
-        String unauthorizedAccessToken = jwtBuilder.unauthorizedAccessJwtBuild();
+        final String unauthorizedAccessToken = jwtBuilder.unauthorizedAccessJwtBuild();
 
         // when
         final ResultActions resultActions = requestLogout(unauthorizedAccessToken);

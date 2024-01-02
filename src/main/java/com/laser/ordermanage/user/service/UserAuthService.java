@@ -7,15 +7,15 @@ import com.laser.ordermanage.common.cache.redis.repository.RefreshTokenRedisRepo
 import com.laser.ordermanage.common.exception.CustomCommonException;
 import com.laser.ordermanage.common.exception.ErrorCode;
 import com.laser.ordermanage.common.security.jwt.component.JwtProvider;
-import com.laser.ordermanage.common.security.jwt.dto.TokenInfo;
 import com.laser.ordermanage.common.util.NetworkUtil;
 import com.laser.ordermanage.user.domain.UserEntity;
 import com.laser.ordermanage.user.dto.request.LoginRequest;
+import com.laser.ordermanage.user.dto.response.TokenInfoResponse;
 import com.laser.ordermanage.user.repository.UserEntityRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -32,7 +32,7 @@ public class UserAuthService {
     private final UserEntityRepository userRepository;
 
     private final JwtProvider jwtProvider;
-    private final AuthenticationManagerBuilder authenticationManagerBuilder;
+    private final AuthenticationManager authenticationManager;
 
     @Transactional(readOnly = true)
     public UserEntity getUserByEmail(String email) {
@@ -40,7 +40,7 @@ public class UserAuthService {
     }
 
     @Transactional
-    public TokenInfo login(HttpServletRequest httpServletRequest, LoginRequest request) {
+    public TokenInfoResponse login(HttpServletRequest httpServletRequest, LoginRequest request) {
 
         // 1. Login ID/PW 를 기반으로 Authentication 객체 생성
         // 이때 authentication 는 인증 여부를 확인하는 authenticated 값이 false
@@ -48,11 +48,11 @@ public class UserAuthService {
 
         // 2. 실제 검증 (사용자 비밀번호 체크)이 이루어지는 부분
         // authenticate 메서드가 실행될 때 CustomUserDetailService 에서 만든 loadUserByUsername 메서드가 실행
-        Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
+        Authentication authentication = authenticationManager.authenticate(authenticationToken);
 
         // 3. 인증 정보를 기반으로 JWT 토큰 생성
         String role = authentication.getAuthorities().iterator().next().getAuthority();
-        TokenInfo response = jwtProvider.generateToken(authentication.getName(), role);
+        TokenInfoResponse response = jwtProvider.generateToken(authentication.getName(), role);
 
         // 4. RefreshToken 을 Redis 에 저장
         refreshTokenRedisRepository.save(RefreshToken.builder()
@@ -65,7 +65,7 @@ public class UserAuthService {
         return response;
     }
 
-    public TokenInfo reissue(HttpServletRequest httpServletRequest, String refreshTokenReq) {
+    public TokenInfoResponse reissue(HttpServletRequest httpServletRequest, String refreshTokenReq) {
         // 1. refresh token 인지 확인
         if (StringUtils.hasText(refreshTokenReq) && jwtProvider.validateToken(refreshTokenReq) && jwtProvider.getType(refreshTokenReq).equals(JwtProvider.TYPE_REFRESH)) {
             RefreshToken refreshToken = refreshTokenRedisRepository.findByRefreshToken(refreshTokenReq);
@@ -74,7 +74,7 @@ public class UserAuthService {
                 String currentIpAddress = NetworkUtil.getClientIp(httpServletRequest);
                 if (refreshToken.getIp().equals(currentIpAddress)) {
                     // 3. Redis 에 저장된 RefreshToken 정보를 기반으로 JWT Token 생성
-                    TokenInfo response = jwtProvider.generateToken(refreshToken.getId(), refreshToken.getRole());
+                    TokenInfoResponse response = jwtProvider.generateToken(refreshToken.getId(), refreshToken.getRole());
 
                     // 4. Redis RefreshToken update
                     refreshTokenRedisRepository.save(RefreshToken.builder()

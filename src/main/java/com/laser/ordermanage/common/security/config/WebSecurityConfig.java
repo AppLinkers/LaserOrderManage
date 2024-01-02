@@ -24,7 +24,6 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.List;
 
-import static org.springframework.http.HttpHeaders.SET_COOKIE;
 import static org.springframework.security.config.Customizer.withDefaults;
 
 @Configuration
@@ -76,6 +75,7 @@ public class WebSecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
 
+        configuration.addAllowedOrigin("http://192.168.0.112:3000");
         configuration.addAllowedOriginPattern("*");
         configuration.setAllowedHeaders(List.of("Authorization", "Content-Type"));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE"));

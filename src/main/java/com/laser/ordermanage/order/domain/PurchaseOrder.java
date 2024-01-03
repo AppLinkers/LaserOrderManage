@@ -30,6 +30,15 @@ public class PurchaseOrder extends CreatedAtEntity {
     @Column(name = "payment_date", nullable = false)
     private LocalDate paymentDate;
 
+    @Column(name = "file_name", nullable = false)
+    private String fileName;
+
+    @Column(name = "file_size", nullable = false)
+    private Long fileSize;
+
+    @Column(name = "file_url", nullable = false)
+    private String fileUrl;
+
     @Builder
     public PurchaseOrder(LocalDate inspectionPeriod, String inspectionCondition, LocalDate paymentDate) {
         this.inspectionPeriod = inspectionPeriod;

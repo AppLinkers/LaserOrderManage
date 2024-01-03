@@ -16,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RequiredArgsConstructor
 @RequestMapping("/customer/order")
@@ -183,7 +184,8 @@ public class CustomerOrderAPI {
     @PutMapping("/{order-id}/purchase-order")
     public ResponseEntity<?> createOrUpdateOrderPurchaseOrder(
         @PathVariable("order-id") Long orderId,
-        @RequestBody @Valid CustomerCreateOrUpdateOrderPurchaseOrderRequest request) {
+        @RequestParam(required = false) MultipartFile file,
+        @RequestPart(value = "purchaseOrder") @Valid CustomerCreateOrUpdateOrderPurchaseOrderRequest request) {
 
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
@@ -202,10 +204,10 @@ public class CustomerOrderAPI {
         CustomerCreateOrUpdateOrderPurchaseOrderResponse response;
 
         if (order.hasPurchaseOrder()) {
-            response = customerOrderService.updateOrderPurchaseOrder(order, request);
+            response = customerOrderService.updateOrderPurchaseOrder(order, file, request);
             customerOrderService.sendMailForUpdateOrderPurchaseOrder(order);
         } else {
-            response = customerOrderService.createOrderPurchaseOrder(order, request);
+            response = customerOrderService.createOrderPurchaseOrder(order, file, request);
             customerOrderService.sendMailForCreateOrderPurchaseOrder(order);
         }
 

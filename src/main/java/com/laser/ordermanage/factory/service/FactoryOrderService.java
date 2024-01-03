@@ -72,7 +72,7 @@ public class FactoryOrderService {
 
     @Transactional
     public FactoryCreateOrUpdateOrderQuotationResponse createOrderQuotation(Order order, MultipartFile file, FactoryCreateOrUpdateOrderQuotationRequest request) {
-        // 도면 파일 유무 확인
+        // 견적서 파일 유무 확인
         if (file == null || file.isEmpty()) {
             throw new CustomCommonException(ErrorCode.MISSING_QUOTATION_FILE);
         }
@@ -94,11 +94,7 @@ public class FactoryOrderService {
         Quotation savedQuotation = quotationRepository.save(quotation);
         order.createQuotation(savedQuotation);
 
-        return FactoryCreateOrUpdateOrderQuotationResponse.builder()
-                .id(savedQuotation.getId())
-                .fileName(savedQuotation.getFileName())
-                .fileUrl(savedQuotation.getFileUrl())
-                .build();
+        return FactoryCreateOrUpdateOrderQuotationResponse.from(savedQuotation);
     }
 
     @Transactional(readOnly = true)
@@ -124,7 +120,7 @@ public class FactoryOrderService {
     public FactoryCreateOrUpdateOrderQuotationResponse updateOrderQuotation(Order order, MultipartFile file, FactoryCreateOrUpdateOrderQuotationRequest request) {
         Quotation quotation = order.getQuotation();
 
-        // 도면 파일 유무 확인
+        // 견적서 파일 유무 확인
         if (file != null && !file.isEmpty()) {
             String fileName = file.getOriginalFilename();
             Long fileSize = file.getSize();
@@ -137,11 +133,7 @@ public class FactoryOrderService {
 
         quotation.updateProperties(request);
 
-        return FactoryCreateOrUpdateOrderQuotationResponse.builder()
-                .id(quotation.getId())
-                .fileName(quotation.getFileName())
-                .fileUrl(quotation.getFileUrl())
-                .build();
+        return FactoryCreateOrUpdateOrderQuotationResponse.from(quotation);
     }
 
     @Transactional(readOnly = true)
@@ -231,7 +223,7 @@ public class FactoryOrderService {
         mailService.sendEmail(toEmail, title, content);
     }
 
-    public String uploadQuotationFile(MultipartFile multipartFile) {
+    private String uploadQuotationFile(MultipartFile multipartFile) {
         return s3Service.upload("quotation", multipartFile);
     }
 }

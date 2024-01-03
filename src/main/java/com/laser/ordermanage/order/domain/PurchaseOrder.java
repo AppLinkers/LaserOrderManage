@@ -40,18 +40,19 @@ public class PurchaseOrder extends CreatedAtEntity {
     private String fileUrl;
 
     @Builder
-    public PurchaseOrder(LocalDate inspectionPeriod, String inspectionCondition, LocalDate paymentDate) {
+    public PurchaseOrder(LocalDate inspectionPeriod, String inspectionCondition, LocalDate paymentDate, String fileName, Long fileSize, String fileUrl) {
         this.inspectionPeriod = inspectionPeriod;
         this.inspectionCondition = inspectionCondition;
         this.paymentDate = paymentDate;
+        this.fileName = fileName;
+        this.fileSize = fileSize;
+        this.fileUrl = fileUrl;
     }
 
-    public static PurchaseOrder ofRequest(CustomerCreateOrUpdateOrderPurchaseOrderRequest request) {
-        return PurchaseOrder.builder()
-                .inspectionPeriod(request.inspectionPeriod())
-                .inspectionCondition(request.inspectionCondition())
-                .paymentDate(request.paymentDate())
-                .build();
+    public void updateFile(String fileName, Long fileSize, String fileUrl) {
+        this.fileName = fileName;
+        this.fileSize = fileSize;
+        this.fileUrl = fileUrl;
     }
 
     public void updateProperties(CustomerCreateOrUpdateOrderPurchaseOrderRequest request) {

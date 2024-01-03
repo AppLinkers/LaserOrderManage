@@ -1,11 +1,17 @@
 package com.laser.ordermanage.factory.dto.response;
 
-import lombok.Builder;
+import com.laser.ordermanage.order.domain.Quotation;
 
-@Builder
 public record FactoryCreateOrUpdateOrderQuotationResponse(
         Long id,
         String fileName,
         String fileUrl
 ) {
+    public static FactoryCreateOrUpdateOrderQuotationResponse from(Quotation quotation) {
+        return new FactoryCreateOrUpdateOrderQuotationResponse(
+                quotation.getId(),
+                quotation.getFileName(),
+                quotation.getFileUrl()
+        );
+    }
 }

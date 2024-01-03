@@ -27,15 +27,14 @@ public class JwtExceptionFilter extends OncePerRequestFilter {
 
     private void createJwtErrorResponse(HttpServletRequest request, HttpServletResponse response, CustomCommonException e) throws IOException {
 
+        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+        response.setCharacterEncoding(StandardCharsets.UTF_8.name());
+        response.setStatus(e.getHttpStatus().value());
+
         ObjectMapper objectMapper = new ObjectMapper();
+        String responseBody = objectMapper.writeValueAsString(e.toErrorResponse());
 
         try (PrintWriter writer = response.getWriter()) {
-            String responseBody = objectMapper.writeValueAsString(e.toErrorResponse());
-
-            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-            response.setCharacterEncoding(StandardCharsets.UTF_8.name());
-            response.setStatus(e.getHttpStatus().value());
-
             writer.write(responseBody);
         }
 

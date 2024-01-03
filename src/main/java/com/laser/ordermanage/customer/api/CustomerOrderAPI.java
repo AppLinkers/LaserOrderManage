@@ -61,7 +61,7 @@ public class CustomerOrderAPI {
 
         customerOrderService.checkAuthorityOfOrder(user, orderId);
 
-        customerDeliveryAddressService.checkAuthorityCustomerOfDeliveryAddress(user, request.getDeliveryAddressId());
+        customerDeliveryAddressService.checkAuthorityCustomerOfDeliveryAddress(user, request.deliveryAddressId());
 
         Order order = customerOrderService.updateOrderDeliveryAddress(orderId, request);
 
@@ -195,7 +195,7 @@ public class CustomerOrderAPI {
             throw new CustomCommonException(ErrorCode.INVALID_ORDER_STAGE, order.getStage().getValue());
         }
 
-        if (order.getQuotation().getDeliveryDate().isAfter(request.getInspectionPeriod()) || order.getQuotation().getDeliveryDate().isAfter(request.getPaymentDate())) {
+        if (order.getQuotation().getDeliveryDate().isAfter(request.inspectionPeriod()) || order.getQuotation().getDeliveryDate().isAfter(request.paymentDate())) {
             throw new CustomCommonException(ErrorCode.INVALID_FIELDS, "발주서의 검수기간 및 지급일은 거래 납기일 이후이어야 합니다.");
         }
 

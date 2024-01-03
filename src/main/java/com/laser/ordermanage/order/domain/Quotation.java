@@ -52,7 +52,7 @@ public class Quotation extends CreatedAtEntity {
     }
 
     public void updateProperties(FactoryCreateOrUpdateOrderQuotationRequest request) {
-        this.totalCost = request.getTotalCost();
-        this.deliveryDate = request.getDeliveryDate();
+        this.totalCost = request.totalCost();
+        this.deliveryDate = request.deliveryDate();
     }
 }

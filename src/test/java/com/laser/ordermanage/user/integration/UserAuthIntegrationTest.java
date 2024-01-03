@@ -107,7 +107,7 @@ public class UserAuthIntegrationTest extends IntegrationTest {
 
         final String response = requestLogin(request).andReturn().getResponse().getContentAsString();
 
-        final String refreshToken = objectMapper.readValue(response, TokenInfoResponse.class).getRefreshToken();
+        final String refreshToken = objectMapper.readValue(response, TokenInfoResponse.class).refreshToken();
 
         // when
         final ResultActions resultActions = requestReIssue(refreshToken);
@@ -156,7 +156,7 @@ public class UserAuthIntegrationTest extends IntegrationTest {
 
         final String response = requestLogin(request).andReturn().getResponse().getContentAsString();
 
-        final String accessToken = objectMapper.readValue(response, TokenInfoResponse.class).getAccessToken();
+        final String accessToken = objectMapper.readValue(response, TokenInfoResponse.class).accessToken();
 
         // when
         final ResultActions resultActions = requestReIssue(accessToken);
@@ -263,7 +263,7 @@ public class UserAuthIntegrationTest extends IntegrationTest {
 
         final String response = requestLogin(request).andReturn().getResponse().getContentAsString();
 
-        final String refreshToken = objectMapper.readValue(response, TokenInfoResponse.class).getRefreshToken();
+        final String refreshToken = objectMapper.readValue(response, TokenInfoResponse.class).refreshToken();
 
         // when
         final ResultActions resultActions = requestReIssueWithDifferentIpAddress(refreshToken);
@@ -289,7 +289,7 @@ public class UserAuthIntegrationTest extends IntegrationTest {
 
         final String response = requestLogin(request).andReturn().getResponse().getContentAsString();
 
-        final String accessToken = objectMapper.readValue(response, TokenInfoResponse.class).getAccessToken();
+        final String accessToken = objectMapper.readValue(response, TokenInfoResponse.class).accessToken();
 
         // when
         final ResultActions resultActions = requestLogout(accessToken);

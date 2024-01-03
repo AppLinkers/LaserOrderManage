@@ -64,8 +64,8 @@ public class Drawing {
     }
 
     public void updateDrawingProperties(CustomerUpdateDrawingRequest request) {
-        this.count = request.getCount();
-        this.ingredient = Ingredient.ofValue(request.getIngredient());
-        this.thickness = request.getThickness();
+        this.count = request.count();
+        this.ingredient = Ingredient.ofValue(request.ingredient());
+        this.thickness = request.thickness();
     }
 }

@@ -1,36 +1,27 @@
 package com.laser.ordermanage.common.paging;
 
-import lombok.Getter;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
 
-@Getter
-public class PageResponse<T> {
-
-    private final List<T> contents;
-
-    private final Integer page;
-
-    private final Integer size;
-
-    private final Long totalElements;
-
-    private final Integer totalPages;
-
-    private final Boolean first;
-
-    private final Boolean last;
-
+public record PageResponse<T>(
+        List<T> contents,
+        Integer page,
+        Integer size,
+        Long totalElements,
+        Integer totalPages,
+        Boolean first,
+        Boolean last
+) {
     public PageResponse(Page<T> contentPage) {
-        this.contents = contentPage.getContent();
-
-        this.page = contentPage.getNumber() + 1;
-        this.size = contentPage.getNumberOfElements();
-        this.totalElements = contentPage.getTotalElements();
-        this.totalPages = contentPage.getTotalPages();
-        this.first = (contentPage.getNumber() == 0) ? Boolean.TRUE : Boolean.FALSE;
-        this.last = ((contentPage.getNumber() + 1) == contentPage.getTotalPages()) ? Boolean.TRUE : Boolean.FALSE;
-
+        this(
+                contentPage.getContent(),
+                contentPage.getNumber() + 1,
+                contentPage.getNumberOfElements(),
+                contentPage.getTotalElements(),
+                contentPage.getTotalPages(),
+                contentPage.getNumber() == 0,
+                (contentPage.getNumber() + 1) == contentPage.getTotalPages()
+        );
     }
 }

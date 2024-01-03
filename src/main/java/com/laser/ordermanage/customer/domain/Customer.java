@@ -42,9 +42,9 @@ public class Customer {
     }
 
     public void updateProperties(CustomerUpdateUserAccountRequest request) {
-        this.name = request.getName();
-        this.user.updateProperties(request.getUser());
-        this.companyName = request.getCompanyName();
+        this.name = request.name();
+        this.user.updateProperties(request.user());
+        this.companyName = request.companyName();
     }
 
     public boolean isNewCustomer() {

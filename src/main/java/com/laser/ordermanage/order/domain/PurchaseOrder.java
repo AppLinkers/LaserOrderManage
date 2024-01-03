@@ -39,15 +39,15 @@ public class PurchaseOrder extends CreatedAtEntity {
 
     public static PurchaseOrder ofRequest(CustomerCreateOrUpdateOrderPurchaseOrderRequest request) {
         return PurchaseOrder.builder()
-                .inspectionPeriod(request.getInspectionPeriod())
-                .inspectionCondition(request.getInspectionCondition())
-                .paymentDate(request.getPaymentDate())
+                .inspectionPeriod(request.inspectionPeriod())
+                .inspectionCondition(request.inspectionCondition())
+                .paymentDate(request.paymentDate())
                 .build();
     }
 
     public void updateProperties(CustomerCreateOrUpdateOrderPurchaseOrderRequest request) {
-        this.inspectionPeriod = request.getInspectionPeriod();
-        this.inspectionCondition = request.getInspectionCondition();
-        this.paymentDate = request.getPaymentDate();
+        this.inspectionPeriod = request.inspectionPeriod();
+        this.inspectionCondition = request.inspectionCondition();
+        this.paymentDate = request.paymentDate();
     }
 }

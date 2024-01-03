@@ -67,14 +67,14 @@ public class DeliveryAddress extends CreatedAtEntity {
     }
 
     public void updateProperties(CustomerCreateOrUpdateDeliveryAddressRequest request) {
-        this.name = request.getName();
-        this.zipCode = request.getZipCode();
-        this.address = request.getAddress();
-        this.detailAddress = request.getDetailAddress();
-        this.receiver = request.getReceiver();
-        this.phone1 = request.getPhone1();
-        this.phone2 = request.getPhone2();
-        this.isDefault = request.getIsDefault();
+        this.name = request.name();
+        this.zipCode = request.zipCode();
+        this.address = request.address();
+        this.detailAddress = request.detailAddress();
+        this.receiver = request.receiver();
+        this.phone1 = request.phone1();
+        this.phone2 = request.phone2();
+        this.isDefault = request.isDefault();
     }
 
     public boolean isDefault() {

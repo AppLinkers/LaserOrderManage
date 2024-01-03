@@ -106,9 +106,9 @@ public class UserEntity extends CreatedAtEntity implements UserDetails {
     }
 
     public void updateProperties(UpdateUserAccountRequest request) {
-        this.phone = request.getPhone();
-        this.zipCode = request.getZipCode();
-        this.address = request.getAddress();
-        this.detailAddress = request.getDetailAddress();
+        this.phone = request.phone();
+        this.zipCode = request.zipCode();
+        this.address = request.address();
+        this.detailAddress = request.detailAddress();
     }
 }

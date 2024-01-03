@@ -40,38 +40,38 @@ public class CustomerOrderService {
     public void createOrder(User user, CustomerCreateOrderRequest request) {
         Customer customer = customerRepository.findFirstByUserEmail(user.getUsername());
 
-        OrderDeliveryAddress deliveryAddress = OrderDeliveryAddress.ofRequest(request.getDeliveryAddress());
+        OrderDeliveryAddress deliveryAddress = OrderDeliveryAddress.ofRequest(request.deliveryAddress());
 
-        OrderManufacturing orderManufacturing = OrderManufacturing.ofRequest(request.getManufacturing());
-        OrderPostProcessing orderPostProcessing = OrderPostProcessing.ofRequest(request.getPostProcessing());
+        OrderManufacturing orderManufacturing = OrderManufacturing.ofRequest(request.manufacturing());
+        OrderPostProcessing orderPostProcessing = OrderPostProcessing.ofRequest(request.postProcessing());
 
         Order order = Order.builder()
                 .customer(customer)
                 .deliveryAddress(deliveryAddress)
-                .name(request.getName())
+                .name(request.name())
                 .imgUrl(request.getOrderImgUrl())
                 .manufacturing(orderManufacturing)
                 .postProcessing(orderPostProcessing)
-                .request(request.getRequest())
-                .isNewIssue(request.getIsNewIssue())
+                .request(request.request())
+                .isNewIssue(request.isNewIssue())
                 .build();
 
         Order createdOrder = orderRepository.save(order);
 
         List<Drawing> drawingList = new ArrayList<>();
-        request.getDrawingList().forEach(
+        request.drawingList().forEach(
                 drawingRequest -> {
                     drawingList.add(
                             Drawing.builder()
                                     .order(createdOrder)
-                                    .fileName(drawingRequest.getFileName())
-                                    .fileSize(drawingRequest.getFileSize())
-                                    .fileType(drawingRequest.getFileType())
-                                    .fileUrl(drawingRequest.getFileUrl())
-                                    .thumbnailUrl(drawingRequest.getThumbnailUrl())
-                                    .count(drawingRequest.getCount())
-                                    .ingredient(drawingRequest.getIngredient())
-                                    .thickness(drawingRequest.getThickness())
+                                    .fileName(drawingRequest.fileName())
+                                    .fileSize(drawingRequest.fileSize())
+                                    .fileType(drawingRequest.fileType())
+                                    .fileUrl(drawingRequest.fileUrl())
+                                    .thumbnailUrl(drawingRequest.thumbnailUrl())
+                                    .count(drawingRequest.count())
+                                    .ingredient(drawingRequest.ingredient())
+                                    .thickness(drawingRequest.thickness())
                                     .build()
                     );
                 }
@@ -88,7 +88,7 @@ public class CustomerOrderService {
             throw new CustomCommonException(ErrorCode.INVALID_ORDER_STAGE, order.getStage().getValue());
         }
 
-        DeliveryAddress deliveryAddress = customerDeliveryAddressService.getDeliveryAddress(request.getDeliveryAddressId());
+        DeliveryAddress deliveryAddress = customerDeliveryAddressService.getDeliveryAddress(request.deliveryAddressId());
 
         order.updateDeliveryAddress(deliveryAddress);
 
@@ -125,14 +125,14 @@ public class CustomerOrderService {
 
         Drawing drawing = Drawing.builder()
                 .order(order)
-                .fileName(request.getFileName())
-                .fileSize(request.getFileSize())
-                .fileType(request.getFileType())
-                .fileUrl(request.getFileUrl())
-                .thumbnailUrl(request.getThumbnailUrl())
-                .count(request.getCount())
-                .ingredient(request.getIngredient())
-                .thickness(request.getThickness())
+                .fileName(request.fileName())
+                .fileSize(request.fileSize())
+                .fileType(request.fileType())
+                .fileUrl(request.fileUrl())
+                .thumbnailUrl(request.thumbnailUrl())
+                .count(request.count())
+                .ingredient(request.ingredient())
+                .thickness(request.thickness())
                 .build();
 
         Drawing savedDrawing = drawingRepository.save(drawing);

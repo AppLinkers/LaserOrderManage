@@ -34,7 +34,7 @@ public class FactoryOrderService {
             throw new CustomCommonException(ErrorCode.INVALID_ORDER_STAGE, order.getStage().getValue());
         }
 
-        order.updateIsUrgent(request.getIsUrgent());
+        order.updateIsUrgent(request.isUrgent());
 
         return order;
     }
@@ -84,11 +84,11 @@ public class FactoryOrderService {
         String quotationFileUrl = uploadQuotationFile(file);
 
         Quotation quotation = Quotation.builder()
-                .totalCost(request.getTotalCost())
+                .totalCost(request.totalCost())
                 .fileName(fileName)
                 .fileSize(fileSize)
                 .fileUrl(quotationFileUrl)
-                .deliveryDate(request.getDeliveryDate())
+                .deliveryDate(request.deliveryDate())
                 .build();
 
         Quotation savedQuotation = quotationRepository.save(quotation);

@@ -32,9 +32,9 @@ public class Factory {
     private String fax;
 
     public void updateProperties(FactoryUpdateUserAccountRequest request) {
-        this.companyName = request.getCompanyName();
-        this.representative = request.getRepresentative();
-        this.user.updateProperties(request.getUser());
-        this.fax = request.getFax();
+        this.companyName = request.companyName();
+        this.representative = request.representative();
+        this.user.updateProperties(request.user());
+        this.fax = request.fax();
     }
 }

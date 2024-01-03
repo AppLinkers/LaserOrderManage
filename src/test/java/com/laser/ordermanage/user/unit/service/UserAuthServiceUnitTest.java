@@ -106,7 +106,7 @@ public class UserAuthServiceUnitTest extends ServiceUnitTest {
     public void login_성공() {
         // given
         final LoginRequest loginRequest = LoginRequestBuilder.build();
-        final Authentication authentication = new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), null, Collections.singleton(new SimpleGrantedAuthority(Role.ROLE_CUSTOMER.name())));
+        final Authentication authentication = new UsernamePasswordAuthenticationToken(loginRequest.email(), null, Collections.singleton(new SimpleGrantedAuthority(Role.ROLE_CUSTOMER.name())));
         final TokenInfoResponse expectedTokenInfoResponse = TokenInfoResponseBuilder.build();
 
         // stub

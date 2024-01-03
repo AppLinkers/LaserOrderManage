@@ -59,18 +59,18 @@ public class UserJoinService {
 
     @Transactional
     public UserJoinStatusResponse verifyEmail(VerifyEmailRequest request) {
-        UserJoinStatusResponse response = checkDuplicatedEmail(request.getEmail());
+        UserJoinStatusResponse response = checkDuplicatedEmail(request.email());
 
         if (JoinStatus.isPossible(response.status())) {
-            VerifyCode verifyCode = verifyCodeRedisRepository.findById(request.getEmail())
+            VerifyCode verifyCode = verifyCodeRedisRepository.findById(request.email())
                     .orElseThrow(() -> new CustomCommonException(ErrorCode.NOT_FOUND_VERIFY_CODE));
 
-            if (!verifyCode.getCode().equals(request.getCode())) {
+            if (!verifyCode.getCode().equals(request.code())) {
                 throw new CustomCommonException(ErrorCode.INVALID_VERIFY_CODE);
             }
 
             // 인증 완료 후, 인증 코드 삭제
-            verifyCodeRedisRepository.deleteById(request.getEmail());
+            verifyCodeRedisRepository.deleteById(request.email());
         }
 
         return response;
@@ -78,23 +78,23 @@ public class UserJoinService {
 
     @Transactional
     public UserJoinStatusResponse joinCustomer(JoinCustomerRequest request) {
-        UserJoinStatusResponse response = checkDuplicatedEmail(request.getEmail());
+        UserJoinStatusResponse response = checkDuplicatedEmail(request.email());
 
         if (JoinStatus.isPossible(response.status())) {
             UserEntity user = UserEntity.builder()
-                    .email(request.getEmail())
-                    .password(passwordEncoder.encode(request.getPassword()))
+                    .email(request.email())
+                    .password(passwordEncoder.encode(request.password()))
                     .role(Role.ROLE_CUSTOMER)
-                    .phone(request.getPhone())
-                    .zipCode(request.getZipCode())
-                    .address(request.getAddress())
-                    .detailAddress(request.getDetailAddress())
+                    .phone(request.phone())
+                    .zipCode(request.zipCode())
+                    .address(request.address())
+                    .detailAddress(request.detailAddress())
                     .build();
 
             Customer customer = Customer.builder()
                     .user(user)
-                    .name(request.getName())
-                    .companyName(request.getCompanyName())
+                    .name(request.name())
+                    .companyName(request.companyName())
                     .build();
 
             DeliveryAddress deliveryAddress = DeliveryAddress.builder()

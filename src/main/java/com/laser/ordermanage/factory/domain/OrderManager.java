@@ -37,7 +37,7 @@ public class OrderManager extends CreatedAtEntity {
     }
 
     public void updateProperties(FactoryCreateOrUpdateOrderManagerRequest request) {
-        this.name = request.getName();
-        this.phone = request.getPhone();
+        this.name = request.name();
+        this.phone = request.phone();
     }
 }

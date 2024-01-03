@@ -59,7 +59,7 @@ public class OrderService {
         Comment comment = Comment.builder()
                 .user(user)
                 .order(order)
-                .content(request.getContent())
+                .content(request.content())
                 .build();
 
         commentRepository.save(comment);

@@ -5,35 +5,34 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
-import lombok.Getter;
 
 import java.util.List;
 
-@Getter
-public class CustomerCreateOrderRequest {
+public record CustomerCreateOrderRequest (
 
     @NotEmpty(message = "거래 이름은 필수 입력값입니다.")
     @Pattern(regexp = "^.{0,20}$", message = "거래 이름의 최대 글자수는 20자입니다.")
-    private String name;
+    String name,
 
-    private List<String> manufacturing;
+    List<String> manufacturing,
 
-    private List<String> postProcessing;
+    List<String> postProcessing,
 
     @Valid
     @Size(min = 1, message = "도면은 최소한 한개 이상이어야 합니다.")
     @NotNull
-    private List<CustomerCreateDrawingRequest> drawingList;
+    List<CustomerCreateDrawingRequest> drawingList,
 
-    private String request;
+    String request,
 
     @Valid
-    private CustomerCreateOrderDeliveryAddressRequest deliveryAddress;
+    CustomerCreateOrderDeliveryAddressRequest deliveryAddress,
 
     @NotNull(message = "신규 발급 유무는 필수 사항입니다.")
-    private Boolean isNewIssue;
+    Boolean isNewIssue
 
+) {
     public String getOrderImgUrl() {
-        return this.drawingList.get(0).getThumbnailUrl();
+        return this.drawingList.get(0).thumbnailUrl();
     }
 }

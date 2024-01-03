@@ -62,7 +62,7 @@ public class FactoryOrderAPI {
             throw new CustomCommonException(ErrorCode.INVALID_ORDER_STAGE, order.getStage().getValue());
         }
 
-        if (order.getCreatedAt().toLocalDate().isAfter(request.getDeliveryDate())) {
+        if (order.getCreatedAt().toLocalDate().isAfter(request.deliveryDate())) {
             throw new CustomCommonException(ErrorCode.INVALID_FIELDS, "견적서의 납기일은 거래 생성일 이후이어야 합니다.");
         }
 

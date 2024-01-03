@@ -53,13 +53,13 @@ public class OrderDeliveryAddress {
 
     public static OrderDeliveryAddress ofRequest(CustomerCreateOrderDeliveryAddressRequest request) {
         return OrderDeliveryAddress.builder()
-                .name(request.getName())
-                .zipCode(request.getZipCode())
-                .address(request.getZipCode())
-                .detailAddress(request.getDetailAddress())
-                .receiver(request.getReceiver())
-                .phone1(request.getPhone1())
-                .phone2(request.getPhone2())
+                .name(request.name())
+                .zipCode(request.zipCode())
+                .address(request.address())
+                .detailAddress(request.detailAddress())
+                .receiver(request.receiver())
+                .phone1(request.phone1())
+                .phone2(request.phone2())
                 .build();
     }
 

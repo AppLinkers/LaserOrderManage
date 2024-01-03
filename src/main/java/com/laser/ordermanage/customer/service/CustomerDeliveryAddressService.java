@@ -29,21 +29,21 @@ public class CustomerDeliveryAddressService {
     public void createDeliveryAddress(String email, CustomerCreateOrUpdateDeliveryAddressRequest request) {
         Customer customer = customerRepository.findFirstByUserEmail(email);
 
-        if (request.getIsDefault()) {
+        if (request.isDefault()) {
             DeliveryAddress defaultDeliveryAddress = deliveryAddressRepository.findFirstByCustomerAndIsDefaultTrue(customer);
             defaultDeliveryAddress.disableDefault();
         }
 
         DeliveryAddress deliveryAddress = DeliveryAddress.builder()
                 .customer(customer)
-                .name(request.getName())
-                .zipCode(request.getZipCode())
-                .address(request.getAddress())
-                .detailAddress(request.getDetailAddress())
-                .receiver(request.getReceiver())
-                .phone1(request.getPhone1())
-                .phone2(request.getPhone2())
-                .isDefault(request.getIsDefault())
+                .name(request.name())
+                .zipCode(request.zipCode())
+                .address(request.address())
+                .detailAddress(request.detailAddress())
+                .receiver(request.receiver())
+                .phone1(request.phone1())
+                .phone2(request.phone2())
+                .isDefault(request.isDefault())
                 .build();
 
         deliveryAddressRepository.save(deliveryAddress);
@@ -63,7 +63,7 @@ public class CustomerDeliveryAddressService {
     public void updateDeliveryAddress(String email, Long deliveryAddressId, CustomerCreateOrUpdateDeliveryAddressRequest request) {
         DeliveryAddress deliveryAddress = this.getDeliveryAddress(deliveryAddressId);
 
-        if (request.getIsDefault()) {
+        if (request.isDefault()) {
             DeliveryAddress defaultDeliveryAddress = deliveryAddressRepository.findFirstByCustomer_User_EmailAndIsDefaultTrue(email);
             defaultDeliveryAddress.disableDefault();
         }

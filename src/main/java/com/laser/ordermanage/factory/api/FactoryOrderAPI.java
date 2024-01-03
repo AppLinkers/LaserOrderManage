@@ -98,15 +98,15 @@ public class FactoryOrderAPI {
      * 거래 제작 완료
      * - path parameter {order-id} 에 해당하는 거래 조회
      * - 거래 제작 완료 가능 단계 확인 (제작 중)
-     * - 거래 단계 변경 : 제작 중 -> 배송 중
+     * - 거래 단계 변경 : 제작 중 -> 제작 완료
      * - 거래의 고객에게 메일 전송
      */
-    @PatchMapping("/{order-id}/stage/shipping")
-    public ResponseEntity<?> changeStageToShipping(@PathVariable("order-id") Long orderId) {
+    @PatchMapping("/{order-id}/stage/production-completed")
+    public ResponseEntity<?> changeStageToProductionCompleted(@PathVariable("order-id") Long orderId) {
 
-        Order order = factoryOrderService.changeStageToShipping(orderId);
+        Order order = factoryOrderService.changeStageToProductionCompleted(orderId);
 
-        factoryOrderService.sendEmailForChangeStageToShipping(order);
+        factoryOrderService.sendEmailForChangeStageToProductionCompleted(order);
         return ResponseEntity.ok().build();
     }
 }

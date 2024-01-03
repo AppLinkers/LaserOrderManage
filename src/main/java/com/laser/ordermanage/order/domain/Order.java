@@ -45,7 +45,7 @@ public class Order extends CreatedAtEntity {
     @Column(name = "stage", nullable = false)
     private Stage stage = Stage.NEW;
 
-    private static final EnumSet<Stage> ENABLE_UPDATE_IS_URGENT_STAGE_LIST = EnumSet.of(Stage.NEW, Stage.QUOTE_APPROVAL, Stage.IN_PRODUCTION, Stage.SHIPPING);
+    private static final EnumSet<Stage> ENABLE_UPDATE_IS_URGENT_STAGE_LIST = EnumSet.of(Stage.NEW, Stage.QUOTE_APPROVAL, Stage.IN_PRODUCTION, Stage.PRODUCTION_COMPLETED);
     private static final EnumSet<Stage> ENABLE_UPDATE_DELIVERY_ADDRESS_STAGE_LIST = EnumSet.of(Stage.NEW, Stage.QUOTE_APPROVAL, Stage.IN_PRODUCTION);
     private static final EnumSet<Stage> ENABLE_MANAGE_DRAWING_STAGE_LIST = EnumSet.of(Stage.NEW, Stage.QUOTE_APPROVAL, Stage.IN_PRODUCTION);
 
@@ -151,16 +151,16 @@ public class Order extends CreatedAtEntity {
         this.stage = Stage.IN_PRODUCTION;
     }
 
-    public boolean enableChangeStageToShipping() {
+    public boolean enableChangeStageToProductionCompleted() {
         return this.stage.equals(Stage.IN_PRODUCTION);
     }
 
-    public void changeStageToShipping() {
-        this.stage = Stage.SHIPPING;
+    public void changeStageToProductionCompleted() {
+        this.stage = Stage.PRODUCTION_COMPLETED;
     }
 
     public boolean enableChangeStageToCompleted() {
-        return this.stage.equals(Stage.SHIPPING);
+        return this.stage.equals(Stage.PRODUCTION_COMPLETED);
     }
 
     public void changeStageToCompleted() {

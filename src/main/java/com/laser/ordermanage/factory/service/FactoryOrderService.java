@@ -200,20 +200,20 @@ public class FactoryOrderService {
     }
 
     @Transactional
-    public Order changeStageToShipping(Long orderId) {
+    public Order changeStageToProductionCompleted(Long orderId) {
         Order order = orderService.getOrderById(orderId);
 
-        if (!order.enableChangeStageToShipping()) {
+        if (!order.enableChangeStageToProductionCompleted()) {
             throw new CustomCommonException(ErrorCode.INVALID_ORDER_STAGE, order.getStage().getValue());
         }
 
-        order.changeStageToShipping();
+        order.changeStageToProductionCompleted();
 
         return order;
     }
 
     @Transactional(readOnly = true)
-    public void sendEmailForChangeStageToShipping(Order order) {
+    public void sendEmailForChangeStageToProductionCompleted(Order order) {
         String toEmail = order.getCustomer().getUser().getEmail();
 
         StringBuilder sbTitle = new StringBuilder();

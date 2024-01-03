@@ -64,7 +64,7 @@ public class Order extends CreatedAtEntity {
     @Column(name = "is_urgent", nullable = false, length = 1)
     private Boolean isUrgent = Boolean.FALSE;
 
-    @Column(name = "completed_at", updatable = false)
+    @Column(name = "completed_at")
     private LocalDateTime completedAt;
 
     @Convert(converter = BooleanToYNConverter.class)
@@ -165,5 +165,6 @@ public class Order extends CreatedAtEntity {
 
     public void changeStageToCompleted() {
         this.stage = Stage.COMPLETED;
+        this.completedAt = LocalDateTime.now();
     }
 }

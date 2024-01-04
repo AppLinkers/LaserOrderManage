@@ -1,4 +1,4 @@
-package com.laser.ordermanage.factory.scheduler.job;
+package com.laser.ordermanage.common.scheduler.job;
 
 import com.laser.ordermanage.customer.service.CustomerOrderService;
 import com.laser.ordermanage.order.domain.Order;

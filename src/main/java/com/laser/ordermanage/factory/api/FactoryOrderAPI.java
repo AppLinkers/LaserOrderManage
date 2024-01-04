@@ -2,6 +2,7 @@ package com.laser.ordermanage.factory.api;
 
 import com.laser.ordermanage.common.exception.CustomCommonException;
 import com.laser.ordermanage.common.exception.ErrorCode;
+import com.laser.ordermanage.common.scheduler.service.ScheduleService;
 import com.laser.ordermanage.factory.dto.request.FactoryCreateOrUpdateOrderQuotationRequest;
 import com.laser.ordermanage.factory.dto.request.FactoryUpdateOrderIsUrgentRequest;
 import com.laser.ordermanage.factory.dto.response.FactoryCreateOrUpdateOrderQuotationResponse;
@@ -21,6 +22,7 @@ public class FactoryOrderAPI {
 
     private final FactoryOrderService factoryOrderService;
     private final OrderService orderService;
+    private final ScheduleService scheduleService;
 
     /**
      * 거래 긴급 설정
@@ -109,7 +111,7 @@ public class FactoryOrderAPI {
 
         factoryOrderService.sendEmailForChangeStageToProductionCompleted(order);
 
-        factoryOrderService.addJobForChangeStageToCompleted(order.getId());
+        scheduleService.addJobForChangeStageToCompleted(order.getId());
 
         return ResponseEntity.ok().build();
     }

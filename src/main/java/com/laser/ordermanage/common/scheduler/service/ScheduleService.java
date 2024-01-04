@@ -28,13 +28,10 @@ public class ScheduleService {
     }
 
     private void addJob(JobRequest jobRequest, Class<? extends Job> jobClass) {
-        JobDetail jobDetail;
-        Trigger trigger;
+        Trigger trigger = JobUtil.createTrigger(jobRequest);
+        JobDetail jobDetail = JobUtil.createJob(jobRequest, jobClass);
 
         try {
-            trigger = JobUtil.createTrigger(jobRequest);
-            jobDetail = JobUtil.createJob(jobRequest, jobClass);
-
             schedulerFactoryBean.getScheduler().scheduleJob(jobDetail, trigger);
         } catch (SchedulerException e) {
             throw new CustomCommonException(ErrorCode.INTERNAL_SERVER_ERROR);

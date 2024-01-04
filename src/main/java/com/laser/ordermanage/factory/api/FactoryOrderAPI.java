@@ -141,11 +141,11 @@ public class FactoryOrderAPI {
     /**
      * 거래 완료 - 인수자 정보 및 서명 등록 후, 거래 완료
      * - path parameter {order-id} 에 해당하는 거래 조회
+     * - 거래 완료 가능 단계 확인 (제작 완료)
      * - 인수자 서명 이미지 파일 S3 업로드
      * - 인수자 정보 데이터 생성 및 거래와 연관관계 매핑
      * - Schedule 에 등록되어 있는 {order-id} 에 해당하는 거래 단계 변경 (제작 완료 -> 거래 완료) 를 위한 Job 이 있다면, 해당 Job 제거
-     * - 거래 완료 가능 단계 확인 (제작 완료)
-     * - 거래 단계 변경 : 제작 완료 -> 거래 완료
+     * - 거래 단계 변경 : 제작 완료 -> 거래 완료 (해당 고객이 신규 고객이면, 신규 고객 -> 기존 고객 변경)
      * - 거래의 고객에게 메일 전송
      */
     @PostMapping("/{order-id}/stage/completed")
@@ -156,6 +156,10 @@ public class FactoryOrderAPI {
     ) {
 
         Order order = orderService.getOrderById(orderId);
+
+        if (!order.enableChangeStageToCompleted()) {
+            throw new CustomCommonException(ErrorCode.INVALID_ORDER_STAGE, order.getStage().getValue());
+        }
 
         factoryOrderService.createOrderAcquirer(order, request, file);
 

@@ -282,10 +282,6 @@ public class FactoryOrderService {
 
     @Transactional
     public void changeStageToCompleted(Order order) {
-        if (!order.enableChangeStageToCompleted()) {
-            throw new CustomCommonException(ErrorCode.INVALID_ORDER_STAGE, order.getStage().getValue());
-        }
-
         order.changeStageToCompleted();
 
         Customer customer = order.getCustomer();

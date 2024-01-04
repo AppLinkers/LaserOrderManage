@@ -37,7 +37,7 @@ public class ScheduleService {
 
             schedulerFactoryBean.getScheduler().scheduleJob(jobDetail, trigger);
         } catch (SchedulerException e) {
-            throw new CustomCommonException(ErrorCode.UNKNOWN_ERROR);
+            throw new CustomCommonException(ErrorCode.INTERNAL_SERVER_ERROR);
         }
     }
 

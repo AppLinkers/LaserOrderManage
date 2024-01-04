@@ -79,6 +79,10 @@ public class Order extends CreatedAtEntity {
     @JoinColumn(name = "purchase_order_id")
     private PurchaseOrder purchaseOrder;
 
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "acquirer_id")
+    private Acquirer acquirer;
+
     @Builder
     public Order(Customer customer, OrderDeliveryAddress deliveryAddress, String name, String imgUrl, OrderManufacturing manufacturing, OrderPostProcessing postProcessing, String request, Boolean isNewIssue) {
         this.customer = customer;

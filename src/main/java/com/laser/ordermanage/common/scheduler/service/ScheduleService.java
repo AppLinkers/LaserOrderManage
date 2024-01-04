@@ -18,7 +18,7 @@ public class ScheduleService {
 
     private final SchedulerFactoryBean schedulerFactoryBean;
 
-    public void addJobForChangeStageToCompleted(Long orderId) {
+    public void createJobForChangeStageToCompleted(Long orderId) {
         JobRequest jobRequest = JobRequest.builder()
                 .name(orderId.toString())
                 .group(ChangeStageToCompletedJob.class.getName()) // orderId 에 해당하는 거래의 상태를 COMPLETED 로 변경하는 작업
@@ -41,4 +41,18 @@ public class ScheduleService {
         }
     }
 
+    public void removeJobForChangeStageToCompleted(Long orderId) {
+        this.removeJob(String.valueOf(orderId), ChangeStageToCompletedJob.class.getName());
+    }
+
+    private void removeJob(String jobName, String groupName) {
+        JobKey jobKey = JobKey.jobKey(jobName, groupName);
+
+        try {
+            schedulerFactoryBean.getScheduler().deleteJob(jobKey);
+        } catch (SchedulerException e) {
+            // Trigger 해제를 실패하는 경우
+            throw new CustomCommonException(ErrorCode.INTERNAL_SERVER_ERROR);
+        }
+    }
 }

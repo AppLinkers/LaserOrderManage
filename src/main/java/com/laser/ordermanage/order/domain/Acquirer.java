@@ -3,6 +3,7 @@ package com.laser.ordermanage.order.domain;
 import com.laser.ordermanage.common.entity.CreatedAtEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -31,4 +32,13 @@ public class Acquirer extends CreatedAtEntity {
 
     @Column(name = "signature_file_url", nullable = false)
     private String signatureFileUrl;
+
+    @Builder
+    public Acquirer(String name, String phone, String signatureFileName, Long signatureFileSize, String signatureFileUrl) {
+        this.name = name;
+        this.phone = phone;
+        this.signatureFileName = signatureFileName;
+        this.signatureFileSize = signatureFileSize;
+        this.signatureFileUrl = signatureFileUrl;
+    }
 }

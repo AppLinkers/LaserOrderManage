@@ -163,6 +163,10 @@ public class Order extends CreatedAtEntity {
         this.stage = Stage.PRODUCTION_COMPLETED;
     }
 
+    public void createAcquirer(Acquirer acquirer) {
+        this.acquirer = acquirer;
+    }
+
     public boolean enableChangeStageToCompleted() {
         return this.stage.equals(Stage.PRODUCTION_COMPLETED);
     }
@@ -170,5 +174,9 @@ public class Order extends CreatedAtEntity {
     public void changeStageToCompleted() {
         this.stage = Stage.COMPLETED;
         this.completedAt = LocalDateTime.now();
+    }
+
+    public boolean hasAcquirer() {
+        return acquirer != null;
     }
 }

@@ -3,7 +3,9 @@ package com.laser.ordermanage.factory.api;
 import com.laser.ordermanage.common.exception.CustomCommonException;
 import com.laser.ordermanage.common.exception.ErrorCode;
 import com.laser.ordermanage.common.scheduler.service.ScheduleService;
+import com.laser.ordermanage.common.validation.constraints.ValidFile;
 import com.laser.ordermanage.factory.dto.request.FactoryCreateOrUpdateOrderQuotationRequest;
+import com.laser.ordermanage.factory.dto.request.FactoryCreateOrderAcquirerRequest;
 import com.laser.ordermanage.factory.dto.request.FactoryUpdateOrderIsUrgentRequest;
 import com.laser.ordermanage.factory.dto.response.FactoryCreateOrUpdateOrderQuotationResponse;
 import com.laser.ordermanage.factory.service.FactoryOrderService;
@@ -113,7 +115,7 @@ public class FactoryOrderAPI {
 
         factoryOrderService.sendEmailForChangeStageToProductionCompleted(order);
 
-        scheduleService.addJobForChangeStageToCompleted(order.getId());
+        scheduleService.createJobForChangeStageToCompleted(order.getId());
 
         return ResponseEntity.ok().build();
     }
@@ -132,6 +134,36 @@ public class FactoryOrderAPI {
             @RequestParam(value = "base-url") String baseUrl
     ) {
         factoryOrderService.sendEmailForAcquirer(orderId, baseUrl);
+
+        return ResponseEntity.ok().build();
+    }
+
+    /**
+     * 거래 완료 - 인수자 정보 및 서명 등록 후, 거래 완료
+     * - path parameter {order-id} 에 해당하는 거래 조회
+     * - 인수자 서명 이미지 파일 S3 업로드
+     * - 인수자 정보 데이터 생성 및 거래와 연관관계 매핑
+     * - Schedule 에 등록되어 있는 {order-id} 에 해당하는 거래 단계 변경 (제작 완료 -> 거래 완료) 를 위한 Job 이 있다면, 해당 Job 제거
+     * - 거래 완료 가능 단계 확인 (제작 완료)
+     * - 거래 단계 변경 : 제작 완료 -> 거래 완료
+     * - 거래의 고객에게 메일 전송
+     */
+    @PostMapping("/{order-id}/stage/completed")
+    public ResponseEntity<?> changeStageToCompleted(
+            @PathVariable("order-id") Long orderId,
+            @RequestParam @ValidFile(message = "인수자 서명 파일은 필수 입력값입니다.") MultipartFile file,
+            @RequestPart("acquirer") @Valid FactoryCreateOrderAcquirerRequest request
+    ) {
+
+        Order order = orderService.getOrderById(orderId);
+
+        factoryOrderService.createOrderAcquirer(order, request, file);
+
+        scheduleService.removeJobForChangeStageToCompleted(order.getId());
+
+        factoryOrderService.changeStageToCompleted(order);
+
+        factoryOrderService.sendEmailForChangeStageToCompleted(order);
 
         return ResponseEntity.ok().build();
     }

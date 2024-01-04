@@ -4,11 +4,15 @@ import com.laser.ordermanage.common.cloud.aws.S3Service;
 import com.laser.ordermanage.common.exception.CustomCommonException;
 import com.laser.ordermanage.common.exception.ErrorCode;
 import com.laser.ordermanage.common.mail.MailService;
+import com.laser.ordermanage.customer.domain.Customer;
 import com.laser.ordermanage.factory.dto.request.FactoryCreateOrUpdateOrderQuotationRequest;
+import com.laser.ordermanage.factory.dto.request.FactoryCreateOrderAcquirerRequest;
 import com.laser.ordermanage.factory.dto.request.FactoryUpdateOrderIsUrgentRequest;
 import com.laser.ordermanage.factory.dto.response.FactoryCreateOrUpdateOrderQuotationResponse;
+import com.laser.ordermanage.order.domain.Acquirer;
 import com.laser.ordermanage.order.domain.Order;
 import com.laser.ordermanage.order.domain.Quotation;
+import com.laser.ordermanage.order.repository.AcquirerRepository;
 import com.laser.ordermanage.order.repository.QuotationRepository;
 import com.laser.ordermanage.order.service.OrderService;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +26,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 public class FactoryOrderService {
 
     private final QuotationRepository quotationRepository;
+    private final AcquirerRepository acquirerRepository;
 
     private final OrderService orderService;
     private final MailService mailService;
@@ -254,7 +259,73 @@ public class FactoryOrderService {
         mailService.sendEmailToFactory(title, content);
     }
 
+    @Transactional
+    public void createOrderAcquirer(Order order, FactoryCreateOrderAcquirerRequest request, MultipartFile file) {
+
+        String fileName = file.getOriginalFilename();
+        Long fileSize = file.getSize();
+
+        // 인수자 서명 파일 업로드
+        String acquirerSignatureFileUrl = uploadAcquirerSignatureFile(file);
+
+        Acquirer acquirer = Acquirer.builder()
+                .name(request.name())
+                .phone(request.phone())
+                .signatureFileName(fileName)
+                .signatureFileSize(fileSize)
+                .signatureFileUrl(acquirerSignatureFileUrl)
+                .build();
+
+        Acquirer savedAcquirer = acquirerRepository.save(acquirer);
+        order.createAcquirer(savedAcquirer);
+    }
+
+    @Transactional
+    public void changeStageToCompleted(Order order) {
+        if (!order.enableChangeStageToCompleted()) {
+            throw new CustomCommonException(ErrorCode.INVALID_ORDER_STAGE, order.getStage().getValue());
+        }
+
+        order.changeStageToCompleted();
+
+        Customer customer = order.getCustomer();
+        if (customer.isNewCustomer()) {
+            customer.disableNewCustomer();
+        }
+    }
+
+    @Transactional(readOnly = true)
+    public void sendEmailForChangeStageToCompleted(Order order) {
+        String toEmail = order.getCustomer().getUser().getEmail();
+
+        StringBuilder sbTitle = new StringBuilder();
+        sbTitle.append("[거래 완료] 고객님, ")
+                .append(order.getName())
+                .append(" 거래가 완료되었습니다.");
+        String title = sbTitle.toString();
+
+        StringBuilder sbContent = new StringBuilder();
+        sbContent.append("고객님, ")
+                .append(order.getName())
+                .append(" 거래가 완료되었습니다.\n");
+
+        if (order.hasAcquirer()) {
+            sbContent.append("인수자 정보\n이름 : ")
+                    .append(order.getAcquirer().getName())
+                    .append("\n핸드폰 번호 : ")
+                    .append(order.getAcquirer().getPhone());
+        }
+
+        String content = sbContent.toString();
+
+        mailService.sendEmail(toEmail, title, content);
+    }
+
     private String uploadQuotationFile(MultipartFile multipartFile) {
         return s3Service.upload("quotation", multipartFile);
+    }
+
+    private String uploadAcquirerSignatureFile(MultipartFile multipartFile) {
+        return s3Service.upload("acquirer-signature", multipartFile);
     }
 }

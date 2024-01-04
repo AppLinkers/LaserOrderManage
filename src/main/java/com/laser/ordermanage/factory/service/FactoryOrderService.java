@@ -4,7 +4,6 @@ import com.laser.ordermanage.common.cloud.aws.S3Service;
 import com.laser.ordermanage.common.exception.CustomCommonException;
 import com.laser.ordermanage.common.exception.ErrorCode;
 import com.laser.ordermanage.common.mail.MailService;
-import com.laser.ordermanage.common.scheduler.service.ScheduleService;
 import com.laser.ordermanage.factory.dto.request.FactoryCreateOrUpdateOrderQuotationRequest;
 import com.laser.ordermanage.factory.dto.request.FactoryUpdateOrderIsUrgentRequest;
 import com.laser.ordermanage.factory.dto.response.FactoryCreateOrUpdateOrderQuotationResponse;
@@ -16,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.util.UriComponentsBuilder;
 
 @RequiredArgsConstructor
 @Service
@@ -222,6 +222,36 @@ public class FactoryOrderService {
         String content = sbContent.toString();
 
         mailService.sendEmail(toEmail, title, content);
+    }
+
+    @Transactional(readOnly = true)
+    public void sendEmailForAcquirer(Long orderId, String baseUrl) {
+        Order order = orderService.getOrderById(orderId);
+
+        if (!order.enableChangeStageToCompleted()) {
+            throw new CustomCommonException(ErrorCode.INVALID_ORDER_STAGE, order.getStage().getValue());
+        }
+
+        String acquireSignatureUrl = UriComponentsBuilder
+                .fromHttpUrl(baseUrl)
+                .path("/{order-id}")
+                .buildAndExpand(order.getId())
+                .toUriString();
+
+        StringBuilder sbTitle = new StringBuilder();
+        sbTitle.append("[거래 품목 확인 및 인수 서명 요청] ")
+                .append(order.getCustomer().getName())
+                .append(" - ")
+                .append(order.getName())
+                .append(" 거래의 품목을 확인 후 인수자의 서명을 받아주세요.");
+        String title = sbTitle.toString();
+
+        StringBuilder sbContent = new StringBuilder();
+        sbContent.append("거래 확인 및 인수자 서명 링크 : ")
+                .append(acquireSignatureUrl);
+        String content = sbContent.toString();
+
+        mailService.sendEmailToFactory(title, content);
     }
 
     private String uploadQuotationFile(MultipartFile multipartFile) {

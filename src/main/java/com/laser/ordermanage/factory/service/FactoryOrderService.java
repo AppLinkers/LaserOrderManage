@@ -4,14 +4,18 @@ import com.laser.ordermanage.common.cloud.aws.S3Service;
 import com.laser.ordermanage.common.exception.CustomCommonException;
 import com.laser.ordermanage.common.exception.ErrorCode;
 import com.laser.ordermanage.common.mail.MailService;
+import com.laser.ordermanage.common.scheduler.dto.request.JobRequest;
+import com.laser.ordermanage.common.scheduler.service.ScheduleService;
 import com.laser.ordermanage.factory.dto.request.FactoryCreateOrUpdateOrderQuotationRequest;
 import com.laser.ordermanage.factory.dto.request.FactoryUpdateOrderIsUrgentRequest;
 import com.laser.ordermanage.factory.dto.response.FactoryCreateOrUpdateOrderQuotationResponse;
+import com.laser.ordermanage.factory.scheduler.job.ChangeStageToCompletedJob;
 import com.laser.ordermanage.order.domain.Order;
 import com.laser.ordermanage.order.domain.Quotation;
 import com.laser.ordermanage.order.repository.QuotationRepository;
 import com.laser.ordermanage.order.service.OrderService;
 import lombok.RequiredArgsConstructor;
+import org.quartz.DateBuilder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -25,6 +29,7 @@ public class FactoryOrderService {
     private final OrderService orderService;
     private final MailService mailService;
     private final S3Service s3Service;
+    private final ScheduleService scheduleService;
 
     @Transactional
     public Order updateOrderIsUrgent(Long orderId, FactoryUpdateOrderIsUrgentRequest request) {
@@ -221,6 +226,15 @@ public class FactoryOrderService {
         String content = sbContent.toString();
 
         mailService.sendEmail(toEmail, title, content);
+    }
+
+    public void addJobForChangeStageToCompleted(Long orderId) {
+        JobRequest jobRequest = JobRequest.builder()
+                .name(orderId.toString())
+                .group(ChangeStageToCompletedJob.class.getName()) // orderId 에 해당하는 거래의 상태를 COMPLETED 로 변경하는 작업
+                .startAt(DateBuilder.futureDate(7, DateBuilder.IntervalUnit.DAY)) // 7일 후
+                .build();
+        scheduleService.addJob(jobRequest, ChangeStageToCompletedJob.class);
     }
 
     private String uploadQuotationFile(MultipartFile multipartFile) {

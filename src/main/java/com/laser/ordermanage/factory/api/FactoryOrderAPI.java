@@ -100,6 +100,7 @@ public class FactoryOrderAPI {
      * - 거래 제작 완료 가능 단계 확인 (제작 중)
      * - 거래 단계 변경 : 제작 중 -> 제작 완료
      * - 거래의 고객에게 메일 전송
+     * - 7일 후, 거래 단계 변경 (제작 완료 -> 거래 완료) 를 위한 Job 을 Schedule 에 등록
      */
     @PatchMapping("/{order-id}/stage/production-completed")
     public ResponseEntity<?> changeStageToProductionCompleted(@PathVariable("order-id") Long orderId) {
@@ -107,6 +108,9 @@ public class FactoryOrderAPI {
         Order order = factoryOrderService.changeStageToProductionCompleted(orderId);
 
         factoryOrderService.sendEmailForChangeStageToProductionCompleted(order);
+
+        factoryOrderService.addJobForChangeStageToCompleted(order.getId());
+
         return ResponseEntity.ok().build();
     }
 }

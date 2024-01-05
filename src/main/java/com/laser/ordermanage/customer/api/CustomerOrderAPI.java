@@ -16,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RequiredArgsConstructor
 @RequestMapping("/customer/order")
@@ -183,7 +184,8 @@ public class CustomerOrderAPI {
     @PutMapping("/{order-id}/purchase-order")
     public ResponseEntity<?> createOrUpdateOrderPurchaseOrder(
         @PathVariable("order-id") Long orderId,
-        @RequestBody @Valid CustomerCreateOrUpdateOrderPurchaseOrderRequest request) {
+        @RequestParam(required = false) MultipartFile file,
+        @RequestPart(value = "purchaseOrder") @Valid CustomerCreateOrUpdateOrderPurchaseOrderRequest request) {
 
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
@@ -202,34 +204,14 @@ public class CustomerOrderAPI {
         CustomerCreateOrUpdateOrderPurchaseOrderResponse response;
 
         if (order.hasPurchaseOrder()) {
-            response = customerOrderService.updateOrderPurchaseOrder(order, request);
+            response = customerOrderService.updateOrderPurchaseOrder(order, file, request);
             customerOrderService.sendMailForUpdateOrderPurchaseOrder(order);
         } else {
-            response = customerOrderService.createOrderPurchaseOrder(order, request);
+            response = customerOrderService.createOrderPurchaseOrder(order, file, request);
             customerOrderService.sendMailForCreateOrderPurchaseOrder(order);
         }
 
         return ResponseEntity.ok(response);
     }
 
-    /**
-     * 거래 완료
-     * - path parameter {order-id} 에 해당하는 거래 조회
-     * - 거래에 대한 현재 로그인한 회원의 접근 권한 확인 (거래의 고객 회원)
-     * - 거래 제작 완료 가능 단계 확인 (배송 중)
-     * - 거래 단계 변경 : 배송 중 -> 거래 완료
-     * - 공장에게 메일 전송
-     */
-    @PatchMapping("/{order-id}/stage/completed")
-    public ResponseEntity<?> changeStageToCompleted(@PathVariable("order-id") Long orderId) {
-
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
-        customerOrderService.checkAuthorityOfOrder(user, orderId);
-
-        Order order = customerOrderService.changeStageToCompleted(orderId);
-
-        customerOrderService.sendEmailForChangeStageToCompleted(order);
-        return ResponseEntity.ok().build();
-    }
 }

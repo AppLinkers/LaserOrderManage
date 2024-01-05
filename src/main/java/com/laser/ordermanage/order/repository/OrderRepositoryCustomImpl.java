@@ -377,6 +377,8 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
                                        ).skipNulls(),
                                        new QGetPurchaseOrderResponse(
                                                purchaseOrder.id,
+                                               purchaseOrder.fileName,
+                                               purchaseOrder.fileUrl,
                                                purchaseOrder.inspectionPeriod,
                                                purchaseOrder.inspectionCondition,
                                                purchaseOrder.paymentDate,

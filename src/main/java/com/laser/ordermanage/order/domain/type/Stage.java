@@ -17,7 +17,7 @@ public enum Stage {
     NEW("견적 대기", "new"),
     QUOTE_APPROVAL("견적 승인", "quote-approval"),
     IN_PRODUCTION("제작 중", "in-production"),
-    SHIPPING("배송 중", "shipping"),
+    PRODUCTION_COMPLETED("제작 완료", "production-completed"),
     COMPLETED("거래 완료", "completed");
 
     @Getter

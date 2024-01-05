@@ -45,7 +45,7 @@ public class Order extends CreatedAtEntity {
     @Column(name = "stage", nullable = false)
     private Stage stage = Stage.NEW;
 
-    private static final EnumSet<Stage> ENABLE_UPDATE_IS_URGENT_STAGE_LIST = EnumSet.of(Stage.NEW, Stage.QUOTE_APPROVAL, Stage.IN_PRODUCTION, Stage.SHIPPING);
+    private static final EnumSet<Stage> ENABLE_UPDATE_IS_URGENT_STAGE_LIST = EnumSet.of(Stage.NEW, Stage.QUOTE_APPROVAL, Stage.IN_PRODUCTION, Stage.PRODUCTION_COMPLETED);
     private static final EnumSet<Stage> ENABLE_UPDATE_DELIVERY_ADDRESS_STAGE_LIST = EnumSet.of(Stage.NEW, Stage.QUOTE_APPROVAL, Stage.IN_PRODUCTION);
     private static final EnumSet<Stage> ENABLE_MANAGE_DRAWING_STAGE_LIST = EnumSet.of(Stage.NEW, Stage.QUOTE_APPROVAL, Stage.IN_PRODUCTION);
 
@@ -64,7 +64,7 @@ public class Order extends CreatedAtEntity {
     @Column(name = "is_urgent", nullable = false, length = 1)
     private Boolean isUrgent = Boolean.FALSE;
 
-    @Column(name = "completed_at", updatable = false)
+    @Column(name = "completed_at")
     private LocalDateTime completedAt;
 
     @Convert(converter = BooleanToYNConverter.class)
@@ -78,6 +78,10 @@ public class Order extends CreatedAtEntity {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "purchase_order_id")
     private PurchaseOrder purchaseOrder;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "acquirer_id")
+    private Acquirer acquirer;
 
     @Builder
     public Order(Customer customer, OrderDeliveryAddress deliveryAddress, String name, String imgUrl, OrderManufacturing manufacturing, OrderPostProcessing postProcessing, String request, Boolean isNewIssue) {
@@ -151,19 +155,28 @@ public class Order extends CreatedAtEntity {
         this.stage = Stage.IN_PRODUCTION;
     }
 
-    public boolean enableChangeStageToShipping() {
+    public boolean enableChangeStageToProductionCompleted() {
         return this.stage.equals(Stage.IN_PRODUCTION);
     }
 
-    public void changeStageToShipping() {
-        this.stage = Stage.SHIPPING;
+    public void changeStageToProductionCompleted() {
+        this.stage = Stage.PRODUCTION_COMPLETED;
+    }
+
+    public void createAcquirer(Acquirer acquirer) {
+        this.acquirer = acquirer;
     }
 
     public boolean enableChangeStageToCompleted() {
-        return this.stage.equals(Stage.SHIPPING);
+        return this.stage.equals(Stage.PRODUCTION_COMPLETED);
     }
 
     public void changeStageToCompleted() {
         this.stage = Stage.COMPLETED;
+        this.completedAt = LocalDateTime.now();
+    }
+
+    public boolean hasAcquirer() {
+        return acquirer != null;
     }
 }

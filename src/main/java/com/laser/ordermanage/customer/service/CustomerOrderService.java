@@ -1,5 +1,6 @@
 package com.laser.ordermanage.customer.service;
 
+import com.laser.ordermanage.common.cloud.aws.S3Service;
 import com.laser.ordermanage.common.exception.CustomCommonException;
 import com.laser.ordermanage.common.exception.ErrorCode;
 import com.laser.ordermanage.common.mail.MailService;
@@ -18,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,6 +37,7 @@ public class CustomerOrderService {
     private final CustomerDeliveryAddressService customerDeliveryAddressService;
     private final DrawingService drawingService;
     private final MailService mailService;
+    private final S3Service s3Service;
 
     @Transactional
     public void createOrder(User user, CustomerCreateOrderRequest request) {
@@ -279,8 +282,26 @@ public class CustomerOrderService {
     }
 
     @Transactional
-    public CustomerCreateOrUpdateOrderPurchaseOrderResponse createOrderPurchaseOrder(Order order, CustomerCreateOrUpdateOrderPurchaseOrderRequest request) {
-        PurchaseOrder purchaseOrder = PurchaseOrder.ofRequest(request);
+    public CustomerCreateOrUpdateOrderPurchaseOrderResponse createOrderPurchaseOrder(Order order, MultipartFile file, CustomerCreateOrUpdateOrderPurchaseOrderRequest request) {
+        // 발주서 파일 유무 확인
+        if (file == null || file.isEmpty()) {
+            throw new CustomCommonException(ErrorCode.MISSING_PURCHASE_ORDER_FILE);
+        }
+
+        String fileName = file.getOriginalFilename();
+        Long fileSize = file.getSize();
+
+        // 발주서 파일 업로드
+        String purchaseOrderFileUrl = uploadPurchaseOrderFile(file);
+
+        PurchaseOrder purchaseOrder = PurchaseOrder.builder()
+                .inspectionPeriod(request.inspectionPeriod())
+                .inspectionCondition(request.inspectionCondition())
+                .paymentDate(request.paymentDate())
+                .fileName(fileName)
+                .fileSize(fileSize)
+                .fileUrl(purchaseOrderFileUrl)
+                .build();
 
         PurchaseOrder savedPurchaseOrder = purchaseOrderRepository.save(purchaseOrder);
         order.createPurchaseOrder(savedPurchaseOrder);
@@ -309,8 +330,19 @@ public class CustomerOrderService {
     }
 
     @Transactional
-    public CustomerCreateOrUpdateOrderPurchaseOrderResponse updateOrderPurchaseOrder(Order order, CustomerCreateOrUpdateOrderPurchaseOrderRequest request) {
+    public CustomerCreateOrUpdateOrderPurchaseOrderResponse updateOrderPurchaseOrder(Order order, MultipartFile file, CustomerCreateOrUpdateOrderPurchaseOrderRequest request) {
         PurchaseOrder purchaseOrder = order.getPurchaseOrder();
+
+        // 발주서 파일 유무 확인
+        if (file != null && !file.isEmpty()) {
+            String fileName = file.getOriginalFilename();
+            Long fileSize = file.getSize();
+
+            // 발주서 파일 업로드
+            String purchaseOrderFileUrl = uploadPurchaseOrderFile(file);
+
+            purchaseOrder.updateFile(fileName, fileSize, purchaseOrderFileUrl);
+        }
 
         purchaseOrder.updateProperties(request);
 
@@ -337,40 +369,7 @@ public class CustomerOrderService {
         mailService.sendEmailToFactory(title, content);
     }
 
-    @Transactional
-    public Order changeStageToCompleted(Long orderId) {
-        Order order = orderService.getOrderById(orderId);
-
-        if (!order.enableChangeStageToCompleted()) {
-            throw new CustomCommonException(ErrorCode.INVALID_ORDER_STAGE, order.getStage().getValue());
-        }
-
-        order.changeStageToCompleted();
-
-        if (order.getCustomer().isNewCustomer()) {
-            order.getCustomer().disableNewCustomer();
-        }
-
-        return order;
-    }
-
-    @Transactional(readOnly = true)
-    public void sendEmailForChangeStageToCompleted(Order order) {
-        StringBuilder sbTitle = new StringBuilder();
-        sbTitle.append("[거래 완료] ")
-                .append(order.getCustomer().getName())
-                .append(" - ")
-                .append(order.getName())
-                .append(" 거래가 완료 되었습니다.");
-        String title = sbTitle.toString();
-
-        StringBuilder sbContent = new StringBuilder();
-        sbContent.append(order.getCustomer().getName())
-                .append(" 고객님의 ")
-                .append(order.getName())
-                .append(" 거래가 완료 되었습니다.");
-        String content = sbContent.toString();
-
-        mailService.sendEmailToFactory(title, content);
+    private String uploadPurchaseOrderFile(MultipartFile file) {
+        return s3Service.upload("purchase-order", file);
     }
 }

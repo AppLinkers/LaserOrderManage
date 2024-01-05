@@ -29,6 +29,7 @@ public enum ErrorCode {
     MISSING_QUOTATION("-014", HttpStatus.BAD_REQUEST, "거래의 견적서가 존재하지 않습니다."),
     MISSING_PURCHASE_ORDER("-015", HttpStatus.BAD_REQUEST, "거래의 발주서가 존재하지 않습니다."),
     DEFAULT_DELIVERY_ADDRESS_DELETE("-016", HttpStatus.BAD_REQUEST, "기본 배송지는 삭제할 수 없습니다."),
+    MISSING_PURCHASE_ORDER_FILE("-017", HttpStatus.BAD_REQUEST, "발주서 최초 작성 시, 발주서 파일은 필수 사항입니다."),
 
     // 401 UNAUTHORIZED 인증 자격 정보가 유효하지 않음
     UNAUTHORIZED("-100", HttpStatus.UNAUTHORIZED, "인증 자격 정보가 유효하지 않습니다."),

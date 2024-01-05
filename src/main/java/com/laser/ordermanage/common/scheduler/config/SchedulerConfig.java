@@ -1,6 +1,5 @@
 package com.laser.ordermanage.common.scheduler.config;
 
-import com.zaxxer.hikari.HikariDataSource;
 import org.springframework.boot.autoconfigure.quartz.QuartzDataSource;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.jdbc.DataSourceBuilder;
@@ -14,10 +13,8 @@ public class SchedulerConfig {
 
     @QuartzDataSource
     @Bean
-    @ConfigurationProperties(prefix = "spring.quartz.datasource.hikari")
+    @ConfigurationProperties(prefix = "spring.quartz.datasource")
     public DataSource quartzDataSource() {
-        return DataSourceBuilder.create()
-                .type(HikariDataSource.class)
-                .build();
+        return DataSourceBuilder.create().build();
     }
 }

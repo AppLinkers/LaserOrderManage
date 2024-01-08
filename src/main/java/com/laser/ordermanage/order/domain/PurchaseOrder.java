@@ -30,24 +30,34 @@ public class PurchaseOrder extends CreatedAtEntity {
     @Column(name = "payment_date", nullable = false)
     private LocalDate paymentDate;
 
+    @Column(name = "file_name", nullable = false)
+    private String fileName;
+
+    @Column(name = "file_size", nullable = false)
+    private Long fileSize;
+
+    @Column(name = "file_url", nullable = false)
+    private String fileUrl;
+
     @Builder
-    public PurchaseOrder(LocalDate inspectionPeriod, String inspectionCondition, LocalDate paymentDate) {
+    public PurchaseOrder(LocalDate inspectionPeriod, String inspectionCondition, LocalDate paymentDate, String fileName, Long fileSize, String fileUrl) {
         this.inspectionPeriod = inspectionPeriod;
         this.inspectionCondition = inspectionCondition;
         this.paymentDate = paymentDate;
+        this.fileName = fileName;
+        this.fileSize = fileSize;
+        this.fileUrl = fileUrl;
     }
 
-    public static PurchaseOrder ofRequest(CustomerCreateOrUpdateOrderPurchaseOrderRequest request) {
-        return PurchaseOrder.builder()
-                .inspectionPeriod(request.getInspectionPeriod())
-                .inspectionCondition(request.getInspectionCondition())
-                .paymentDate(request.getPaymentDate())
-                .build();
+    public void updateFile(String fileName, Long fileSize, String fileUrl) {
+        this.fileName = fileName;
+        this.fileSize = fileSize;
+        this.fileUrl = fileUrl;
     }
 
     public void updateProperties(CustomerCreateOrUpdateOrderPurchaseOrderRequest request) {
-        this.inspectionPeriod = request.getInspectionPeriod();
-        this.inspectionCondition = request.getInspectionCondition();
-        this.paymentDate = request.getPaymentDate();
+        this.inspectionPeriod = request.inspectionPeriod();
+        this.inspectionCondition = request.inspectionCondition();
+        this.paymentDate = request.paymentDate();
     }
 }

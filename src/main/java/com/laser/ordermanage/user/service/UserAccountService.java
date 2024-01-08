@@ -43,7 +43,7 @@ public class UserAccountService {
 
     @Transactional
     public void requestPasswordChange(RequestPasswordChangeRequest request) {
-        UserEntity user = userAuthService.getUserByEmail(request.getEmail());
+        UserEntity user = userAuthService.getUserByEmail(request.email());
 
         String changePasswordToken = jwtProvider.generateChangePasswordToken(user);
 
@@ -55,7 +55,7 @@ public class UserAccountService {
         );
 
         String changePasswordLink = UriComponentsBuilder
-                .fromHttpUrl(request.getBaseUrl())
+                .fromHttpUrl(request.baseUrl())
                 .queryParam("token", changePasswordToken)
                 .toUriString();
 
@@ -82,7 +82,7 @@ public class UserAccountService {
 
         UserEntity user = userAuthService.getUserByEmail(authentication.getName());
 
-        user.changePassword(passwordEncoder.encode(request.getPassword()));
+        user.changePassword(passwordEncoder.encode(request.password()));
     }
 
     @Transactional

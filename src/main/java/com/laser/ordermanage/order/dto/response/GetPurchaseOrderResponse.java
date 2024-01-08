@@ -1,27 +1,24 @@
 package com.laser.ordermanage.order.dto.response;
 
 import com.querydsl.core.annotations.QueryProjection;
-import lombok.Getter;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-@Getter
-public class GetPurchaseOrderResponse {
-
-    private final Long id;
-
-    private final LocalDate inspectionPeriod;
-
-    private final String inspectionCondition;
-
-    private final LocalDate paymentDate;
-
-    private final LocalDateTime createdAt;
-
+public record GetPurchaseOrderResponse(
+        Long id,
+        String fileName,
+        String fileUrl,
+        LocalDate inspectionPeriod,
+        String inspectionCondition,
+        LocalDate paymentDate,
+        LocalDateTime createdAt
+) {
     @QueryProjection
-    public GetPurchaseOrderResponse(Long id, LocalDate inspectionPeriod, String inspectionCondition, LocalDate paymentDate, LocalDateTime createdAt) {
+    public GetPurchaseOrderResponse(Long id, String fileName, String fileUrl, LocalDate inspectionPeriod, String inspectionCondition, LocalDate paymentDate, LocalDateTime createdAt) {
         this.id = id;
+        this.fileName = fileName;
+        this.fileUrl = fileUrl;
         this.inspectionPeriod = inspectionPeriod;
         this.inspectionCondition = inspectionCondition;
         this.paymentDate = paymentDate;

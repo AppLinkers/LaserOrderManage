@@ -3,29 +3,28 @@ package com.laser.ordermanage.customer.dto.request;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
-import lombok.Getter;
 
-@Getter
-public class CustomerCreateDrawingRequest {
+public record CustomerCreateDrawingRequest(
 
-    private String thumbnailUrl;
+        String thumbnailUrl,
 
-    private String fileName;
+        String fileName,
 
-    private Long fileSize;
+        Long fileSize,
 
-    private String fileType;
+        String fileType,
 
-    private String fileUrl;
+        String fileUrl,
 
-    @Min(value = 1, message = "수량은 1 이상, 100 이하의 정수 입니다.")
-    @Max(value = 100, message = "수량은 1 이상, 100 이하의 정수 입니다.")
-    private Integer count;
+        @Min(value = 1, message = "수량은 1 이상, 100 이하의 정수 입니다.")
+        @Max(value = 100, message = "수량은 1 이상, 100 이하의 정수 입니다.")
+        Integer count,
 
-    @NotEmpty(message = "재료 선택은 필수 사항입니다.")
-    private String ingredient;
+        @NotEmpty(message = "재료 선택은 필수 사항입니다.")
+        String ingredient,
 
-    @Min(value = 1, message = "두께는 1 이상, 19 이하의 정수 입니다.")
-    @Max(value = 19, message = "두께는 1 이상, 19 이하의 정수 입니다.")
-    private Integer thickness;
-}
+        @Min(value = 1, message = "두께는 1 이상, 19 이하의 정수 입니다.")
+        @Max(value = 19, message = "두께는 1 이상, 19 이하의 정수 입니다.")
+        Integer thickness
+
+) { }

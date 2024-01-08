@@ -31,8 +31,8 @@ public class FactoryOrderManagerService {
 
         OrderManager orderManager = OrderManager.builder()
                 .factory(factory)
-                .name(request.getName())
-                .phone(request.getPhone())
+                .name(request.name())
+                .phone(request.phone())
                 .build();
 
         orderManagerRepository.save(orderManager);

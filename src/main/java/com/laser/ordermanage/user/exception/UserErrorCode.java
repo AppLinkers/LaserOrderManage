@@ -28,7 +28,6 @@ public enum UserErrorCode implements ErrorCode {
 
     // 403 FORBIDDEN 인증 필요
     DENIED_ACCESS("USER_403_01", HttpStatus.FORBIDDEN, "해당 요청에 대한 접근 권한이 없습니다."),
-    DENIED_ACCESS_TO_ENTITY("USER_403_02", HttpStatus.FORBIDDEN, " 엔티티에 접근 권한이 없습니다."),
 
     // 404 NOT_FOUND 리소스가 존재하지 않음
     NOT_FOUND_VERIFY_CODE("USER_404_01", HttpStatus.NOT_FOUND, "이메일에 해당하는 인증 코드가 존재하지 않습니다.");

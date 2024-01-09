@@ -17,7 +17,10 @@ public enum OrderErrorCode implements ErrorCode {
     REQUIRED_QUOTATION_FILE("ORDER_400_05", HttpStatus.BAD_REQUEST, "견적서 최초 작성 시, 견적서 파일은 필수 사항입니다."),
     MISSING_QUOTATION("ORDER_400_06", HttpStatus.BAD_REQUEST, "거래의 견적서가 존재하지 않습니다."),
     MISSING_PURCHASE_ORDER("ORDER_400_07", HttpStatus.BAD_REQUEST, "거래의 발주서가 존재하지 않습니다."),
-    REQUIRED_PURCHASE_ORDER_FILE("ORDER_400_08", HttpStatus.BAD_REQUEST, "발주서 최초 작성 시, 발주서 파일은 필수 사항입니다.");
+    REQUIRED_PURCHASE_ORDER_FILE("ORDER_400_08", HttpStatus.BAD_REQUEST, "발주서 최초 작성 시, 발주서 파일은 필수 사항입니다."),
+
+    // 403 FORBIDDEN 인증 필요
+    DENIED_ACCESS_TO_ORDER("ORDER_403_01", HttpStatus.FORBIDDEN, "거래에 대한 접근 권한이 없습니다.");
 
     private final String code;
     private final HttpStatus httpStatus;

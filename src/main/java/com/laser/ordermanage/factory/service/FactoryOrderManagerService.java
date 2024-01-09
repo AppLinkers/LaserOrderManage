@@ -1,15 +1,15 @@
 package com.laser.ordermanage.factory.service;
 
-import com.laser.ordermanage.common.exception.CustomCommonException;
 import com.laser.ordermanage.common.exception.CommonErrorCode;
+import com.laser.ordermanage.common.exception.CustomCommonException;
 import com.laser.ordermanage.common.paging.ListResponse;
 import com.laser.ordermanage.factory.domain.Factory;
 import com.laser.ordermanage.factory.domain.OrderManager;
 import com.laser.ordermanage.factory.dto.request.FactoryCreateOrUpdateOrderManagerRequest;
 import com.laser.ordermanage.factory.dto.response.FactoryGetOrderManagerResponse;
+import com.laser.ordermanage.factory.exception.FactoryErrorCode;
 import com.laser.ordermanage.factory.repository.FactoryRepository;
 import com.laser.ordermanage.factory.repository.OrderManagerRepository;
-import com.laser.ordermanage.user.exception.UserErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
@@ -70,6 +70,6 @@ public class FactoryOrderManagerService {
             return;
         }
 
-        throw new CustomCommonException(UserErrorCode.DENIED_ACCESS_TO_ENTITY, "orderManager");
+        throw new CustomCommonException(FactoryErrorCode.DENIED_ACCESS_TO_ORDER_MANAGER);
     }
 }

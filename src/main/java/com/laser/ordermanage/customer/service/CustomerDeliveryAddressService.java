@@ -1,7 +1,7 @@
 package com.laser.ordermanage.customer.service;
 
-import com.laser.ordermanage.common.exception.CustomCommonException;
 import com.laser.ordermanage.common.exception.CommonErrorCode;
+import com.laser.ordermanage.common.exception.CustomCommonException;
 import com.laser.ordermanage.common.paging.ListResponse;
 import com.laser.ordermanage.customer.domain.Customer;
 import com.laser.ordermanage.customer.domain.DeliveryAddress;
@@ -10,7 +10,6 @@ import com.laser.ordermanage.customer.dto.response.CustomerGetDeliveryAddressRes
 import com.laser.ordermanage.customer.exception.CustomerErrorCode;
 import com.laser.ordermanage.customer.repository.CustomerRepository;
 import com.laser.ordermanage.customer.repository.DeliveryAddressRepository;
-import com.laser.ordermanage.user.exception.UserErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
@@ -88,7 +87,7 @@ public class CustomerDeliveryAddressService {
     @Transactional(readOnly = true)
     public void checkAuthorityCustomerOfDeliveryAddress(User user, Long deliveryAddressId) {
         if (!this.getUserEmailByDeliveryAddress(deliveryAddressId).equals(user.getUsername())) {
-            throw new CustomCommonException(UserErrorCode.DENIED_ACCESS_TO_ENTITY, "deliveryAddress");
+            throw new CustomCommonException(CustomerErrorCode.DENIED_ACCESS_TO_DELIVERY_ADDRESS);
         }
     }
 }

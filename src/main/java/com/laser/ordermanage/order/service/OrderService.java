@@ -11,11 +11,11 @@ import com.laser.ordermanage.order.dto.request.CreateCommentRequest;
 import com.laser.ordermanage.order.dto.response.GetCommentResponse;
 import com.laser.ordermanage.order.dto.response.GetOrderDetailResponse;
 import com.laser.ordermanage.order.dto.response.GetPurchaseOrderFileResponse;
+import com.laser.ordermanage.order.exception.OrderErrorCode;
 import com.laser.ordermanage.order.repository.CommentRepository;
 import com.laser.ordermanage.order.repository.OrderRepository;
 import com.laser.ordermanage.user.domain.UserEntity;
 import com.laser.ordermanage.user.domain.type.Role;
-import com.laser.ordermanage.user.exception.UserErrorCode;
 import com.laser.ordermanage.user.service.UserAuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -113,7 +113,7 @@ public class OrderService {
             return;
         }
 
-        throw new CustomCommonException(UserErrorCode.DENIED_ACCESS_TO_ENTITY, "order");
+        throw new CustomCommonException(OrderErrorCode.DENIED_ACCESS_TO_ORDER);
     }
 
     @Transactional(readOnly = true)

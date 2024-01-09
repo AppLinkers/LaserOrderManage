@@ -15,7 +15,6 @@ import com.laser.ordermanage.order.repository.OrderRepository;
 import com.laser.ordermanage.order.repository.PurchaseOrderRepository;
 import com.laser.ordermanage.order.service.DrawingService;
 import com.laser.ordermanage.order.service.OrderService;
-import com.laser.ordermanage.user.exception.UserErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
@@ -241,7 +240,7 @@ public class CustomerOrderService {
     @Transactional(readOnly = true)
     public void checkAuthorityOfOrder(User user, Long orderId) {
         if (!orderService.getUserEmailByOrder(orderId).equals(user.getUsername())) {
-            throw new CustomCommonException(UserErrorCode.DENIED_ACCESS_TO_ENTITY, "order");
+            throw new CustomCommonException(OrderErrorCode.DENIED_ACCESS_TO_ORDER);
         }
     }
 

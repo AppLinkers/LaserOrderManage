@@ -116,7 +116,7 @@ public class FactoryOrderAPI {
 
         factoryOrderService.sendEmailForChangeStageToProductionCompleted(order);
 
-        scheduleService.createJobForChangeStageToCompleted(order.getId());
+        scheduleService.createJobForChangeStageToCompleted(orderId);
 
         return ResponseEntity.ok().build();
     }
@@ -162,11 +162,11 @@ public class FactoryOrderAPI {
             throw new CustomCommonException(OrderErrorCode.INVALID_ORDER_STAGE, order.getStage().getValue());
         }
 
-        factoryOrderService.createOrderAcquirer(order, request, file);
+        factoryOrderService.createOrderAcquirer(orderId, request, file);
 
         scheduleService.removeJobForChangeStageToCompleted(order.getId());
 
-        factoryOrderService.changeStageToCompleted(order);
+        factoryOrderService.changeStageToCompleted(orderId);
 
         factoryOrderService.sendEmailForChangeStageToCompleted(order);
 

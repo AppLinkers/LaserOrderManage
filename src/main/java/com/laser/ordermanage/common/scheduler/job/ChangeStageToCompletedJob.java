@@ -25,7 +25,7 @@ public class ChangeStageToCompletedJob implements Job {
             return;
         }
 
-        factoryOrderService.changeStageToCompleted(order);
+        factoryOrderService.changeStageToCompleted(orderId);
 
         factoryOrderService.sendEmailForChangeStageToCompleted(order);
     }

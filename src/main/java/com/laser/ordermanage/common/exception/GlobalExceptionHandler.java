@@ -24,6 +24,12 @@ import java.util.List;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<?> handleUnknownException(Exception e) {
+        CustomCommonException exception = new CustomCommonException(CommonErrorCode.UNKNOWN_ERROR);
+        return exception.toErrorResponse();
+    }
+
     @ExceptionHandler(CustomCommonException.class)
     public ResponseEntity<?> handleCustomCommonException(CustomCommonException e) {
         return e.toErrorResponse();

@@ -59,7 +59,7 @@ public class OrderManufacturing {
                         case "laser-cutting" -> orderManufacturing.isLaserCutting = Boolean.TRUE;
                         case "bending" -> orderManufacturing.isBending = Boolean.TRUE;
                         case "welding-fabrication" -> orderManufacturing.isWeldingFabrication = Boolean.TRUE;
-                        default -> throw new CustomCommonException(CommonErrorCode.INVALID_FIELDS, "manufacturing 의 타입이 옳바르지 않습니다.");
+                        default -> throw new CustomCommonException(CommonErrorCode.INVALID_REQUEST_BODY_FIELDS, "manufacturing 의 타입이 옳바르지 않습니다.");
                     }
                 }
         );

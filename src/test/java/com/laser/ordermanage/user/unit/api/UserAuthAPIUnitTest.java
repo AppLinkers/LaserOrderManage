@@ -85,8 +85,8 @@ public class UserAuthAPIUnitTest extends APIUnitTest {
 
         // then
         resultActions
-                .andExpect(status().is(CommonErrorCode.INVALID_FIELDS.getHttpStatus().value()))
-                .andExpect(jsonPath("errorCode").value(CommonErrorCode.INVALID_FIELDS.getCode()))
+                .andExpect(status().is(CommonErrorCode.INVALID_REQUEST_BODY_FIELDS.getHttpStatus().value()))
+                .andExpect(jsonPath("errorCode").value(CommonErrorCode.INVALID_REQUEST_BODY_FIELDS.getCode()))
                 .andExpect(jsonPath("message").value("이메일은 필수 입력값입니다."));
     }
 
@@ -107,8 +107,8 @@ public class UserAuthAPIUnitTest extends APIUnitTest {
 
         // then
         resultActions
-                .andExpect(status().is(CommonErrorCode.INVALID_FIELDS.getHttpStatus().value()))
-                .andExpect(jsonPath("errorCode").value(CommonErrorCode.INVALID_FIELDS.getCode()))
+                .andExpect(status().is(CommonErrorCode.INVALID_REQUEST_BODY_FIELDS.getHttpStatus().value()))
+                .andExpect(jsonPath("errorCode").value(CommonErrorCode.INVALID_REQUEST_BODY_FIELDS.getCode()))
                 .andExpect(jsonPath("message").value("이메일 형식에 맞지 않습니다."));
     }
 
@@ -128,8 +128,8 @@ public class UserAuthAPIUnitTest extends APIUnitTest {
 
         // then
         resultActions
-                .andExpect(status().is(CommonErrorCode.INVALID_FIELDS.getHttpStatus().value()))
-                .andExpect(jsonPath("errorCode").value(CommonErrorCode.INVALID_FIELDS.getCode()))
+                .andExpect(status().is(CommonErrorCode.INVALID_REQUEST_BODY_FIELDS.getHttpStatus().value()))
+                .andExpect(jsonPath("errorCode").value(CommonErrorCode.INVALID_REQUEST_BODY_FIELDS.getCode()))
                 .andExpect(jsonPath("message").value("비밀번호는 필수 입력값입니다."));
     }
 
@@ -150,8 +150,8 @@ public class UserAuthAPIUnitTest extends APIUnitTest {
 
         // then
         resultActions
-                .andExpect(status().is(CommonErrorCode.INVALID_FIELDS.getHttpStatus().value()))
-                .andExpect(jsonPath("errorCode").value(CommonErrorCode.INVALID_FIELDS.getCode()))
+                .andExpect(status().is(CommonErrorCode.INVALID_REQUEST_BODY_FIELDS.getHttpStatus().value()))
+                .andExpect(jsonPath("errorCode").value(CommonErrorCode.INVALID_REQUEST_BODY_FIELDS.getCode()))
                 .andExpect(jsonPath("message").value("비밀번호는 8 자리 이상 영문, 숫자, 특수문자를 사용하세요."));
     }
 
@@ -217,9 +217,9 @@ public class UserAuthAPIUnitTest extends APIUnitTest {
 
         // then
         resultActions
-                .andExpect(status().is(CommonErrorCode.MISSING_COOKIE.getHttpStatus().value()))
-                .andExpect(jsonPath("errorCode").value(CommonErrorCode.MISSING_COOKIE.getCode()))
-                .andExpect(jsonPath("message").value("refreshToken" + CommonErrorCode.MISSING_COOKIE.getMessage()));
+                .andExpect(status().is(CommonErrorCode.REQUIRED_COOKIE.getHttpStatus().value()))
+                .andExpect(jsonPath("errorCode").value(CommonErrorCode.REQUIRED_COOKIE.getCode()))
+                .andExpect(jsonPath("message").value("refreshToken" + CommonErrorCode.REQUIRED_COOKIE.getMessage()));
     }
 
     /**

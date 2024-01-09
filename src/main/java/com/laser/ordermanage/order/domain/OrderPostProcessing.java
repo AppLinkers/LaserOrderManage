@@ -50,7 +50,7 @@ public class OrderPostProcessing {
                     switch (request) {
                         case "painting" -> orderPostProcessing.isPainting = true;
                         case "plating" -> orderPostProcessing.isPlating = true;
-                        default -> throw new CustomCommonException(CommonErrorCode.INVALID_FIELDS, "postProcessing 의 타입이 옳바르지 않습니다.");
+                        default -> throw new CustomCommonException(CommonErrorCode.INVALID_REQUEST_BODY_FIELDS, "postProcessing 의 타입이 옳바르지 않습니다.");
                     }
                 }
         );

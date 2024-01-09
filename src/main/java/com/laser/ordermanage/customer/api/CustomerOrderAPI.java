@@ -199,7 +199,7 @@ public class CustomerOrderAPI {
         }
 
         if (order.getQuotation().getDeliveryDate().isAfter(request.inspectionPeriod()) || order.getQuotation().getDeliveryDate().isAfter(request.paymentDate())) {
-            throw new CustomCommonException(CommonErrorCode.INVALID_FIELDS, "발주서의 검수기간 및 지급일은 거래 납기일 이후이어야 합니다.");
+            throw new CustomCommonException(CommonErrorCode.INVALID_REQUEST_BODY_FIELDS, "발주서의 검수기간 및 지급일은 거래 납기일 이후이어야 합니다.");
         }
 
         CustomerCreateOrUpdateOrderPurchaseOrderResponse response;

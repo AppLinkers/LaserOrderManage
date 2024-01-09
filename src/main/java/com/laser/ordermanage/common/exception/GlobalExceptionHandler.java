@@ -5,6 +5,7 @@ import jakarta.validation.ConstraintViolationException;
 import org.apache.tomcat.util.http.fileupload.impl.FileSizeLimitExceededException;
 import org.apache.tomcat.util.http.fileupload.impl.SizeLimitExceededException;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.InsufficientAuthenticationException;
@@ -28,6 +29,12 @@ public class GlobalExceptionHandler {
         return e.toErrorResponse();
     }
 
+    @ExceptionHandler(InsufficientAuthenticationException.class)
+    public ResponseEntity<?> handleAuthenticationException(InsufficientAuthenticationException e) {
+        CustomCommonException exception = new CustomCommonException(UserErrorCode.MISSING_JWT);
+        return exception.toErrorResponse();
+    }
+
     @ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity<?> handleBadCredentialException(BadCredentialsException e) {
         CustomCommonException exception = new CustomCommonException(UserErrorCode.INVALID_CREDENTIALS);
@@ -40,9 +47,27 @@ public class GlobalExceptionHandler {
         return exception.toErrorResponse();
     }
 
-    @ExceptionHandler(InsufficientAuthenticationException.class)
-    public ResponseEntity<?> handleAuthenticationException(InsufficientAuthenticationException e) {
-        CustomCommonException exception = new CustomCommonException(UserErrorCode.MISSING_JWT);
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<?> handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException e) {
+        CustomCommonException exception = new CustomCommonException(CommonErrorCode.MISMATCH_PARAMETER_TYPE, e.getName());
+        return exception.toErrorResponse();
+    }
+
+    @ExceptionHandler(MissingServletRequestParameterException.class)
+    public ResponseEntity<?> handleMissingRequestParameterException(MissingServletRequestParameterException e) {
+        CustomCommonException exception = new CustomCommonException(CommonErrorCode.REQUIRED_PARAMETER, e.getParameterName());
+        return exception.toErrorResponse();
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<?> handleConstraintViolationException(ConstraintViolationException e) {
+        StringBuilder sb = new StringBuilder();
+        e.getConstraintViolations().forEach(
+                constraintViolation -> sb.append(constraintViolation.getMessage())
+        );
+
+        CustomCommonException exception = new CustomCommonException(CommonErrorCode.INVALID_PARAMETER, sb.toString());
+
         return exception.toErrorResponse();
     }
 
@@ -55,38 +80,20 @@ public class GlobalExceptionHandler {
                 objectError -> sb.append(objectError.getDefaultMessage())
         );
 
-        CustomCommonException exception = new CustomCommonException(CommonErrorCode.INVALID_FIELDS, sb.toString());
+        CustomCommonException exception = new CustomCommonException(CommonErrorCode.INVALID_REQUEST_BODY_FIELDS, sb.toString());
 
         return exception.toErrorResponse();
     }
 
-    @ExceptionHandler(ConstraintViolationException.class)
-    public ResponseEntity<?> handleConstraintViolationException(ConstraintViolationException e) {
-        StringBuilder sb = new StringBuilder();
-        e.getConstraintViolations().forEach(
-                constraintViolation -> sb.append(constraintViolation.getMessage())
-        );
-
-        CustomCommonException exception = new CustomCommonException(CommonErrorCode.INVALID_FIELDS, sb.toString());
-
-        return exception.toErrorResponse();
-    }
-
-    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
-    public ResponseEntity<?> handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException e) {
-        CustomCommonException exception = new CustomCommonException(CommonErrorCode.INVALID_PARAMETER_TYPE, e.getName());
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<?> handleHttpMessageNotReadableException(HttpMessageNotReadableException e) {
+        CustomCommonException exception = new CustomCommonException(CommonErrorCode.REQUIRED_REQUEST_BODY);
         return exception.toErrorResponse();
     }
 
     @ExceptionHandler(MissingRequestCookieException.class)
     public ResponseEntity<?> handleMissingRequestCookieException(MissingRequestCookieException e) {
-        CustomCommonException exception = new CustomCommonException(CommonErrorCode.MISSING_COOKIE, e.getCookieName());
-        return exception.toErrorResponse();
-    }
-
-    @ExceptionHandler(MissingServletRequestParameterException.class)
-    public ResponseEntity<?> handleMissingRequestParameterException(MissingServletRequestParameterException e) {
-        CustomCommonException exception = new CustomCommonException(CommonErrorCode.MISSING_QUERY_PARAMETER, e.getParameterName());
+        CustomCommonException exception = new CustomCommonException(CommonErrorCode.REQUIRED_COOKIE, e.getCookieName());
         return exception.toErrorResponse();
     }
 

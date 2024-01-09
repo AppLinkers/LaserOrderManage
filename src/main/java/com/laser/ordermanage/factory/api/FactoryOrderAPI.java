@@ -70,7 +70,7 @@ public class FactoryOrderAPI {
         }
 
         if (order.getCreatedAt().toLocalDate().isAfter(request.deliveryDate())) {
-            throw new CustomCommonException(CommonErrorCode.INVALID_FIELDS, "견적서의 납기일은 거래 생성일 이후이어야 합니다.");
+            throw new CustomCommonException(CommonErrorCode.INVALID_REQUEST_BODY_FIELDS, "견적서의 납기일은 거래 생성일 이후이어야 합니다.");
         }
 
         if (order.hasQuotation()) {

@@ -135,9 +135,9 @@ public class UserAuthIntegrationTest extends IntegrationTest {
 
         // then
         resultActions
-                .andExpect(status().is(CommonErrorCode.MISSING_COOKIE.getHttpStatus().value()))
-                .andExpect(jsonPath("errorCode").value(CommonErrorCode.MISSING_COOKIE.getCode()))
-                .andExpect(jsonPath("message").value("refreshToken" + CommonErrorCode.MISSING_COOKIE.getMessage()));
+                .andExpect(status().is(CommonErrorCode.REQUIRED_COOKIE.getHttpStatus().value()))
+                .andExpect(jsonPath("errorCode").value(CommonErrorCode.REQUIRED_COOKIE.getCode()))
+                .andExpect(jsonPath("message").value("refreshToken" + CommonErrorCode.REQUIRED_COOKIE.getMessage()));
     }
 
     /**

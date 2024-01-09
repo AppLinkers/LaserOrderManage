@@ -10,16 +10,15 @@ public enum CommonErrorCode implements ErrorCode {
 
     // 400 BAD_REQUEST 잘못된 요청
     BAD_REQUEST("COMMON_400_01", HttpStatus.BAD_REQUEST, "잘못된 요청입니다."),
-    MISSING_JWT_TOKEN("COMMON_400_02", HttpStatus.BAD_REQUEST, "JWT 토큰 정보가 요청에 포함되지 않았습니다."),
 
-    INVALID_PARAMETER("COMMON_400_03", HttpStatus.BAD_REQUEST, " 파라미터가 올바르지 않습니다."),
-    INVALID_PARAMETER_TYPE("COMMON_400_04", HttpStatus.BAD_REQUEST, " 파라미터의 타입이 올바르지 않습니다."),
-    INVALID_FIELDS("COMMON_400_05", HttpStatus.BAD_REQUEST, ""),
+    INVALID_PARAMETER("COMMON_400_02", HttpStatus.BAD_REQUEST, " 파라미터가 올바르지 않습니다."),
+    INVALID_PARAMETER_TYPE("COMMON_400_03", HttpStatus.BAD_REQUEST, " 파라미터의 타입이 올바르지 않습니다."),
+    INVALID_FIELDS("COMMON_400_04", HttpStatus.BAD_REQUEST, ""),
 
-    MISSING_COOKIE("COMMON_400_06", HttpStatus.BAD_REQUEST, " 쿠키값이 존재하지 않습니다."),
-    MISSING_QUERY_PARAMETER("COMMON_400_07", HttpStatus.BAD_REQUEST, " 쿼리 파라미터 값이 존재하지 않습니다."),
+    MISSING_COOKIE("COMMON_400_05", HttpStatus.BAD_REQUEST, " 쿠키값이 존재하지 않습니다."),
+    MISSING_QUERY_PARAMETER("COMMON_400_06", HttpStatus.BAD_REQUEST, " 쿼리 파라미터 값이 존재하지 않습니다."),
 
-    REQUEST_FILE_SIZE_EXCEED("COMMON_400_08", HttpStatus.BAD_REQUEST, "요청 파일의 크기가 100MB를 초과합니다."),
+    REQUEST_FILE_SIZE_EXCEED("COMMON_400_07", HttpStatus.BAD_REQUEST, "요청 파일의 크기가 100MB를 초과합니다."),
 
     // 401 UNAUTHORIZED 인증 자격 정보가 유효하지 않음
     UNAUTHORIZED("COMMON_401_01", HttpStatus.UNAUTHORIZED, "인증 자격 정보가 유효하지 않습니다."),

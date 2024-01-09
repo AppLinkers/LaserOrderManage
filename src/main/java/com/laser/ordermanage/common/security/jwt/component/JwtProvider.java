@@ -2,7 +2,6 @@ package com.laser.ordermanage.common.security.jwt.component;
 
 import com.laser.ordermanage.common.cache.redis.repository.BlackListRedisRepository;
 import com.laser.ordermanage.common.constants.ExpireTime;
-import com.laser.ordermanage.common.exception.CommonErrorCode;
 import com.laser.ordermanage.common.exception.CustomCommonException;
 import com.laser.ordermanage.user.domain.UserEntity;
 import com.laser.ordermanage.user.dto.response.TokenInfoResponse;
@@ -155,7 +154,7 @@ public class JwtProvider {
             try {
                 return bearerToken.substring(7);
             } catch (StringIndexOutOfBoundsException e) {
-                throw new CustomCommonException(CommonErrorCode.MISSING_JWT_TOKEN);
+                throw new CustomCommonException(UserErrorCode.MISSING_JWT_TOKEN);
             }
         }
 

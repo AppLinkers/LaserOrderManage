@@ -10,7 +10,8 @@ import org.springframework.http.HttpStatus;
 public enum UserErrorCode implements ErrorCode {
 
     // 400 BAD_REQUEST 잘못된 요청
-    INVALID_CREDENTIALS("USER_400_01", HttpStatus.BAD_REQUEST, "ID 또는 비밀번호가 올바르지 않습니다."),
+    MISSING_JWT_TOKEN("USER_400_01", HttpStatus.BAD_REQUEST, "JWT 토큰 정보가 요청에 포함되지 않았습니다."),
+    INVALID_CREDENTIALS("USER_400_02", HttpStatus.BAD_REQUEST, "ID 또는 비밀번호가 올바르지 않습니다."),
 
     // 401 UNAUTHORIZED 인증 자격 정보가 유효하지 않음
     INVALID_JWT_TOKEN("USER_401_01", HttpStatus.UNAUTHORIZED, "JWT Token 정보가 유효하지 않습니다."),

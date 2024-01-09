@@ -66,8 +66,7 @@ public class UserAuthIntegrationTest extends IntegrationTest {
 
         // then
         resultActions
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("httpStatus").value(UserErrorCode.INVALID_CREDENTIALS.getHttpStatus().name()))
+                .andExpect(status().is(UserErrorCode.INVALID_CREDENTIALS.getHttpStatus().value()))
                 .andExpect(jsonPath("errorCode").value(UserErrorCode.INVALID_CREDENTIALS.getCode()))
                 .andExpect(jsonPath("message").value(UserErrorCode.INVALID_CREDENTIALS.getMessage()));
     }
@@ -89,8 +88,7 @@ public class UserAuthIntegrationTest extends IntegrationTest {
 
         // then
         resultActions
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("httpStatus").value(UserErrorCode.INVALID_CREDENTIALS.getHttpStatus().name()))
+                .andExpect(status().is(UserErrorCode.INVALID_CREDENTIALS.getHttpStatus().value()))
                 .andExpect(jsonPath("errorCode").value(UserErrorCode.INVALID_CREDENTIALS.getCode()))
                 .andExpect(jsonPath("message").value(UserErrorCode.INVALID_CREDENTIALS.getMessage()));
     }
@@ -137,8 +135,7 @@ public class UserAuthIntegrationTest extends IntegrationTest {
 
         // then
         resultActions
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("httpStatus").value(CommonErrorCode.MISSING_COOKIE.getHttpStatus().name()))
+                .andExpect(status().is(CommonErrorCode.MISSING_COOKIE.getHttpStatus().value()))
                 .andExpect(jsonPath("errorCode").value(CommonErrorCode.MISSING_COOKIE.getCode()))
                 .andExpect(jsonPath("message").value("refreshToken" + CommonErrorCode.MISSING_COOKIE.getMessage()));
     }
@@ -164,8 +161,7 @@ public class UserAuthIntegrationTest extends IntegrationTest {
 
         // then
         resultActions
-                .andExpect(status().isUnauthorized())
-                .andExpect(jsonPath("httpStatus").value(UserErrorCode.INVALID_REFRESH_JWT_TOKEN.getHttpStatus().name()))
+                .andExpect(status().is(UserErrorCode.INVALID_REFRESH_JWT_TOKEN.getHttpStatus().value()))
                 .andExpect(jsonPath("errorCode").value(UserErrorCode.INVALID_REFRESH_JWT_TOKEN.getCode()))
                 .andExpect(jsonPath("message").value(UserErrorCode.INVALID_REFRESH_JWT_TOKEN.getMessage()));
     }
@@ -183,8 +179,8 @@ public class UserAuthIntegrationTest extends IntegrationTest {
         final ResultActions resultActions = requestReIssue(emptyRefreshToken);
 
         // then
-        resultActions.andExpect(status().isUnauthorized())
-                .andExpect(jsonPath("httpStatus").value(UserErrorCode.INVALID_REFRESH_JWT_TOKEN.getHttpStatus().name()))
+        resultActions
+                .andExpect(status().is(UserErrorCode.INVALID_REFRESH_JWT_TOKEN.getHttpStatus().value()))
                 .andExpect(jsonPath("errorCode").value(UserErrorCode.INVALID_REFRESH_JWT_TOKEN.getCode()))
                 .andExpect(jsonPath("message").value(UserErrorCode.INVALID_REFRESH_JWT_TOKEN.getMessage()));
 
@@ -203,8 +199,8 @@ public class UserAuthIntegrationTest extends IntegrationTest {
         final ResultActions resultActions = requestReIssue(invalidRefreshToken);
 
         // then
-        resultActions.andExpect(status().isUnauthorized())
-                .andExpect(jsonPath("httpStatus").value(UserErrorCode.INVALID_JWT_TOKEN.getHttpStatus().name()))
+        resultActions
+                .andExpect(status().is(UserErrorCode.INVALID_JWT_TOKEN.getHttpStatus().value()))
                 .andExpect(jsonPath("errorCode").value(UserErrorCode.INVALID_JWT_TOKEN.getCode()))
                 .andExpect(jsonPath("message").value(UserErrorCode.INVALID_JWT_TOKEN.getMessage()));
 
@@ -223,8 +219,8 @@ public class UserAuthIntegrationTest extends IntegrationTest {
         final ResultActions resultActions = requestReIssue(expiredRefreshToken);
 
         // then
-        resultActions.andExpect(status().isUnauthorized())
-                .andExpect(jsonPath("httpStatus").value(UserErrorCode.EXPIRED_JWT_TOKEN.getHttpStatus().name()))
+        resultActions
+                .andExpect(status().is(UserErrorCode.EXPIRED_JWT_TOKEN.getHttpStatus().value()))
                 .andExpect(jsonPath("errorCode").value(UserErrorCode.EXPIRED_JWT_TOKEN.getCode()))
                 .andExpect(jsonPath("message").value(UserErrorCode.EXPIRED_JWT_TOKEN.getMessage()));
 
@@ -243,8 +239,8 @@ public class UserAuthIntegrationTest extends IntegrationTest {
         final ResultActions resultActions = requestReIssue(unauthorizedRefreshToken);
 
         // then
-        resultActions.andExpect(status().isUnauthorized())
-                .andExpect(jsonPath("httpStatus").value(UserErrorCode.UNAUTHORIZED_JWT_TOKEN.getHttpStatus().name()))
+        resultActions
+                .andExpect(status().is(UserErrorCode.UNAUTHORIZED_JWT_TOKEN.getHttpStatus().value()))
                 .andExpect(jsonPath("errorCode").value(UserErrorCode.UNAUTHORIZED_JWT_TOKEN.getCode()))
                 .andExpect(jsonPath("message").value(UserErrorCode.UNAUTHORIZED_JWT_TOKEN.getMessage()));
 
@@ -270,8 +266,8 @@ public class UserAuthIntegrationTest extends IntegrationTest {
         final ResultActions resultActions = requestReIssueWithDifferentIpAddress(refreshToken);
 
         // then
-        resultActions.andExpect(status().isUnauthorized())
-                .andExpect(jsonPath("httpStatus").value(UserErrorCode.INVALID_REFRESH_JWT_TOKEN.getHttpStatus().name()))
+        resultActions
+                .andExpect(status().is(UserErrorCode.INVALID_REFRESH_JWT_TOKEN.getHttpStatus().value()))
                 .andExpect(jsonPath("errorCode").value(UserErrorCode.INVALID_REFRESH_JWT_TOKEN.getCode()))
                 .andExpect(jsonPath("message").value(UserErrorCode.INVALID_REFRESH_JWT_TOKEN.getMessage()));
 
@@ -313,10 +309,10 @@ public class UserAuthIntegrationTest extends IntegrationTest {
         final ResultActions resultActions = requestLogoutWithOutAccessToken();
 
         // then
-        resultActions.andExpect(status().isBadRequest())
-                .andExpect(jsonPath("httpStatus").value(CommonErrorCode.MISSING_JWT_TOKEN.getHttpStatus().name()))
-                .andExpect(jsonPath("errorCode").value(CommonErrorCode.MISSING_JWT_TOKEN.getCode()))
-                .andExpect(jsonPath("message").value(CommonErrorCode.MISSING_JWT_TOKEN.getMessage()));
+        resultActions
+                .andExpect(status().is(UserErrorCode.MISSING_JWT_TOKEN.getHttpStatus().value()))
+                .andExpect(jsonPath("errorCode").value(UserErrorCode.MISSING_JWT_TOKEN.getCode()))
+                .andExpect(jsonPath("message").value(UserErrorCode.MISSING_JWT_TOKEN.getMessage()));
 
     }
 
@@ -333,8 +329,8 @@ public class UserAuthIntegrationTest extends IntegrationTest {
         final ResultActions resultActions = requestLogout(refreshToken);
 
         // then
-        resultActions.andExpect(status().isUnauthorized())
-                .andExpect(jsonPath("httpStatus").value(UserErrorCode.INVALID_ACCESS_JWT_TOKEN.getHttpStatus().name()))
+        resultActions
+                .andExpect(status().is(UserErrorCode.INVALID_ACCESS_JWT_TOKEN.getHttpStatus().value()))
                 .andExpect(jsonPath("errorCode").value(UserErrorCode.INVALID_ACCESS_JWT_TOKEN.getCode()))
                 .andExpect(jsonPath("message").value(UserErrorCode.INVALID_ACCESS_JWT_TOKEN.getMessage()));
 
@@ -353,8 +349,8 @@ public class UserAuthIntegrationTest extends IntegrationTest {
         final ResultActions resultActions = requestLogout(expiredAccessToken);
 
         // then
-        resultActions.andExpect(status().isUnauthorized())
-                .andExpect(jsonPath("httpStatus").value(UserErrorCode.EXPIRED_JWT_TOKEN.getHttpStatus().name()))
+        resultActions
+                .andExpect(status().is(UserErrorCode.EXPIRED_JWT_TOKEN.getHttpStatus().value()))
                 .andExpect(jsonPath("errorCode").value(UserErrorCode.EXPIRED_JWT_TOKEN.getCode()))
                 .andExpect(jsonPath("message").value(UserErrorCode.EXPIRED_JWT_TOKEN.getMessage()));
 
@@ -373,8 +369,8 @@ public class UserAuthIntegrationTest extends IntegrationTest {
         final ResultActions resultActions = requestLogout(unauthorizedAccessToken);
 
         // then
-        resultActions.andExpect(status().isUnauthorized())
-                .andExpect(jsonPath("httpStatus").value(UserErrorCode.UNAUTHORIZED_JWT_TOKEN.getHttpStatus().name()))
+        resultActions
+                .andExpect(status().is(UserErrorCode.UNAUTHORIZED_JWT_TOKEN.getHttpStatus().value()))
                 .andExpect(jsonPath("errorCode").value(UserErrorCode.UNAUTHORIZED_JWT_TOKEN.getCode()))
                 .andExpect(jsonPath("message").value(UserErrorCode.UNAUTHORIZED_JWT_TOKEN.getMessage()));
 

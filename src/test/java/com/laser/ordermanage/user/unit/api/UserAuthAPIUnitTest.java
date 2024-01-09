@@ -85,8 +85,7 @@ public class UserAuthAPIUnitTest extends APIUnitTest {
 
         // then
         resultActions
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("httpStatus").value(CommonErrorCode.INVALID_FIELDS.getHttpStatus().name()))
+                .andExpect(status().is(CommonErrorCode.INVALID_FIELDS.getHttpStatus().value()))
                 .andExpect(jsonPath("errorCode").value(CommonErrorCode.INVALID_FIELDS.getCode()))
                 .andExpect(jsonPath("message").value("이메일은 필수 입력값입니다."));
     }
@@ -108,8 +107,7 @@ public class UserAuthAPIUnitTest extends APIUnitTest {
 
         // then
         resultActions
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("httpStatus").value(CommonErrorCode.INVALID_FIELDS.getHttpStatus().name()))
+                .andExpect(status().is(CommonErrorCode.INVALID_FIELDS.getHttpStatus().value()))
                 .andExpect(jsonPath("errorCode").value(CommonErrorCode.INVALID_FIELDS.getCode()))
                 .andExpect(jsonPath("message").value("이메일 형식에 맞지 않습니다."));
     }
@@ -130,8 +128,7 @@ public class UserAuthAPIUnitTest extends APIUnitTest {
 
         // then
         resultActions
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("httpStatus").value(CommonErrorCode.INVALID_FIELDS.getHttpStatus().name()))
+                .andExpect(status().is(CommonErrorCode.INVALID_FIELDS.getHttpStatus().value()))
                 .andExpect(jsonPath("errorCode").value(CommonErrorCode.INVALID_FIELDS.getCode()))
                 .andExpect(jsonPath("message").value("비밀번호는 필수 입력값입니다."));
     }
@@ -153,8 +150,7 @@ public class UserAuthAPIUnitTest extends APIUnitTest {
 
         // then
         resultActions
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("httpStatus").value(CommonErrorCode.INVALID_FIELDS.getHttpStatus().name()))
+                .andExpect(status().is(CommonErrorCode.INVALID_FIELDS.getHttpStatus().value()))
                 .andExpect(jsonPath("errorCode").value(CommonErrorCode.INVALID_FIELDS.getCode()))
                 .andExpect(jsonPath("message").value("비밀번호는 8 자리 이상 영문, 숫자, 특수문자를 사용하세요."));
     }
@@ -178,8 +174,7 @@ public class UserAuthAPIUnitTest extends APIUnitTest {
 
         // then
         resultActions
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("httpStatus").value(UserErrorCode.INVALID_CREDENTIALS.getHttpStatus().name()))
+                .andExpect(status().is(UserErrorCode.INVALID_CREDENTIALS.getHttpStatus().value()))
                 .andExpect(jsonPath("errorCode").value(UserErrorCode.INVALID_CREDENTIALS.getCode()))
                 .andExpect(jsonPath("message").value(UserErrorCode.INVALID_CREDENTIALS.getMessage()));
     }
@@ -222,8 +217,7 @@ public class UserAuthAPIUnitTest extends APIUnitTest {
 
         // then
         resultActions
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("httpStatus").value(CommonErrorCode.MISSING_COOKIE.getHttpStatus().name()))
+                .andExpect(status().is(CommonErrorCode.MISSING_COOKIE.getHttpStatus().value()))
                 .andExpect(jsonPath("errorCode").value(CommonErrorCode.MISSING_COOKIE.getCode()))
                 .andExpect(jsonPath("message").value("refreshToken" + CommonErrorCode.MISSING_COOKIE.getMessage()));
     }
@@ -245,8 +239,7 @@ public class UserAuthAPIUnitTest extends APIUnitTest {
 
         // then
         resultActions
-                .andExpect(status().isUnauthorized())
-                .andExpect(jsonPath("httpStatus").value(UserErrorCode.INVALID_JWT_TOKEN.getHttpStatus().name()))
+                .andExpect(status().is(UserErrorCode.INVALID_JWT_TOKEN.getHttpStatus().value()))
                 .andExpect(jsonPath("errorCode").value(UserErrorCode.INVALID_JWT_TOKEN.getCode()))
                 .andExpect(jsonPath("message").value(UserErrorCode.INVALID_JWT_TOKEN.getMessage()));
     }
@@ -268,8 +261,7 @@ public class UserAuthAPIUnitTest extends APIUnitTest {
 
         // then
         resultActions
-                .andExpect(status().isUnauthorized())
-                .andExpect(jsonPath("httpStatus").value(UserErrorCode.EXPIRED_JWT_TOKEN.getHttpStatus().name()))
+                .andExpect(status().is(UserErrorCode.EXPIRED_JWT_TOKEN.getHttpStatus().value()))
                 .andExpect(jsonPath("errorCode").value(UserErrorCode.EXPIRED_JWT_TOKEN.getCode()))
                 .andExpect(jsonPath("message").value(UserErrorCode.EXPIRED_JWT_TOKEN.getMessage()));
     }
@@ -291,8 +283,7 @@ public class UserAuthAPIUnitTest extends APIUnitTest {
 
         // then
         resultActions
-                .andExpect(status().isUnauthorized())
-                .andExpect(jsonPath("httpStatus").value(UserErrorCode.UNAUTHORIZED_JWT_TOKEN.getHttpStatus().name()))
+                .andExpect(status().is(UserErrorCode.UNAUTHORIZED_JWT_TOKEN.getHttpStatus().value()))
                 .andExpect(jsonPath("errorCode").value(UserErrorCode.UNAUTHORIZED_JWT_TOKEN.getCode()))
                 .andExpect(jsonPath("message").value(UserErrorCode.UNAUTHORIZED_JWT_TOKEN.getMessage()));
     }
@@ -314,8 +305,7 @@ public class UserAuthAPIUnitTest extends APIUnitTest {
 
         // then
         resultActions
-                .andExpect(status().isUnauthorized())
-                .andExpect(jsonPath("httpStatus").value(UserErrorCode.INVALID_REFRESH_JWT_TOKEN.getHttpStatus().name()))
+                .andExpect(status().is(UserErrorCode.INVALID_REFRESH_JWT_TOKEN.getHttpStatus().value()))
                 .andExpect(jsonPath("errorCode").value(UserErrorCode.INVALID_REFRESH_JWT_TOKEN.getCode()))
                 .andExpect(jsonPath("message").value(UserErrorCode.INVALID_REFRESH_JWT_TOKEN.getMessage()));
     }
@@ -337,8 +327,7 @@ public class UserAuthAPIUnitTest extends APIUnitTest {
 
         // then
         resultActions
-                .andExpect(status().isUnauthorized())
-                .andExpect(jsonPath("httpStatus").value(UserErrorCode.UNSUPPORTED_JWT_TOKEN.getHttpStatus().name()))
+                .andExpect(status().is(UserErrorCode.UNSUPPORTED_JWT_TOKEN.getHttpStatus().value()))
                 .andExpect(jsonPath("errorCode").value(UserErrorCode.UNSUPPORTED_JWT_TOKEN.getCode()))
                 .andExpect(jsonPath("message").value(UserErrorCode.UNSUPPORTED_JWT_TOKEN.getMessage()));
     }
@@ -378,10 +367,9 @@ public class UserAuthAPIUnitTest extends APIUnitTest {
 
         // then
         resultActions
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("httpStatus").value(CommonErrorCode.MISSING_JWT_TOKEN.getHttpStatus().name()))
-                .andExpect(jsonPath("errorCode").value(CommonErrorCode.MISSING_JWT_TOKEN.getCode()))
-                .andExpect(jsonPath("message").value(CommonErrorCode.MISSING_JWT_TOKEN.getMessage()));
+                .andExpect(status().is(UserErrorCode.MISSING_JWT_TOKEN.getHttpStatus().value()))
+                .andExpect(jsonPath("errorCode").value(UserErrorCode.MISSING_JWT_TOKEN.getCode()))
+                .andExpect(jsonPath("message").value(UserErrorCode.MISSING_JWT_TOKEN.getMessage()));
     }
 
     /**
@@ -402,8 +390,7 @@ public class UserAuthAPIUnitTest extends APIUnitTest {
 
         // then
         resultActions
-                .andExpect(status().isUnauthorized())
-                .andExpect(jsonPath("httpStatus").value(UserErrorCode.INVALID_ACCESS_JWT_TOKEN.getHttpStatus().name()))
+                .andExpect(status().is(UserErrorCode.INVALID_ACCESS_JWT_TOKEN.getHttpStatus().value()))
                 .andExpect(jsonPath("errorCode").value(UserErrorCode.INVALID_ACCESS_JWT_TOKEN.getCode()))
                 .andExpect(jsonPath("message").value(UserErrorCode.INVALID_ACCESS_JWT_TOKEN.getMessage()));
     }

@@ -24,25 +24,25 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(CustomCommonException.class)
     public ResponseEntity<?> handleCustomCommonException(CustomCommonException e) {
-        return ResponseEntity.status(e.getHttpStatus()).body(e.toErrorResponse());
+        return e.toErrorResponse();
     }
 
     @ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity<?> handleBadCredentialException(BadCredentialsException e) {
         CustomCommonException exception = new CustomCommonException(UserErrorCode.INVALID_CREDENTIALS);
-        return ResponseEntity.badRequest().body(exception.toErrorResponse());
+        return exception.toErrorResponse();
     }
 
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<?> handleAccessDeniedException(Authentication e) {
         CustomCommonException exception = new CustomCommonException(UserErrorCode.DENIED_ACCESS);
-        return ResponseEntity.status(exception.getHttpStatus()).body(exception.toErrorResponse());
+        return exception.toErrorResponse();
     }
 
     @ExceptionHandler(AuthenticationException.class)
     public ResponseEntity<?> handleAuthenticationException(AuthenticationException e) {
-        CustomCommonException exception = new CustomCommonException(CommonErrorCode.MISSING_JWT_TOKEN);
-        return ResponseEntity.status(exception.getHttpStatus()).body(exception.toErrorResponse());
+        CustomCommonException exception = new CustomCommonException(UserErrorCode.MISSING_JWT_TOKEN);
+        return exception.toErrorResponse();
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -56,7 +56,7 @@ public class GlobalExceptionHandler {
 
         CustomCommonException exception = new CustomCommonException(CommonErrorCode.INVALID_FIELDS, sb.toString());
 
-        return ResponseEntity.status(exception.getHttpStatus()).body(exception.toErrorResponse());
+        return exception.toErrorResponse();
     }
 
     @ExceptionHandler(ConstraintViolationException.class)
@@ -68,36 +68,36 @@ public class GlobalExceptionHandler {
 
         CustomCommonException exception = new CustomCommonException(CommonErrorCode.INVALID_FIELDS, sb.toString());
 
-        return ResponseEntity.status(exception.getHttpStatus()).body(exception.toErrorResponse());
+        return exception.toErrorResponse();
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<?> handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException e) {
         CustomCommonException exception = new CustomCommonException(CommonErrorCode.INVALID_PARAMETER_TYPE, e.getName());
-        return ResponseEntity.status(exception.getHttpStatus()).body(exception.toErrorResponse());
+        return exception.toErrorResponse();
     }
 
     @ExceptionHandler(MissingRequestCookieException.class)
     public ResponseEntity<?> handleMissingRequestCookieException(MissingRequestCookieException e) {
         CustomCommonException exception = new CustomCommonException(CommonErrorCode.MISSING_COOKIE, e.getCookieName());
-        return ResponseEntity.status(exception.getHttpStatus()).body(exception.toErrorResponse());
+        return exception.toErrorResponse();
     }
 
     @ExceptionHandler(MissingServletRequestParameterException.class)
     public ResponseEntity<?> handleMissingRequestParameterException(MissingServletRequestParameterException e) {
         CustomCommonException exception = new CustomCommonException(CommonErrorCode.MISSING_QUERY_PARAMETER, e.getParameterName());
-        return ResponseEntity.status(exception.getHttpStatus()).body(exception.toErrorResponse());
+        return exception.toErrorResponse();
     }
 
     @ExceptionHandler(SizeLimitExceededException.class)
     public ResponseEntity<?> handleSizeLimitExceededException(SizeLimitExceededException e) {
         CustomCommonException exception = new CustomCommonException(CommonErrorCode.REQUEST_FILE_SIZE_EXCEED);
-        return ResponseEntity.status(exception.getHttpStatus()).body(exception.toErrorResponse());
+        return exception.toErrorResponse();
     }
 
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
     protected ResponseEntity<?> handleHttpRequestMethodNotSupportedException(HttpRequestMethodNotSupportedException e) {
         CustomCommonException exception = new CustomCommonException(CommonErrorCode.METHOD_NOT_ALLOWED);
-        return ResponseEntity.status(exception.getHttpStatus()).body(exception.toErrorResponse());
+        return exception.toErrorResponse();
     }
 }

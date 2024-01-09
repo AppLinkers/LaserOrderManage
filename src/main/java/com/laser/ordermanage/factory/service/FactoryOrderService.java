@@ -15,6 +15,7 @@ import com.laser.ordermanage.order.exception.OrderErrorCode;
 import com.laser.ordermanage.order.repository.AcquirerRepository;
 import com.laser.ordermanage.order.repository.QuotationRepository;
 import com.laser.ordermanage.order.service.OrderService;
+import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,6 +32,8 @@ public class FactoryOrderService {
     private final OrderService orderService;
     private final MailService mailService;
     private final S3Service s3Service;
+
+    private final EntityManager entityManager;
 
     @Transactional
     public Order updateOrderIsUrgent(Long orderId, FactoryUpdateOrderIsUrgentRequest request) {
@@ -260,7 +263,8 @@ public class FactoryOrderService {
     }
 
     @Transactional
-    public void createOrderAcquirer(Order order, FactoryCreateOrderAcquirerRequest request, MultipartFile file) {
+    public void createOrderAcquirer(Long orderId, FactoryCreateOrderAcquirerRequest request, MultipartFile file) {
+        Order order = orderService.getOrderById(orderId);
 
         String fileName = file.getOriginalFilename();
         Long fileSize = file.getSize();
@@ -281,7 +285,9 @@ public class FactoryOrderService {
     }
 
     @Transactional
-    public void changeStageToCompleted(Order order) {
+    public void changeStageToCompleted(Long orderId) {
+        Order order = orderService.getOrderById(orderId);
+
         order.changeStageToCompleted();
 
         Customer customer = order.getCustomer();

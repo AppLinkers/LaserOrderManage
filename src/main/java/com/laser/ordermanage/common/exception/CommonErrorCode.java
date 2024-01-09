@@ -19,6 +19,7 @@ public enum CommonErrorCode implements ErrorCode {
     REQUIRED_REQUEST_BODY("COMMON_400_06", HttpStatus.BAD_REQUEST, "Request Body 가 필요한 요청 입니다."),
 
     REQUIRED_COOKIE("COMMON_400_07", HttpStatus.BAD_REQUEST, " 쿠키값이 존재하지 않습니다."),
+
     // 401 UNAUTHORIZED 인증 자격 정보가 유효하지 않음
     UNAUTHORIZED("COMMON_401_01", HttpStatus.UNAUTHORIZED, "인증 자격 정보가 유효하지 않습니다."),
 

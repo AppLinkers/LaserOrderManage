@@ -1,12 +1,14 @@
-package com.laser.ordermanage.common.exception.filter;
+package com.laser.ordermanage.common.security.jwt.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.laser.ordermanage.common.exception.CustomCommonException;
+import com.laser.ordermanage.common.exception.dto.response.ErrorResponse;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
@@ -27,12 +29,14 @@ public class JwtExceptionFilter extends OncePerRequestFilter {
 
     private void createJwtErrorResponse(HttpServletRequest request, HttpServletResponse response, CustomCommonException e) throws IOException {
 
+        ResponseEntity<ErrorResponse> errorResponse = e.toErrorResponse();
+
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setCharacterEncoding(StandardCharsets.UTF_8.name());
-        response.setStatus(e.getHttpStatus().value());
+        response.setStatus(errorResponse.getStatusCode().value());
 
         ObjectMapper objectMapper = new ObjectMapper();
-        String responseBody = objectMapper.writeValueAsString(e.toErrorResponse());
+        String responseBody = objectMapper.writeValueAsString(errorResponse.getBody());
 
         try (PrintWriter writer = response.getWriter()) {
             writer.write(responseBody);

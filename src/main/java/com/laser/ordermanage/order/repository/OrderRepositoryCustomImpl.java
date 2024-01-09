@@ -1,7 +1,7 @@
 package com.laser.ordermanage.order.repository;
 
 import com.laser.ordermanage.common.exception.CustomCommonException;
-import com.laser.ordermanage.common.exception.ErrorCode;
+import com.laser.ordermanage.common.exception.CommonErrorCode;
 import com.laser.ordermanage.customer.dto.response.*;
 import com.laser.ordermanage.factory.dto.response.*;
 import com.laser.ordermanage.order.domain.type.Stage;
@@ -432,7 +432,7 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
                         case "laser-cutting" -> booleanBuilder.or(orderManufacturing.isLaserCutting.eq(Boolean.TRUE));
                         case "bending" -> booleanBuilder.or(orderManufacturing.isBending.eq(Boolean.TRUE));
                         case "welding-fabrication" -> booleanBuilder.or(orderManufacturing.isWeldingFabrication.eq(Boolean.TRUE));
-                        default -> throw new CustomCommonException(ErrorCode.INVALID_PARAMETER, "manufacturing");
+                        default -> throw new CustomCommonException(CommonErrorCode.INVALID_PARAMETER, "manufacturing");
                     }
                 }
         );

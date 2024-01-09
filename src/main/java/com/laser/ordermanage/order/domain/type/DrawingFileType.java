@@ -1,7 +1,7 @@
 package com.laser.ordermanage.order.domain.type;
 
 import com.laser.ordermanage.common.exception.CustomCommonException;
-import com.laser.ordermanage.common.exception.ErrorCode;
+import com.laser.ordermanage.order.exception.OrderErrorCode;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -29,6 +29,6 @@ public enum DrawingFileType {
                     .collect(Collectors.toMap(DrawingFileType::getExtension, Function.identity())));
 
     public static DrawingFileType ofExtension(String request) {
-        return Optional.ofNullable(extensionMap.get(request)).orElseThrow(() -> new CustomCommonException(ErrorCode.INVALID_FILE_EXTENSION));
+        return Optional.ofNullable(extensionMap.get(request)).orElseThrow(() -> new CustomCommonException(OrderErrorCode.UNSUPPORTED_DRAWING_FILE_EXTENSION));
     }
 }

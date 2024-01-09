@@ -3,14 +3,13 @@ package com.laser.ordermanage.common.security.jwt.component;
 import com.laser.ordermanage.common.cache.redis.repository.BlackListRedisRepository;
 import com.laser.ordermanage.common.constants.ExpireTime;
 import com.laser.ordermanage.common.exception.CustomCommonException;
-import com.laser.ordermanage.common.exception.ErrorCode;
 import com.laser.ordermanage.user.domain.UserEntity;
 import com.laser.ordermanage.user.dto.response.TokenInfoResponse;
+import com.laser.ordermanage.user.exception.UserErrorCode;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.HttpServletRequest;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -115,23 +114,23 @@ public class JwtProvider {
             Claims claims = parseClaims(token);
 
             if (claims.get(ROLE_KEY).toString().isBlank()) {
-                throw new CustomCommonException(ErrorCode.UNAUTHORIZED_JWT_TOKEN);
+                throw new CustomCommonException(UserErrorCode.UNAUTHORIZED_JWT);
             }
 
             // access token 이 black list 에 저장되어 있는지 확인
             if (getType(token).equals(TYPE_ACCESS) && blackListRedisRepository.findByAccessToken(token).isPresent()) {
-                throw new CustomCommonException(ErrorCode.INVALID_ACCESS_JWT_TOKEN);
+                throw new CustomCommonException(UserErrorCode.INVALID_ACCESS_TOKEN);
             }
 
             return true;
         } catch (ExpiredJwtException e) {
-            throw new CustomCommonException(ErrorCode.EXPIRED_JWT_TOKEN);
+            throw new CustomCommonException(UserErrorCode.EXPIRED_JWT);
         } catch (UnsupportedJwtException e) {
-            throw new CustomCommonException(ErrorCode.UNSUPPORTED_JWT_TOKEN);
+            throw new CustomCommonException(UserErrorCode.UNSUPPORTED_JWT);
         } catch (CustomCommonException e) {
             throw e;
         } catch (Exception e) {
-            throw new CustomCommonException(ErrorCode.INVALID_JWT_TOKEN);
+            throw new CustomCommonException(UserErrorCode.INVALID_JWT);
         }
     }
 
@@ -155,7 +154,7 @@ public class JwtProvider {
             try {
                 return bearerToken.substring(7);
             } catch (StringIndexOutOfBoundsException e) {
-                throw new CustomCommonException(ErrorCode.MISSING_JWT_TOKEN);
+                throw new CustomCommonException(UserErrorCode.MISSING_JWT);
             }
         }
 

@@ -1,12 +1,12 @@
 package com.laser.ordermanage.factory.service;
 
 import com.laser.ordermanage.common.exception.CustomCommonException;
-import com.laser.ordermanage.common.exception.ErrorCode;
 import com.laser.ordermanage.common.paging.ListResponse;
 import com.laser.ordermanage.factory.domain.Factory;
 import com.laser.ordermanage.factory.domain.OrderManager;
 import com.laser.ordermanage.factory.dto.request.FactoryCreateOrUpdateOrderManagerRequest;
 import com.laser.ordermanage.factory.dto.response.FactoryGetOrderManagerResponse;
+import com.laser.ordermanage.factory.exception.FactoryErrorCode;
 import com.laser.ordermanage.factory.repository.FactoryRepository;
 import com.laser.ordermanage.factory.repository.OrderManagerRepository;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +22,7 @@ public class FactoryOrderManagerService {
     private final OrderManagerRepository orderManagerRepository;
 
     private String getUserEmailByOrderManager(Long orderManagerId) {
-        return orderManagerRepository.findUserEmailById(orderManagerId).orElseThrow(() -> new CustomCommonException(ErrorCode.NOT_FOUND_ENTITY, "orderManager"));
+        return orderManagerRepository.findUserEmailById(orderManagerId).orElseThrow(() -> new CustomCommonException(FactoryErrorCode.NOT_FOUND_ORDER_MANAGER));
     }
 
     @Transactional
@@ -45,7 +45,7 @@ public class FactoryOrderManagerService {
 
     @Transactional(readOnly = true)
     public OrderManager getOrderManager(Long orderManagerId) {
-        return orderManagerRepository.findFirstById(orderManagerId).orElseThrow(() -> new CustomCommonException(ErrorCode.NOT_FOUND_ENTITY, "orderManager"));
+        return orderManagerRepository.findFirstById(orderManagerId).orElseThrow(() -> new CustomCommonException(FactoryErrorCode.NOT_FOUND_ORDER_MANAGER));
     }
 
     @Transactional
@@ -69,6 +69,6 @@ public class FactoryOrderManagerService {
             return;
         }
 
-        throw new CustomCommonException(ErrorCode.DENIED_ACCESS_TO_ENTITY, "orderManager");
+        throw new CustomCommonException(FactoryErrorCode.DENIED_ACCESS_TO_ORDER_MANAGER);
     }
 }

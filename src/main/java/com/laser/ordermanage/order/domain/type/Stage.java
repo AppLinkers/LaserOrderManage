@@ -1,7 +1,7 @@
 package com.laser.ordermanage.order.domain.type;
 
 import com.laser.ordermanage.common.exception.CustomCommonException;
-import com.laser.ordermanage.common.exception.ErrorCode;
+import com.laser.ordermanage.common.exception.CommonErrorCode;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -31,7 +31,7 @@ public enum Stage {
                     .collect(Collectors.toMap(Stage::getRequest, Function.identity())));
 
     public static Stage ofRequest(String request) {
-        return Optional.ofNullable(stageMap.get(request)).orElseThrow(() -> new CustomCommonException(ErrorCode.INVALID_PARAMETER, "stage"));
+        return Optional.ofNullable(stageMap.get(request)).orElseThrow(() -> new CustomCommonException(CommonErrorCode.INVALID_PARAMETER, "stage"));
     }
 
 }

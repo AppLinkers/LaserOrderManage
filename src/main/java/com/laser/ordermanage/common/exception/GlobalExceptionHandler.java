@@ -1,12 +1,15 @@
 package com.laser.ordermanage.common.exception;
 
+import com.laser.ordermanage.user.exception.UserErrorCode;
 import jakarta.validation.ConstraintViolationException;
+import org.apache.tomcat.util.http.fileupload.impl.FileSizeLimitExceededException;
 import org.apache.tomcat.util.http.fileupload.impl.SizeLimitExceededException;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -21,27 +24,57 @@ import java.util.List;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<?> handleUnknownException(Exception e) {
+        CustomCommonException exception = new CustomCommonException(CommonErrorCode.UNKNOWN_ERROR);
+        return exception.toErrorResponse();
+    }
+
     @ExceptionHandler(CustomCommonException.class)
     public ResponseEntity<?> handleCustomCommonException(CustomCommonException e) {
-        return ResponseEntity.status(e.getHttpStatus()).body(e.toErrorResponse());
+        return e.toErrorResponse();
+    }
+
+    @ExceptionHandler(InsufficientAuthenticationException.class)
+    public ResponseEntity<?> handleAuthenticationException(InsufficientAuthenticationException e) {
+        CustomCommonException exception = new CustomCommonException(UserErrorCode.MISSING_JWT);
+        return exception.toErrorResponse();
     }
 
     @ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity<?> handleBadCredentialException(BadCredentialsException e) {
-        CustomCommonException exception = new CustomCommonException(ErrorCode.INVALID_CREDENTIALS);
-        return ResponseEntity.badRequest().body(exception.toErrorResponse());
+        CustomCommonException exception = new CustomCommonException(UserErrorCode.INVALID_CREDENTIALS);
+        return exception.toErrorResponse();
     }
 
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<?> handleAccessDeniedException(Authentication e) {
-        CustomCommonException exception = new CustomCommonException(ErrorCode.DENIED_ACCESS);
-        return ResponseEntity.status(exception.getHttpStatus()).body(exception.toErrorResponse());
+        CustomCommonException exception = new CustomCommonException(UserErrorCode.DENIED_ACCESS);
+        return exception.toErrorResponse();
     }
 
-    @ExceptionHandler(AuthenticationException.class)
-    public ResponseEntity<?> handleAuthenticationException(AuthenticationException e) {
-        CustomCommonException exception = new CustomCommonException(ErrorCode.MISSING_JWT_TOKEN);
-        return ResponseEntity.status(exception.getHttpStatus()).body(exception.toErrorResponse());
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<?> handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException e) {
+        CustomCommonException exception = new CustomCommonException(CommonErrorCode.MISMATCH_PARAMETER_TYPE, e.getName());
+        return exception.toErrorResponse();
+    }
+
+    @ExceptionHandler(MissingServletRequestParameterException.class)
+    public ResponseEntity<?> handleMissingRequestParameterException(MissingServletRequestParameterException e) {
+        CustomCommonException exception = new CustomCommonException(CommonErrorCode.REQUIRED_PARAMETER, e.getParameterName());
+        return exception.toErrorResponse();
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<?> handleConstraintViolationException(ConstraintViolationException e) {
+        StringBuilder sb = new StringBuilder();
+        e.getConstraintViolations().forEach(
+                constraintViolation -> sb.append(constraintViolation.getMessage())
+        );
+
+        CustomCommonException exception = new CustomCommonException(CommonErrorCode.INVALID_PARAMETER, sb.toString());
+
+        return exception.toErrorResponse();
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -53,50 +86,38 @@ public class GlobalExceptionHandler {
                 objectError -> sb.append(objectError.getDefaultMessage())
         );
 
-        CustomCommonException exception = new CustomCommonException(ErrorCode.INVALID_FIELDS, sb.toString());
+        CustomCommonException exception = new CustomCommonException(CommonErrorCode.INVALID_REQUEST_BODY_FIELDS, sb.toString());
 
-        return ResponseEntity.status(exception.getHttpStatus()).body(exception.toErrorResponse());
+        return exception.toErrorResponse();
     }
 
-    @ExceptionHandler(ConstraintViolationException.class)
-    public ResponseEntity<?> handleConstraintViolationException(ConstraintViolationException e) {
-        StringBuilder sb = new StringBuilder();
-        e.getConstraintViolations().forEach(
-                constraintViolation -> sb.append(constraintViolation.getMessage())
-        );
-
-        CustomCommonException exception = new CustomCommonException(ErrorCode.INVALID_FIELDS, sb.toString());
-
-        return ResponseEntity.status(exception.getHttpStatus()).body(exception.toErrorResponse());
-    }
-
-    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
-    public ResponseEntity<?> handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException e) {
-        CustomCommonException exception = new CustomCommonException(ErrorCode.INVALID_PARAMETER_TYPE, e.getName());
-        return ResponseEntity.status(exception.getHttpStatus()).body(exception.toErrorResponse());
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<?> handleHttpMessageNotReadableException(HttpMessageNotReadableException e) {
+        CustomCommonException exception = new CustomCommonException(CommonErrorCode.REQUIRED_REQUEST_BODY);
+        return exception.toErrorResponse();
     }
 
     @ExceptionHandler(MissingRequestCookieException.class)
     public ResponseEntity<?> handleMissingRequestCookieException(MissingRequestCookieException e) {
-        CustomCommonException exception = new CustomCommonException(ErrorCode.MISSING_COOKIE, e.getCookieName());
-        return ResponseEntity.status(exception.getHttpStatus()).body(exception.toErrorResponse());
-    }
-
-    @ExceptionHandler(MissingServletRequestParameterException.class)
-    public ResponseEntity<?> handleMissingRequestParameterException(MissingServletRequestParameterException e) {
-        CustomCommonException exception = new CustomCommonException(ErrorCode.MISSING_QUERY_PARAMETER, e.getParameterName());
-        return ResponseEntity.status(exception.getHttpStatus()).body(exception.toErrorResponse());
+        CustomCommonException exception = new CustomCommonException(CommonErrorCode.REQUIRED_COOKIE, e.getCookieName());
+        return exception.toErrorResponse();
     }
 
     @ExceptionHandler(SizeLimitExceededException.class)
     public ResponseEntity<?> handleSizeLimitExceededException(SizeLimitExceededException e) {
-        CustomCommonException exception = new CustomCommonException(ErrorCode.REQUEST_FILE_SIZE_EXCEED);
-        return ResponseEntity.status(exception.getHttpStatus()).body(exception.toErrorResponse());
+        CustomCommonException exception = new CustomCommonException(CommonErrorCode.REQUEST_SIZE_EXCEEDED);
+        return exception.toErrorResponse();
+    }
+
+    @ExceptionHandler(FileSizeLimitExceededException.class)
+    public ResponseEntity<?> handleFileSizeLimitExceededException(FileSizeLimitExceededException e) {
+        CustomCommonException exception = new CustomCommonException(CommonErrorCode.REQUEST_FILE_SIZE_EXCEEDED);
+        return exception.toErrorResponse();
     }
 
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
     protected ResponseEntity<?> handleHttpRequestMethodNotSupportedException(HttpRequestMethodNotSupportedException e) {
-        CustomCommonException exception = new CustomCommonException(ErrorCode.METHOD_NOT_ALLOWED);
-        return ResponseEntity.status(exception.getHttpStatus()).body(exception.toErrorResponse());
+        CustomCommonException exception = new CustomCommonException(CommonErrorCode.METHOD_NOT_ALLOWED);
+        return exception.toErrorResponse();
     }
 }

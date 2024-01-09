@@ -1,7 +1,6 @@
 package com.laser.ordermanage.order.service;
 
 import com.laser.ordermanage.common.exception.CustomCommonException;
-import com.laser.ordermanage.common.exception.ErrorCode;
 import com.laser.ordermanage.common.mail.MailService;
 import com.laser.ordermanage.common.paging.ListResponse;
 import com.laser.ordermanage.order.domain.Comment;
@@ -11,6 +10,7 @@ import com.laser.ordermanage.order.dto.request.CreateCommentRequest;
 import com.laser.ordermanage.order.dto.response.GetCommentResponse;
 import com.laser.ordermanage.order.dto.response.GetOrderDetailResponse;
 import com.laser.ordermanage.order.dto.response.GetPurchaseOrderFileResponse;
+import com.laser.ordermanage.order.exception.OrderErrorCode;
 import com.laser.ordermanage.order.repository.CommentRepository;
 import com.laser.ordermanage.order.repository.OrderRepository;
 import com.laser.ordermanage.user.domain.UserEntity;
@@ -34,12 +34,12 @@ public class OrderService {
 
     @Transactional(readOnly = true)
     public Order getOrderById(Long orderId) {
-        return orderRepository.findFirstById(orderId).orElseThrow(() -> new CustomCommonException(ErrorCode.NOT_FOUND_ENTITY, "order"));
+        return orderRepository.findFirstById(orderId).orElseThrow(() -> new CustomCommonException(OrderErrorCode.NOT_FOUND_ORDER));
     }
 
     @Transactional(readOnly = true)
     public String getUserEmailByOrder(Long orderId) {
-        return orderRepository.findUserEmailById(orderId).orElseThrow(() -> new CustomCommonException(ErrorCode.NOT_FOUND_ENTITY, "order"));
+        return orderRepository.findUserEmailById(orderId).orElseThrow(() -> new CustomCommonException(OrderErrorCode.NOT_FOUND_ORDER));
     }
 
     @Transactional(readOnly = true)
@@ -112,7 +112,7 @@ public class OrderService {
             return;
         }
 
-        throw new CustomCommonException(ErrorCode.DENIED_ACCESS_TO_ENTITY, "order");
+        throw new CustomCommonException(OrderErrorCode.DENIED_ACCESS_TO_ORDER);
     }
 
     @Transactional(readOnly = true)
@@ -120,7 +120,7 @@ public class OrderService {
         Order order = getOrderById(orderId);
 
         if (!order.hasPurchaseOrder()) {
-            throw new CustomCommonException(ErrorCode.NOT_FOUND_ENTITY, "purchaseOrder");
+            throw new CustomCommonException(OrderErrorCode.NOT_FOUND_PURCHASE_ORDER);
         }
 
         PurchaseOrder purchaseOrder = order.getPurchaseOrder();

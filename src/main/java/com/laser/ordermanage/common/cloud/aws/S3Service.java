@@ -1,7 +1,7 @@
 package com.laser.ordermanage.common.cloud.aws;
 
 import com.laser.ordermanage.common.exception.CustomCommonException;
-import com.laser.ordermanage.common.exception.ErrorCode;
+import com.laser.ordermanage.common.exception.CommonErrorCode;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -33,7 +33,7 @@ public class S3Service {
             RequestBody requestBody = RequestBody.fromInputStream(multipartFile.getInputStream(), multipartFile.getSize());
             return putObject(requestBody, key);
         } catch (IOException e) {
-            throw new CustomCommonException(ErrorCode.UNABLE_TO_AWS_S3_UPLOAD);
+            throw new CustomCommonException(CommonErrorCode.UNABLE_TO_AWS_S3_UPLOAD);
         }
     }
 
@@ -46,7 +46,7 @@ public class S3Service {
             file.delete();
             return fileUrl;
         } catch (IOException e) {
-            throw new CustomCommonException(ErrorCode.UNABLE_TO_AWS_S3_UPLOAD);
+            throw new CustomCommonException(CommonErrorCode.UNABLE_TO_AWS_S3_UPLOAD);
         }
     }
 

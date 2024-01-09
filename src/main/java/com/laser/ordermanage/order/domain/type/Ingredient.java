@@ -1,7 +1,7 @@
 package com.laser.ordermanage.order.domain.type;
 
 import com.laser.ordermanage.common.exception.CustomCommonException;
-import com.laser.ordermanage.common.exception.ErrorCode;
+import com.laser.ordermanage.order.exception.OrderErrorCode;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -52,6 +52,6 @@ public enum Ingredient {
                     .collect(Collectors.toMap(Ingredient::getValue, Function.identity())));
 
     public static Ingredient ofValue(String value) {
-        return Optional.ofNullable(valueMap.get(value)).orElseThrow(() -> new CustomCommonException(ErrorCode.INVALID_INGREDIENT));
+        return Optional.ofNullable(valueMap.get(value)).orElseThrow(() -> new CustomCommonException(OrderErrorCode.UNSUPPORTED_INGREDIENT));
     }
 }

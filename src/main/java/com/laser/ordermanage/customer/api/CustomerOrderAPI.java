@@ -1,7 +1,7 @@
 package com.laser.ordermanage.customer.api;
 
 import com.laser.ordermanage.common.exception.CustomCommonException;
-import com.laser.ordermanage.common.exception.ErrorCode;
+import com.laser.ordermanage.common.exception.CommonErrorCode;
 import com.laser.ordermanage.customer.dto.request.*;
 import com.laser.ordermanage.customer.dto.response.CustomerCreateDrawingResponse;
 import com.laser.ordermanage.customer.dto.response.CustomerCreateOrUpdateOrderPurchaseOrderResponse;
@@ -9,6 +9,7 @@ import com.laser.ordermanage.customer.service.CustomerDeliveryAddressService;
 import com.laser.ordermanage.customer.service.CustomerOrderService;
 import com.laser.ordermanage.order.domain.Drawing;
 import com.laser.ordermanage.order.domain.Order;
+import com.laser.ordermanage.order.exception.OrderErrorCode;
 import com.laser.ordermanage.order.service.OrderService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -194,11 +195,11 @@ public class CustomerOrderAPI {
         Order order = orderService.getOrderById(orderId);
 
         if (!order.enableManagePurchaseOrder()) {
-            throw new CustomCommonException(ErrorCode.INVALID_ORDER_STAGE, order.getStage().getValue());
+            throw new CustomCommonException(OrderErrorCode.INVALID_ORDER_STAGE, order.getStage().getValue());
         }
 
         if (order.getQuotation().getDeliveryDate().isAfter(request.inspectionPeriod()) || order.getQuotation().getDeliveryDate().isAfter(request.paymentDate())) {
-            throw new CustomCommonException(ErrorCode.INVALID_FIELDS, "발주서의 검수기간 및 지급일은 거래 납기일 이후이어야 합니다.");
+            throw new CustomCommonException(CommonErrorCode.INVALID_REQUEST_BODY_FIELDS, "발주서의 검수기간 및 지급일은 거래 납기일 이후이어야 합니다.");
         }
 
         CustomerCreateOrUpdateOrderPurchaseOrderResponse response;

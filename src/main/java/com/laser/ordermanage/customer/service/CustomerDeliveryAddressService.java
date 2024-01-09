@@ -1,12 +1,12 @@
 package com.laser.ordermanage.customer.service;
 
 import com.laser.ordermanage.common.exception.CustomCommonException;
-import com.laser.ordermanage.common.exception.ErrorCode;
 import com.laser.ordermanage.common.paging.ListResponse;
 import com.laser.ordermanage.customer.domain.Customer;
 import com.laser.ordermanage.customer.domain.DeliveryAddress;
 import com.laser.ordermanage.customer.dto.request.CustomerCreateOrUpdateDeliveryAddressRequest;
 import com.laser.ordermanage.customer.dto.response.CustomerGetDeliveryAddressResponse;
+import com.laser.ordermanage.customer.exception.CustomerErrorCode;
 import com.laser.ordermanage.customer.repository.CustomerRepository;
 import com.laser.ordermanage.customer.repository.DeliveryAddressRepository;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +22,7 @@ public class CustomerDeliveryAddressService {
     private final DeliveryAddressRepository deliveryAddressRepository;
 
     private String getUserEmailByDeliveryAddress(Long deliveryAddressId) {
-        return deliveryAddressRepository.findUserEmailById(deliveryAddressId).orElseThrow(() -> new CustomCommonException(ErrorCode.NOT_FOUND_ENTITY, "deliveryAddress"));
+        return deliveryAddressRepository.findUserEmailById(deliveryAddressId).orElseThrow(() -> new CustomCommonException(CustomerErrorCode.NOT_FOUND_DELIVERY_ADDRESS));
     }
 
     @Transactional
@@ -56,7 +56,7 @@ public class CustomerDeliveryAddressService {
 
     @Transactional(readOnly = true)
     public DeliveryAddress getDeliveryAddress(Long deliverAddressId) {
-        return deliveryAddressRepository.findFirstById(deliverAddressId).orElseThrow(() -> new CustomCommonException(ErrorCode.NOT_FOUND_ENTITY, "deliveryAddress"));
+        return deliveryAddressRepository.findFirstById(deliverAddressId).orElseThrow(() -> new CustomCommonException(CustomerErrorCode.NOT_FOUND_DELIVERY_ADDRESS));
     }
 
     @Transactional
@@ -77,7 +77,7 @@ public class CustomerDeliveryAddressService {
         DeliveryAddress deliveryAddress = this.getDeliveryAddress(deliveryAddressId);
 
         if (deliveryAddress.isDefault()) {
-            throw new CustomCommonException(ErrorCode.DEFAULT_DELIVERY_ADDRESS_DELETE);
+            throw new CustomCommonException(CustomerErrorCode.DEFAULT_DELIVERY_ADDRESS_DELETE);
         }
 
         deliveryAddressRepository.delete(deliveryAddress);
@@ -86,7 +86,7 @@ public class CustomerDeliveryAddressService {
     @Transactional(readOnly = true)
     public void checkAuthorityCustomerOfDeliveryAddress(User user, Long deliveryAddressId) {
         if (!this.getUserEmailByDeliveryAddress(deliveryAddressId).equals(user.getUsername())) {
-            throw new CustomCommonException(ErrorCode.DENIED_ACCESS_TO_ENTITY, "deliveryAddress");
+            throw new CustomCommonException(CustomerErrorCode.DENIED_ACCESS_TO_DELIVERY_ADDRESS);
         }
     }
 }

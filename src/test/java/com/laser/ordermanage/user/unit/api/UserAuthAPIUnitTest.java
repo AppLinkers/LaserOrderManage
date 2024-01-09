@@ -2,13 +2,14 @@ package com.laser.ordermanage.user.unit.api;
 
 import com.laser.ordermanage.common.APIUnitTest;
 import com.laser.ordermanage.common.constants.ExpireTime;
+import com.laser.ordermanage.common.exception.CommonErrorCode;
 import com.laser.ordermanage.common.exception.CustomCommonException;
-import com.laser.ordermanage.common.exception.ErrorCode;
 import com.laser.ordermanage.user.api.UserAuthAPI;
 import com.laser.ordermanage.user.domain.type.Role;
 import com.laser.ordermanage.user.dto.request.LoginRequest;
 import com.laser.ordermanage.user.dto.request.LoginRequestBuilder;
 import com.laser.ordermanage.user.dto.response.TokenInfoResponseBuilder;
+import com.laser.ordermanage.user.exception.UserErrorCode;
 import com.laser.ordermanage.user.service.UserAuthService;
 import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.BeforeEach;
@@ -84,9 +85,8 @@ public class UserAuthAPIUnitTest extends APIUnitTest {
 
         // then
         resultActions
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("httpStatus").value(ErrorCode.INVALID_FIELDS.getHttpStatus().name()))
-                .andExpect(jsonPath("errorCode").value(ErrorCode.INVALID_FIELDS.getCode()))
+                .andExpect(status().is(CommonErrorCode.INVALID_REQUEST_BODY_FIELDS.getHttpStatus().value()))
+                .andExpect(jsonPath("errorCode").value(CommonErrorCode.INVALID_REQUEST_BODY_FIELDS.getCode()))
                 .andExpect(jsonPath("message").value("이메일은 필수 입력값입니다."));
     }
 
@@ -107,9 +107,8 @@ public class UserAuthAPIUnitTest extends APIUnitTest {
 
         // then
         resultActions
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("httpStatus").value(ErrorCode.INVALID_FIELDS.getHttpStatus().name()))
-                .andExpect(jsonPath("errorCode").value(ErrorCode.INVALID_FIELDS.getCode()))
+                .andExpect(status().is(CommonErrorCode.INVALID_REQUEST_BODY_FIELDS.getHttpStatus().value()))
+                .andExpect(jsonPath("errorCode").value(CommonErrorCode.INVALID_REQUEST_BODY_FIELDS.getCode()))
                 .andExpect(jsonPath("message").value("이메일 형식에 맞지 않습니다."));
     }
 
@@ -129,9 +128,8 @@ public class UserAuthAPIUnitTest extends APIUnitTest {
 
         // then
         resultActions
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("httpStatus").value(ErrorCode.INVALID_FIELDS.getHttpStatus().name()))
-                .andExpect(jsonPath("errorCode").value(ErrorCode.INVALID_FIELDS.getCode()))
+                .andExpect(status().is(CommonErrorCode.INVALID_REQUEST_BODY_FIELDS.getHttpStatus().value()))
+                .andExpect(jsonPath("errorCode").value(CommonErrorCode.INVALID_REQUEST_BODY_FIELDS.getCode()))
                 .andExpect(jsonPath("message").value("비밀번호는 필수 입력값입니다."));
     }
 
@@ -152,9 +150,8 @@ public class UserAuthAPIUnitTest extends APIUnitTest {
 
         // then
         resultActions
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("httpStatus").value(ErrorCode.INVALID_FIELDS.getHttpStatus().name()))
-                .andExpect(jsonPath("errorCode").value(ErrorCode.INVALID_FIELDS.getCode()))
+                .andExpect(status().is(CommonErrorCode.INVALID_REQUEST_BODY_FIELDS.getHttpStatus().value()))
+                .andExpect(jsonPath("errorCode").value(CommonErrorCode.INVALID_REQUEST_BODY_FIELDS.getCode()))
                 .andExpect(jsonPath("message").value("비밀번호는 8 자리 이상 영문, 숫자, 특수문자를 사용하세요."));
     }
 
@@ -170,17 +167,16 @@ public class UserAuthAPIUnitTest extends APIUnitTest {
         final LoginRequest invalidRequest = LoginRequestBuilder.invalidBuild();
 
         // stub
-        when(userAuthService.login(any(), any())).thenThrow(new CustomCommonException(ErrorCode.INVALID_CREDENTIALS));
+        when(userAuthService.login(any(), any())).thenThrow(new CustomCommonException(UserErrorCode.INVALID_CREDENTIALS));
 
         // when
         final ResultActions resultActions = requestLogin(invalidRequest);
 
         // then
         resultActions
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("httpStatus").value(ErrorCode.INVALID_CREDENTIALS.getHttpStatus().name()))
-                .andExpect(jsonPath("errorCode").value(ErrorCode.INVALID_CREDENTIALS.getCode()))
-                .andExpect(jsonPath("message").value(ErrorCode.INVALID_CREDENTIALS.getMessage()));
+                .andExpect(status().is(UserErrorCode.INVALID_CREDENTIALS.getHttpStatus().value()))
+                .andExpect(jsonPath("errorCode").value(UserErrorCode.INVALID_CREDENTIALS.getCode()))
+                .andExpect(jsonPath("message").value(UserErrorCode.INVALID_CREDENTIALS.getMessage()));
     }
 
     /**
@@ -210,7 +206,7 @@ public class UserAuthAPIUnitTest extends APIUnitTest {
 
     /**
      * 사용자 Refresh Token 을 활용한 Access Token 재발급 실패
-     * - 실패 사유 : 요청 시, Cookie 에 JWT Token 정보를 추가하지 않음
+     * - 실패 사유 : 요청 시, Cookie 에 JWT 정보를 추가하지 않음
      */
     @Test
     public void Access_Token_재발급_실패_Cookie_존재() throws Exception {
@@ -221,15 +217,14 @@ public class UserAuthAPIUnitTest extends APIUnitTest {
 
         // then
         resultActions
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("httpStatus").value(ErrorCode.MISSING_COOKIE.getHttpStatus().name()))
-                .andExpect(jsonPath("errorCode").value(ErrorCode.MISSING_COOKIE.getCode()))
-                .andExpect(jsonPath("message").value("refreshToken" + ErrorCode.MISSING_COOKIE.getMessage()));
+                .andExpect(status().is(CommonErrorCode.REQUIRED_COOKIE.getHttpStatus().value()))
+                .andExpect(jsonPath("errorCode").value(CommonErrorCode.REQUIRED_COOKIE.getCode()))
+                .andExpect(jsonPath("message").value("refreshToken" + CommonErrorCode.REQUIRED_COOKIE.getMessage()));
     }
 
     /**
      * 사용자 Refresh Token 을 활용한 Access Token 재발급 실패
-     * - 실패 사유 : 유효하지 않은 JWT Token 을 사용함.
+     * - 실패 사유 : 유효하지 않은 JWT 을 사용함.
      */
     @Test
     public void Access_Token_재발급_실패_Invalid_JWT_Token() throws Exception {
@@ -237,63 +232,60 @@ public class UserAuthAPIUnitTest extends APIUnitTest {
         final String invalidJwtToken = "invalid-jwt-token";
 
         // stub
-        when(userAuthService.reissue(any(), any())).thenThrow(new CustomCommonException(ErrorCode.INVALID_JWT_TOKEN));
+        when(userAuthService.reissue(any(), any())).thenThrow(new CustomCommonException(UserErrorCode.INVALID_JWT));
 
         // when
         final ResultActions resultActions = requestReIssue(invalidJwtToken);
 
         // then
         resultActions
-                .andExpect(status().isUnauthorized())
-                .andExpect(jsonPath("httpStatus").value(ErrorCode.INVALID_JWT_TOKEN.getHttpStatus().name()))
-                .andExpect(jsonPath("errorCode").value(ErrorCode.INVALID_JWT_TOKEN.getCode()))
-                .andExpect(jsonPath("message").value(ErrorCode.INVALID_JWT_TOKEN.getMessage()));
+                .andExpect(status().is(UserErrorCode.INVALID_JWT.getHttpStatus().value()))
+                .andExpect(jsonPath("errorCode").value(UserErrorCode.INVALID_JWT.getCode()))
+                .andExpect(jsonPath("message").value(UserErrorCode.INVALID_JWT.getMessage()));
     }
 
     /**
      * 사용자 Refresh Token 을 활용한 Access Token 재발급 실패
-     * - 실패 사유 : 요청 시, Cookie 에 있는  JWT Token 의 유효기간 만료
+     * - 실패 사유 : 요청 시, Cookie 에 있는  JWT 의 유효기간 만료
      */
     @Test
-    public void Access_Token_재발급_실패_Expired_JWT_Token() throws Exception {
+    public void Access_Token_재발급_실패_Expired_JWT() throws Exception {
         // given
         final String expiredJwtToken = "expired-jwt-token";
 
         // stub
-        when(userAuthService.reissue(any(), any())).thenThrow(new CustomCommonException(ErrorCode.EXPIRED_JWT_TOKEN));
+        when(userAuthService.reissue(any(), any())).thenThrow(new CustomCommonException(UserErrorCode.EXPIRED_JWT));
 
         // when
         final ResultActions resultActions = requestReIssue(expiredJwtToken);
 
         // then
         resultActions
-                .andExpect(status().isUnauthorized())
-                .andExpect(jsonPath("httpStatus").value(ErrorCode.EXPIRED_JWT_TOKEN.getHttpStatus().name()))
-                .andExpect(jsonPath("errorCode").value(ErrorCode.EXPIRED_JWT_TOKEN.getCode()))
-                .andExpect(jsonPath("message").value(ErrorCode.EXPIRED_JWT_TOKEN.getMessage()));
+                .andExpect(status().is(UserErrorCode.EXPIRED_JWT.getHttpStatus().value()))
+                .andExpect(jsonPath("errorCode").value(UserErrorCode.EXPIRED_JWT.getCode()))
+                .andExpect(jsonPath("message").value(UserErrorCode.EXPIRED_JWT.getMessage()));
     }
 
     /**
      * 사용자 Refresh Token 을 활용한 Access Token 재발급 실패
-     * - 실패 사유 : 요청 시, Cookie 에 있는 JWT Token 에 권한 정보가 없음
+     * - 실패 사유 : 요청 시, Cookie 에 있는 JWT 에 권한 정보가 없음
      */
     @Test
-    public void Access_Token_재발급_실패_Unauthorized_JWT_Token() throws Exception {
+    public void Access_Token_재발급_실패_Unauthorized_JWT() throws Exception {
         // given
         final String unauthorizedJwtToken = "unauthorized-jwt-token";
 
         // stub
-        when(userAuthService.reissue(any(), any())).thenThrow(new CustomCommonException(ErrorCode.UNAUTHORIZED_JWT_TOKEN));
+        when(userAuthService.reissue(any(), any())).thenThrow(new CustomCommonException(UserErrorCode.UNAUTHORIZED_JWT));
 
         // when
         final ResultActions resultActions = requestReIssue(unauthorizedJwtToken);
 
         // then
         resultActions
-                .andExpect(status().isUnauthorized())
-                .andExpect(jsonPath("httpStatus").value(ErrorCode.UNAUTHORIZED_JWT_TOKEN.getHttpStatus().name()))
-                .andExpect(jsonPath("errorCode").value(ErrorCode.UNAUTHORIZED_JWT_TOKEN.getCode()))
-                .andExpect(jsonPath("message").value(ErrorCode.UNAUTHORIZED_JWT_TOKEN.getMessage()));
+                .andExpect(status().is(UserErrorCode.UNAUTHORIZED_JWT.getHttpStatus().value()))
+                .andExpect(jsonPath("errorCode").value(UserErrorCode.UNAUTHORIZED_JWT.getCode()))
+                .andExpect(jsonPath("message").value(UserErrorCode.UNAUTHORIZED_JWT.getMessage()));
     }
 
     /**
@@ -306,17 +298,16 @@ public class UserAuthAPIUnitTest extends APIUnitTest {
         final String invalidRefreshToken = "invalid-refreshToken";
 
         // stub
-        when(userAuthService.reissue(any(), any())).thenThrow(new CustomCommonException(ErrorCode.INVALID_REFRESH_JWT_TOKEN));
+        when(userAuthService.reissue(any(), any())).thenThrow(new CustomCommonException(UserErrorCode.INVALID_REFRESH_TOKEN));
 
         // when
         final ResultActions resultActions = requestReIssue(invalidRefreshToken);
 
         // then
         resultActions
-                .andExpect(status().isUnauthorized())
-                .andExpect(jsonPath("httpStatus").value(ErrorCode.INVALID_REFRESH_JWT_TOKEN.getHttpStatus().name()))
-                .andExpect(jsonPath("errorCode").value(ErrorCode.INVALID_REFRESH_JWT_TOKEN.getCode()))
-                .andExpect(jsonPath("message").value(ErrorCode.INVALID_REFRESH_JWT_TOKEN.getMessage()));
+                .andExpect(status().is(UserErrorCode.INVALID_REFRESH_TOKEN.getHttpStatus().value()))
+                .andExpect(jsonPath("errorCode").value(UserErrorCode.INVALID_REFRESH_TOKEN.getCode()))
+                .andExpect(jsonPath("message").value(UserErrorCode.INVALID_REFRESH_TOKEN.getMessage()));
     }
 
     /**
@@ -329,17 +320,16 @@ public class UserAuthAPIUnitTest extends APIUnitTest {
         final String unsupportedRefreshToken = "unsupported-refreshToken";
 
         // stub
-        when(userAuthService.reissue(any(), any())).thenThrow(new CustomCommonException(ErrorCode.UNSUPPORTED_JWT_TOKEN));
+        when(userAuthService.reissue(any(), any())).thenThrow(new CustomCommonException(UserErrorCode.UNSUPPORTED_JWT));
 
         // when
         final ResultActions resultActions = requestReIssue(unsupportedRefreshToken);
 
         // then
         resultActions
-                .andExpect(status().isUnauthorized())
-                .andExpect(jsonPath("httpStatus").value(ErrorCode.UNSUPPORTED_JWT_TOKEN.getHttpStatus().name()))
-                .andExpect(jsonPath("errorCode").value(ErrorCode.UNSUPPORTED_JWT_TOKEN.getCode()))
-                .andExpect(jsonPath("message").value(ErrorCode.UNSUPPORTED_JWT_TOKEN.getMessage()));
+                .andExpect(status().is(UserErrorCode.UNSUPPORTED_JWT.getHttpStatus().value()))
+                .andExpect(jsonPath("errorCode").value(UserErrorCode.UNSUPPORTED_JWT.getCode()))
+                .andExpect(jsonPath("message").value(UserErrorCode.UNSUPPORTED_JWT.getMessage()));
     }
 
     /**
@@ -377,10 +367,9 @@ public class UserAuthAPIUnitTest extends APIUnitTest {
 
         // then
         resultActions
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("httpStatus").value(ErrorCode.MISSING_JWT_TOKEN.getHttpStatus().name()))
-                .andExpect(jsonPath("errorCode").value(ErrorCode.MISSING_JWT_TOKEN.getCode()))
-                .andExpect(jsonPath("message").value(ErrorCode.MISSING_JWT_TOKEN.getMessage()));
+                .andExpect(status().is(UserErrorCode.MISSING_JWT.getHttpStatus().value()))
+                .andExpect(jsonPath("errorCode").value(UserErrorCode.MISSING_JWT.getCode()))
+                .andExpect(jsonPath("message").value(UserErrorCode.MISSING_JWT.getMessage()));
     }
 
     /**
@@ -394,17 +383,16 @@ public class UserAuthAPIUnitTest extends APIUnitTest {
         String invalidAccessToken = "invalid-accessToken";
 
         // stub
-        doThrow(new CustomCommonException(ErrorCode.INVALID_ACCESS_JWT_TOKEN)).when(userAuthService).logout(any());
+        doThrow(new CustomCommonException(UserErrorCode.INVALID_ACCESS_TOKEN)).when(userAuthService).logout(any());
 
         // when
         final ResultActions resultActions = requestLogout(invalidAccessToken);
 
         // then
         resultActions
-                .andExpect(status().isUnauthorized())
-                .andExpect(jsonPath("httpStatus").value(ErrorCode.INVALID_ACCESS_JWT_TOKEN.getHttpStatus().name()))
-                .andExpect(jsonPath("errorCode").value(ErrorCode.INVALID_ACCESS_JWT_TOKEN.getCode()))
-                .andExpect(jsonPath("message").value(ErrorCode.INVALID_ACCESS_JWT_TOKEN.getMessage()));
+                .andExpect(status().is(UserErrorCode.INVALID_ACCESS_TOKEN.getHttpStatus().value()))
+                .andExpect(jsonPath("errorCode").value(UserErrorCode.INVALID_ACCESS_TOKEN.getCode()))
+                .andExpect(jsonPath("message").value(UserErrorCode.INVALID_ACCESS_TOKEN.getMessage()));
     }
 
     private ResultActions requestLogin(LoginRequest request) throws Exception {

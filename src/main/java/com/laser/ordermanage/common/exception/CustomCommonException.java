@@ -3,6 +3,7 @@ package com.laser.ordermanage.common.exception;
 import com.laser.ordermanage.common.exception.dto.response.ErrorResponse;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 @Getter
 public class CustomCommonException extends RuntimeException{
@@ -22,11 +23,12 @@ public class CustomCommonException extends RuntimeException{
         this.errorCode = errorcode.getCode();
     }
 
-    public ErrorResponse toErrorResponse() {
-        return ErrorResponse.builder()
-                .httpStatus(this.httpStatus)
+    public ResponseEntity<ErrorResponse> toErrorResponse() {
+        ErrorResponse response = ErrorResponse.builder()
                 .errorCode(this.errorCode)
                 .message(this.getMessage())
                 .build();
+
+        return ResponseEntity.status(this.httpStatus).body(response);
     }
 }

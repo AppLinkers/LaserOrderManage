@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+
 @Validated
 @RequiredArgsConstructor
 @RequestMapping("/drawing")
@@ -30,7 +32,7 @@ public class DrawingAPI {
      * - 썸네일 이미지 파일 AWS S3 에 업로드
      */
     @PostMapping("")
-    public ResponseEntity<?> uploadDrawingFile(@RequestParam @ValidFile(message = "도면 파일은 필수 입력값입니다.") MultipartFile file) {
+    public ResponseEntity<?> uploadDrawingFile(@RequestParam @ValidFile(message = "도면 파일은 필수 입력값입니다.") MultipartFile file) throws IOException {
         // File 확장자 확인
         DrawingFileType fileType = DrawingFileType.ofExtension(FileUtil.getExtension(file));
 
@@ -39,19 +41,11 @@ public class DrawingAPI {
         // 도면 파일 업로드
         String drawingFileUrl = drawingService.uploadDrawingFile(file);
 
-        String thumbnailUrl;
-        if (fileType.equals(DrawingFileType.DWG) || fileType.equals(DrawingFileType.DXF)) {
-            // 썸네일 추출
-            String tempThumbnailFilePath = drawingService.extractThumbnail(file);
+        // 썸네일 추출
+        String tempThumbnailFilePath = drawingService.extractThumbnail(file, fileType);
 
-            // 썸네일 파일 업로드
-            thumbnailUrl = drawingService.uploadThumbnailFile(tempThumbnailFilePath);
-
-        } else {
-            // TODO: pdf, png, jpg, jpeg 파일 썸네일 추출 기능
-            // 썸네일 파일 업로드
-            thumbnailUrl = "https://ordermanage-drawing.s3.ap-northeast-2.amazonaws.com/ce429eb7-3319-45ba-b0b9-48bc6c77cf79_exception.png";
-        }
+        // 썸네일 파일 업로드
+        String thumbnailUrl = drawingService.uploadThumbnailFile(tempThumbnailFilePath);
 
         UploadDrawingFileResponse uploadDrawingFileResponse = UploadDrawingFileResponse.builder()
                 .thumbnailUrl(thumbnailUrl)

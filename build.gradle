@@ -66,7 +66,10 @@ dependencies {
 	implementation 'com.aspose:aspose-cad:23.7'
 
 	// imgscalr
-	implementation group: 'org.imgscalr', name: 'imgscalr-lib', version: '4.2'
+	implementation 'org.imgscalr:imgscalr-lib:4.2'
+
+	// apache PDFBox
+	implementation 'org.apache.pdfbox:pdfbox:3.0.0'
 
 	// test
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'

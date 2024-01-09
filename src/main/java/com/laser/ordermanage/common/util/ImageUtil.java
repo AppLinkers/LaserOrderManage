@@ -22,11 +22,11 @@ public class ImageUtil {
             BufferedImage bufferedImage = ImageIO.read(multipartFile.getInputStream());
 
             // resize image
-            bufferedImage = Scalr.resize(bufferedImage, Scalr.Method.AUTOMATIC, Scalr.Mode.FIT_EXACT, 500, 500, Scalr.OP_ANTIALIAS);
+            BufferedImage resizedImage = Scalr.resize(bufferedImage, Scalr.Method.AUTOMATIC, Scalr.Mode.FIT_EXACT, 500, 500, Scalr.OP_ANTIALIAS);
 
             String filePath = tempFolderPath + FileUtil.getFileNameWithoutExtension(multipartFile) + "-thumbnail.png";
 
-            ImageIO.write(bufferedImage, "png", new File(filePath));
+            ImageIO.write(resizedImage, "png", new File(filePath));
 
             return filePath;
         } catch (IOException e) {

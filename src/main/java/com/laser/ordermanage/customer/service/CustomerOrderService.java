@@ -253,7 +253,7 @@ public class CustomerOrderService {
         }
 
         if (!order.hasQuotation()) {
-            throw new CustomCommonException(OrderErrorCode.MISSING_QUOTATION);
+            throw new CustomCommonException(OrderErrorCode.NOT_FOUND_QUOTATION);
         }
 
         order.approveQuotation();

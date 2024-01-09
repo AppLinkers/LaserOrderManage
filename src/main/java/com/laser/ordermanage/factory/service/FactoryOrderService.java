@@ -170,7 +170,7 @@ public class FactoryOrderService {
         }
 
         if (!order.hasPurchaseOrder()) {
-            throw new CustomCommonException(OrderErrorCode.MISSING_PURCHASE_ORDER);
+            throw new CustomCommonException(OrderErrorCode.NOT_FOUND_PURCHASE_ORDER);
         }
 
         order.approvePurchaseOrder();

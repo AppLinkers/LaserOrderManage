@@ -2,7 +2,6 @@ package com.laser.ordermanage.customer.service;
 
 import com.laser.ordermanage.common.cloud.aws.S3Service;
 import com.laser.ordermanage.common.exception.CustomCommonException;
-import com.laser.ordermanage.common.exception.ErrorCode;
 import com.laser.ordermanage.common.mail.MailService;
 import com.laser.ordermanage.customer.domain.Customer;
 import com.laser.ordermanage.customer.domain.DeliveryAddress;
@@ -10,6 +9,7 @@ import com.laser.ordermanage.customer.dto.request.*;
 import com.laser.ordermanage.customer.dto.response.CustomerCreateOrUpdateOrderPurchaseOrderResponse;
 import com.laser.ordermanage.customer.repository.CustomerRepository;
 import com.laser.ordermanage.order.domain.*;
+import com.laser.ordermanage.order.exception.OrderErrorCode;
 import com.laser.ordermanage.order.repository.DrawingRepository;
 import com.laser.ordermanage.order.repository.OrderRepository;
 import com.laser.ordermanage.order.repository.PurchaseOrderRepository;
@@ -88,7 +88,7 @@ public class CustomerOrderService {
         Order order = orderService.getOrderById(orderId);
 
         if (!order.enableUpdateDeliveryAddress()) {
-            throw new CustomCommonException(ErrorCode.INVALID_ORDER_STAGE, order.getStage().getValue());
+            throw new CustomCommonException(OrderErrorCode.INVALID_ORDER_STAGE, order.getStage().getValue());
         }
 
         DeliveryAddress deliveryAddress = customerDeliveryAddressService.getDeliveryAddress(request.deliveryAddressId());
@@ -123,7 +123,7 @@ public class CustomerOrderService {
         Order order = orderService.getOrderById(orderId);
 
         if (!order.enableManageDrawing()) {
-            throw new CustomCommonException(ErrorCode.INVALID_ORDER_STAGE, order.getStage().getValue());
+            throw new CustomCommonException(OrderErrorCode.INVALID_ORDER_STAGE, order.getStage().getValue());
         }
 
         Drawing drawing = Drawing.builder()
@@ -168,7 +168,7 @@ public class CustomerOrderService {
         Order order = orderService.getOrderById(orderId);
 
         if (!order.enableManageDrawing()) {
-            throw new CustomCommonException(ErrorCode.INVALID_ORDER_STAGE, order.getStage().getValue());
+            throw new CustomCommonException(OrderErrorCode.INVALID_ORDER_STAGE, order.getStage().getValue());
         }
 
         Drawing drawing = drawingService.getDrawingByOrderAndId(order, drawingId);
@@ -203,11 +203,11 @@ public class CustomerOrderService {
         Order order = orderService.getOrderById(orderId);
 
         if (!order.enableManageDrawing()) {
-            throw new CustomCommonException(ErrorCode.INVALID_ORDER_STAGE, order.getStage().getValue());
+            throw new CustomCommonException(OrderErrorCode.INVALID_ORDER_STAGE, order.getStage().getValue());
         }
 
         if (drawingService.countDrawingByOrder(order).equals(1)) {
-            throw new CustomCommonException(ErrorCode.LAST_DRAWING_DELETE);
+            throw new CustomCommonException(OrderErrorCode.LAST_DRAWING_DELETE);
         }
 
         Drawing drawing = drawingService.getDrawingByOrderAndId(order, drawingId);
@@ -240,7 +240,7 @@ public class CustomerOrderService {
     @Transactional(readOnly = true)
     public void checkAuthorityOfOrder(User user, Long orderId) {
         if (!orderService.getUserEmailByOrder(orderId).equals(user.getUsername())) {
-            throw new CustomCommonException(ErrorCode.DENIED_ACCESS_TO_ENTITY, "order");
+            throw new CustomCommonException(OrderErrorCode.DENIED_ACCESS_TO_ORDER);
         }
     }
 
@@ -249,11 +249,11 @@ public class CustomerOrderService {
         Order order = orderService.getOrderById(orderId);
 
         if (!order.enableApproveQuotation()) {
-            throw new CustomCommonException(ErrorCode.INVALID_ORDER_STAGE, order.getStage().getValue());
+            throw new CustomCommonException(OrderErrorCode.INVALID_ORDER_STAGE, order.getStage().getValue());
         }
 
         if (!order.hasQuotation()) {
-            throw new CustomCommonException(ErrorCode.MISSING_QUOTATION);
+            throw new CustomCommonException(OrderErrorCode.NOT_FOUND_QUOTATION);
         }
 
         order.approveQuotation();
@@ -285,7 +285,7 @@ public class CustomerOrderService {
     public CustomerCreateOrUpdateOrderPurchaseOrderResponse createOrderPurchaseOrder(Order order, MultipartFile file, CustomerCreateOrUpdateOrderPurchaseOrderRequest request) {
         // 발주서 파일 유무 확인
         if (file == null || file.isEmpty()) {
-            throw new CustomCommonException(ErrorCode.MISSING_PURCHASE_ORDER_FILE);
+            throw new CustomCommonException(OrderErrorCode.REQUIRED_PURCHASE_ORDER_FILE);
         }
 
         String fileName = file.getOriginalFilename();

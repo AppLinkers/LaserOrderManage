@@ -4,8 +4,8 @@ import com.laser.ordermanage.common.ServiceUnitTest;
 import com.laser.ordermanage.common.cache.redis.dao.RefreshToken;
 import com.laser.ordermanage.common.cache.redis.repository.BlackListRedisRepository;
 import com.laser.ordermanage.common.cache.redis.repository.RefreshTokenRedisRepository;
+import com.laser.ordermanage.common.exception.CommonErrorCode;
 import com.laser.ordermanage.common.exception.CustomCommonException;
-import com.laser.ordermanage.common.exception.ErrorCode;
 import com.laser.ordermanage.common.security.jwt.component.JwtProvider;
 import com.laser.ordermanage.common.util.NetworkUtil;
 import com.laser.ordermanage.user.domain.UserEntity;
@@ -15,6 +15,7 @@ import com.laser.ordermanage.user.dto.request.LoginRequest;
 import com.laser.ordermanage.user.dto.request.LoginRequestBuilder;
 import com.laser.ordermanage.user.dto.response.TokenInfoResponse;
 import com.laser.ordermanage.user.dto.response.TokenInfoResponseBuilder;
+import com.laser.ordermanage.user.exception.UserErrorCode;
 import com.laser.ordermanage.user.repository.UserEntityRepository;
 import com.laser.ordermanage.user.service.UserAuthService;
 import org.assertj.core.api.Assertions;
@@ -96,7 +97,7 @@ public class UserAuthServiceUnitTest extends ServiceUnitTest {
         // when & then
         Assertions.assertThatThrownBy(() -> userAuthService.getUserByEmail(invalidUserEmail))
                 .isInstanceOf(CustomCommonException.class)
-                .hasMessage("user" + ErrorCode.NOT_FOUND_ENTITY.getMessage());
+                .hasMessage(UserErrorCode.NOT_FOUND_USER.getMessage());
     }
 
     /**
@@ -133,12 +134,12 @@ public class UserAuthServiceUnitTest extends ServiceUnitTest {
         final LoginRequest invalidLoginRequest = LoginRequestBuilder.invalidBuild();
 
         // stub
-        when(authenticationManager.authenticate(invalidLoginRequest.toAuthentication())).thenThrow(new CustomCommonException(ErrorCode.INVALID_CREDENTIALS));
+        when(authenticationManager.authenticate(invalidLoginRequest.toAuthentication())).thenThrow(new CustomCommonException(UserErrorCode.INVALID_CREDENTIALS));
 
         // when & then
         Assertions.assertThatThrownBy(() -> userAuthService.login(request, invalidLoginRequest))
                 .isInstanceOf(CustomCommonException.class)
-                .hasMessage(ErrorCode.INVALID_CREDENTIALS.getMessage());
+                .hasMessage(UserErrorCode.INVALID_CREDENTIALS.getMessage());
 
     }
 
@@ -183,7 +184,7 @@ public class UserAuthServiceUnitTest extends ServiceUnitTest {
         // when & then
         Assertions.assertThatThrownBy(() -> userAuthService.reissue(request, emptyRefreshToken))
                 .isInstanceOf(CustomCommonException.class)
-                .hasMessage(ErrorCode.INVALID_REFRESH_JWT_TOKEN.getMessage());
+                .hasMessage(UserErrorCode.INVALID_REFRESH_TOKEN.getMessage());
     }
 
     /**
@@ -201,7 +202,7 @@ public class UserAuthServiceUnitTest extends ServiceUnitTest {
         // when & then
         Assertions.assertThatThrownBy(() -> userAuthService.reissue(request, invalidRefreshToken))
                 .isInstanceOf(CustomCommonException.class)
-                .hasMessage(ErrorCode.INVALID_REFRESH_JWT_TOKEN.getMessage());
+                .hasMessage(UserErrorCode.INVALID_REFRESH_TOKEN.getMessage());
     }
 
     /**
@@ -220,7 +221,7 @@ public class UserAuthServiceUnitTest extends ServiceUnitTest {
         // when & then
         Assertions.assertThatThrownBy(() -> userAuthService.reissue(request, accessToken))
                 .isInstanceOf(CustomCommonException.class)
-                .hasMessage(ErrorCode.INVALID_REFRESH_JWT_TOKEN.getMessage());
+                .hasMessage(UserErrorCode.INVALID_REFRESH_TOKEN.getMessage());
     }
 
     /**
@@ -241,7 +242,7 @@ public class UserAuthServiceUnitTest extends ServiceUnitTest {
         // when & then
         Assertions.assertThatThrownBy(() -> userAuthService.reissue(request, invalidRefreshToken))
                 .isInstanceOf(CustomCommonException.class)
-                .hasMessage(ErrorCode.INVALID_REFRESH_JWT_TOKEN.getMessage());
+                .hasMessage(UserErrorCode.INVALID_REFRESH_TOKEN.getMessage());
     }
 
     /**
@@ -267,7 +268,7 @@ public class UserAuthServiceUnitTest extends ServiceUnitTest {
         // when & then
         Assertions.assertThatThrownBy(() -> userAuthService.reissue(request, refreshToken.getRefreshToken()))
                 .isInstanceOf(CustomCommonException.class)
-                .hasMessage(ErrorCode.INVALID_REFRESH_JWT_TOKEN.getMessage());
+                .hasMessage(UserErrorCode.INVALID_REFRESH_TOKEN.getMessage());
     }
 
     /**
@@ -305,7 +306,7 @@ public class UserAuthServiceUnitTest extends ServiceUnitTest {
         // when & then
         Assertions.assertThatThrownBy(() -> userAuthService.logout(request))
                 .isInstanceOf(CustomCommonException.class)
-                .hasMessage(ErrorCode.INVALID_ACCESS_JWT_TOKEN.getMessage());
+                .hasMessage(UserErrorCode.INVALID_ACCESS_TOKEN.getMessage());
     }
 
 
@@ -326,6 +327,6 @@ public class UserAuthServiceUnitTest extends ServiceUnitTest {
         // when & then
         Assertions.assertThatThrownBy(() -> userAuthService.logout(request))
                 .isInstanceOf(CustomCommonException.class)
-                .hasMessage(ErrorCode.INVALID_ACCESS_JWT_TOKEN.getMessage());
+                .hasMessage(UserErrorCode.INVALID_ACCESS_TOKEN.getMessage());
     }
 }

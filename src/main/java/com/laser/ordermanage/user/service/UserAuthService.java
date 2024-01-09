@@ -5,16 +5,15 @@ import com.laser.ordermanage.common.cache.redis.dao.RefreshToken;
 import com.laser.ordermanage.common.cache.redis.repository.BlackListRedisRepository;
 import com.laser.ordermanage.common.cache.redis.repository.RefreshTokenRedisRepository;
 import com.laser.ordermanage.common.exception.CustomCommonException;
-import com.laser.ordermanage.common.exception.ErrorCode;
 import com.laser.ordermanage.common.security.jwt.component.JwtProvider;
 import com.laser.ordermanage.common.util.NetworkUtil;
 import com.laser.ordermanage.user.domain.UserEntity;
 import com.laser.ordermanage.user.dto.request.LoginRequest;
 import com.laser.ordermanage.user.dto.response.TokenInfoResponse;
+import com.laser.ordermanage.user.exception.UserErrorCode;
 import com.laser.ordermanage.user.repository.UserEntityRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -37,7 +36,7 @@ public class UserAuthService {
 
     @Transactional(readOnly = true)
     public UserEntity getUserByEmail(String email) {
-        return userRepository.findFirstByEmail(email).orElseThrow(() -> new CustomCommonException(ErrorCode.NOT_FOUND_ENTITY, "user"));
+        return userRepository.findFirstByEmail(email).orElseThrow(() -> new CustomCommonException(UserErrorCode.NOT_FOUND_USER));
     }
 
     @Transactional
@@ -93,7 +92,7 @@ public class UserAuthService {
             }
         }
 
-        throw new CustomCommonException(ErrorCode.INVALID_REFRESH_JWT_TOKEN);
+        throw new CustomCommonException(UserErrorCode.INVALID_REFRESH_TOKEN);
     }
 
     public void logout(HttpServletRequest httpServletRequest) {
@@ -116,7 +115,7 @@ public class UserAuthService {
                     .build());
 
         } else {
-            throw new CustomCommonException(ErrorCode.INVALID_ACCESS_JWT_TOKEN);
+            throw new CustomCommonException(UserErrorCode.INVALID_ACCESS_TOKEN);
         }
 
     }

@@ -3,7 +3,6 @@ package com.laser.ordermanage.user.service;
 import com.laser.ordermanage.common.cache.redis.dao.ChangePasswordToken;
 import com.laser.ordermanage.common.cache.redis.repository.ChangePasswordTokenRedisRepository;
 import com.laser.ordermanage.common.exception.CustomCommonException;
-import com.laser.ordermanage.common.exception.ErrorCode;
 import com.laser.ordermanage.common.mail.MailService;
 import com.laser.ordermanage.common.paging.ListResponse;
 import com.laser.ordermanage.common.security.jwt.component.JwtProvider;
@@ -11,6 +10,7 @@ import com.laser.ordermanage.user.domain.UserEntity;
 import com.laser.ordermanage.user.dto.request.ChangePasswordRequest;
 import com.laser.ordermanage.user.dto.request.RequestPasswordChangeRequest;
 import com.laser.ordermanage.user.dto.response.GetUserEmailResponse;
+import com.laser.ordermanage.user.exception.UserErrorCode;
 import com.laser.ordermanage.user.repository.UserEntityRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -75,7 +75,7 @@ public class UserAccountService {
         String resolvedToken = (String)httpServletRequest.getAttribute("resolvedToken");
 
         if (!StringUtils.hasText(resolvedToken) || !jwtProvider.getType(resolvedToken).equals(JwtProvider.TYPE_CHANGE_PASSWORD)) {
-            throw new CustomCommonException(ErrorCode.INVALID_CHANGE_PASSWORD_JWT_TOKEN);
+            throw new CustomCommonException(UserErrorCode.INVALID_CHANGE_PASSWORD_TOKEN);
         }
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();

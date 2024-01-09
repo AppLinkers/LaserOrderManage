@@ -1,7 +1,7 @@
 package com.laser.ordermanage.user.service;
 
-import com.laser.ordermanage.common.exception.ErrorCode;
 import com.laser.ordermanage.user.domain.UserEntity;
+import com.laser.ordermanage.user.exception.UserErrorCode;
 import com.laser.ordermanage.user.repository.UserEntityRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.User;
@@ -18,7 +18,7 @@ public class CustomUserDetailService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        UserEntity user = userRepository.findFirstByEmail(username).orElseThrow(() -> new UsernameNotFoundException(ErrorCode.INVALID_CREDENTIALS.getMessage()));
+        UserEntity user = userRepository.findFirstByEmail(username).orElseThrow(() -> new UsernameNotFoundException(UserErrorCode.INVALID_CREDENTIALS.getMessage()));
 
         return createUserDetails(user);
     }

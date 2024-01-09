@@ -2,7 +2,6 @@ package com.laser.ordermanage.factory.service;
 
 import com.laser.ordermanage.common.cloud.aws.S3Service;
 import com.laser.ordermanage.common.exception.CustomCommonException;
-import com.laser.ordermanage.common.exception.ErrorCode;
 import com.laser.ordermanage.common.mail.MailService;
 import com.laser.ordermanage.customer.domain.Customer;
 import com.laser.ordermanage.factory.dto.request.FactoryCreateOrUpdateOrderQuotationRequest;
@@ -12,6 +11,7 @@ import com.laser.ordermanage.factory.dto.response.FactoryCreateOrUpdateOrderQuot
 import com.laser.ordermanage.order.domain.Acquirer;
 import com.laser.ordermanage.order.domain.Order;
 import com.laser.ordermanage.order.domain.Quotation;
+import com.laser.ordermanage.order.exception.OrderErrorCode;
 import com.laser.ordermanage.order.repository.AcquirerRepository;
 import com.laser.ordermanage.order.repository.QuotationRepository;
 import com.laser.ordermanage.order.service.OrderService;
@@ -37,7 +37,7 @@ public class FactoryOrderService {
         Order order = orderService.getOrderById(orderId);
 
         if (!order.enableUpdateIsUrgent()) {
-            throw new CustomCommonException(ErrorCode.INVALID_ORDER_STAGE, order.getStage().getValue());
+            throw new CustomCommonException(OrderErrorCode.INVALID_ORDER_STAGE, order.getStage().getValue());
         }
 
         order.updateIsUrgent(request.isUrgent());
@@ -80,7 +80,7 @@ public class FactoryOrderService {
     public FactoryCreateOrUpdateOrderQuotationResponse createOrderQuotation(Order order, MultipartFile file, FactoryCreateOrUpdateOrderQuotationRequest request) {
         // 견적서 파일 유무 확인
         if (file == null || file.isEmpty()) {
-            throw new CustomCommonException(ErrorCode.MISSING_QUOTATION_FILE);
+            throw new CustomCommonException(OrderErrorCode.REQUIRED_QUOTATION_FILE);
         }
 
         String fileName = file.getOriginalFilename();
@@ -166,11 +166,11 @@ public class FactoryOrderService {
         Order order = orderService.getOrderById(orderId);
 
         if (!order.enableApprovePurchaseOrder()) {
-            throw new CustomCommonException(ErrorCode.INVALID_ORDER_STAGE, order.getStage().getValue());
+            throw new CustomCommonException(OrderErrorCode.INVALID_ORDER_STAGE, order.getStage().getValue());
         }
 
         if (!order.hasPurchaseOrder()) {
-            throw new CustomCommonException(ErrorCode.MISSING_PURCHASE_ORDER);
+            throw new CustomCommonException(OrderErrorCode.NOT_FOUND_PURCHASE_ORDER);
         }
 
         order.approvePurchaseOrder();
@@ -202,7 +202,7 @@ public class FactoryOrderService {
         Order order = orderService.getOrderById(orderId);
 
         if (!order.enableChangeStageToProductionCompleted()) {
-            throw new CustomCommonException(ErrorCode.INVALID_ORDER_STAGE, order.getStage().getValue());
+            throw new CustomCommonException(OrderErrorCode.INVALID_ORDER_STAGE, order.getStage().getValue());
         }
 
         order.changeStageToProductionCompleted();
@@ -234,7 +234,7 @@ public class FactoryOrderService {
         Order order = orderService.getOrderById(orderId);
 
         if (!order.enableChangeStageToCompleted()) {
-            throw new CustomCommonException(ErrorCode.INVALID_ORDER_STAGE, order.getStage().getValue());
+            throw new CustomCommonException(OrderErrorCode.INVALID_ORDER_STAGE, order.getStage().getValue());
         }
 
         String acquireSignatureUrl = UriComponentsBuilder

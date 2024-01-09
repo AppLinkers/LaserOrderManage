@@ -3,8 +3,11 @@ package com.laser.ordermanage.order.service;
 import com.laser.ordermanage.common.cloud.aws.S3Service;
 import com.laser.ordermanage.common.exception.CustomCommonException;
 import com.laser.ordermanage.common.util.CADUtil;
+import com.laser.ordermanage.common.util.ImageUtil;
+import com.laser.ordermanage.common.util.PDFUtil;
 import com.laser.ordermanage.order.domain.Drawing;
 import com.laser.ordermanage.order.domain.Order;
+import com.laser.ordermanage.order.domain.type.DrawingFileType;
 import com.laser.ordermanage.order.exception.OrderErrorCode;
 import com.laser.ordermanage.order.repository.DrawingRepository;
 import lombok.RequiredArgsConstructor;
@@ -34,8 +37,13 @@ public class DrawingService {
         return drawingRepository.countByOrder(order);
     }
 
-    public String extractThumbnail(MultipartFile multipartFile) {
-        return CADUtil.extractThumbnail(multipartFile, tempFolderPath);
+    public String extractThumbnail(MultipartFile multipartFile, DrawingFileType fileType) {
+        return switch (fileType) {
+            case DWG, DXF -> CADUtil.extractThumbnail(multipartFile, tempFolderPath);
+            case PDF -> PDFUtil.extractThumbnail(multipartFile, tempFolderPath);
+            // PNG, JPG, JPEG
+            default -> ImageUtil.extractThumbnail(multipartFile, tempFolderPath);
+        };
     }
 
     public String uploadDrawingFile(MultipartFile multipartFile) {

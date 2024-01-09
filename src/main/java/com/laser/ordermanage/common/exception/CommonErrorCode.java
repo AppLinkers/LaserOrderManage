@@ -18,8 +18,6 @@ public enum CommonErrorCode implements ErrorCode {
     MISSING_COOKIE("COMMON_400_05", HttpStatus.BAD_REQUEST, " 쿠키값이 존재하지 않습니다."),
     MISSING_QUERY_PARAMETER("COMMON_400_06", HttpStatus.BAD_REQUEST, " 쿼리 파라미터 값이 존재하지 않습니다."),
 
-    REQUEST_FILE_SIZE_EXCEED("COMMON_400_07", HttpStatus.BAD_REQUEST, "요청 파일의 크기가 100MB를 초과합니다."),
-
     // 401 UNAUTHORIZED 인증 자격 정보가 유효하지 않음
     UNAUTHORIZED("COMMON_401_01", HttpStatus.UNAUTHORIZED, "인증 자격 정보가 유효하지 않습니다."),
 
@@ -32,6 +30,10 @@ public enum CommonErrorCode implements ErrorCode {
 
     // 405 METHOD_NOT_ALLOWED 허용하지 않은 Http Method
     METHOD_NOT_ALLOWED("COMMON_405_01", HttpStatus.METHOD_NOT_ALLOWED, "해당 요청에는 지원하지 않은 HTTP 메서드 입니다."),
+
+    // 413 PAYLOAD_TOO_LARGE
+    REQUEST_SIZE_EXCEEDED("COMMON_413_01", HttpStatus.PAYLOAD_TOO_LARGE, "요청의 크기가 100MB를 초과합니다."),
+    REQUEST_FILE_SIZE_EXCEEDED("COMMON_413_02", HttpStatus.PAYLOAD_TOO_LARGE, "요청 파일의 크기가 100MB를 초과합니다."),
 
     // 500 INTERNAL SERVER ERROR 서버 에러
     INTERNAL_SERVER_ERROR("COMMON_500_01", HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러 입니다."),

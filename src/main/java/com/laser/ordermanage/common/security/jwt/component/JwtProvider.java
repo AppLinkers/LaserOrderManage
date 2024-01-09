@@ -114,23 +114,23 @@ public class JwtProvider {
             Claims claims = parseClaims(token);
 
             if (claims.get(ROLE_KEY).toString().isBlank()) {
-                throw new CustomCommonException(UserErrorCode.UNAUTHORIZED_JWT_TOKEN);
+                throw new CustomCommonException(UserErrorCode.UNAUTHORIZED_JWT);
             }
 
             // access token 이 black list 에 저장되어 있는지 확인
             if (getType(token).equals(TYPE_ACCESS) && blackListRedisRepository.findByAccessToken(token).isPresent()) {
-                throw new CustomCommonException(UserErrorCode.INVALID_ACCESS_JWT_TOKEN);
+                throw new CustomCommonException(UserErrorCode.INVALID_ACCESS_TOKEN);
             }
 
             return true;
         } catch (ExpiredJwtException e) {
-            throw new CustomCommonException(UserErrorCode.EXPIRED_JWT_TOKEN);
+            throw new CustomCommonException(UserErrorCode.EXPIRED_JWT);
         } catch (UnsupportedJwtException e) {
-            throw new CustomCommonException(UserErrorCode.UNSUPPORTED_JWT_TOKEN);
+            throw new CustomCommonException(UserErrorCode.UNSUPPORTED_JWT);
         } catch (CustomCommonException e) {
             throw e;
         } catch (Exception e) {
-            throw new CustomCommonException(UserErrorCode.INVALID_JWT_TOKEN);
+            throw new CustomCommonException(UserErrorCode.INVALID_JWT);
         }
     }
 
@@ -154,7 +154,7 @@ public class JwtProvider {
             try {
                 return bearerToken.substring(7);
             } catch (StringIndexOutOfBoundsException e) {
-                throw new CustomCommonException(UserErrorCode.MISSING_JWT_TOKEN);
+                throw new CustomCommonException(UserErrorCode.MISSING_JWT);
             }
         }
 

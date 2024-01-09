@@ -2,12 +2,13 @@ package com.laser.ordermanage.common.exception;
 
 import com.laser.ordermanage.user.exception.UserErrorCode;
 import jakarta.validation.ConstraintViolationException;
+import org.apache.tomcat.util.http.fileupload.impl.FileSizeLimitExceededException;
 import org.apache.tomcat.util.http.fileupload.impl.SizeLimitExceededException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -39,9 +40,9 @@ public class GlobalExceptionHandler {
         return exception.toErrorResponse();
     }
 
-    @ExceptionHandler(AuthenticationException.class)
-    public ResponseEntity<?> handleAuthenticationException(AuthenticationException e) {
-        CustomCommonException exception = new CustomCommonException(UserErrorCode.MISSING_JWT_TOKEN);
+    @ExceptionHandler(InsufficientAuthenticationException.class)
+    public ResponseEntity<?> handleAuthenticationException(InsufficientAuthenticationException e) {
+        CustomCommonException exception = new CustomCommonException(UserErrorCode.MISSING_JWT);
         return exception.toErrorResponse();
     }
 
@@ -91,7 +92,13 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(SizeLimitExceededException.class)
     public ResponseEntity<?> handleSizeLimitExceededException(SizeLimitExceededException e) {
-        CustomCommonException exception = new CustomCommonException(CommonErrorCode.REQUEST_FILE_SIZE_EXCEED);
+        CustomCommonException exception = new CustomCommonException(CommonErrorCode.REQUEST_SIZE_EXCEEDED);
+        return exception.toErrorResponse();
+    }
+
+    @ExceptionHandler(FileSizeLimitExceededException.class)
+    public ResponseEntity<?> handleFileSizeLimitExceededException(FileSizeLimitExceededException e) {
+        CustomCommonException exception = new CustomCommonException(CommonErrorCode.REQUEST_FILE_SIZE_EXCEEDED);
         return exception.toErrorResponse();
     }
 

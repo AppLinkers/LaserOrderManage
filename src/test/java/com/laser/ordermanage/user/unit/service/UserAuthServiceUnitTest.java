@@ -184,7 +184,7 @@ public class UserAuthServiceUnitTest extends ServiceUnitTest {
         // when & then
         Assertions.assertThatThrownBy(() -> userAuthService.reissue(request, emptyRefreshToken))
                 .isInstanceOf(CustomCommonException.class)
-                .hasMessage(UserErrorCode.INVALID_REFRESH_JWT_TOKEN.getMessage());
+                .hasMessage(UserErrorCode.INVALID_REFRESH_TOKEN.getMessage());
     }
 
     /**
@@ -202,7 +202,7 @@ public class UserAuthServiceUnitTest extends ServiceUnitTest {
         // when & then
         Assertions.assertThatThrownBy(() -> userAuthService.reissue(request, invalidRefreshToken))
                 .isInstanceOf(CustomCommonException.class)
-                .hasMessage(UserErrorCode.INVALID_REFRESH_JWT_TOKEN.getMessage());
+                .hasMessage(UserErrorCode.INVALID_REFRESH_TOKEN.getMessage());
     }
 
     /**
@@ -221,7 +221,7 @@ public class UserAuthServiceUnitTest extends ServiceUnitTest {
         // when & then
         Assertions.assertThatThrownBy(() -> userAuthService.reissue(request, accessToken))
                 .isInstanceOf(CustomCommonException.class)
-                .hasMessage(UserErrorCode.INVALID_REFRESH_JWT_TOKEN.getMessage());
+                .hasMessage(UserErrorCode.INVALID_REFRESH_TOKEN.getMessage());
     }
 
     /**
@@ -242,7 +242,7 @@ public class UserAuthServiceUnitTest extends ServiceUnitTest {
         // when & then
         Assertions.assertThatThrownBy(() -> userAuthService.reissue(request, invalidRefreshToken))
                 .isInstanceOf(CustomCommonException.class)
-                .hasMessage(UserErrorCode.INVALID_REFRESH_JWT_TOKEN.getMessage());
+                .hasMessage(UserErrorCode.INVALID_REFRESH_TOKEN.getMessage());
     }
 
     /**
@@ -268,7 +268,7 @@ public class UserAuthServiceUnitTest extends ServiceUnitTest {
         // when & then
         Assertions.assertThatThrownBy(() -> userAuthService.reissue(request, refreshToken.getRefreshToken()))
                 .isInstanceOf(CustomCommonException.class)
-                .hasMessage(UserErrorCode.INVALID_REFRESH_JWT_TOKEN.getMessage());
+                .hasMessage(UserErrorCode.INVALID_REFRESH_TOKEN.getMessage());
     }
 
     /**
@@ -306,7 +306,7 @@ public class UserAuthServiceUnitTest extends ServiceUnitTest {
         // when & then
         Assertions.assertThatThrownBy(() -> userAuthService.logout(request))
                 .isInstanceOf(CustomCommonException.class)
-                .hasMessage(UserErrorCode.INVALID_ACCESS_JWT_TOKEN.getMessage());
+                .hasMessage(UserErrorCode.INVALID_ACCESS_TOKEN.getMessage());
     }
 
 
@@ -327,6 +327,6 @@ public class UserAuthServiceUnitTest extends ServiceUnitTest {
         // when & then
         Assertions.assertThatThrownBy(() -> userAuthService.logout(request))
                 .isInstanceOf(CustomCommonException.class)
-                .hasMessage(UserErrorCode.INVALID_ACCESS_JWT_TOKEN.getMessage());
+                .hasMessage(UserErrorCode.INVALID_ACCESS_TOKEN.getMessage());
     }
 }

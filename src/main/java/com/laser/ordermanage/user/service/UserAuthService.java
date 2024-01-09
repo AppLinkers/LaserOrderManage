@@ -93,7 +93,7 @@ public class UserAuthService {
             }
         }
 
-        throw new CustomCommonException(UserErrorCode.INVALID_REFRESH_JWT_TOKEN);
+        throw new CustomCommonException(UserErrorCode.INVALID_REFRESH_TOKEN);
     }
 
     public void logout(HttpServletRequest httpServletRequest) {
@@ -116,7 +116,7 @@ public class UserAuthService {
                     .build());
 
         } else {
-            throw new CustomCommonException(UserErrorCode.INVALID_ACCESS_JWT_TOKEN);
+            throw new CustomCommonException(UserErrorCode.INVALID_ACCESS_TOKEN);
         }
 
     }

@@ -80,7 +80,7 @@ public class FactoryOrderService {
     public FactoryCreateOrUpdateOrderQuotationResponse createOrderQuotation(Order order, MultipartFile file, FactoryCreateOrUpdateOrderQuotationRequest request) {
         // 견적서 파일 유무 확인
         if (file == null || file.isEmpty()) {
-            throw new CustomCommonException(OrderErrorCode.MISSING_QUOTATION_FILE);
+            throw new CustomCommonException(OrderErrorCode.REQUIRED_QUOTATION_FILE);
         }
 
         String fileName = file.getOriginalFilename();

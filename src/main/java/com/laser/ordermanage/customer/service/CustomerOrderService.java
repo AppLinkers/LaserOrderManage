@@ -286,7 +286,7 @@ public class CustomerOrderService {
     public CustomerCreateOrUpdateOrderPurchaseOrderResponse createOrderPurchaseOrder(Order order, MultipartFile file, CustomerCreateOrUpdateOrderPurchaseOrderRequest request) {
         // 발주서 파일 유무 확인
         if (file == null || file.isEmpty()) {
-            throw new CustomCommonException(OrderErrorCode.MISSING_PURCHASE_ORDER_FILE);
+            throw new CustomCommonException(OrderErrorCode.REQUIRED_PURCHASE_ORDER_FILE);
         }
 
         String fileName = file.getOriginalFilename();

@@ -26,6 +26,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<?> handleUnknownException(Exception e) {
+        e.printStackTrace();
         CustomCommonException exception = new CustomCommonException(CommonErrorCode.UNKNOWN_ERROR);
         return exception.toErrorResponse();
     }

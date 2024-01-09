@@ -52,6 +52,6 @@ public enum Ingredient {
                     .collect(Collectors.toMap(Ingredient::getValue, Function.identity())));
 
     public static Ingredient ofValue(String value) {
-        return Optional.ofNullable(valueMap.get(value)).orElseThrow(() -> new CustomCommonException(OrderErrorCode.NOT_SUPPORTED_INGREDIENT));
+        return Optional.ofNullable(valueMap.get(value)).orElseThrow(() -> new CustomCommonException(OrderErrorCode.UNSUPPORTED_INGREDIENT));
     }
 }

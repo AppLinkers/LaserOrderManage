@@ -29,6 +29,6 @@ public enum DrawingFileType {
                     .collect(Collectors.toMap(DrawingFileType::getExtension, Function.identity())));
 
     public static DrawingFileType ofExtension(String request) {
-        return Optional.ofNullable(extensionMap.get(request)).orElseThrow(() -> new CustomCommonException(OrderErrorCode.NOT_SUPPORTED_DRAWING_FILE_EXTENSION));
+        return Optional.ofNullable(extensionMap.get(request)).orElseThrow(() -> new CustomCommonException(OrderErrorCode.UNSUPPORTED_DRAWING_FILE_EXTENSION));
     }
 }

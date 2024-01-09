@@ -2,8 +2,8 @@ package com.laser.ordermanage.user.service;
 
 import com.laser.ordermanage.common.cache.redis.dao.VerifyCode;
 import com.laser.ordermanage.common.cache.redis.repository.VerifyCodeRedisRepository;
+import com.laser.ordermanage.common.exception.CommonErrorCode;
 import com.laser.ordermanage.common.exception.CustomCommonException;
-import com.laser.ordermanage.common.exception.ErrorCode;
 import com.laser.ordermanage.common.mail.MailService;
 import com.laser.ordermanage.customer.domain.Customer;
 import com.laser.ordermanage.customer.domain.DeliveryAddress;
@@ -14,6 +14,7 @@ import com.laser.ordermanage.user.dto.request.JoinCustomerRequest;
 import com.laser.ordermanage.user.dto.request.VerifyEmailRequest;
 import com.laser.ordermanage.user.dto.response.UserJoinStatusResponse;
 import com.laser.ordermanage.user.dto.type.JoinStatus;
+import com.laser.ordermanage.user.exception.UserErrorCode;
 import com.laser.ordermanage.user.repository.UserEntityRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -63,10 +64,10 @@ public class UserJoinService {
 
         if (JoinStatus.isPossible(response.status())) {
             VerifyCode verifyCode = verifyCodeRedisRepository.findById(request.email())
-                    .orElseThrow(() -> new CustomCommonException(ErrorCode.NOT_FOUND_VERIFY_CODE));
+                    .orElseThrow(() -> new CustomCommonException(UserErrorCode.NOT_FOUND_VERIFY_CODE));
 
             if (!verifyCode.getCode().equals(request.code())) {
-                throw new CustomCommonException(ErrorCode.INVALID_VERIFY_CODE);
+                throw new CustomCommonException(UserErrorCode.INVALID_VERIFY_CODE);
             }
 
             // 인증 완료 후, 인증 코드 삭제
@@ -142,7 +143,7 @@ public class UserJoinService {
             }
             return builder.toString();
         } catch (NoSuchAlgorithmException e) {
-            throw new CustomCommonException(ErrorCode.INTERNAL_SERVER_ERROR);
+            throw new CustomCommonException(CommonErrorCode.INTERNAL_SERVER_ERROR);
         }
     }
 }

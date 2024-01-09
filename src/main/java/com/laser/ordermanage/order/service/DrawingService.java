@@ -2,7 +2,7 @@ package com.laser.ordermanage.order.service;
 
 import com.laser.ordermanage.common.cloud.aws.S3Service;
 import com.laser.ordermanage.common.exception.CustomCommonException;
-import com.laser.ordermanage.common.exception.ErrorCode;
+import com.laser.ordermanage.common.exception.CommonErrorCode;
 import com.laser.ordermanage.common.util.CADUtil;
 import com.laser.ordermanage.order.domain.Drawing;
 import com.laser.ordermanage.order.domain.Order;
@@ -26,7 +26,7 @@ public class DrawingService {
 
     @Transactional(readOnly = true)
     public Drawing getDrawingByOrderAndId(Order order, Long drawingId) {
-        return drawingRepository.findFirstByOrderAndId(order, drawingId).orElseThrow(() -> new CustomCommonException(ErrorCode.NOT_FOUND_ENTITY, "drawing"));
+        return drawingRepository.findFirstByOrderAndId(order, drawingId).orElseThrow(() -> new CustomCommonException(CommonErrorCode.NOT_FOUND_ENTITY, "drawing"));
     }
 
     @Transactional(readOnly = true)

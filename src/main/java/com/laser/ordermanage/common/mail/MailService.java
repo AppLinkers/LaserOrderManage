@@ -1,7 +1,7 @@
 package com.laser.ordermanage.common.mail;
 
 import com.laser.ordermanage.common.exception.CustomCommonException;
-import com.laser.ordermanage.common.exception.ErrorCode;
+import com.laser.ordermanage.common.exception.CommonErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -21,7 +21,7 @@ public class MailService {
         try {
             emailSender.send(emailForm);
         } catch (RuntimeException e) {
-            throw new CustomCommonException(ErrorCode.UNABLE_TO_SEND_EMAIL);
+            throw new CustomCommonException(CommonErrorCode.UNABLE_TO_SEND_EMAIL);
         }
     }
 
@@ -32,7 +32,7 @@ public class MailService {
         try {
             emailSender.send(emailForm);
         } catch (RuntimeException e) {
-            throw new CustomCommonException(ErrorCode.UNABLE_TO_SEND_EMAIL);
+            throw new CustomCommonException(CommonErrorCode.UNABLE_TO_SEND_EMAIL);
         }
     }
 

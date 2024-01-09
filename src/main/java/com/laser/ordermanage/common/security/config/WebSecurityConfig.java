@@ -1,6 +1,6 @@
 package com.laser.ordermanage.common.security.config;
 
-import com.laser.ordermanage.common.exception.filter.JwtExceptionFilter;
+import com.laser.ordermanage.common.security.jwt.filter.JwtExceptionFilter;
 import com.laser.ordermanage.common.security.jwt.component.JwtProvider;
 import com.laser.ordermanage.common.security.jwt.filter.JwtAuthFilter;
 import lombok.RequiredArgsConstructor;

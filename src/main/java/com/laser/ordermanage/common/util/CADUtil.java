@@ -4,7 +4,7 @@ import com.aspose.cad.Image;
 import com.aspose.cad.imageoptions.CadRasterizationOptions;
 import com.aspose.cad.imageoptions.PngOptions;
 import com.laser.ordermanage.common.exception.CustomCommonException;
-import com.laser.ordermanage.common.exception.ErrorCode;
+import com.laser.ordermanage.common.exception.CommonErrorCode;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -33,7 +33,7 @@ public class CADUtil {
 
             return filePath;
         } catch (IOException e) {
-            throw new CustomCommonException(ErrorCode.UNABLE_TO_EXTRACT_THUMBNAIL);
+            throw new CustomCommonException(CommonErrorCode.UNABLE_TO_EXTRACT_THUMBNAIL);
         }
     }
 }

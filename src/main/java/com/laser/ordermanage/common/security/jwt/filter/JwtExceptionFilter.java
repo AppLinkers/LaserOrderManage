@@ -1,4 +1,4 @@
-package com.laser.ordermanage.common.exception.filter;
+package com.laser.ordermanage.common.security.jwt.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.laser.ordermanage.common.exception.CustomCommonException;

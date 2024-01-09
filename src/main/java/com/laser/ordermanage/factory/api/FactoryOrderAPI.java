@@ -1,7 +1,7 @@
 package com.laser.ordermanage.factory.api;
 
 import com.laser.ordermanage.common.exception.CustomCommonException;
-import com.laser.ordermanage.common.exception.ErrorCode;
+import com.laser.ordermanage.common.exception.CommonErrorCode;
 import com.laser.ordermanage.common.scheduler.service.ScheduleService;
 import com.laser.ordermanage.common.validation.constraints.ValidFile;
 import com.laser.ordermanage.factory.dto.request.FactoryCreateOrUpdateOrderQuotationRequest;
@@ -10,6 +10,7 @@ import com.laser.ordermanage.factory.dto.request.FactoryUpdateOrderIsUrgentReque
 import com.laser.ordermanage.factory.dto.response.FactoryCreateOrUpdateOrderQuotationResponse;
 import com.laser.ordermanage.factory.service.FactoryOrderService;
 import com.laser.ordermanage.order.domain.Order;
+import com.laser.ordermanage.order.exception.OrderErrorCode;
 import com.laser.ordermanage.order.service.OrderService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
@@ -65,11 +66,11 @@ public class FactoryOrderAPI {
         FactoryCreateOrUpdateOrderQuotationResponse response;
 
         if (!order.enableManageQuotation()) {
-            throw new CustomCommonException(ErrorCode.INVALID_ORDER_STAGE, order.getStage().getValue());
+            throw new CustomCommonException(OrderErrorCode.INVALID_ORDER_STAGE, order.getStage().getValue());
         }
 
         if (order.getCreatedAt().toLocalDate().isAfter(request.deliveryDate())) {
-            throw new CustomCommonException(ErrorCode.INVALID_FIELDS, "견적서의 납기일은 거래 생성일 이후이어야 합니다.");
+            throw new CustomCommonException(CommonErrorCode.INVALID_FIELDS, "견적서의 납기일은 거래 생성일 이후이어야 합니다.");
         }
 
         if (order.hasQuotation()) {
@@ -158,7 +159,7 @@ public class FactoryOrderAPI {
         Order order = orderService.getOrderById(orderId);
 
         if (!order.enableChangeStageToCompleted()) {
-            throw new CustomCommonException(ErrorCode.INVALID_ORDER_STAGE, order.getStage().getValue());
+            throw new CustomCommonException(OrderErrorCode.INVALID_ORDER_STAGE, order.getStage().getValue());
         }
 
         factoryOrderService.createOrderAcquirer(order, request, file);

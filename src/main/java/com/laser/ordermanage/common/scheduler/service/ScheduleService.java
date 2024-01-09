@@ -1,7 +1,7 @@
 package com.laser.ordermanage.common.scheduler.service;
 
 import com.laser.ordermanage.common.exception.CustomCommonException;
-import com.laser.ordermanage.common.exception.ErrorCode;
+import com.laser.ordermanage.common.exception.CommonErrorCode;
 import com.laser.ordermanage.common.scheduler.dto.request.JobRequest;
 import com.laser.ordermanage.common.scheduler.util.JobUtil;
 import com.laser.ordermanage.common.scheduler.job.ChangeStageToCompletedJob;
@@ -34,7 +34,7 @@ public class ScheduleService {
         try {
             schedulerFactoryBean.getScheduler().scheduleJob(jobDetail, trigger);
         } catch (SchedulerException e) {
-            throw new CustomCommonException(ErrorCode.INTERNAL_SERVER_ERROR);
+            throw new CustomCommonException(CommonErrorCode.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -49,7 +49,7 @@ public class ScheduleService {
             schedulerFactoryBean.getScheduler().deleteJob(jobKey);
         } catch (SchedulerException e) {
             // Trigger 해제를 실패하는 경우
-            throw new CustomCommonException(ErrorCode.INTERNAL_SERVER_ERROR);
+            throw new CustomCommonException(CommonErrorCode.INTERNAL_SERVER_ERROR);
         }
     }
 }

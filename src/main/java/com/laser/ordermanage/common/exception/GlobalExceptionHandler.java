@@ -1,5 +1,6 @@
 package com.laser.ordermanage.common.exception;
 
+import com.laser.ordermanage.user.exception.UserErrorCode;
 import jakarta.validation.ConstraintViolationException;
 import org.apache.tomcat.util.http.fileupload.impl.SizeLimitExceededException;
 import org.springframework.http.ResponseEntity;
@@ -28,19 +29,19 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity<?> handleBadCredentialException(BadCredentialsException e) {
-        CustomCommonException exception = new CustomCommonException(ErrorCode.INVALID_CREDENTIALS);
+        CustomCommonException exception = new CustomCommonException(UserErrorCode.INVALID_CREDENTIALS);
         return ResponseEntity.badRequest().body(exception.toErrorResponse());
     }
 
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<?> handleAccessDeniedException(Authentication e) {
-        CustomCommonException exception = new CustomCommonException(ErrorCode.DENIED_ACCESS);
+        CustomCommonException exception = new CustomCommonException(UserErrorCode.DENIED_ACCESS);
         return ResponseEntity.status(exception.getHttpStatus()).body(exception.toErrorResponse());
     }
 
     @ExceptionHandler(AuthenticationException.class)
     public ResponseEntity<?> handleAuthenticationException(AuthenticationException e) {
-        CustomCommonException exception = new CustomCommonException(ErrorCode.MISSING_JWT_TOKEN);
+        CustomCommonException exception = new CustomCommonException(CommonErrorCode.MISSING_JWT_TOKEN);
         return ResponseEntity.status(exception.getHttpStatus()).body(exception.toErrorResponse());
     }
 
@@ -53,7 +54,7 @@ public class GlobalExceptionHandler {
                 objectError -> sb.append(objectError.getDefaultMessage())
         );
 
-        CustomCommonException exception = new CustomCommonException(ErrorCode.INVALID_FIELDS, sb.toString());
+        CustomCommonException exception = new CustomCommonException(CommonErrorCode.INVALID_FIELDS, sb.toString());
 
         return ResponseEntity.status(exception.getHttpStatus()).body(exception.toErrorResponse());
     }
@@ -65,38 +66,38 @@ public class GlobalExceptionHandler {
                 constraintViolation -> sb.append(constraintViolation.getMessage())
         );
 
-        CustomCommonException exception = new CustomCommonException(ErrorCode.INVALID_FIELDS, sb.toString());
+        CustomCommonException exception = new CustomCommonException(CommonErrorCode.INVALID_FIELDS, sb.toString());
 
         return ResponseEntity.status(exception.getHttpStatus()).body(exception.toErrorResponse());
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<?> handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException e) {
-        CustomCommonException exception = new CustomCommonException(ErrorCode.INVALID_PARAMETER_TYPE, e.getName());
+        CustomCommonException exception = new CustomCommonException(CommonErrorCode.INVALID_PARAMETER_TYPE, e.getName());
         return ResponseEntity.status(exception.getHttpStatus()).body(exception.toErrorResponse());
     }
 
     @ExceptionHandler(MissingRequestCookieException.class)
     public ResponseEntity<?> handleMissingRequestCookieException(MissingRequestCookieException e) {
-        CustomCommonException exception = new CustomCommonException(ErrorCode.MISSING_COOKIE, e.getCookieName());
+        CustomCommonException exception = new CustomCommonException(CommonErrorCode.MISSING_COOKIE, e.getCookieName());
         return ResponseEntity.status(exception.getHttpStatus()).body(exception.toErrorResponse());
     }
 
     @ExceptionHandler(MissingServletRequestParameterException.class)
     public ResponseEntity<?> handleMissingRequestParameterException(MissingServletRequestParameterException e) {
-        CustomCommonException exception = new CustomCommonException(ErrorCode.MISSING_QUERY_PARAMETER, e.getParameterName());
+        CustomCommonException exception = new CustomCommonException(CommonErrorCode.MISSING_QUERY_PARAMETER, e.getParameterName());
         return ResponseEntity.status(exception.getHttpStatus()).body(exception.toErrorResponse());
     }
 
     @ExceptionHandler(SizeLimitExceededException.class)
     public ResponseEntity<?> handleSizeLimitExceededException(SizeLimitExceededException e) {
-        CustomCommonException exception = new CustomCommonException(ErrorCode.REQUEST_FILE_SIZE_EXCEED);
+        CustomCommonException exception = new CustomCommonException(CommonErrorCode.REQUEST_FILE_SIZE_EXCEED);
         return ResponseEntity.status(exception.getHttpStatus()).body(exception.toErrorResponse());
     }
 
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
     protected ResponseEntity<?> handleHttpRequestMethodNotSupportedException(HttpRequestMethodNotSupportedException e) {
-        CustomCommonException exception = new CustomCommonException(ErrorCode.METHOD_NOT_ALLOWED);
+        CustomCommonException exception = new CustomCommonException(CommonErrorCode.METHOD_NOT_ALLOWED);
         return ResponseEntity.status(exception.getHttpStatus()).body(exception.toErrorResponse());
     }
 }

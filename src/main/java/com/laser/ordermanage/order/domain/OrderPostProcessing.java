@@ -2,7 +2,7 @@ package com.laser.ordermanage.order.domain;
 
 import com.laser.ordermanage.common.converter.BooleanToYNConverter;
 import com.laser.ordermanage.common.exception.CustomCommonException;
-import com.laser.ordermanage.common.exception.ErrorCode;
+import com.laser.ordermanage.common.exception.CommonErrorCode;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -50,7 +50,7 @@ public class OrderPostProcessing {
                     switch (request) {
                         case "painting" -> orderPostProcessing.isPainting = true;
                         case "plating" -> orderPostProcessing.isPlating = true;
-                        default -> throw new CustomCommonException(ErrorCode.INVALID_FIELDS, "postProcessing 의 타입이 옳바르지 않습니다.");
+                        default -> throw new CustomCommonException(CommonErrorCode.INVALID_FIELDS, "postProcessing 의 타입이 옳바르지 않습니다.");
                     }
                 }
         );

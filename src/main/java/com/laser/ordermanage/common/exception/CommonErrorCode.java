@@ -26,7 +26,6 @@ public enum CommonErrorCode implements ErrorCode {
 
     // 404 NOT_FOUND 리소스가 존재하지 않음
     NOT_FOUND("COMMON_404_01", HttpStatus.NOT_FOUND, "리소스가 존재하지 않습니다."),
-    NOT_FOUND_ENTITY("COMMON_404_02", HttpStatus.NOT_FOUND, " 엔티티가 존재하지 않습니다."),
 
     // 405 METHOD_NOT_ALLOWED 허용하지 않은 Http Method
     METHOD_NOT_ALLOWED("COMMON_405_01", HttpStatus.METHOD_NOT_ALLOWED, "해당 요청에는 지원하지 않은 HTTP 메서드 입니다."),

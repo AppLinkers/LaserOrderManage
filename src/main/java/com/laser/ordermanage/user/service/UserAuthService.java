@@ -4,7 +4,6 @@ import com.laser.ordermanage.common.cache.redis.dao.BlackList;
 import com.laser.ordermanage.common.cache.redis.dao.RefreshToken;
 import com.laser.ordermanage.common.cache.redis.repository.BlackListRedisRepository;
 import com.laser.ordermanage.common.cache.redis.repository.RefreshTokenRedisRepository;
-import com.laser.ordermanage.common.exception.CommonErrorCode;
 import com.laser.ordermanage.common.exception.CustomCommonException;
 import com.laser.ordermanage.common.security.jwt.component.JwtProvider;
 import com.laser.ordermanage.common.util.NetworkUtil;
@@ -37,7 +36,7 @@ public class UserAuthService {
 
     @Transactional(readOnly = true)
     public UserEntity getUserByEmail(String email) {
-        return userRepository.findFirstByEmail(email).orElseThrow(() -> new CustomCommonException(CommonErrorCode.NOT_FOUND_ENTITY, "user"));
+        return userRepository.findFirstByEmail(email).orElseThrow(() -> new CustomCommonException(UserErrorCode.NOT_FOUND_USER));
     }
 
     @Transactional

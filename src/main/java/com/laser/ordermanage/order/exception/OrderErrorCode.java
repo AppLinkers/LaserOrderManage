@@ -20,7 +20,11 @@ public enum OrderErrorCode implements ErrorCode {
     REQUIRED_PURCHASE_ORDER_FILE("ORDER_400_08", HttpStatus.BAD_REQUEST, "발주서 최초 작성 시, 발주서 파일은 필수 사항입니다."),
 
     // 403 FORBIDDEN 인증 필요
-    DENIED_ACCESS_TO_ORDER("ORDER_403_01", HttpStatus.FORBIDDEN, "거래에 대한 접근 권한이 없습니다.");
+    DENIED_ACCESS_TO_ORDER("ORDER_403_01", HttpStatus.FORBIDDEN, "거래에 대한 접근 권한이 없습니다."),
+
+    // 404 NOT_FOUND 리소스가 존재하지 않음
+    NOT_FOUND_ORDER("ORDER_404_01", HttpStatus.NOT_FOUND, "존재하지 않는 거래 입니다."),
+    NOT_FOUND_DRAWING("ORDER_404_02", HttpStatus.NOT_FOUND, "존재하지 않는 도면 입니다.");
 
     private final String code;
     private final HttpStatus httpStatus;

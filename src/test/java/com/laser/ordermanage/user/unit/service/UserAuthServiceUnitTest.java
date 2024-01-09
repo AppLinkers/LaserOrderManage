@@ -97,7 +97,7 @@ public class UserAuthServiceUnitTest extends ServiceUnitTest {
         // when & then
         Assertions.assertThatThrownBy(() -> userAuthService.getUserByEmail(invalidUserEmail))
                 .isInstanceOf(CustomCommonException.class)
-                .hasMessage("user" + CommonErrorCode.NOT_FOUND_ENTITY.getMessage());
+                .hasMessage(UserErrorCode.NOT_FOUND_USER.getMessage());
     }
 
     /**

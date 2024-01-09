@@ -1,6 +1,5 @@
 package com.laser.ordermanage.factory.service;
 
-import com.laser.ordermanage.common.exception.CommonErrorCode;
 import com.laser.ordermanage.common.exception.CustomCommonException;
 import com.laser.ordermanage.common.paging.ListResponse;
 import com.laser.ordermanage.factory.domain.Factory;
@@ -23,7 +22,7 @@ public class FactoryOrderManagerService {
     private final OrderManagerRepository orderManagerRepository;
 
     private String getUserEmailByOrderManager(Long orderManagerId) {
-        return orderManagerRepository.findUserEmailById(orderManagerId).orElseThrow(() -> new CustomCommonException(CommonErrorCode.NOT_FOUND_ENTITY, "orderManager"));
+        return orderManagerRepository.findUserEmailById(orderManagerId).orElseThrow(() -> new CustomCommonException(FactoryErrorCode.NOT_FOUND_ORDER_MANAGER));
     }
 
     @Transactional
@@ -46,7 +45,7 @@ public class FactoryOrderManagerService {
 
     @Transactional(readOnly = true)
     public OrderManager getOrderManager(Long orderManagerId) {
-        return orderManagerRepository.findFirstById(orderManagerId).orElseThrow(() -> new CustomCommonException(CommonErrorCode.NOT_FOUND_ENTITY, "orderManager"));
+        return orderManagerRepository.findFirstById(orderManagerId).orElseThrow(() -> new CustomCommonException(FactoryErrorCode.NOT_FOUND_ORDER_MANAGER));
     }
 
     @Transactional

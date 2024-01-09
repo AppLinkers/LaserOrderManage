@@ -30,7 +30,8 @@ public enum UserErrorCode implements ErrorCode {
     DENIED_ACCESS("USER_403_01", HttpStatus.FORBIDDEN, "해당 요청에 대한 접근 권한이 없습니다."),
 
     // 404 NOT_FOUND 리소스가 존재하지 않음
-    NOT_FOUND_VERIFY_CODE("USER_404_01", HttpStatus.NOT_FOUND, "이메일에 해당하는 인증 코드가 존재하지 않습니다.");
+    NOT_FOUND_USER("USER_404_01", HttpStatus.NOT_FOUND, "존재하지 않는 사용자 입니다."),
+    NOT_FOUND_VERIFY_CODE("USER_404_02", HttpStatus.NOT_FOUND, "이메일에 해당하는 인증 코드가 존재하지 않습니다.");
 
     private final String code;
     private final HttpStatus httpStatus;

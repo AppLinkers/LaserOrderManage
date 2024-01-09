@@ -1,6 +1,5 @@
 package com.laser.ordermanage.customer.service;
 
-import com.laser.ordermanage.common.exception.CommonErrorCode;
 import com.laser.ordermanage.common.exception.CustomCommonException;
 import com.laser.ordermanage.common.paging.ListResponse;
 import com.laser.ordermanage.customer.domain.Customer;
@@ -23,7 +22,7 @@ public class CustomerDeliveryAddressService {
     private final DeliveryAddressRepository deliveryAddressRepository;
 
     private String getUserEmailByDeliveryAddress(Long deliveryAddressId) {
-        return deliveryAddressRepository.findUserEmailById(deliveryAddressId).orElseThrow(() -> new CustomCommonException(CommonErrorCode.NOT_FOUND_ENTITY, "deliveryAddress"));
+        return deliveryAddressRepository.findUserEmailById(deliveryAddressId).orElseThrow(() -> new CustomCommonException(CustomerErrorCode.NOT_FOUND_DELIVERY_ADDRESS));
     }
 
     @Transactional
@@ -57,7 +56,7 @@ public class CustomerDeliveryAddressService {
 
     @Transactional(readOnly = true)
     public DeliveryAddress getDeliveryAddress(Long deliverAddressId) {
-        return deliveryAddressRepository.findFirstById(deliverAddressId).orElseThrow(() -> new CustomCommonException(CommonErrorCode.NOT_FOUND_ENTITY, "deliveryAddress"));
+        return deliveryAddressRepository.findFirstById(deliverAddressId).orElseThrow(() -> new CustomCommonException(CustomerErrorCode.NOT_FOUND_DELIVERY_ADDRESS));
     }
 
     @Transactional

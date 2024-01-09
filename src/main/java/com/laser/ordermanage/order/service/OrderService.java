@@ -1,6 +1,5 @@
 package com.laser.ordermanage.order.service;
 
-import com.laser.ordermanage.common.exception.CommonErrorCode;
 import com.laser.ordermanage.common.exception.CustomCommonException;
 import com.laser.ordermanage.common.mail.MailService;
 import com.laser.ordermanage.common.paging.ListResponse;
@@ -35,12 +34,12 @@ public class OrderService {
 
     @Transactional(readOnly = true)
     public Order getOrderById(Long orderId) {
-        return orderRepository.findFirstById(orderId).orElseThrow(() -> new CustomCommonException(CommonErrorCode.NOT_FOUND_ENTITY, "order"));
+        return orderRepository.findFirstById(orderId).orElseThrow(() -> new CustomCommonException(OrderErrorCode.NOT_FOUND_ORDER));
     }
 
     @Transactional(readOnly = true)
     public String getUserEmailByOrder(Long orderId) {
-        return orderRepository.findUserEmailById(orderId).orElseThrow(() -> new CustomCommonException(CommonErrorCode.NOT_FOUND_ENTITY, "order"));
+        return orderRepository.findUserEmailById(orderId).orElseThrow(() -> new CustomCommonException(OrderErrorCode.NOT_FOUND_ORDER));
     }
 
     @Transactional(readOnly = true)
@@ -121,7 +120,7 @@ public class OrderService {
         Order order = getOrderById(orderId);
 
         if (!order.hasPurchaseOrder()) {
-            throw new CustomCommonException(CommonErrorCode.NOT_FOUND_ENTITY, "purchaseOrder");
+            throw new CustomCommonException(OrderErrorCode.MISSING_PURCHASE_ORDER);
         }
 
         PurchaseOrder purchaseOrder = order.getPurchaseOrder();

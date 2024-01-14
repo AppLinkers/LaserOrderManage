@@ -21,7 +21,7 @@ public class OrderAPI {
      * 거래의 상세 정보 조회
      * - 거래에 대한 현재 로그인한 회원의 접근 권한 확인 (공장 or 거래의 고객 회원)
      * - 거래 PK 기준으로 거래 상세 정보 조회
-     * - 거래 상세 정보 : 고객 정보, 거래 기본 정보, 도면 정보, 견적서 정보, 발주서 정보
+     * - 거래 상세 정보 : 고객 정보, 거래 기본 정보, 도면 정보, 견적서 정보, 발주서 정보, 인수자 정보
      */
     @GetMapping("/{order-id}/detail")
     public ResponseEntity<?> getOrderDetail(@PathVariable("order-id") Long orderId) {

@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static com.laser.ordermanage.customer.domain.QCustomer.customer;
+import static com.laser.ordermanage.order.domain.QAcquirer.acquirer;
 import static com.laser.ordermanage.order.domain.QDrawing.drawing;
 import static com.laser.ordermanage.order.domain.QOrder.order;
 import static com.laser.ordermanage.order.domain.QOrderDeliveryAddress.orderDeliveryAddress;
@@ -323,6 +324,7 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
                 .join(order.deliveryAddress, orderDeliveryAddress)
                 .leftJoin(order.quotation, quotation)
                 .leftJoin(order.purchaseOrder, purchaseOrder)
+                .leftJoin(order.acquirer, acquirer)
                 .where(order.id.eq(orderId))
                 .transform(
                         groupBy(order.id).list(
@@ -383,6 +385,13 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
                                                purchaseOrder.inspectionCondition,
                                                purchaseOrder.paymentDate,
                                                purchaseOrder.createdAt
+                                       ).skipNulls(),
+                                       new QGetAcquireResponse(
+                                               acquirer.id,
+                                               acquirer.name,
+                                               acquirer.phone,
+                                               acquirer.signatureFileName,
+                                               acquirer.signatureFileUrl
                                        ).skipNulls()
                                )
                         )

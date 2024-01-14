@@ -8,9 +8,12 @@ import com.laser.ordermanage.factory.dto.request.FactoryCreateOrUpdateOrderQuota
 import com.laser.ordermanage.factory.dto.request.FactoryCreateOrderAcquirerRequest;
 import com.laser.ordermanage.factory.dto.request.FactoryUpdateOrderIsUrgentRequest;
 import com.laser.ordermanage.factory.dto.response.FactoryCreateOrUpdateOrderQuotationResponse;
+import com.laser.ordermanage.factory.dto.response.FactoryGetOrderCustomerResponse;
 import com.laser.ordermanage.order.domain.Acquirer;
 import com.laser.ordermanage.order.domain.Order;
+import com.laser.ordermanage.order.domain.PurchaseOrder;
 import com.laser.ordermanage.order.domain.Quotation;
+import com.laser.ordermanage.factory.dto.response.FactoryGetPurchaseOrderFileResponse;
 import com.laser.ordermanage.order.exception.OrderErrorCode;
 import com.laser.ordermanage.order.repository.AcquirerRepository;
 import com.laser.ordermanage.order.repository.QuotationRepository;
@@ -321,6 +324,36 @@ public class FactoryOrderService {
         String content = sbContent.toString();
 
         mailService.sendEmail(toEmail, title, content);
+    }
+
+    @Transactional(readOnly = true)
+    public FactoryGetPurchaseOrderFileResponse getOrderPurchaseOrderFile(Long orderId) {
+        Order order = orderService.getOrderById(orderId);
+
+        if (!order.hasPurchaseOrder()) {
+            throw new CustomCommonException(OrderErrorCode.NOT_FOUND_PURCHASE_ORDER);
+        }
+
+        PurchaseOrder purchaseOrder = order.getPurchaseOrder();
+
+        return FactoryGetPurchaseOrderFileResponse.builder()
+                .id(purchaseOrder.getId())
+                .fileName(purchaseOrder.getFileName())
+                .fileUrl(purchaseOrder.getFileUrl())
+                .build();
+    }
+
+    @Transactional(readOnly = true)
+    public FactoryGetOrderCustomerResponse getOrderCustomer(Long orderId) {
+        Order order = orderService.getOrderById(orderId);
+
+        Customer customer = order.getCustomer();
+
+        return FactoryGetOrderCustomerResponse.builder()
+                .orderId(order.getId())
+                .orderName(order.getName())
+                .customer(customer)
+                .build();
     }
 
     private String uploadQuotationFile(MultipartFile multipartFile) {

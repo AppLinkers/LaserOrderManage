@@ -172,4 +172,24 @@ public class FactoryOrderAPI {
 
         return ResponseEntity.ok().build();
     }
+
+    /**
+     * 거래의 고객 정보 조회
+     * - path parameter {order-id} 에 해당하는 거래 조회
+     * - 거래의 고객 정보 조회
+     */
+    @GetMapping("/{order-id}/customer")
+    public ResponseEntity<?> getOrderCustomer(@PathVariable("order-id") Long orderId) {
+        return ResponseEntity.ok(factoryOrderService.getOrderCustomer(orderId));
+    }
+
+    /**
+     * 거래의 발주서 파일 조회
+     * - path parameter {order-id} 에 해당하는 거래 조회
+     * - 거래의 발주서 파일 조회
+     */
+    @GetMapping("/{order-id}/purchase-order/file")
+    public ResponseEntity<?> getOrderPurchaseOrderFile(@PathVariable("order-id") Long orderId) {
+        return ResponseEntity.ok(factoryOrderService.getOrderPurchaseOrderFile(orderId));
+    }
 }

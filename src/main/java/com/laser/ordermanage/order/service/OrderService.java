@@ -5,11 +5,9 @@ import com.laser.ordermanage.common.mail.MailService;
 import com.laser.ordermanage.common.paging.ListResponse;
 import com.laser.ordermanage.order.domain.Comment;
 import com.laser.ordermanage.order.domain.Order;
-import com.laser.ordermanage.order.domain.PurchaseOrder;
 import com.laser.ordermanage.order.dto.request.CreateCommentRequest;
 import com.laser.ordermanage.order.dto.response.GetCommentResponse;
 import com.laser.ordermanage.order.dto.response.GetOrderDetailResponse;
-import com.laser.ordermanage.order.dto.response.GetPurchaseOrderFileResponse;
 import com.laser.ordermanage.order.exception.OrderErrorCode;
 import com.laser.ordermanage.order.repository.CommentRepository;
 import com.laser.ordermanage.order.repository.OrderRepository;
@@ -113,22 +111,5 @@ public class OrderService {
         }
 
         throw new CustomCommonException(OrderErrorCode.DENIED_ACCESS_TO_ORDER);
-    }
-
-    @Transactional(readOnly = true)
-    public Object getOrderPurchaseOrderFile(Long orderId) {
-        Order order = getOrderById(orderId);
-
-        if (!order.hasPurchaseOrder()) {
-            throw new CustomCommonException(OrderErrorCode.NOT_FOUND_PURCHASE_ORDER);
-        }
-
-        PurchaseOrder purchaseOrder = order.getPurchaseOrder();
-
-        return GetPurchaseOrderFileResponse.builder()
-                .id(purchaseOrder.getId())
-                .fileName(purchaseOrder.getFileName())
-                .fileUrl(purchaseOrder.getFileUrl())
-                .build();
     }
 }

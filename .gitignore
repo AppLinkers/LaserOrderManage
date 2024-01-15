@@ -6,6 +6,9 @@ build
 .idea
 out
 
+### MAC ###
+.DS_Store
+
 ### Eclipse ###
 .metadata
 bin/

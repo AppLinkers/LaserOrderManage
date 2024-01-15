@@ -4,6 +4,7 @@ import com.laser.ordermanage.common.cache.redis.dao.ChangePasswordToken;
 import com.laser.ordermanage.common.cache.redis.repository.ChangePasswordTokenRedisRepository;
 import com.laser.ordermanage.common.exception.CustomCommonException;
 import com.laser.ordermanage.common.mail.MailService;
+import com.laser.ordermanage.common.mail.dto.MailRequest;
 import com.laser.ordermanage.common.paging.ListResponse;
 import com.laser.ordermanage.common.security.jwt.component.JwtProvider;
 import com.laser.ordermanage.user.domain.UserEntity;
@@ -59,14 +60,19 @@ public class UserAccountService {
                 .queryParam("token", changePasswordToken)
                 .toUriString();
 
-        String title = "비밀번호 변경 링크를 보내드립니다.";
+        String subject = "[비밀번호 변경] 비밀번호 변경 링크를 보내드립니다.";
+        String title = "비밀번호 변경";
+        String content = "아래의 비밀번호 변경 버튼을 클릭하면 비밀번호를 재설정할 수 있습니다.";
 
-        StringBuilder sbContent = new StringBuilder();
-        sbContent.append("비밀번호 변경 링크 : ")
-                .append(changePasswordLink);
-        String content = sbContent.toString();
-
-        mailService.sendEmail(user.getEmail(), title, content);
+        MailRequest mailRequest = MailRequest.builder()
+                .toEmail(user.getEmail())
+                .subject(subject)
+                .title(title)
+                .content(content)
+                .buttonText("비밀번호 변경하기")
+                .buttonUrl(changePasswordLink)
+                .build();
+        mailService.sendEmail(mailRequest);
     }
 
     @Transactional

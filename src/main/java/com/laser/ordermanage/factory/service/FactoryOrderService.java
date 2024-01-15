@@ -3,17 +3,18 @@ package com.laser.ordermanage.factory.service;
 import com.laser.ordermanage.common.cloud.aws.S3Service;
 import com.laser.ordermanage.common.exception.CustomCommonException;
 import com.laser.ordermanage.common.mail.MailService;
+import com.laser.ordermanage.common.mail.dto.MailRequest;
 import com.laser.ordermanage.customer.domain.Customer;
 import com.laser.ordermanage.factory.dto.request.FactoryCreateOrUpdateOrderQuotationRequest;
 import com.laser.ordermanage.factory.dto.request.FactoryCreateOrderAcquirerRequest;
 import com.laser.ordermanage.factory.dto.request.FactoryUpdateOrderIsUrgentRequest;
 import com.laser.ordermanage.factory.dto.response.FactoryCreateOrUpdateOrderQuotationResponse;
 import com.laser.ordermanage.factory.dto.response.FactoryGetOrderCustomerResponse;
+import com.laser.ordermanage.factory.dto.response.FactoryGetPurchaseOrderFileResponse;
 import com.laser.ordermanage.order.domain.Acquirer;
 import com.laser.ordermanage.order.domain.Order;
 import com.laser.ordermanage.order.domain.PurchaseOrder;
 import com.laser.ordermanage.order.domain.Quotation;
-import com.laser.ordermanage.factory.dto.response.FactoryGetPurchaseOrderFileResponse;
 import com.laser.ordermanage.order.exception.OrderErrorCode;
 import com.laser.ordermanage.order.repository.AcquirerRepository;
 import com.laser.ordermanage.order.repository.QuotationRepository;
@@ -36,8 +37,6 @@ public class FactoryOrderService {
     private final MailService mailService;
     private final S3Service s3Service;
 
-    private final EntityManager entityManager;
-
     @Transactional
     public Order updateOrderIsUrgent(Long orderId, FactoryUpdateOrderIsUrgentRequest request) {
         Order order = orderService.getOrderById(orderId);
@@ -55,31 +54,51 @@ public class FactoryOrderService {
     public void sendMailForUpdateOrderIsUrgent(Order order) {
         String toEmail = order.getCustomer().getUser().getEmail();
 
+        StringBuilder sbSubject = new StringBuilder();
         StringBuilder sbTitle = new StringBuilder();
         StringBuilder sbContent = new StringBuilder();
 
         if (order.getIsUrgent()) {
-            sbTitle.append("[거래 긴급 설정] ")
+            sbSubject.append("[거래 긴급 설정] ")
                     .append(order.getName())
                     .append(" 거래의 긴급이 설정 되었습니다.");
 
-            sbContent.append("고객님, ")
+            sbTitle.append("거래 긴급 설정");
+
+            sbContent.append("안녕하세요 ")
+                    .append(order.getCustomer().getName())
+                    .append(order.getCustomer().hasCompanyName() ? " - " + order.getCustomer().getCompanyName() : " ")
+                    .append("고객님,<br/>")
                     .append(order.getName())
                     .append(" 거래의 긴급이 설정 되었습니다.");
         } else {
-            sbTitle.append("[거래 긴급 설정 해제] ")
+            sbSubject.append("[거래 긴급 설정 해제] ")
                     .append(order.getName())
                     .append(" 거래의 긴급 설정이 해제 되었습니다.");
 
-            sbContent.append("고객님, ")
+            sbTitle.append("거래 긴급 설정 해제");
+
+            sbContent.append("안녕하세요 ")
+                    .append(order.getCustomer().getName())
+                    .append(order.getCustomer().hasCompanyName() ? " - " + order.getCustomer().getCompanyName() : " ")
+                    .append("고객님,<br/>")
                     .append(order.getName())
                     .append(" 거래의 긴급 설정이 해제 되었습니다.");
         }
 
+        String subject = sbSubject.toString();
         String title = sbTitle.toString();
         String content = sbContent.toString();
 
-        mailService.sendEmail(toEmail, title, content);
+        MailRequest mailRequest = MailRequest.builder()
+                .toEmail(toEmail)
+                .subject(subject)
+                .title(title)
+                .content(content)
+                .buttonText("거래 정보 확인하기")
+                .buttonUrl("https://www.kumoh.org/order/" + order.getId())
+                .build();
+        mailService.sendEmail(mailRequest);
     }
 
     @Transactional
@@ -113,19 +132,32 @@ public class FactoryOrderService {
     public void sendMailForCreateOrderQuotation(Order order) {
         String toEmail = order.getCustomer().getUser().getEmail();
 
-        StringBuilder sbTitle = new StringBuilder();
-        sbTitle.append("[거래 견적서 작성] 고객님, ")
+        StringBuilder sbSubject = new StringBuilder();
+        sbSubject.append("[거래 견적서 작성] 고객님, ")
                 .append(order.getName())
                 .append(" 거래의 견적서가 작성되었습니다.");
-        String title = sbTitle.toString();
+        String subject = sbSubject.toString();
+
+        String title = "거래 견적서 작성";
 
         StringBuilder sbContent = new StringBuilder();
-        sbContent.append("고객님, ")
+        sbContent.append("안녕하세요 ")
+                .append(order.getCustomer().getName())
+                .append(order.getCustomer().hasCompanyName() ? " - " + order.getCustomer().getCompanyName() : " ")
+                .append("고객님,<br/>")
                 .append(order.getName())
                 .append(" 거래의 견적서가 작성되었습니다.");
         String content = sbContent.toString();
 
-        mailService.sendEmail(toEmail, title, content);
+        MailRequest mailRequest = MailRequest.builder()
+                .toEmail(toEmail)
+                .subject(subject)
+                .title(title)
+                .content(content)
+                .buttonText("거래 정보 확인하기")
+                .buttonUrl("https://www.kumoh.org/order/" + order.getId())
+                .build();
+        mailService.sendEmail(mailRequest);
     }
 
     @Transactional
@@ -152,19 +184,32 @@ public class FactoryOrderService {
     public void sendMailForUpdateOrderQuotation(Order order) {
         String toEmail = order.getCustomer().getUser().getEmail();
 
-        StringBuilder sbTitle = new StringBuilder();
-        sbTitle.append("[거래 견적서 작성] 고객님, ")
+        StringBuilder sbSubject = new StringBuilder();
+        sbSubject.append("[거래 견적서 수정] 고객님, ")
                 .append(order.getName())
                 .append(" 거래의 견적서가 수정되었습니다.");
-        String title = sbTitle.toString();
+        String subject = sbSubject.toString();
+
+        String title = "거래 견적서 수정";
 
         StringBuilder sbContent = new StringBuilder();
-        sbContent.append("고객님, ")
+        sbContent.append("안녕하세요 ")
+                .append(order.getCustomer().getName())
+                .append(order.getCustomer().hasCompanyName() ? " - " + order.getCustomer().getCompanyName() : " ")
+                .append("고객님,<br/>")
                 .append(order.getName())
                 .append(" 거래의 견적서가 수정되었습니다.");
         String content = sbContent.toString();
 
-        mailService.sendEmail(toEmail, title, content);
+        MailRequest mailRequest = MailRequest.builder()
+                .toEmail(toEmail)
+                .subject(subject)
+                .title(title)
+                .content(content)
+                .buttonText("거래 정보 확인하기")
+                .buttonUrl("https://www.kumoh.org/order/" + order.getId())
+                .build();
+        mailService.sendEmail(mailRequest);
     }
 
     @Transactional
@@ -188,19 +233,32 @@ public class FactoryOrderService {
     public void sendEmailForApprovePurchaseOrder(Order order) {
         String toEmail = order.getCustomer().getUser().getEmail();
 
-        StringBuilder sbTitle = new StringBuilder();
-        sbTitle.append("[거래 발주서 승인] 고객님, ")
+        StringBuilder sbSubject = new StringBuilder();
+        sbSubject.append("[거래 발주서 승인] 고객님, ")
                 .append(order.getName())
                 .append(" 거래의 발주서가 승인되었습니다.");
-        String title = sbTitle.toString();
+        String subject = sbSubject.toString();
+
+        String title = "거래 발주서 승인";
 
         StringBuilder sbContent = new StringBuilder();
-        sbContent.append("고객님, ")
+        sbContent.append("안녕하세요 ")
+                .append(order.getCustomer().getName())
+                .append(order.getCustomer().hasCompanyName() ? " - " + order.getCustomer().getCompanyName() : " ")
+                .append("고객님,<br/>")
                 .append(order.getName())
                 .append(" 거래의 발주서가 승인되었습니다.");
         String content = sbContent.toString();
 
-        mailService.sendEmail(toEmail, title, content);
+        MailRequest mailRequest = MailRequest.builder()
+                .toEmail(toEmail)
+                .subject(subject)
+                .title(title)
+                .content(content)
+                .buttonText("거래 정보 확인하기")
+                .buttonUrl("https://www.kumoh.org/order/" + order.getId())
+                .build();
+        mailService.sendEmail(mailRequest);
     }
 
     @Transactional
@@ -220,19 +278,32 @@ public class FactoryOrderService {
     public void sendEmailForChangeStageToProductionCompleted(Order order) {
         String toEmail = order.getCustomer().getUser().getEmail();
 
-        StringBuilder sbTitle = new StringBuilder();
-        sbTitle.append("[거래 제작 완료] 고객님, ")
+        StringBuilder sbSubject = new StringBuilder();
+        sbSubject.append("[거래 제작 완료] 고객님, ")
                 .append(order.getName())
                 .append(" 거래의 제작이 완료되었습니다.");
-        String title = sbTitle.toString();
+        String subject = sbSubject.toString();
+
+        String title = "거래 제작 완료";
 
         StringBuilder sbContent = new StringBuilder();
-        sbContent.append("고객님, ")
+        sbContent.append("안녕하세요 ")
+                .append(order.getCustomer().getName())
+                .append(order.getCustomer().hasCompanyName() ? " - " + order.getCustomer().getCompanyName() : " ")
+                .append("고객님,<br/>")
                 .append(order.getName())
                 .append(" 거래의 제작이 완료되었습니다.");
         String content = sbContent.toString();
 
-        mailService.sendEmail(toEmail, title, content);
+        MailRequest mailRequest = MailRequest.builder()
+                .toEmail(toEmail)
+                .subject(subject)
+                .title(title)
+                .content(content)
+                .buttonText("거래 정보 확인하기")
+                .buttonUrl("https://www.kumoh.org/order/" + order.getId())
+                .build();
+        mailService.sendEmail(mailRequest);
     }
 
     @Transactional(readOnly = true)
@@ -249,20 +320,32 @@ public class FactoryOrderService {
                 .buildAndExpand(order.getId())
                 .toUriString();
 
-        StringBuilder sbTitle = new StringBuilder();
-        sbTitle.append("[거래 품목 확인 및 인수 서명 요청] ")
+        StringBuilder sbSubject = new StringBuilder();
+        sbSubject.append("[거래 품목 확인 및 인수 서명 요청] ")
                 .append(order.getCustomer().getName())
                 .append(" - ")
                 .append(order.getName())
                 .append(" 거래의 품목을 확인 후 인수자의 서명을 받아주세요.");
-        String title = sbTitle.toString();
+        String subject = sbSubject.toString();
+
+        String title = "거래 품목 확인 및 인수 서명 요청";
 
         StringBuilder sbContent = new StringBuilder();
-        sbContent.append("거래 확인 및 인수자 서명 링크 : ")
-                .append(acquireSignatureUrl);
+        sbContent.append(order.getCustomer().getName())
+                .append(order.getCustomer().hasCompanyName() ? " - " + order.getCustomer().getCompanyName() : " ")
+                .append("고객님의, ")
+                .append(order.getName())
+                .append(" 거래에 대한 품목 확인 및 인수자 서명을 받아주세요.");
         String content = sbContent.toString();
 
-        mailService.sendEmailToFactory(title, content);
+        MailRequest mailRequest = MailRequest.builderToFactory()
+                .subject(subject)
+                .title(title)
+                .content(content)
+                .buttonText("서명 링크 이동")
+                .buttonUrl(acquireSignatureUrl)
+                .buildToFactory();
+        mailService.sendEmail(mailRequest);
     }
 
     @Transactional
@@ -303,27 +386,40 @@ public class FactoryOrderService {
     public void sendEmailForChangeStageToCompleted(Order order) {
         String toEmail = order.getCustomer().getUser().getEmail();
 
-        StringBuilder sbTitle = new StringBuilder();
-        sbTitle.append("[거래 완료] 고객님, ")
+        StringBuilder sbSubject = new StringBuilder();
+        sbSubject.append("[거래 완료] 고객님, ")
                 .append(order.getName())
                 .append(" 거래가 완료되었습니다.");
-        String title = sbTitle.toString();
+        String subject = sbSubject.toString();
+
+        String title = "거래 완료";
 
         StringBuilder sbContent = new StringBuilder();
-        sbContent.append("고객님, ")
+        sbContent.append("안녕하세요 ")
+                .append(order.getCustomer().getName())
+                .append(order.getCustomer().hasCompanyName() ? " - " + order.getCustomer().getCompanyName() : " ")
+                .append("고객님,<br/>")
                 .append(order.getName())
-                .append(" 거래가 완료되었습니다.\n");
+                .append(" 거래가 완료되었습니다.");
 
         if (order.hasAcquirer()) {
-            sbContent.append("인수자 정보\n이름 : ")
+            sbContent.append("<br/><br/>인수자 정보<br/>이름 : ")
                     .append(order.getAcquirer().getName())
-                    .append("\n핸드폰 번호 : ")
+                    .append("<br/>핸드폰 번호 : ")
                     .append(order.getAcquirer().getPhone());
         }
 
         String content = sbContent.toString();
 
-        mailService.sendEmail(toEmail, title, content);
+        MailRequest mailRequest = MailRequest.builder()
+                .toEmail(toEmail)
+                .subject(subject)
+                .title(title)
+                .content(content)
+                .buttonText("거래 정보 확인하기")
+                .buttonUrl("https://www.kumoh.org/order/" + order.getId())
+                .build();
+        mailService.sendEmail(mailRequest);
     }
 
     @Transactional(readOnly = true)

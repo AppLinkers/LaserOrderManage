@@ -5,6 +5,7 @@ import com.laser.ordermanage.common.cache.redis.repository.VerifyCodeRedisReposi
 import com.laser.ordermanage.common.exception.CommonErrorCode;
 import com.laser.ordermanage.common.exception.CustomCommonException;
 import com.laser.ordermanage.common.mail.MailService;
+import com.laser.ordermanage.common.mail.dto.MailRequest;
 import com.laser.ordermanage.customer.domain.Customer;
 import com.laser.ordermanage.customer.domain.DeliveryAddress;
 import com.laser.ordermanage.customer.repository.DeliveryAddressRepository;
@@ -42,9 +43,25 @@ public class UserJoinService {
         UserJoinStatusResponse response = checkDuplicatedEmail(email);
 
         if (JoinStatus.isPossible(response.status())) {
-            String title = "금오 M.T 회원가입 이메일 인증 번호";
+            String subject = "[이메일 인증] 회원가입 이메일 인증 번호";
+            String title = "이메일 인증";
+
+            StringBuilder sbContent = new StringBuilder();
+            sbContent.append("가입 화면에서 아래 인증번호를 입력해주세요.<br/>");
             String verifyCode = createVerifyCode();
-            mailService.sendEmail(email, title, verifyCode);
+            sbContent.append(verifyCode);
+            String content = sbContent.toString();
+
+            MailRequest mailRequest = MailRequest.builder()
+                    .toEmail(email)
+                    .subject(subject)
+                    .title(title)
+                    .content(content)
+                    .buttonText("금오 레이저")
+                    .buttonUrl("https://www.kumoh.org/")
+                    .build();
+            mailService.sendEmail(mailRequest);
+
             // 이메일 인증번호 Redis 에 저장
             verifyCodeRedisRepository.save(
                     VerifyCode.builder()

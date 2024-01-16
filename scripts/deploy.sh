@@ -72,3 +72,4 @@ else
       echo "blue 중단 완료 : $(date +%Y)-$(date +%m)-$(date +%d) $(date +%H):$(date +%M):$(date +%S)" >> /home/ubuntu/deploy.log
   fi
 fi
+echo "===================== 배포 완료 ====================="

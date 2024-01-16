@@ -24,7 +24,8 @@ public enum OrderErrorCode implements ErrorCode {
     NOT_FOUND_ORDER("ORDER_404_01", HttpStatus.NOT_FOUND, "존재하지 않는 거래 입니다."),
     NOT_FOUND_DRAWING("ORDER_404_02", HttpStatus.NOT_FOUND, "존재하지 않는 도면 입니다."),
     NOT_FOUND_QUOTATION("ORDER_404_03", HttpStatus.NOT_FOUND, "거래의 견적서가 존재하지 않습니다."),
-    NOT_FOUND_PURCHASE_ORDER("ORDER_404_04", HttpStatus.NOT_FOUND, "거래의 발주서가 존재하지 않습니다.");
+    NOT_FOUND_PURCHASE_ORDER("ORDER_404_04", HttpStatus.NOT_FOUND, "거래의 발주서가 존재하지 않습니다."),
+    NOT_FOUND_COMMENT("ORDER_404_05", HttpStatus.NOT_FOUND, "존재하지 않는 댓글 입니다.");
 
     private final String code;
     private final HttpStatus httpStatus;

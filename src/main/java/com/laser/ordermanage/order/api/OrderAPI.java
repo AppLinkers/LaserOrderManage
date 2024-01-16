@@ -2,6 +2,7 @@ package com.laser.ordermanage.order.api;
 
 import com.laser.ordermanage.order.domain.Comment;
 import com.laser.ordermanage.order.dto.request.CreateCommentRequest;
+import com.laser.ordermanage.order.service.OrderMailService;
 import com.laser.ordermanage.order.service.OrderService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 public class OrderAPI {
 
     private final OrderService orderService;
+    private final OrderMailService orderMailService;
 
     /**
      * 거래의 상세 정보 조회
@@ -64,9 +66,9 @@ public class OrderAPI {
 
         orderService.checkAuthorityCustomerOfOrderOrFactory(user, orderId);
 
-        Comment comment = orderService.createOrderComment(user.getUsername(), orderId, request);
+        Long commentId = orderService.createOrderComment(user.getUsername(), orderId, request);
 
-        orderService.sendEmailForCreateOrderComment(comment);
+        orderMailService.sendEmailForCreateOrderComment(commentId);
 
         return ResponseEntity.ok().build();
     }

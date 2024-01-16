@@ -2,7 +2,6 @@ package com.laser.ordermanage.customer.service;
 
 import com.laser.ordermanage.common.cloud.aws.S3Service;
 import com.laser.ordermanage.common.exception.CustomCommonException;
-import com.laser.ordermanage.common.mail.MailService;
 import com.laser.ordermanage.customer.domain.Customer;
 import com.laser.ordermanage.customer.domain.DeliveryAddress;
 import com.laser.ordermanage.customer.dto.request.*;
@@ -36,7 +35,6 @@ public class CustomerOrderService {
     private final OrderService orderService;
     private final CustomerDeliveryAddressService customerDeliveryAddressService;
     private final DrawingService drawingService;
-    private final MailService mailService;
     private final S3Service s3Service;
 
     @Transactional
@@ -84,7 +82,7 @@ public class CustomerOrderService {
     }
 
     @Transactional
-    public Order updateOrderDeliveryAddress(Long orderId, CustomerUpdateOrderDeliveryAddressRequest request) {
+    public void updateOrderDeliveryAddress(Long orderId, CustomerUpdateOrderDeliveryAddressRequest request) {
         Order order = orderService.getOrderById(orderId);
 
         if (!order.enableUpdateDeliveryAddress()) {
@@ -94,32 +92,10 @@ public class CustomerOrderService {
         DeliveryAddress deliveryAddress = customerDeliveryAddressService.getDeliveryAddress(request.deliveryAddressId());
 
         order.updateDeliveryAddress(deliveryAddress);
-
-        return order;
-    }
-
-    @Transactional(readOnly = true)
-    public void sendEmailForUpdateOrderDeliveryAddress(Order order) {
-        StringBuilder sbTitle = new StringBuilder();
-        sbTitle.append("[거래 배송지 수정] ")
-                .append(order.getCustomer().getName())
-                .append(" - ")
-                .append(order.getName())
-                .append(" 거래의 배송지가 수정되었습니다.");
-        String title = sbTitle.toString();
-
-        StringBuilder sbContent = new StringBuilder();
-        sbContent.append(order.getCustomer().getName())
-                .append(" 고객님의 ")
-                .append(order.getName())
-                .append(" 거래 배송지가 수정되었습니다.");
-        String content = sbContent.toString();
-
-        mailService.sendEmailToFactory(title, content);
     }
 
     @Transactional
-    public Drawing createOrderDrawing(Long orderId, CustomerCreateDrawingRequest request) {
+    public Long createOrderDrawing(Long orderId, CustomerCreateDrawingRequest request) {
         Order order = orderService.getOrderById(orderId);
 
         if (!order.enableManageDrawing()) {
@@ -140,31 +116,11 @@ public class CustomerOrderService {
 
         Drawing savedDrawing = drawingRepository.save(drawing);
 
-        return savedDrawing;
-    }
-
-    @Transactional(readOnly = true)
-    public void sendEmailForCreateOrderDrawing(Order order) {
-        StringBuilder sbTitle = new StringBuilder();
-        sbTitle.append("[거래 도면 추가] ")
-                .append(order.getCustomer().getName())
-                .append(" - ")
-                .append(order.getName())
-                .append(" 거래의 도면이 추가되었습니다.");
-        String title = sbTitle.toString();
-
-        StringBuilder sbContent = new StringBuilder();
-        sbContent.append(order.getCustomer().getName())
-                .append(" 고객님의 ")
-                .append(order.getName())
-                .append(" 거래 도면이 추가되었습니다.");
-        String content = sbContent.toString();
-
-        mailService.sendEmailToFactory(title, content);
+        return savedDrawing.getId();
     }
 
     @Transactional
-    public Order updateOrderDrawing(Long orderId, Long drawingId, CustomerUpdateDrawingRequest request) {
+    public void updateOrderDrawing(Long orderId, Long drawingId, CustomerUpdateDrawingRequest request) {
         Order order = orderService.getOrderById(orderId);
 
         if (!order.enableManageDrawing()) {
@@ -174,32 +130,10 @@ public class CustomerOrderService {
         Drawing drawing = drawingService.getDrawingByOrderAndId(order, drawingId);
 
         drawing.updateDrawingProperties(request);
-
-        return order;
-    }
-
-    @Transactional(readOnly = true)
-    public void sendEmailForUpdateOrderDrawing(Order order) {
-        StringBuilder sbTitle = new StringBuilder();
-        sbTitle.append("[거래 도면 항목 수정] ")
-                .append(order.getCustomer().getName())
-                .append(" - ")
-                .append(order.getName())
-                .append(" 거래의 도면 항목이 수정되었습니다.");
-        String title = sbTitle.toString();
-
-        StringBuilder sbContent = new StringBuilder();
-        sbContent.append(order.getCustomer().getName())
-                .append(" 고객님의 ")
-                .append(order.getName())
-                .append(" 거래 도면 항목이 수정되었습니다.");
-        String content = sbContent.toString();
-
-        mailService.sendEmailToFactory(title, content);
     }
 
     @Transactional
-    public Order deleteOrderDrawing(Long orderId, Long drawingId) {
+    public void deleteOrderDrawing(Long orderId, Long drawingId) {
         Order order = orderService.getOrderById(orderId);
 
         if (!order.enableManageDrawing()) {
@@ -213,28 +147,6 @@ public class CustomerOrderService {
         Drawing drawing = drawingService.getDrawingByOrderAndId(order, drawingId);
 
         drawingRepository.delete(drawing);
-
-        return order;
-    }
-
-    @Transactional(readOnly = true)
-    public void sendEmailForDeleteOrderDrawing(Order order) {
-        StringBuilder sbTitle = new StringBuilder();
-        sbTitle.append("[거래 도면 삭제] ")
-                .append(order.getCustomer().getName())
-                .append(" - ")
-                .append(order.getName())
-                .append(" 거래의 도면이 삭제되었습니다.");
-        String title = sbTitle.toString();
-
-        StringBuilder sbContent = new StringBuilder();
-        sbContent.append(order.getCustomer().getName())
-                .append(" 고객님의 ")
-                .append(order.getName())
-                .append(" 거래 도면이 삭제되었습니다.");
-        String content = sbContent.toString();
-
-        mailService.sendEmailToFactory(title, content);
     }
 
     @Transactional(readOnly = true)
@@ -245,7 +157,7 @@ public class CustomerOrderService {
     }
 
     @Transactional
-    public Order approveQuotation(Long orderId) {
+    public void approveQuotation(Long orderId) {
         Order order = orderService.getOrderById(orderId);
 
         if (!order.enableApproveQuotation()) {
@@ -257,32 +169,12 @@ public class CustomerOrderService {
         }
 
         order.approveQuotation();
-
-        return order;
-    }
-
-    @Transactional(readOnly = true)
-    public void sendEmailForApproveQuotation(Order order) {
-        StringBuilder sbTitle = new StringBuilder();
-        sbTitle.append("[거래 견적서 승인] ")
-                .append(order.getCustomer().getName())
-                .append(" - ")
-                .append(order.getName())
-                .append(" 거래의 견적서가 승인되었습니다.");
-        String title = sbTitle.toString();
-
-        StringBuilder sbContent = new StringBuilder();
-        sbContent.append(order.getCustomer().getName())
-                .append(" 고객님의 ")
-                .append(order.getName())
-                .append(" 거래 견적서가 승인되었습니다.");
-        String content = sbContent.toString();
-
-        mailService.sendEmailToFactory(title, content);
     }
 
     @Transactional
-    public CustomerCreateOrUpdateOrderPurchaseOrderResponse createOrderPurchaseOrder(Order order, MultipartFile file, CustomerCreateOrUpdateOrderPurchaseOrderRequest request) {
+    public CustomerCreateOrUpdateOrderPurchaseOrderResponse createOrderPurchaseOrder(Long orderId, MultipartFile file, CustomerCreateOrUpdateOrderPurchaseOrderRequest request) {
+        Order order = orderService.getOrderById(orderId);
+
         // 발주서 파일 유무 확인
         if (file == null || file.isEmpty()) {
             throw new CustomCommonException(OrderErrorCode.REQUIRED_PURCHASE_ORDER_FILE);
@@ -309,28 +201,9 @@ public class CustomerOrderService {
         return CustomerCreateOrUpdateOrderPurchaseOrderResponse.from(savedPurchaseOrder);
     }
 
-    @Transactional(readOnly = true)
-    public void sendMailForCreateOrderPurchaseOrder(Order order) {
-        StringBuilder sbTitle = new StringBuilder();
-        sbTitle.append("[거래 발주서 작성] ")
-                .append(order.getCustomer().getName())
-                .append(" - ")
-                .append(order.getName())
-                .append(" 거래의 발주서가 작성되었습니다.");
-        String title = sbTitle.toString();
-
-        StringBuilder sbContent = new StringBuilder();
-        sbContent.append(order.getCustomer().getName())
-                .append(" 고객님의 ")
-                .append(order.getName())
-                .append(" 거래 발주서가 작성되었습니다.");
-        String content = sbContent.toString();
-
-        mailService.sendEmailToFactory(title, content);
-    }
-
     @Transactional
-    public CustomerCreateOrUpdateOrderPurchaseOrderResponse updateOrderPurchaseOrder(Order order, MultipartFile file, CustomerCreateOrUpdateOrderPurchaseOrderRequest request) {
+    public CustomerCreateOrUpdateOrderPurchaseOrderResponse updateOrderPurchaseOrder(Long orderId, MultipartFile file, CustomerCreateOrUpdateOrderPurchaseOrderRequest request) {
+        Order order = orderService.getOrderById(orderId);
         PurchaseOrder purchaseOrder = order.getPurchaseOrder();
 
         // 발주서 파일 유무 확인
@@ -347,26 +220,6 @@ public class CustomerOrderService {
         purchaseOrder.updateProperties(request);
 
         return CustomerCreateOrUpdateOrderPurchaseOrderResponse.from(purchaseOrder);
-    }
-
-    @Transactional(readOnly = true)
-    public void sendMailForUpdateOrderPurchaseOrder(Order order) {
-        StringBuilder sbTitle = new StringBuilder();
-        sbTitle.append("[거래 발주서 수정] ")
-                .append(order.getCustomer().getName())
-                .append(" - ")
-                .append(order.getName())
-                .append(" 거래의 발주서가 수정되었습니다.");
-        String title = sbTitle.toString();
-
-        StringBuilder sbContent = new StringBuilder();
-        sbContent.append(order.getCustomer().getName())
-                .append(" 고객님의 ")
-                .append(order.getName())
-                .append(" 거래 발주서가 수정되었습니다.");
-        String content = sbContent.toString();
-
-        mailService.sendEmailToFactory(title, content);
     }
 
     private String uploadPurchaseOrderFile(MultipartFile file) {

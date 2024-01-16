@@ -2,28 +2,25 @@ package com.laser.ordermanage.factory.service;
 
 import com.laser.ordermanage.common.cloud.aws.S3Service;
 import com.laser.ordermanage.common.exception.CustomCommonException;
-import com.laser.ordermanage.common.mail.MailService;
 import com.laser.ordermanage.customer.domain.Customer;
 import com.laser.ordermanage.factory.dto.request.FactoryCreateOrUpdateOrderQuotationRequest;
 import com.laser.ordermanage.factory.dto.request.FactoryCreateOrderAcquirerRequest;
 import com.laser.ordermanage.factory.dto.request.FactoryUpdateOrderIsUrgentRequest;
 import com.laser.ordermanage.factory.dto.response.FactoryCreateOrUpdateOrderQuotationResponse;
 import com.laser.ordermanage.factory.dto.response.FactoryGetOrderCustomerResponse;
+import com.laser.ordermanage.factory.dto.response.FactoryGetPurchaseOrderFileResponse;
 import com.laser.ordermanage.order.domain.Acquirer;
 import com.laser.ordermanage.order.domain.Order;
 import com.laser.ordermanage.order.domain.PurchaseOrder;
 import com.laser.ordermanage.order.domain.Quotation;
-import com.laser.ordermanage.factory.dto.response.FactoryGetPurchaseOrderFileResponse;
 import com.laser.ordermanage.order.exception.OrderErrorCode;
 import com.laser.ordermanage.order.repository.AcquirerRepository;
 import com.laser.ordermanage.order.repository.QuotationRepository;
 import com.laser.ordermanage.order.service.OrderService;
-import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.util.UriComponentsBuilder;
 
 @RequiredArgsConstructor
 @Service
@@ -33,13 +30,10 @@ public class FactoryOrderService {
     private final AcquirerRepository acquirerRepository;
 
     private final OrderService orderService;
-    private final MailService mailService;
     private final S3Service s3Service;
 
-    private final EntityManager entityManager;
-
     @Transactional
-    public Order updateOrderIsUrgent(Long orderId, FactoryUpdateOrderIsUrgentRequest request) {
+    public void updateOrderIsUrgent(Long orderId, FactoryUpdateOrderIsUrgentRequest request) {
         Order order = orderService.getOrderById(orderId);
 
         if (!order.enableUpdateIsUrgent()) {
@@ -47,43 +41,11 @@ public class FactoryOrderService {
         }
 
         order.updateIsUrgent(request.isUrgent());
-
-        return order;
-    }
-
-    @Transactional(readOnly = true)
-    public void sendMailForUpdateOrderIsUrgent(Order order) {
-        String toEmail = order.getCustomer().getUser().getEmail();
-
-        StringBuilder sbTitle = new StringBuilder();
-        StringBuilder sbContent = new StringBuilder();
-
-        if (order.getIsUrgent()) {
-            sbTitle.append("[거래 긴급 설정] ")
-                    .append(order.getName())
-                    .append(" 거래의 긴급이 설정 되었습니다.");
-
-            sbContent.append("고객님, ")
-                    .append(order.getName())
-                    .append(" 거래의 긴급이 설정 되었습니다.");
-        } else {
-            sbTitle.append("[거래 긴급 설정 해제] ")
-                    .append(order.getName())
-                    .append(" 거래의 긴급 설정이 해제 되었습니다.");
-
-            sbContent.append("고객님, ")
-                    .append(order.getName())
-                    .append(" 거래의 긴급 설정이 해제 되었습니다.");
-        }
-
-        String title = sbTitle.toString();
-        String content = sbContent.toString();
-
-        mailService.sendEmail(toEmail, title, content);
     }
 
     @Transactional
-    public FactoryCreateOrUpdateOrderQuotationResponse createOrderQuotation(Order order, MultipartFile file, FactoryCreateOrUpdateOrderQuotationRequest request) {
+    public FactoryCreateOrUpdateOrderQuotationResponse createOrderQuotation(Long orderId, MultipartFile file, FactoryCreateOrUpdateOrderQuotationRequest request) {
+        Order order = orderService.getOrderById(orderId);
         // 견적서 파일 유무 확인
         if (file == null || file.isEmpty()) {
             throw new CustomCommonException(OrderErrorCode.REQUIRED_QUOTATION_FILE);
@@ -109,27 +71,9 @@ public class FactoryOrderService {
         return FactoryCreateOrUpdateOrderQuotationResponse.from(savedQuotation);
     }
 
-    @Transactional(readOnly = true)
-    public void sendMailForCreateOrderQuotation(Order order) {
-        String toEmail = order.getCustomer().getUser().getEmail();
-
-        StringBuilder sbTitle = new StringBuilder();
-        sbTitle.append("[거래 견적서 작성] 고객님, ")
-                .append(order.getName())
-                .append(" 거래의 견적서가 작성되었습니다.");
-        String title = sbTitle.toString();
-
-        StringBuilder sbContent = new StringBuilder();
-        sbContent.append("고객님, ")
-                .append(order.getName())
-                .append(" 거래의 견적서가 작성되었습니다.");
-        String content = sbContent.toString();
-
-        mailService.sendEmail(toEmail, title, content);
-    }
-
     @Transactional
-    public FactoryCreateOrUpdateOrderQuotationResponse updateOrderQuotation(Order order, MultipartFile file, FactoryCreateOrUpdateOrderQuotationRequest request) {
+    public FactoryCreateOrUpdateOrderQuotationResponse updateOrderQuotation(Long orderId, MultipartFile file, FactoryCreateOrUpdateOrderQuotationRequest request) {
+        Order order = orderService.getOrderById(orderId);
         Quotation quotation = order.getQuotation();
 
         // 견적서 파일 유무 확인
@@ -148,27 +92,8 @@ public class FactoryOrderService {
         return FactoryCreateOrUpdateOrderQuotationResponse.from(quotation);
     }
 
-    @Transactional(readOnly = true)
-    public void sendMailForUpdateOrderQuotation(Order order) {
-        String toEmail = order.getCustomer().getUser().getEmail();
-
-        StringBuilder sbTitle = new StringBuilder();
-        sbTitle.append("[거래 견적서 작성] 고객님, ")
-                .append(order.getName())
-                .append(" 거래의 견적서가 수정되었습니다.");
-        String title = sbTitle.toString();
-
-        StringBuilder sbContent = new StringBuilder();
-        sbContent.append("고객님, ")
-                .append(order.getName())
-                .append(" 거래의 견적서가 수정되었습니다.");
-        String content = sbContent.toString();
-
-        mailService.sendEmail(toEmail, title, content);
-    }
-
     @Transactional
-    public Order approvePurchaseOrder(Long orderId) {
+    public void approvePurchaseOrder(Long orderId) {
         Order order = orderService.getOrderById(orderId);
 
         if (!order.enableApprovePurchaseOrder()) {
@@ -180,27 +105,6 @@ public class FactoryOrderService {
         }
 
         order.approvePurchaseOrder();
-
-        return order;
-    }
-
-    @Transactional(readOnly = true)
-    public void sendEmailForApprovePurchaseOrder(Order order) {
-        String toEmail = order.getCustomer().getUser().getEmail();
-
-        StringBuilder sbTitle = new StringBuilder();
-        sbTitle.append("[거래 발주서 승인] 고객님, ")
-                .append(order.getName())
-                .append(" 거래의 발주서가 승인되었습니다.");
-        String title = sbTitle.toString();
-
-        StringBuilder sbContent = new StringBuilder();
-        sbContent.append("고객님, ")
-                .append(order.getName())
-                .append(" 거래의 발주서가 승인되었습니다.");
-        String content = sbContent.toString();
-
-        mailService.sendEmail(toEmail, title, content);
     }
 
     @Transactional
@@ -214,55 +118,6 @@ public class FactoryOrderService {
         order.changeStageToProductionCompleted();
 
         return order;
-    }
-
-    @Transactional(readOnly = true)
-    public void sendEmailForChangeStageToProductionCompleted(Order order) {
-        String toEmail = order.getCustomer().getUser().getEmail();
-
-        StringBuilder sbTitle = new StringBuilder();
-        sbTitle.append("[거래 제작 완료] 고객님, ")
-                .append(order.getName())
-                .append(" 거래의 제작이 완료되었습니다.");
-        String title = sbTitle.toString();
-
-        StringBuilder sbContent = new StringBuilder();
-        sbContent.append("고객님, ")
-                .append(order.getName())
-                .append(" 거래의 제작이 완료되었습니다.");
-        String content = sbContent.toString();
-
-        mailService.sendEmail(toEmail, title, content);
-    }
-
-    @Transactional(readOnly = true)
-    public void sendEmailForAcquirer(Long orderId, String baseUrl) {
-        Order order = orderService.getOrderById(orderId);
-
-        if (!order.enableChangeStageToCompleted()) {
-            throw new CustomCommonException(OrderErrorCode.INVALID_ORDER_STAGE, order.getStage().getValue());
-        }
-
-        String acquireSignatureUrl = UriComponentsBuilder
-                .fromHttpUrl(baseUrl)
-                .path("/{order-id}")
-                .buildAndExpand(order.getId())
-                .toUriString();
-
-        StringBuilder sbTitle = new StringBuilder();
-        sbTitle.append("[거래 품목 확인 및 인수 서명 요청] ")
-                .append(order.getCustomer().getName())
-                .append(" - ")
-                .append(order.getName())
-                .append(" 거래의 품목을 확인 후 인수자의 서명을 받아주세요.");
-        String title = sbTitle.toString();
-
-        StringBuilder sbContent = new StringBuilder();
-        sbContent.append("거래 확인 및 인수자 서명 링크 : ")
-                .append(acquireSignatureUrl);
-        String content = sbContent.toString();
-
-        mailService.sendEmailToFactory(title, content);
     }
 
     @Transactional
@@ -297,33 +152,6 @@ public class FactoryOrderService {
         if (customer.isNewCustomer()) {
             customer.disableNewCustomer();
         }
-    }
-
-    @Transactional(readOnly = true)
-    public void sendEmailForChangeStageToCompleted(Order order) {
-        String toEmail = order.getCustomer().getUser().getEmail();
-
-        StringBuilder sbTitle = new StringBuilder();
-        sbTitle.append("[거래 완료] 고객님, ")
-                .append(order.getName())
-                .append(" 거래가 완료되었습니다.");
-        String title = sbTitle.toString();
-
-        StringBuilder sbContent = new StringBuilder();
-        sbContent.append("고객님, ")
-                .append(order.getName())
-                .append(" 거래가 완료되었습니다.\n");
-
-        if (order.hasAcquirer()) {
-            sbContent.append("인수자 정보\n이름 : ")
-                    .append(order.getAcquirer().getName())
-                    .append("\n핸드폰 번호 : ")
-                    .append(order.getAcquirer().getPhone());
-        }
-
-        String content = sbContent.toString();
-
-        mailService.sendEmail(toEmail, title, content);
     }
 
     @Transactional(readOnly = true)

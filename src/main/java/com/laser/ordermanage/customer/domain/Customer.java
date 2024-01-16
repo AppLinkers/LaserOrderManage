@@ -54,4 +54,8 @@ public class Customer {
     public void disableNewCustomer() {
         this.isNew = Boolean.FALSE;
     }
+
+    public boolean hasCompanyName() {
+        return this.companyName != null;
+    }
 }

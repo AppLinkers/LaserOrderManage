@@ -1,13 +1,13 @@
 package com.laser.ordermanage.customer.api;
 
-import com.laser.ordermanage.common.exception.CustomCommonException;
 import com.laser.ordermanage.common.exception.CommonErrorCode;
+import com.laser.ordermanage.common.exception.CustomCommonException;
 import com.laser.ordermanage.customer.dto.request.*;
 import com.laser.ordermanage.customer.dto.response.CustomerCreateDrawingResponse;
 import com.laser.ordermanage.customer.dto.response.CustomerCreateOrUpdateOrderPurchaseOrderResponse;
 import com.laser.ordermanage.customer.service.CustomerDeliveryAddressService;
+import com.laser.ordermanage.customer.service.CustomerOrderMailService;
 import com.laser.ordermanage.customer.service.CustomerOrderService;
-import com.laser.ordermanage.order.domain.Drawing;
 import com.laser.ordermanage.order.domain.Order;
 import com.laser.ordermanage.order.exception.OrderErrorCode;
 import com.laser.ordermanage.order.service.OrderService;
@@ -26,6 +26,7 @@ public class CustomerOrderAPI {
 
     private final OrderService orderService;
     private final CustomerOrderService customerOrderService;
+    private final CustomerOrderMailService customerOrderMailService;
     private final CustomerDeliveryAddressService customerDeliveryAddressService;
 
     /**
@@ -65,9 +66,9 @@ public class CustomerOrderAPI {
 
         customerDeliveryAddressService.checkAuthorityCustomerOfDeliveryAddress(user, request.deliveryAddressId());
 
-        Order order = customerOrderService.updateOrderDeliveryAddress(orderId, request);
+        customerOrderService.updateOrderDeliveryAddress(orderId, request);
 
-        customerOrderService.sendEmailForUpdateOrderDeliveryAddress(order);
+        customerOrderMailService.sendEmailForUpdateOrderDeliveryAddress(orderId);
 
         return ResponseEntity.ok().build();
     }
@@ -89,13 +90,13 @@ public class CustomerOrderAPI {
 
         customerOrderService.checkAuthorityOfOrder(user, orderId);
 
-        Drawing drawing = customerOrderService.createOrderDrawing(orderId, request);
+        Long drawingId = customerOrderService.createOrderDrawing(orderId, request);
 
-        customerOrderService.sendEmailForCreateOrderDrawing(drawing.getOrder());
+        customerOrderMailService.sendEmailForCreateOrderDrawing(orderId);
 
         return ResponseEntity.ok(
                 CustomerCreateDrawingResponse.builder()
-                        .id(drawing.getId())
+                        .id(drawingId)
                         .build()
         );
     }
@@ -119,9 +120,9 @@ public class CustomerOrderAPI {
 
         customerOrderService.checkAuthorityOfOrder(user, orderId);
 
-        Order order = customerOrderService.updateOrderDrawing(orderId, drawingId, request);
+        customerOrderService.updateOrderDrawing(orderId, drawingId, request);
 
-        customerOrderService.sendEmailForUpdateOrderDrawing(order);
+        customerOrderMailService.sendEmailForUpdateOrderDrawing(orderId);
 
         return ResponseEntity.ok().build();
     }
@@ -144,9 +145,9 @@ public class CustomerOrderAPI {
 
         customerOrderService.checkAuthorityOfOrder(user, orderId);
 
-        Order order = customerOrderService.deleteOrderDrawing(orderId, drawingId);
+        customerOrderService.deleteOrderDrawing(orderId, drawingId);
 
-        customerOrderService.sendEmailForDeleteOrderDrawing(order);
+        customerOrderMailService.sendEmailForDeleteOrderDrawing(orderId);
 
         return ResponseEntity.ok().build();
     }
@@ -167,9 +168,9 @@ public class CustomerOrderAPI {
 
         customerOrderService.checkAuthorityOfOrder(user, orderId);
 
-        Order order = customerOrderService.approveQuotation(orderId);
+        customerOrderService.approveQuotation(orderId);
 
-        customerOrderService.sendEmailForApproveQuotation(order);
+        customerOrderMailService.sendEmailForApproveQuotation(orderId);
         return ResponseEntity.ok().build();
     }
 
@@ -205,11 +206,11 @@ public class CustomerOrderAPI {
         CustomerCreateOrUpdateOrderPurchaseOrderResponse response;
 
         if (order.hasPurchaseOrder()) {
-            response = customerOrderService.updateOrderPurchaseOrder(order, file, request);
-            customerOrderService.sendMailForUpdateOrderPurchaseOrder(order);
+            response = customerOrderService.updateOrderPurchaseOrder(orderId, file, request);
+            customerOrderMailService.sendEmailForUpdateOrderPurchaseOrder(orderId);
         } else {
-            response = customerOrderService.createOrderPurchaseOrder(order, file, request);
-            customerOrderService.sendMailForCreateOrderPurchaseOrder(order);
+            response = customerOrderService.createOrderPurchaseOrder(orderId, file, request);
+            customerOrderMailService.sendEmailForCreateOrderPurchaseOrder(orderId);
         }
 
         return ResponseEntity.ok(response);

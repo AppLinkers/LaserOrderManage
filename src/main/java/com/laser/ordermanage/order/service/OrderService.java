@@ -1,7 +1,6 @@
 package com.laser.ordermanage.order.service;
 
 import com.laser.ordermanage.common.exception.CustomCommonException;
-import com.laser.ordermanage.common.mail.MailService;
 import com.laser.ordermanage.common.paging.ListResponse;
 import com.laser.ordermanage.order.domain.Comment;
 import com.laser.ordermanage.order.domain.Order;
@@ -28,7 +27,6 @@ public class OrderService {
     private final OrderRepository orderRepository;
 
     private final UserAuthService userAuthService;
-    private final MailService mailService;
 
     @Transactional(readOnly = true)
     public Order getOrderById(Long orderId) {
@@ -46,12 +44,17 @@ public class OrderService {
     }
 
     @Transactional(readOnly = true)
+    public Comment getCommentById(Long commentId) {
+        return commentRepository.findById(commentId).orElseThrow(() -> new CustomCommonException(OrderErrorCode.NOT_FOUND_COMMENT));
+    }
+
+    @Transactional(readOnly = true)
     public ListResponse<GetCommentResponse> getOrderComment(Long orderId) {
         return new ListResponse<>(commentRepository.findCommentByOrder(orderId));
     }
 
     @Transactional
-    public Comment createOrderComment(String userName, Long orderId, CreateCommentRequest request) {
+    public Long createOrderComment(String userName, Long orderId, CreateCommentRequest request) {
 
         UserEntity user = userAuthService.getUserByEmail(userName);
         Order order = this.getOrderById(orderId);
@@ -62,42 +65,9 @@ public class OrderService {
                 .content(request.content())
                 .build();
 
-        commentRepository.save(comment);
+        Comment savedComment = commentRepository.save(comment);
 
-        return comment;
-    }
-
-    @Transactional(readOnly = true)
-    public void sendEmailForCreateOrderComment(Comment comment) {
-        Order order = comment.getOrder();
-        UserEntity user = comment.getUser();
-
-        StringBuilder sbContent = new StringBuilder();
-        sbContent.append(order.getName())
-                .append(" 거래에 새로운 댓글이 작성되었습니다.");
-        String content = sbContent.toString();
-
-        if (user.getRole().equals(Role.ROLE_FACTORY)) {
-            String toEmail = order.getCustomer().getUser().getEmail();
-
-            StringBuilder sbTitle = new StringBuilder();
-            sbTitle.append("[댓글] 고객님, ")
-                    .append(order.getName())
-                    .append(" 거래에 댓글이 작성되었습니다.");
-            String title = sbTitle.toString();
-
-            mailService.sendEmail(toEmail, title, content);
-        } else if (user.getRole().equals(Role.ROLE_CUSTOMER)) {
-            StringBuilder sbTitle = new StringBuilder();
-            sbTitle.append("[댓글] ")
-                    .append(order.getCustomer().getName())
-                    .append(" - ")
-                    .append(order.getName())
-                    .append(" 거래에 댓글이 작성되었습니다.");
-            String title = sbTitle.toString();
-
-            mailService.sendEmailToFactory(title, content);
-        }
+        return savedComment.getId();
     }
 
     @Transactional(readOnly = true)

@@ -8,6 +8,7 @@ import com.laser.ordermanage.factory.dto.request.FactoryCreateOrUpdateOrderQuota
 import com.laser.ordermanage.factory.dto.request.FactoryCreateOrderAcquirerRequest;
 import com.laser.ordermanage.factory.dto.request.FactoryUpdateOrderIsUrgentRequest;
 import com.laser.ordermanage.factory.dto.response.FactoryCreateOrUpdateOrderQuotationResponse;
+import com.laser.ordermanage.factory.service.FactoryOrderMailService;
 import com.laser.ordermanage.factory.service.FactoryOrderService;
 import com.laser.ordermanage.order.domain.Order;
 import com.laser.ordermanage.order.exception.OrderErrorCode;
@@ -26,6 +27,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class FactoryOrderAPI {
 
     private final FactoryOrderService factoryOrderService;
+    private final FactoryOrderMailService factoryOrderMailService;
     private final OrderService orderService;
     private final ScheduleService scheduleService;
 
@@ -41,9 +43,9 @@ public class FactoryOrderAPI {
             @PathVariable("order-id") Long orderId,
             @RequestBody @Valid FactoryUpdateOrderIsUrgentRequest request) {
 
-        Order order = factoryOrderService.updateOrderIsUrgent(orderId, request);
+        factoryOrderService.updateOrderIsUrgent(orderId, request);
 
-        factoryOrderService.sendMailForUpdateOrderIsUrgent(order);
+        factoryOrderMailService.sendMailForUpdateOrderIsUrgent(orderId);
 
         return ResponseEntity.ok().build();
     }
@@ -74,11 +76,11 @@ public class FactoryOrderAPI {
         }
 
         if (order.hasQuotation()) {
-            response = factoryOrderService.updateOrderQuotation(order, file, request);
-            factoryOrderService.sendMailForUpdateOrderQuotation(order);
+            response = factoryOrderService.updateOrderQuotation(orderId, file, request);
+            factoryOrderMailService.sendMailForUpdateOrderQuotation(orderId);
         } else {
-            response = factoryOrderService.createOrderQuotation(order, file, request);
-            factoryOrderService.sendMailForCreateOrderQuotation(order);
+            response = factoryOrderService.createOrderQuotation(orderId, file, request);
+            factoryOrderMailService.sendMailForCreateOrderQuotation(orderId);
         }
 
         return ResponseEntity.ok(response);
@@ -95,9 +97,9 @@ public class FactoryOrderAPI {
     @PatchMapping("/{order-id}/purchase-order")
     public ResponseEntity<?> approvePurchaseOrder(@PathVariable("order-id") Long orderId) {
 
-        Order order = factoryOrderService.approvePurchaseOrder(orderId);
+        factoryOrderService.approvePurchaseOrder(orderId);
 
-        factoryOrderService.sendEmailForApprovePurchaseOrder(order);
+        factoryOrderMailService.sendEmailForApprovePurchaseOrder(orderId);
         return ResponseEntity.ok().build();
     }
 
@@ -112,9 +114,9 @@ public class FactoryOrderAPI {
     @PatchMapping("/{order-id}/stage/production-completed")
     public ResponseEntity<?> changeStageToProductionCompleted(@PathVariable("order-id") Long orderId) {
 
-        Order order = factoryOrderService.changeStageToProductionCompleted(orderId);
+        factoryOrderService.changeStageToProductionCompleted(orderId);
 
-        factoryOrderService.sendEmailForChangeStageToProductionCompleted(order);
+        factoryOrderMailService.sendEmailForChangeStageToProductionCompleted(orderId);
 
         scheduleService.createJobForChangeStageToCompleted(orderId);
 
@@ -134,7 +136,7 @@ public class FactoryOrderAPI {
             @Pattern(regexp = "^((http(s?))\\:\\/\\/)([0-9a-zA-Z\\-]+\\.)+[a-zA-Z]{2,6}(\\:[0-9]+)?(\\/\\S*)?$", message = "base URL 형식이 유효하지 않습니다.")
             @RequestParam(value = "base-url") String baseUrl
     ) {
-        factoryOrderService.sendEmailForAcquirer(orderId, baseUrl);
+        factoryOrderMailService.sendEmailForAcquirer(orderId, baseUrl);
 
         return ResponseEntity.ok().build();
     }
@@ -164,11 +166,11 @@ public class FactoryOrderAPI {
 
         factoryOrderService.createOrderAcquirer(orderId, request, file);
 
-        scheduleService.removeJobForChangeStageToCompleted(order.getId());
+        scheduleService.removeJobForChangeStageToCompleted(orderId);
 
         factoryOrderService.changeStageToCompleted(orderId);
 
-        factoryOrderService.sendEmailForChangeStageToCompleted(order);
+        factoryOrderMailService.sendEmailForChangeStageToCompleted(orderId);
 
         return ResponseEntity.ok().build();
     }

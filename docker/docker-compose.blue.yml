@@ -9,6 +9,7 @@ services:
     # 호스트의 8081 포트와 컨테이너의 8080 포트를 매핑
     ports:
       - "8081:8080"
+      - "8090:8090"
     # 컨테이너의 이름
     container_name: order-manage-server-blue
 

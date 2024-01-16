@@ -14,10 +14,12 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class OrderMailService {
 
+    private final OrderService orderService;
     private final MailService mailService;
 
     @Transactional(readOnly = true)
-    public void sendEmailForCreateOrderComment(Comment comment) {
+    public void sendEmailForCreateOrderComment(Long commentId) {
+        Comment comment = orderService.getCommentById(commentId);
         Order order = comment.getOrder();
         UserEntity user = comment.getUser();
 

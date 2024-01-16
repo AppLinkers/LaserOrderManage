@@ -43,9 +43,9 @@ public class FactoryOrderAPI {
             @PathVariable("order-id") Long orderId,
             @RequestBody @Valid FactoryUpdateOrderIsUrgentRequest request) {
 
-        Order order = factoryOrderService.updateOrderIsUrgent(orderId, request);
+        factoryOrderService.updateOrderIsUrgent(orderId, request);
 
-        factoryOrderMailService.sendMailForUpdateOrderIsUrgent(order);
+        factoryOrderMailService.sendMailForUpdateOrderIsUrgent(orderId);
 
         return ResponseEntity.ok().build();
     }
@@ -76,11 +76,11 @@ public class FactoryOrderAPI {
         }
 
         if (order.hasQuotation()) {
-            response = factoryOrderService.updateOrderQuotation(order, file, request);
-            factoryOrderMailService.sendMailForUpdateOrderQuotation(order);
+            response = factoryOrderService.updateOrderQuotation(orderId, file, request);
+            factoryOrderMailService.sendMailForUpdateOrderQuotation(orderId);
         } else {
-            response = factoryOrderService.createOrderQuotation(order, file, request);
-            factoryOrderMailService.sendMailForCreateOrderQuotation(order);
+            response = factoryOrderService.createOrderQuotation(orderId, file, request);
+            factoryOrderMailService.sendMailForCreateOrderQuotation(orderId);
         }
 
         return ResponseEntity.ok(response);
@@ -97,9 +97,9 @@ public class FactoryOrderAPI {
     @PatchMapping("/{order-id}/purchase-order")
     public ResponseEntity<?> approvePurchaseOrder(@PathVariable("order-id") Long orderId) {
 
-        Order order = factoryOrderService.approvePurchaseOrder(orderId);
+        factoryOrderService.approvePurchaseOrder(orderId);
 
-        factoryOrderMailService.sendEmailForApprovePurchaseOrder(order);
+        factoryOrderMailService.sendEmailForApprovePurchaseOrder(orderId);
         return ResponseEntity.ok().build();
     }
 
@@ -114,9 +114,9 @@ public class FactoryOrderAPI {
     @PatchMapping("/{order-id}/stage/production-completed")
     public ResponseEntity<?> changeStageToProductionCompleted(@PathVariable("order-id") Long orderId) {
 
-        Order order = factoryOrderService.changeStageToProductionCompleted(orderId);
+        factoryOrderService.changeStageToProductionCompleted(orderId);
 
-        factoryOrderMailService.sendEmailForChangeStageToProductionCompleted(order);
+        factoryOrderMailService.sendEmailForChangeStageToProductionCompleted(orderId);
 
         scheduleService.createJobForChangeStageToCompleted(orderId);
 
@@ -166,11 +166,11 @@ public class FactoryOrderAPI {
 
         factoryOrderService.createOrderAcquirer(orderId, request, file);
 
-        scheduleService.removeJobForChangeStageToCompleted(order.getId());
+        scheduleService.removeJobForChangeStageToCompleted(orderId);
 
         factoryOrderService.changeStageToCompleted(orderId);
 
-        factoryOrderMailService.sendEmailForChangeStageToCompleted(order);
+        factoryOrderMailService.sendEmailForChangeStageToCompleted(orderId);
 
         return ResponseEntity.ok().build();
     }

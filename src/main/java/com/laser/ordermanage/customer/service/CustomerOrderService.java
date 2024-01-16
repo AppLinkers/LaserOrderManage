@@ -82,7 +82,7 @@ public class CustomerOrderService {
     }
 
     @Transactional
-    public Order updateOrderDeliveryAddress(Long orderId, CustomerUpdateOrderDeliveryAddressRequest request) {
+    public void updateOrderDeliveryAddress(Long orderId, CustomerUpdateOrderDeliveryAddressRequest request) {
         Order order = orderService.getOrderById(orderId);
 
         if (!order.enableUpdateDeliveryAddress()) {
@@ -92,12 +92,10 @@ public class CustomerOrderService {
         DeliveryAddress deliveryAddress = customerDeliveryAddressService.getDeliveryAddress(request.deliveryAddressId());
 
         order.updateDeliveryAddress(deliveryAddress);
-
-        return order;
     }
 
     @Transactional
-    public Drawing createOrderDrawing(Long orderId, CustomerCreateDrawingRequest request) {
+    public Long createOrderDrawing(Long orderId, CustomerCreateDrawingRequest request) {
         Order order = orderService.getOrderById(orderId);
 
         if (!order.enableManageDrawing()) {
@@ -118,11 +116,11 @@ public class CustomerOrderService {
 
         Drawing savedDrawing = drawingRepository.save(drawing);
 
-        return savedDrawing;
+        return savedDrawing.getId();
     }
 
     @Transactional
-    public Order updateOrderDrawing(Long orderId, Long drawingId, CustomerUpdateDrawingRequest request) {
+    public void updateOrderDrawing(Long orderId, Long drawingId, CustomerUpdateDrawingRequest request) {
         Order order = orderService.getOrderById(orderId);
 
         if (!order.enableManageDrawing()) {
@@ -132,12 +130,10 @@ public class CustomerOrderService {
         Drawing drawing = drawingService.getDrawingByOrderAndId(order, drawingId);
 
         drawing.updateDrawingProperties(request);
-
-        return order;
     }
 
     @Transactional
-    public Order deleteOrderDrawing(Long orderId, Long drawingId) {
+    public void deleteOrderDrawing(Long orderId, Long drawingId) {
         Order order = orderService.getOrderById(orderId);
 
         if (!order.enableManageDrawing()) {
@@ -151,8 +147,6 @@ public class CustomerOrderService {
         Drawing drawing = drawingService.getDrawingByOrderAndId(order, drawingId);
 
         drawingRepository.delete(drawing);
-
-        return order;
     }
 
     @Transactional(readOnly = true)
@@ -163,7 +157,7 @@ public class CustomerOrderService {
     }
 
     @Transactional
-    public Order approveQuotation(Long orderId) {
+    public void approveQuotation(Long orderId) {
         Order order = orderService.getOrderById(orderId);
 
         if (!order.enableApproveQuotation()) {
@@ -175,12 +169,12 @@ public class CustomerOrderService {
         }
 
         order.approveQuotation();
-
-        return order;
     }
 
     @Transactional
-    public CustomerCreateOrUpdateOrderPurchaseOrderResponse createOrderPurchaseOrder(Order order, MultipartFile file, CustomerCreateOrUpdateOrderPurchaseOrderRequest request) {
+    public CustomerCreateOrUpdateOrderPurchaseOrderResponse createOrderPurchaseOrder(Long orderId, MultipartFile file, CustomerCreateOrUpdateOrderPurchaseOrderRequest request) {
+        Order order = orderService.getOrderById(orderId);
+
         // 발주서 파일 유무 확인
         if (file == null || file.isEmpty()) {
             throw new CustomCommonException(OrderErrorCode.REQUIRED_PURCHASE_ORDER_FILE);
@@ -208,7 +202,8 @@ public class CustomerOrderService {
     }
 
     @Transactional
-    public CustomerCreateOrUpdateOrderPurchaseOrderResponse updateOrderPurchaseOrder(Order order, MultipartFile file, CustomerCreateOrUpdateOrderPurchaseOrderRequest request) {
+    public CustomerCreateOrUpdateOrderPurchaseOrderResponse updateOrderPurchaseOrder(Long orderId, MultipartFile file, CustomerCreateOrUpdateOrderPurchaseOrderRequest request) {
+        Order order = orderService.getOrderById(orderId);
         PurchaseOrder purchaseOrder = order.getPurchaseOrder();
 
         // 발주서 파일 유무 확인

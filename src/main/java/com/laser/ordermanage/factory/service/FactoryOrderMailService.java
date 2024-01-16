@@ -19,7 +19,8 @@ public class FactoryOrderMailService {
     private final MailService mailService;
 
     @Transactional(readOnly = true)
-    public void sendMailForUpdateOrderIsUrgent(Order order) {
+    public void sendMailForUpdateOrderIsUrgent(Long orderId) {
+        Order order = orderService.getOrderById(orderId);
         String toEmail = order.getCustomer().getUser().getEmail();
 
         StringBuilder sbSubject = new StringBuilder();
@@ -70,7 +71,8 @@ public class FactoryOrderMailService {
     }
 
     @Transactional(readOnly = true)
-    public void sendMailForCreateOrderQuotation(Order order) {
+    public void sendMailForCreateOrderQuotation(Long orderId) {
+        Order order = orderService.getOrderById(orderId);
         String toEmail = order.getCustomer().getUser().getEmail();
 
         StringBuilder sbSubject = new StringBuilder();
@@ -102,7 +104,8 @@ public class FactoryOrderMailService {
     }
 
     @Transactional(readOnly = true)
-    public void sendMailForUpdateOrderQuotation(Order order) {
+    public void sendMailForUpdateOrderQuotation(Long orderId) {
+        Order order = orderService.getOrderById(orderId);
         String toEmail = order.getCustomer().getUser().getEmail();
 
         StringBuilder sbSubject = new StringBuilder();
@@ -134,7 +137,8 @@ public class FactoryOrderMailService {
     }
 
     @Transactional(readOnly = true)
-    public void sendEmailForApprovePurchaseOrder(Order order) {
+    public void sendEmailForApprovePurchaseOrder(Long orderId) {
+        Order order = orderService.getOrderById(orderId);
         String toEmail = order.getCustomer().getUser().getEmail();
 
         StringBuilder sbSubject = new StringBuilder();
@@ -166,7 +170,8 @@ public class FactoryOrderMailService {
     }
 
     @Transactional(readOnly = true)
-    public void sendEmailForChangeStageToProductionCompleted(Order order) {
+    public void sendEmailForChangeStageToProductionCompleted(Long orderId) {
+        Order order = orderService.getOrderById(orderId);
         String toEmail = order.getCustomer().getUser().getEmail();
 
         StringBuilder sbSubject = new StringBuilder();
@@ -240,7 +245,8 @@ public class FactoryOrderMailService {
     }
 
     @Transactional(readOnly = true)
-    public void sendEmailForChangeStageToCompleted(Order order) {
+    public void sendEmailForChangeStageToCompleted(Long orderId) {
+        Order order = orderService.getOrderById(orderId);
         String toEmail = order.getCustomer().getUser().getEmail();
 
         StringBuilder sbSubject = new StringBuilder();

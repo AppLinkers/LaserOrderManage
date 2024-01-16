@@ -1,8 +1,6 @@
 package com.laser.ordermanage.order.service;
 
 import com.laser.ordermanage.common.exception.CustomCommonException;
-import com.laser.ordermanage.common.mail.MailService;
-import com.laser.ordermanage.common.mail.dto.MailRequest;
 import com.laser.ordermanage.common.paging.ListResponse;
 import com.laser.ordermanage.order.domain.Comment;
 import com.laser.ordermanage.order.domain.Order;
@@ -46,12 +44,17 @@ public class OrderService {
     }
 
     @Transactional(readOnly = true)
+    public Comment getCommentById(Long commentId) {
+        return commentRepository.findById(commentId).orElseThrow(() -> new CustomCommonException(OrderErrorCode.NOT_FOUND_COMMENT));
+    }
+
+    @Transactional(readOnly = true)
     public ListResponse<GetCommentResponse> getOrderComment(Long orderId) {
         return new ListResponse<>(commentRepository.findCommentByOrder(orderId));
     }
 
     @Transactional
-    public Comment createOrderComment(String userName, Long orderId, CreateCommentRequest request) {
+    public Long createOrderComment(String userName, Long orderId, CreateCommentRequest request) {
 
         UserEntity user = userAuthService.getUserByEmail(userName);
         Order order = this.getOrderById(orderId);
@@ -62,9 +65,9 @@ public class OrderService {
                 .content(request.content())
                 .build();
 
-        commentRepository.save(comment);
+        Comment savedComment = commentRepository.save(comment);
 
-        return comment;
+        return savedComment.getId();
     }
 
     @Transactional(readOnly = true)

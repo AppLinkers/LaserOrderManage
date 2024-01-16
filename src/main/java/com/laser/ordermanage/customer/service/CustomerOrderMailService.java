@@ -3,6 +3,7 @@ package com.laser.ordermanage.customer.service;
 import com.laser.ordermanage.common.mail.MailService;
 import com.laser.ordermanage.common.mail.dto.MailRequest;
 import com.laser.ordermanage.order.domain.Order;
+import com.laser.ordermanage.order.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,10 +12,12 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class CustomerOrderMailService {
 
+    private final OrderService orderService;
     private final MailService mailService;
 
     @Transactional(readOnly = true)
-    public void sendEmailForUpdateOrderDeliveryAddress(Order order) {
+    public void sendEmailForUpdateOrderDeliveryAddress(Long orderId) {
+        Order order = orderService.getOrderById(orderId);
         StringBuilder sbSubject = new StringBuilder();
         sbSubject.append("[거래 배송지 수정] ")
                 .append(order.getCustomer().getName())
@@ -44,7 +47,8 @@ public class CustomerOrderMailService {
     }
 
     @Transactional(readOnly = true)
-    public void sendEmailForCreateOrderDrawing(Order order) {
+    public void sendEmailForCreateOrderDrawing(Long orderId) {
+        Order order = orderService.getOrderById(orderId);
         StringBuilder sbSubject = new StringBuilder();
         sbSubject.append("[거래 도면 추가] ")
                 .append(order.getCustomer().getName())
@@ -74,7 +78,8 @@ public class CustomerOrderMailService {
     }
 
     @Transactional(readOnly = true)
-    public void sendEmailForUpdateOrderDrawing(Order order) {
+    public void sendEmailForUpdateOrderDrawing(Long orderId) {
+        Order order = orderService.getOrderById(orderId);
         StringBuilder sbSubject = new StringBuilder();
         sbSubject.append("[거래 도면 항목 수정] ")
                 .append(order.getCustomer().getName())
@@ -103,7 +108,8 @@ public class CustomerOrderMailService {
     }
 
     @Transactional(readOnly = true)
-    public void sendEmailForDeleteOrderDrawing(Order order) {
+    public void sendEmailForDeleteOrderDrawing(Long orderId) {
+        Order order = orderService.getOrderById(orderId);
         StringBuilder sbSubject = new StringBuilder();
         sbSubject.append("[거래 도면 삭제] ")
                 .append(order.getCustomer().getName())
@@ -133,7 +139,8 @@ public class CustomerOrderMailService {
     }
 
     @Transactional(readOnly = true)
-    public void sendEmailForApproveQuotation(Order order) {
+    public void sendEmailForApproveQuotation(Long orderId) {
+        Order order = orderService.getOrderById(orderId);
         StringBuilder sbSubject = new StringBuilder();
         sbSubject.append("[거래 견적서 승인] ")
                 .append(order.getCustomer().getName())
@@ -163,7 +170,8 @@ public class CustomerOrderMailService {
     }
 
     @Transactional(readOnly = true)
-    public void sendEmailForCreateOrderPurchaseOrder(Order order) {
+    public void sendEmailForCreateOrderPurchaseOrder(Long orderId) {
+        Order order = orderService.getOrderById(orderId);
         StringBuilder sbSubject = new StringBuilder();
         sbSubject.append("[거래 발주서 작성] ")
                 .append(order.getCustomer().getName())
@@ -193,7 +201,8 @@ public class CustomerOrderMailService {
     }
 
     @Transactional(readOnly = true)
-    public void sendEmailForUpdateOrderPurchaseOrder(Order order) {
+    public void sendEmailForUpdateOrderPurchaseOrder(Long orderId) {
+        Order order = orderService.getOrderById(orderId);
         StringBuilder sbSubject = new StringBuilder();
         sbSubject.append("[거래 발주서 수정] ")
                 .append(order.getCustomer().getName())

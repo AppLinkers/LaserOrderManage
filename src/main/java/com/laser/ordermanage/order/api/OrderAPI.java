@@ -66,9 +66,9 @@ public class OrderAPI {
 
         orderService.checkAuthorityCustomerOfOrderOrFactory(user, orderId);
 
-        Comment comment = orderService.createOrderComment(user.getUsername(), orderId, request);
+        Long commentId = orderService.createOrderComment(user.getUsername(), orderId, request);
 
-        orderMailService.sendEmailForCreateOrderComment(comment);
+        orderMailService.sendEmailForCreateOrderComment(commentId);
 
         return ResponseEntity.ok().build();
     }

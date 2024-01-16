@@ -33,7 +33,7 @@ public class FactoryOrderService {
     private final S3Service s3Service;
 
     @Transactional
-    public Order updateOrderIsUrgent(Long orderId, FactoryUpdateOrderIsUrgentRequest request) {
+    public void updateOrderIsUrgent(Long orderId, FactoryUpdateOrderIsUrgentRequest request) {
         Order order = orderService.getOrderById(orderId);
 
         if (!order.enableUpdateIsUrgent()) {
@@ -41,12 +41,11 @@ public class FactoryOrderService {
         }
 
         order.updateIsUrgent(request.isUrgent());
-
-        return order;
     }
 
     @Transactional
-    public FactoryCreateOrUpdateOrderQuotationResponse createOrderQuotation(Order order, MultipartFile file, FactoryCreateOrUpdateOrderQuotationRequest request) {
+    public FactoryCreateOrUpdateOrderQuotationResponse createOrderQuotation(Long orderId, MultipartFile file, FactoryCreateOrUpdateOrderQuotationRequest request) {
+        Order order = orderService.getOrderById(orderId);
         // 견적서 파일 유무 확인
         if (file == null || file.isEmpty()) {
             throw new CustomCommonException(OrderErrorCode.REQUIRED_QUOTATION_FILE);
@@ -73,7 +72,8 @@ public class FactoryOrderService {
     }
 
     @Transactional
-    public FactoryCreateOrUpdateOrderQuotationResponse updateOrderQuotation(Order order, MultipartFile file, FactoryCreateOrUpdateOrderQuotationRequest request) {
+    public FactoryCreateOrUpdateOrderQuotationResponse updateOrderQuotation(Long orderId, MultipartFile file, FactoryCreateOrUpdateOrderQuotationRequest request) {
+        Order order = orderService.getOrderById(orderId);
         Quotation quotation = order.getQuotation();
 
         // 견적서 파일 유무 확인
@@ -93,7 +93,7 @@ public class FactoryOrderService {
     }
 
     @Transactional
-    public Order approvePurchaseOrder(Long orderId) {
+    public void approvePurchaseOrder(Long orderId) {
         Order order = orderService.getOrderById(orderId);
 
         if (!order.enableApprovePurchaseOrder()) {
@@ -105,8 +105,6 @@ public class FactoryOrderService {
         }
 
         order.approvePurchaseOrder();
-
-        return order;
     }
 
     @Transactional

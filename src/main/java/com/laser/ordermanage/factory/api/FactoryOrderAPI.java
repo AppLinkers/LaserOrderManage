@@ -8,6 +8,7 @@ import com.laser.ordermanage.factory.dto.request.FactoryCreateOrUpdateOrderQuota
 import com.laser.ordermanage.factory.dto.request.FactoryCreateOrderAcquirerRequest;
 import com.laser.ordermanage.factory.dto.request.FactoryUpdateOrderIsUrgentRequest;
 import com.laser.ordermanage.factory.dto.response.FactoryCreateOrUpdateOrderQuotationResponse;
+import com.laser.ordermanage.factory.service.FactoryOrderMailService;
 import com.laser.ordermanage.factory.service.FactoryOrderService;
 import com.laser.ordermanage.order.domain.Order;
 import com.laser.ordermanage.order.exception.OrderErrorCode;
@@ -26,6 +27,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class FactoryOrderAPI {
 
     private final FactoryOrderService factoryOrderService;
+    private final FactoryOrderMailService factoryOrderMailService;
     private final OrderService orderService;
     private final ScheduleService scheduleService;
 
@@ -43,7 +45,7 @@ public class FactoryOrderAPI {
 
         Order order = factoryOrderService.updateOrderIsUrgent(orderId, request);
 
-        factoryOrderService.sendMailForUpdateOrderIsUrgent(order);
+        factoryOrderMailService.sendMailForUpdateOrderIsUrgent(order);
 
         return ResponseEntity.ok().build();
     }
@@ -75,10 +77,10 @@ public class FactoryOrderAPI {
 
         if (order.hasQuotation()) {
             response = factoryOrderService.updateOrderQuotation(order, file, request);
-            factoryOrderService.sendMailForUpdateOrderQuotation(order);
+            factoryOrderMailService.sendMailForUpdateOrderQuotation(order);
         } else {
             response = factoryOrderService.createOrderQuotation(order, file, request);
-            factoryOrderService.sendMailForCreateOrderQuotation(order);
+            factoryOrderMailService.sendMailForCreateOrderQuotation(order);
         }
 
         return ResponseEntity.ok(response);
@@ -97,7 +99,7 @@ public class FactoryOrderAPI {
 
         Order order = factoryOrderService.approvePurchaseOrder(orderId);
 
-        factoryOrderService.sendEmailForApprovePurchaseOrder(order);
+        factoryOrderMailService.sendEmailForApprovePurchaseOrder(order);
         return ResponseEntity.ok().build();
     }
 
@@ -114,7 +116,7 @@ public class FactoryOrderAPI {
 
         Order order = factoryOrderService.changeStageToProductionCompleted(orderId);
 
-        factoryOrderService.sendEmailForChangeStageToProductionCompleted(order);
+        factoryOrderMailService.sendEmailForChangeStageToProductionCompleted(order);
 
         scheduleService.createJobForChangeStageToCompleted(orderId);
 
@@ -134,7 +136,7 @@ public class FactoryOrderAPI {
             @Pattern(regexp = "^((http(s?))\\:\\/\\/)([0-9a-zA-Z\\-]+\\.)+[a-zA-Z]{2,6}(\\:[0-9]+)?(\\/\\S*)?$", message = "base URL 형식이 유효하지 않습니다.")
             @RequestParam(value = "base-url") String baseUrl
     ) {
-        factoryOrderService.sendEmailForAcquirer(orderId, baseUrl);
+        factoryOrderMailService.sendEmailForAcquirer(orderId, baseUrl);
 
         return ResponseEntity.ok().build();
     }
@@ -168,7 +170,7 @@ public class FactoryOrderAPI {
 
         factoryOrderService.changeStageToCompleted(orderId);
 
-        factoryOrderService.sendEmailForChangeStageToCompleted(order);
+        factoryOrderMailService.sendEmailForChangeStageToCompleted(order);
 
         return ResponseEntity.ok().build();
     }

@@ -2,8 +2,6 @@ package com.laser.ordermanage.customer.service;
 
 import com.laser.ordermanage.common.cloud.aws.S3Service;
 import com.laser.ordermanage.common.exception.CustomCommonException;
-import com.laser.ordermanage.common.mail.MailService;
-import com.laser.ordermanage.common.mail.dto.MailRequest;
 import com.laser.ordermanage.customer.domain.Customer;
 import com.laser.ordermanage.customer.domain.DeliveryAddress;
 import com.laser.ordermanage.customer.dto.request.*;
@@ -37,7 +35,6 @@ public class CustomerOrderService {
     private final OrderService orderService;
     private final CustomerDeliveryAddressService customerDeliveryAddressService;
     private final DrawingService drawingService;
-    private final MailService mailService;
     private final S3Service s3Service;
 
     @Transactional
@@ -99,36 +96,6 @@ public class CustomerOrderService {
         return order;
     }
 
-    @Transactional(readOnly = true)
-    public void sendEmailForUpdateOrderDeliveryAddress(Order order) {
-        StringBuilder sbSubject = new StringBuilder();
-        sbSubject.append("[거래 배송지 수정] ")
-                .append(order.getCustomer().getName())
-                .append(" - ")
-                .append(order.getName())
-                .append(" 거래의 배송지가 수정되었습니다.");
-        String subject = sbSubject.toString();
-
-        String title = "거래 배송지 수정";
-
-        StringBuilder sbContent = new StringBuilder();
-        sbContent.append(order.getCustomer().getName())
-                .append(order.getCustomer().hasCompanyName() ? " - " + order.getCustomer().getCompanyName() : " ")
-                .append("고객님의, ")
-                .append(order.getName())
-                .append(" 거래 배송지가 수정되었습니다.");
-        String content = sbContent.toString();
-
-        MailRequest mailRequest = MailRequest.builderToFactory()
-                .subject(subject)
-                .title(title)
-                .content(content)
-                .buttonText("거래 정보 확인하기")
-                .buttonUrl("https://www.kumoh.org/order/" + order.getId())
-                .buildToFactory();
-        mailService.sendEmail(mailRequest);
-    }
-
     @Transactional
     public Drawing createOrderDrawing(Long orderId, CustomerCreateDrawingRequest request) {
         Order order = orderService.getOrderById(orderId);
@@ -154,36 +121,6 @@ public class CustomerOrderService {
         return savedDrawing;
     }
 
-    @Transactional(readOnly = true)
-    public void sendEmailForCreateOrderDrawing(Order order) {
-        StringBuilder sbSubject = new StringBuilder();
-        sbSubject.append("[거래 도면 추가] ")
-                .append(order.getCustomer().getName())
-                .append(" - ")
-                .append(order.getName())
-                .append(" 거래의 도면이 추가되었습니다.");
-        String subject = sbSubject.toString();
-
-        String title = "거래 도면 추가";
-
-        StringBuilder sbContent = new StringBuilder();
-        sbContent.append(order.getCustomer().getName())
-                .append(order.getCustomer().hasCompanyName() ? " - " + order.getCustomer().getCompanyName() : " ")
-                .append("고객님의, ")
-                .append(order.getName())
-                .append(" 거래 도면이 추가되었습니다.");
-        String content = sbContent.toString();
-
-        MailRequest mailRequest = MailRequest.builderToFactory()
-                .subject(subject)
-                .title(title)
-                .content(content)
-                .buttonText("거래 정보 확인하기")
-                .buttonUrl("https://www.kumoh.org/order/" + order.getId())
-                .buildToFactory();
-        mailService.sendEmail(mailRequest);
-    }
-
     @Transactional
     public Order updateOrderDrawing(Long orderId, Long drawingId, CustomerUpdateDrawingRequest request) {
         Order order = orderService.getOrderById(orderId);
@@ -197,35 +134,6 @@ public class CustomerOrderService {
         drawing.updateDrawingProperties(request);
 
         return order;
-    }
-
-    @Transactional(readOnly = true)
-    public void sendEmailForUpdateOrderDrawing(Order order) {
-        StringBuilder sbSubject = new StringBuilder();
-        sbSubject.append("[거래 도면 항목 수정] ")
-                .append(order.getCustomer().getName())
-                .append(" - ")
-                .append(order.getName())
-                .append(" 거래의 도면 항목이 수정되었습니다.");
-        String subject = sbSubject.toString();
-
-        String title = "거래 도면 항목 수정";
-
-        StringBuilder sbContent = new StringBuilder();
-        sbContent.append(order.getCustomer().getName())
-                .append(order.getCustomer().hasCompanyName() ? " - " + order.getCustomer().getCompanyName() : " ")
-                .append("고객님의, ")
-                .append(" 거래 도면 항목이 수정되었습니다.");
-        String content = sbContent.toString();
-
-        MailRequest mailRequest = MailRequest.builderToFactory()
-                .subject(subject)
-                .title(title)
-                .content(content)
-                .buttonText("거래 정보 확인하기")
-                .buttonUrl("https://www.kumoh.org/order/" + order.getId())
-                .buildToFactory();
-        mailService.sendEmail(mailRequest);
     }
 
     @Transactional
@@ -245,36 +153,6 @@ public class CustomerOrderService {
         drawingRepository.delete(drawing);
 
         return order;
-    }
-
-    @Transactional(readOnly = true)
-    public void sendEmailForDeleteOrderDrawing(Order order) {
-        StringBuilder sbSubject = new StringBuilder();
-        sbSubject.append("[거래 도면 삭제] ")
-                .append(order.getCustomer().getName())
-                .append(" - ")
-                .append(order.getName())
-                .append(" 거래의 도면이 삭제되었습니다.");
-        String subject = sbSubject.toString();
-
-        String title = "거래 도면 삭제";
-
-        StringBuilder sbContent = new StringBuilder();
-        sbContent.append(order.getCustomer().getName())
-                .append(order.getCustomer().hasCompanyName() ? " - " + order.getCustomer().getCompanyName() : " ")
-                .append("고객님의, ")
-                .append(order.getName())
-                .append(" 거래 도면이 삭제되었습니다.");
-        String content = sbContent.toString();
-
-        MailRequest mailRequest = MailRequest.builderToFactory()
-                .subject(subject)
-                .title(title)
-                .content(content)
-                .buttonText("거래 정보 확인하기")
-                .buttonUrl("https://www.kumoh.org/order/" + order.getId())
-                .buildToFactory();
-        mailService.sendEmail(mailRequest);
     }
 
     @Transactional(readOnly = true)
@@ -299,36 +177,6 @@ public class CustomerOrderService {
         order.approveQuotation();
 
         return order;
-    }
-
-    @Transactional(readOnly = true)
-    public void sendEmailForApproveQuotation(Order order) {
-        StringBuilder sbSubject = new StringBuilder();
-        sbSubject.append("[거래 견적서 승인] ")
-                .append(order.getCustomer().getName())
-                .append(" - ")
-                .append(order.getName())
-                .append(" 거래의 견적서가 승인되었습니다.");
-        String subject = sbSubject.toString();
-
-        String title = "거래 견적서 승인";
-
-        StringBuilder sbContent = new StringBuilder();
-        sbContent.append(order.getCustomer().getName())
-                .append(order.getCustomer().hasCompanyName() ? " - " + order.getCustomer().getCompanyName() : " ")
-                .append("고객님의, ")
-                .append(order.getName())
-                .append(" 거래 견적서가 승인되었습니다.");
-        String content = sbContent.toString();
-
-        MailRequest mailRequest = MailRequest.builderToFactory()
-                .subject(subject)
-                .title(title)
-                .content(content)
-                .buttonText("거래 정보 확인하기")
-                .buttonUrl("https://www.kumoh.org/order/" + order.getId())
-                .buildToFactory();
-        mailService.sendEmail(mailRequest);
     }
 
     @Transactional
@@ -359,36 +207,6 @@ public class CustomerOrderService {
         return CustomerCreateOrUpdateOrderPurchaseOrderResponse.from(savedPurchaseOrder);
     }
 
-    @Transactional(readOnly = true)
-    public void sendMailForCreateOrderPurchaseOrder(Order order) {
-        StringBuilder sbSubject = new StringBuilder();
-        sbSubject.append("[거래 발주서 작성] ")
-                .append(order.getCustomer().getName())
-                .append(" - ")
-                .append(order.getName())
-                .append(" 거래의 발주서가 작성되었습니다.");
-        String subject = sbSubject.toString();
-
-        String title = "거래 발주서 작성";
-
-        StringBuilder sbContent = new StringBuilder();
-        sbContent.append(order.getCustomer().getName())
-                .append(order.getCustomer().hasCompanyName() ? " - " + order.getCustomer().getCompanyName() : " ")
-                .append("고객님의, ")
-                .append(order.getName())
-                .append(" 거래 발주서가 작성되었습니다.");
-        String content = sbContent.toString();
-
-        MailRequest mailRequest = MailRequest.builderToFactory()
-                .subject(subject)
-                .title(title)
-                .content(content)
-                .buttonText("거래 정보 확인하기")
-                .buttonUrl("https://www.kumoh.org/order/" + order.getId())
-                .buildToFactory();
-        mailService.sendEmail(mailRequest);
-    }
-
     @Transactional
     public CustomerCreateOrUpdateOrderPurchaseOrderResponse updateOrderPurchaseOrder(Order order, MultipartFile file, CustomerCreateOrUpdateOrderPurchaseOrderRequest request) {
         PurchaseOrder purchaseOrder = order.getPurchaseOrder();
@@ -407,36 +225,6 @@ public class CustomerOrderService {
         purchaseOrder.updateProperties(request);
 
         return CustomerCreateOrUpdateOrderPurchaseOrderResponse.from(purchaseOrder);
-    }
-
-    @Transactional(readOnly = true)
-    public void sendMailForUpdateOrderPurchaseOrder(Order order) {
-        StringBuilder sbSubject = new StringBuilder();
-        sbSubject.append("[거래 발주서 수정] ")
-                .append(order.getCustomer().getName())
-                .append(" - ")
-                .append(order.getName())
-                .append(" 거래의 발주서가 수정되었습니다.");
-        String subject = sbSubject.toString();
-
-        String title = "거래 발주서 수정";
-
-        StringBuilder sbContent = new StringBuilder();
-        sbContent.append(order.getCustomer().getName())
-                .append(order.getCustomer().hasCompanyName() ? " - " + order.getCustomer().getCompanyName() : " ")
-                .append("고객님의, ")
-                .append(order.getName())
-                .append(" 거래 발주서가 수정되었습니다.");
-        String content = sbContent.toString();
-
-        MailRequest mailRequest = MailRequest.builderToFactory()
-                .subject(subject)
-                .title(title)
-                .content(content)
-                .buttonText("거래 정보 확인하기")
-                .buttonUrl("https://www.kumoh.org/order/" + order.getId())
-                .buildToFactory();
-        mailService.sendEmail(mailRequest);
     }
 
     private String uploadPurchaseOrderFile(MultipartFile file) {

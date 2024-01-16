@@ -6,6 +6,7 @@ import com.laser.ordermanage.customer.dto.request.*;
 import com.laser.ordermanage.customer.dto.response.CustomerCreateDrawingResponse;
 import com.laser.ordermanage.customer.dto.response.CustomerCreateOrUpdateOrderPurchaseOrderResponse;
 import com.laser.ordermanage.customer.service.CustomerDeliveryAddressService;
+import com.laser.ordermanage.customer.service.CustomerOrderMailService;
 import com.laser.ordermanage.customer.service.CustomerOrderService;
 import com.laser.ordermanage.order.domain.Drawing;
 import com.laser.ordermanage.order.domain.Order;
@@ -26,6 +27,7 @@ public class CustomerOrderAPI {
 
     private final OrderService orderService;
     private final CustomerOrderService customerOrderService;
+    private final CustomerOrderMailService customerOrderMailService;
     private final CustomerDeliveryAddressService customerDeliveryAddressService;
 
     /**
@@ -67,7 +69,7 @@ public class CustomerOrderAPI {
 
         Order order = customerOrderService.updateOrderDeliveryAddress(orderId, request);
 
-        customerOrderService.sendEmailForUpdateOrderDeliveryAddress(order);
+        customerOrderMailService.sendEmailForUpdateOrderDeliveryAddress(order);
 
         return ResponseEntity.ok().build();
     }
@@ -91,7 +93,7 @@ public class CustomerOrderAPI {
 
         Drawing drawing = customerOrderService.createOrderDrawing(orderId, request);
 
-        customerOrderService.sendEmailForCreateOrderDrawing(drawing.getOrder());
+        customerOrderMailService.sendEmailForCreateOrderDrawing(drawing.getOrder());
 
         return ResponseEntity.ok(
                 CustomerCreateDrawingResponse.builder()
@@ -121,7 +123,7 @@ public class CustomerOrderAPI {
 
         Order order = customerOrderService.updateOrderDrawing(orderId, drawingId, request);
 
-        customerOrderService.sendEmailForUpdateOrderDrawing(order);
+        customerOrderMailService.sendEmailForUpdateOrderDrawing(order);
 
         return ResponseEntity.ok().build();
     }
@@ -146,7 +148,7 @@ public class CustomerOrderAPI {
 
         Order order = customerOrderService.deleteOrderDrawing(orderId, drawingId);
 
-        customerOrderService.sendEmailForDeleteOrderDrawing(order);
+        customerOrderMailService.sendEmailForDeleteOrderDrawing(order);
 
         return ResponseEntity.ok().build();
     }
@@ -169,7 +171,7 @@ public class CustomerOrderAPI {
 
         Order order = customerOrderService.approveQuotation(orderId);
 
-        customerOrderService.sendEmailForApproveQuotation(order);
+        customerOrderMailService.sendEmailForApproveQuotation(order);
         return ResponseEntity.ok().build();
     }
 
@@ -206,10 +208,10 @@ public class CustomerOrderAPI {
 
         if (order.hasPurchaseOrder()) {
             response = customerOrderService.updateOrderPurchaseOrder(order, file, request);
-            customerOrderService.sendMailForUpdateOrderPurchaseOrder(order);
+            customerOrderMailService.sendEmailForUpdateOrderPurchaseOrder(order);
         } else {
             response = customerOrderService.createOrderPurchaseOrder(order, file, request);
-            customerOrderService.sendMailForCreateOrderPurchaseOrder(order);
+            customerOrderMailService.sendEmailForCreateOrderPurchaseOrder(order);
         }
 
         return ResponseEntity.ok(response);

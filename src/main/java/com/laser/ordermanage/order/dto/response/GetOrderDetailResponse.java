@@ -8,14 +8,14 @@ public record GetOrderDetailResponse (
         GetOrderResponse order,
         GetQuotationResponse quotation,
         GetPurchaseOrderResponse purchaseOrder,
-        GetAcquireResponse acquire
+        GetAcquirerResponse acquirer
 ) {
     @QueryProjection
-    public GetOrderDetailResponse(GetCustomerResponse customer, GetOrderResponse order, GetQuotationResponse quotation, GetPurchaseOrderResponse purchaseOrder, GetAcquireResponse acquire) {
+    public GetOrderDetailResponse(GetCustomerResponse customer, GetOrderResponse order, GetQuotationResponse quotation, GetPurchaseOrderResponse purchaseOrder, GetAcquirerResponse acquirer) {
         this.customer = customer;
         this.order = order;
         this.quotation = quotation;
         this.purchaseOrder = purchaseOrder;
-        this.acquire = acquire;
+        this.acquirer = acquirer;
     }
 }

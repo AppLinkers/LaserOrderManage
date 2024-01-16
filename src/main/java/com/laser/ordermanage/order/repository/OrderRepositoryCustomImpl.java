@@ -386,7 +386,7 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
                                                purchaseOrder.paymentDate,
                                                purchaseOrder.createdAt
                                        ).skipNulls(),
-                                       new QGetAcquireResponse(
+                                       new QGetAcquirerResponse(
                                                acquirer.id,
                                                acquirer.name,
                                                acquirer.phone,

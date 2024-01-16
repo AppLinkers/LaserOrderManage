@@ -55,6 +55,7 @@ public class WebSecurityConfig {
 
         http.authorizeHttpRequests((authorizeRequests) ->
                 authorizeRequests
+                        .requestMatchers("/secure/actuator/**").permitAll() // actuator 권한 허가
                         .requestMatchers("/user/logout", "/user/password").authenticated()
                         .requestMatchers("/user/**").permitAll()
                         .requestMatchers("/customer/**", "/drawing/**").hasRole("CUSTOMER")

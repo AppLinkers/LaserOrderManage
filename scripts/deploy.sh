@@ -3,7 +3,7 @@
 # 작업 디렉토리를 /home/ubuntu/app으로 변경
 cd /home/ubuntu/app
 
-# 환경변수 DOCKER_APP_NAME을 spring으로 설정
+# 환경변수 DOCKER_APP_NAME 설정
 DOCKER_APP_NAME=order-manage-server
 
 # 실행중인 blue가 있는지 확인

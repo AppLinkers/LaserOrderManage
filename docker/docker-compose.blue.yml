@@ -10,8 +10,12 @@ services:
     ports:
       - "8081:8080"
       - "8090:8090"
+    # 이미지 이름
+    image: order-manage-server
     # 컨테이너의 이름
     container_name: order-manage-server-blue
+    # 재부팅 시, 컨테이너 시작
+    restart: always
 
 networks:
   default:

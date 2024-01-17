@@ -15,5 +15,5 @@ services:
 
 networks:
   default:
-    external:
-      name: order-manage-server-bridge
+    name: order-manage-server-bridge
+    external: true

@@ -5,11 +5,13 @@ import com.laser.ordermanage.factory.dto.response.FactoryGetOrderHistoryResponse
 import com.laser.ordermanage.factory.dto.response.FactoryGetOrderIsNewAndIsNewIssueHistoryResponse;
 import com.laser.ordermanage.factory.dto.response.FactoryGetOrderIsNewAndIsReIssueHistoryResponse;
 import com.laser.ordermanage.factory.service.FactoryOrderHistoryService;
+import jakarta.validation.constraints.Pattern;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -18,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.time.LocalDate;
 
 
+@Validated
 @RequiredArgsConstructor
 @RequestMapping("/factory/order")
 @RestController
@@ -85,7 +88,7 @@ public class FactoryOrderHistoryAPI {
             @RequestParam(value = "date-criterion", required = false) String dateCriterion,
             @RequestParam(value = "start-date", required = false) @DateTimeFormat(pattern = "yyyy-mm-dd") LocalDate startDate,
             @RequestParam(value = "end-date", required = false) @DateTimeFormat(pattern = "yyyy-mm-dd") LocalDate endDate,
-            @RequestParam(value = "query", required = false) String query) {
+            @RequestParam(value = "query", required = false) @Pattern(regexp = "^.{0,20}$", message = "검색 단어수의 최대 글자수는 20자입니다.") String query) {
 
         Pageable pageable = PageRequest.of(page - 1, size);
 

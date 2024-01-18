@@ -63,9 +63,14 @@ public class CustomerDeliveryAddressService {
     public void updateDeliveryAddress(String email, Long deliveryAddressId, CustomerCreateOrUpdateDeliveryAddressRequest request) {
         DeliveryAddress deliveryAddress = this.getDeliveryAddress(deliveryAddressId);
 
+        if (deliveryAddress.isDefault() && !request.isDefault()) {
+            throw new CustomCommonException(CustomerErrorCode.UNABLE_DEFAULT_DELIVERY_ADDRESS_DISABLE);
+        }
+
         if (request.isDefault()) {
             DeliveryAddress defaultDeliveryAddress = deliveryAddressRepository.findFirstByCustomer_User_EmailAndIsDefaultTrue(email);
             defaultDeliveryAddress.disableDefault();
+            deliveryAddress.asDefault();
         }
 
         deliveryAddress.updateProperties(request);

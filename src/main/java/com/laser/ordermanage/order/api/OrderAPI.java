@@ -1,6 +1,5 @@
 package com.laser.ordermanage.order.api;
 
-import com.laser.ordermanage.order.domain.Comment;
 import com.laser.ordermanage.order.dto.request.CreateCommentRequest;
 import com.laser.ordermanage.order.service.OrderMailService;
 import com.laser.ordermanage.order.service.OrderService;
@@ -47,7 +46,7 @@ public class OrderAPI {
 
         orderService.checkAuthorityCustomerOfOrderOrFactory(user, orderId);
 
-        return ResponseEntity.ok(orderService.getOrderComment(orderId));
+        return ResponseEntity.ok(orderService.getCommentByOrder(orderId));
     }
 
     /**

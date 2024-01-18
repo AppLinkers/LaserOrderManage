@@ -44,12 +44,12 @@ public class OrderService {
     }
 
     @Transactional(readOnly = true)
-    public Comment getCommentById(Long commentId) {
+    public Comment getCommentByCommentId(Long commentId) {
         return commentRepository.findById(commentId).orElseThrow(() -> new CustomCommonException(OrderErrorCode.NOT_FOUND_COMMENT));
     }
 
     @Transactional(readOnly = true)
-    public ListResponse<GetCommentResponse> getOrderComment(Long orderId) {
+    public ListResponse<GetCommentResponse> getCommentByOrder(Long orderId) {
         return new ListResponse<>(commentRepository.findCommentByOrder(orderId));
     }
 

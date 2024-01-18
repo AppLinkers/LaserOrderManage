@@ -16,6 +16,7 @@ public class FactoryUserAccountService {
     private final FactoryRepository factoryRepository;
     private final UserEntityRepository userRepository;
 
+    @Transactional(readOnly = true)
     public FactoryGetUserAccountResponse getUserAccount(String email) {
         return userRepository.findUserAccountByFactory(email);
     }

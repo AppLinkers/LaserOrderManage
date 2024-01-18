@@ -4,8 +4,11 @@ import com.laser.ordermanage.common.exception.CustomCommonException;
 import com.laser.ordermanage.common.mail.MailService;
 import com.laser.ordermanage.common.mail.dto.MailRequest;
 import com.laser.ordermanage.order.domain.Order;
+import com.laser.ordermanage.order.dto.response.GetEmailReceiverResponse;
 import com.laser.ordermanage.order.exception.OrderErrorCode;
+import com.laser.ordermanage.order.service.OrderMailService;
 import com.laser.ordermanage.order.service.OrderService;
+import com.laser.ordermanage.user.domain.type.Role;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,12 +19,18 @@ import org.springframework.web.util.UriComponentsBuilder;
 public class FactoryOrderMailService {
 
     private final OrderService orderService;
+    private final OrderMailService orderMailService;
     private final MailService mailService;
 
     @Transactional(readOnly = true)
     public void sendMailForUpdateOrderIsUrgent(Long orderId) {
+        GetEmailReceiverResponse emailReceiver = orderMailService.getMailReceiver(orderId, Role.ROLE_CUSTOMER);
+
+        if (!emailReceiver.emailNotification()) {
+            return;
+        }
+
         Order order = orderService.getOrderById(orderId);
-        String toEmail = order.getCustomer().getUser().getEmail();
 
         StringBuilder sbSubject = new StringBuilder();
         StringBuilder sbTitle = new StringBuilder();
@@ -60,7 +69,7 @@ public class FactoryOrderMailService {
         String content = sbContent.toString();
 
         MailRequest mailRequest = MailRequest.builder()
-                .toEmail(toEmail)
+                .toEmail(emailReceiver.email())
                 .subject(subject)
                 .title(title)
                 .content(content)
@@ -72,8 +81,13 @@ public class FactoryOrderMailService {
 
     @Transactional(readOnly = true)
     public void sendMailForCreateOrderQuotation(Long orderId) {
+        GetEmailReceiverResponse emailReceiver = orderMailService.getMailReceiver(orderId, Role.ROLE_CUSTOMER);
+
+        if (!emailReceiver.emailNotification()) {
+            return;
+        }
+
         Order order = orderService.getOrderById(orderId);
-        String toEmail = order.getCustomer().getUser().getEmail();
 
         StringBuilder sbSubject = new StringBuilder();
         sbSubject.append("[거래 견적서 작성] 고객님, ")
@@ -93,7 +107,7 @@ public class FactoryOrderMailService {
         String content = sbContent.toString();
 
         MailRequest mailRequest = MailRequest.builder()
-                .toEmail(toEmail)
+                .toEmail(emailReceiver.email())
                 .subject(subject)
                 .title(title)
                 .content(content)
@@ -105,8 +119,13 @@ public class FactoryOrderMailService {
 
     @Transactional(readOnly = true)
     public void sendMailForUpdateOrderQuotation(Long orderId) {
+        GetEmailReceiverResponse emailReceiver = orderMailService.getMailReceiver(orderId, Role.ROLE_CUSTOMER);
+
+        if (!emailReceiver.emailNotification()) {
+            return;
+        }
+
         Order order = orderService.getOrderById(orderId);
-        String toEmail = order.getCustomer().getUser().getEmail();
 
         StringBuilder sbSubject = new StringBuilder();
         sbSubject.append("[거래 견적서 수정] 고객님, ")
@@ -126,7 +145,7 @@ public class FactoryOrderMailService {
         String content = sbContent.toString();
 
         MailRequest mailRequest = MailRequest.builder()
-                .toEmail(toEmail)
+                .toEmail(emailReceiver.email())
                 .subject(subject)
                 .title(title)
                 .content(content)
@@ -138,8 +157,13 @@ public class FactoryOrderMailService {
 
     @Transactional(readOnly = true)
     public void sendEmailForApprovePurchaseOrder(Long orderId) {
+        GetEmailReceiverResponse emailReceiver = orderMailService.getMailReceiver(orderId, Role.ROLE_CUSTOMER);
+
+        if (!emailReceiver.emailNotification()) {
+            return;
+        }
+
         Order order = orderService.getOrderById(orderId);
-        String toEmail = order.getCustomer().getUser().getEmail();
 
         StringBuilder sbSubject = new StringBuilder();
         sbSubject.append("[거래 발주서 승인] 고객님, ")
@@ -159,7 +183,7 @@ public class FactoryOrderMailService {
         String content = sbContent.toString();
 
         MailRequest mailRequest = MailRequest.builder()
-                .toEmail(toEmail)
+                .toEmail(emailReceiver.email())
                 .subject(subject)
                 .title(title)
                 .content(content)
@@ -171,8 +195,13 @@ public class FactoryOrderMailService {
 
     @Transactional(readOnly = true)
     public void sendEmailForChangeStageToProductionCompleted(Long orderId) {
+        GetEmailReceiverResponse emailReceiver = orderMailService.getMailReceiver(orderId, Role.ROLE_CUSTOMER);
+
+        if (!emailReceiver.emailNotification()) {
+            return;
+        }
+
         Order order = orderService.getOrderById(orderId);
-        String toEmail = order.getCustomer().getUser().getEmail();
 
         StringBuilder sbSubject = new StringBuilder();
         sbSubject.append("[거래 제작 완료] 고객님, ")
@@ -192,7 +221,7 @@ public class FactoryOrderMailService {
         String content = sbContent.toString();
 
         MailRequest mailRequest = MailRequest.builder()
-                .toEmail(toEmail)
+                .toEmail(emailReceiver.email())
                 .subject(subject)
                 .title(title)
                 .content(content)
@@ -204,6 +233,12 @@ public class FactoryOrderMailService {
 
     @Transactional(readOnly = true)
     public void sendEmailForAcquirer(Long orderId, String baseUrl) {
+        GetEmailReceiverResponse emailReceiver = orderMailService.getMailReceiver(orderId, Role.ROLE_FACTORY);
+
+        if (!emailReceiver.emailNotification()) {
+            return;
+        }
+
         Order order = orderService.getOrderById(orderId);
 
         if (!order.enableChangeStageToCompleted()) {
@@ -234,20 +269,26 @@ public class FactoryOrderMailService {
                 .append(" 거래에 대한 품목 확인 및 인수자 서명을 받아주세요.");
         String content = sbContent.toString();
 
-        MailRequest mailRequest = MailRequest.builderToFactory()
+        MailRequest mailRequest = MailRequest.builder()
+                .toEmail(emailReceiver.email())
                 .subject(subject)
                 .title(title)
                 .content(content)
                 .buttonText("서명 링크 이동")
                 .buttonUrl(acquireSignatureUrl)
-                .buildToFactory();
+                .build();
         mailService.sendEmail(mailRequest);
     }
 
     @Transactional(readOnly = true)
     public void sendEmailForChangeStageToCompleted(Long orderId) {
+        GetEmailReceiverResponse emailReceiver = orderMailService.getMailReceiver(orderId, Role.ROLE_CUSTOMER);
+
+        if (!emailReceiver.emailNotification()) {
+            return;
+        }
+
         Order order = orderService.getOrderById(orderId);
-        String toEmail = order.getCustomer().getUser().getEmail();
 
         StringBuilder sbSubject = new StringBuilder();
         sbSubject.append("[거래 완료] 고객님, ")
@@ -275,7 +316,7 @@ public class FactoryOrderMailService {
         String content = sbContent.toString();
 
         MailRequest mailRequest = MailRequest.builder()
-                .toEmail(toEmail)
+                .toEmail(emailReceiver.email())
                 .subject(subject)
                 .title(title)
                 .content(content)

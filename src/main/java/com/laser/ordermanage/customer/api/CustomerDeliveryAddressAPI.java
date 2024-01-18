@@ -56,7 +56,6 @@ public class CustomerDeliveryAddressAPI {
             @PathVariable("delivery-address-id") Long deliveryAddressId,
             @RequestBody @Valid CustomerCreateOrUpdateDeliveryAddressRequest request
     ) {
-
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         customerDeliveryAddressService.checkAuthorityCustomerOfDeliveryAddress(user, deliveryAddressId);

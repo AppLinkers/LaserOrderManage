@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @AllArgsConstructor
-public enum QuotationFileType {
+public enum PurchaseOrderFileType {
     PDF("pdf"),
     HWP("hwp"),
     CELL("cell"),
@@ -28,11 +28,11 @@ public enum QuotationFileType {
     @Getter
     private final String extension;
 
-    private static final Map<String, QuotationFileType> extensionMap =
+    private static final Map<String, PurchaseOrderFileType> extensionMap =
             Collections.unmodifiableMap(Stream.of(values())
-                    .collect(Collectors.toMap(QuotationFileType::getExtension, Function.identity())));
+                    .collect(Collectors.toMap(PurchaseOrderFileType::getExtension, Function.identity())));
 
-    public static QuotationFileType ofExtension(String request) {
+    public static PurchaseOrderFileType ofExtension(String request) {
         return Optional.ofNullable(extensionMap.get(request)).orElseThrow(() -> new CustomCommonException(OrderErrorCode.UNSUPPORTED_QUOTATION_FILE_EXTENSION));
     }
 }

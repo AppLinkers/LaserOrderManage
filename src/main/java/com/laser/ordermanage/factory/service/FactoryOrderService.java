@@ -2,6 +2,7 @@ package com.laser.ordermanage.factory.service;
 
 import com.laser.ordermanage.common.cloud.aws.S3Service;
 import com.laser.ordermanage.common.exception.CustomCommonException;
+import com.laser.ordermanage.common.util.FileUtil;
 import com.laser.ordermanage.customer.domain.Customer;
 import com.laser.ordermanage.factory.dto.request.FactoryCreateOrUpdateOrderQuotationRequest;
 import com.laser.ordermanage.factory.dto.request.FactoryCreateOrderAcquirerRequest;
@@ -13,6 +14,7 @@ import com.laser.ordermanage.order.domain.Acquirer;
 import com.laser.ordermanage.order.domain.Order;
 import com.laser.ordermanage.order.domain.PurchaseOrder;
 import com.laser.ordermanage.order.domain.Quotation;
+import com.laser.ordermanage.order.domain.type.QuotationFileType;
 import com.laser.ordermanage.order.exception.OrderErrorCode;
 import com.laser.ordermanage.order.repository.AcquirerRepository;
 import com.laser.ordermanage.order.repository.QuotationRepository;
@@ -53,6 +55,7 @@ public class FactoryOrderService {
 
         String fileName = file.getOriginalFilename();
         Long fileSize = file.getSize();
+        String fileType = FileUtil.getExtension(file);
 
         // 견적서 파일 업로드
         String quotationFileUrl = uploadQuotationFile(file);
@@ -61,6 +64,7 @@ public class FactoryOrderService {
                 .totalCost(request.totalCost())
                 .fileName(fileName)
                 .fileSize(fileSize)
+                .fileType(fileType)
                 .fileUrl(quotationFileUrl)
                 .deliveryDate(request.deliveryDate())
                 .build();
@@ -80,11 +84,12 @@ public class FactoryOrderService {
         if (file != null && !file.isEmpty()) {
             String fileName = file.getOriginalFilename();
             Long fileSize = file.getSize();
+            String fileType = FileUtil.getExtension(file);
 
             // 견적서 파일 업로드
             String quotationFileUrl = uploadQuotationFile(file);
 
-            quotation.updateFile(fileName, fileSize, quotationFileUrl);
+            quotation.updateFile(fileName, fileSize, fileType, quotationFileUrl);
         }
 
         quotation.updateProperties(request);

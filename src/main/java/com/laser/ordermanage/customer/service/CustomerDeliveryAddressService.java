@@ -66,6 +66,7 @@ public class CustomerDeliveryAddressService {
         if (request.isDefault()) {
             DeliveryAddress defaultDeliveryAddress = deliveryAddressRepository.findFirstByCustomer_User_EmailAndIsDefaultTrue(email);
             defaultDeliveryAddress.disableDefault();
+            deliveryAddress.asDefault();
         }
 
         deliveryAddress.updateProperties(request);

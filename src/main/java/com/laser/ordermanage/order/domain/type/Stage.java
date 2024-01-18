@@ -31,7 +31,7 @@ public enum Stage {
                     .collect(Collectors.toMap(Stage::getRequest, Function.identity())));
 
     public static Stage ofRequest(String request) {
-        return Optional.ofNullable(stageMap.get(request)).orElseThrow(() -> new CustomCommonException(CommonErrorCode.INVALID_PARAMETER, "stage"));
+        return Optional.ofNullable(stageMap.get(request)).orElseThrow(() -> new CustomCommonException(CommonErrorCode.INVALID_PARAMETER, "stage 파라미터가 올바르지 않습니다."));
     }
 
 }

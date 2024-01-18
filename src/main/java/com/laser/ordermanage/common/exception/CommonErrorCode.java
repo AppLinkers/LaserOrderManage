@@ -13,7 +13,7 @@ public enum CommonErrorCode implements ErrorCode {
 
     MISMATCH_PARAMETER_TYPE("COMMON_400_02", HttpStatus.BAD_REQUEST, " 파라미터의 타입이 올바르지 않습니다."),
     REQUIRED_PARAMETER("COMMON_400_03", HttpStatus.BAD_REQUEST, " 파라미터는 필수 입력값입니다."),
-    INVALID_PARAMETER("COMMON_400_04", HttpStatus.BAD_REQUEST, " 파라미터가 올바르지 않습니다."),
+    INVALID_PARAMETER("COMMON_400_04", HttpStatus.BAD_REQUEST, ""),
 
     INVALID_REQUEST_BODY_FIELDS("COMMON_400_05", HttpStatus.BAD_REQUEST, ""),
     REQUIRED_REQUEST_BODY("COMMON_400_06", HttpStatus.BAD_REQUEST, "Request Body 가 필요한 요청 입니다."),

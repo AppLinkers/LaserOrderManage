@@ -2,6 +2,7 @@ package com.laser.ordermanage.order.domain;
 
 import com.laser.ordermanage.common.entity.CreatedAtEntity;
 import com.laser.ordermanage.customer.dto.request.CustomerCreateOrUpdateOrderPurchaseOrderRequest;
+import com.laser.ordermanage.order.domain.type.PurchaseOrderFileType;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -36,22 +37,28 @@ public class PurchaseOrder extends CreatedAtEntity {
     @Column(name = "file_size", nullable = false)
     private Long fileSize;
 
+    @Enumerated(value = EnumType.STRING)
+    @Column(name = "file_type", nullable = false)
+    private PurchaseOrderFileType fileType;
+
     @Column(name = "file_url", nullable = false)
     private String fileUrl;
 
     @Builder
-    public PurchaseOrder(LocalDate inspectionPeriod, String inspectionCondition, LocalDate paymentDate, String fileName, Long fileSize, String fileUrl) {
+    public PurchaseOrder(LocalDate inspectionPeriod, String inspectionCondition, LocalDate paymentDate, String fileName, Long fileSize, String fileType, String fileUrl) {
         this.inspectionPeriod = inspectionPeriod;
         this.inspectionCondition = inspectionCondition;
         this.paymentDate = paymentDate;
         this.fileName = fileName;
         this.fileSize = fileSize;
+        this.fileType = PurchaseOrderFileType.ofExtension(fileType);
         this.fileUrl = fileUrl;
     }
 
-    public void updateFile(String fileName, Long fileSize, String fileUrl) {
+    public void updateFile(String fileName, Long fileSize, String fileType, String fileUrl) {
         this.fileName = fileName;
         this.fileSize = fileSize;
+        this.fileType = PurchaseOrderFileType.ofExtension(fileType);
         this.fileUrl = fileUrl;
     }
 

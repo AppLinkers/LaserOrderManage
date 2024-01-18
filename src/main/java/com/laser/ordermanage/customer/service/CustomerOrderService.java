@@ -2,6 +2,7 @@ package com.laser.ordermanage.customer.service;
 
 import com.laser.ordermanage.common.cloud.aws.S3Service;
 import com.laser.ordermanage.common.exception.CustomCommonException;
+import com.laser.ordermanage.common.util.FileUtil;
 import com.laser.ordermanage.customer.domain.Customer;
 import com.laser.ordermanage.customer.domain.DeliveryAddress;
 import com.laser.ordermanage.customer.dto.request.*;
@@ -182,6 +183,7 @@ public class CustomerOrderService {
 
         String fileName = file.getOriginalFilename();
         Long fileSize = file.getSize();
+        String fileType = FileUtil.getExtension(file);
 
         // 발주서 파일 업로드
         String purchaseOrderFileUrl = uploadPurchaseOrderFile(file);
@@ -192,6 +194,7 @@ public class CustomerOrderService {
                 .paymentDate(request.paymentDate())
                 .fileName(fileName)
                 .fileSize(fileSize)
+                .fileType(fileType)
                 .fileUrl(purchaseOrderFileUrl)
                 .build();
 
@@ -210,11 +213,12 @@ public class CustomerOrderService {
         if (file != null && !file.isEmpty()) {
             String fileName = file.getOriginalFilename();
             Long fileSize = file.getSize();
+            String fileType = FileUtil.getExtension(file);
 
             // 발주서 파일 업로드
             String purchaseOrderFileUrl = uploadPurchaseOrderFile(file);
 
-            purchaseOrder.updateFile(fileName, fileSize, purchaseOrderFileUrl);
+            purchaseOrder.updateFile(fileName, fileSize, fileType, purchaseOrderFileUrl);
         }
 
         purchaseOrder.updateProperties(request);

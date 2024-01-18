@@ -20,16 +20,4 @@ public record MailRequest(
         this.buttonText = buttonText;
         this.buttonUrl = buttonUrl;
     }
-
-    @Builder(builderMethodName = "builderToFactory", buildMethodName = "buildToFactory")
-    public MailRequest(String subject, String title, String content, String buttonText, String buttonUrl) {
-        this(
-                "admin@kumoh.org",
-                subject,
-                title,
-                content,
-                buttonText,
-                buttonUrl
-        );
-    }
 }

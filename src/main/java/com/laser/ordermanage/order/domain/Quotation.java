@@ -2,6 +2,7 @@ package com.laser.ordermanage.order.domain;
 
 import com.laser.ordermanage.common.entity.CreatedAtEntity;
 import com.laser.ordermanage.factory.dto.request.FactoryCreateOrUpdateOrderQuotationRequest;
+import com.laser.ordermanage.order.domain.type.QuotationFileType;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -30,6 +31,10 @@ public class Quotation extends CreatedAtEntity {
     @Column(name = "file_size", nullable = false)
     private Long fileSize;
 
+    @Enumerated(value = EnumType.STRING)
+    @Column(name = "file_type", nullable = false)
+    private QuotationFileType fileType;
+
     @Column(name = "file_url", nullable = false)
     private String fileUrl;
 
@@ -37,17 +42,19 @@ public class Quotation extends CreatedAtEntity {
     private LocalDate deliveryDate;
 
     @Builder
-    public Quotation(Long totalCost, String fileName, Long fileSize, String fileUrl, LocalDate deliveryDate) {
+    public Quotation(Long totalCost, String fileName, Long fileSize, String fileType, String fileUrl, LocalDate deliveryDate) {
         this.totalCost = totalCost;
         this.fileName = fileName;
         this.fileSize = fileSize;
+        this.fileType = QuotationFileType.ofExtension(fileType);
         this.fileUrl = fileUrl;
         this.deliveryDate = deliveryDate;
     }
 
-    public void updateFile(String fileName, Long fileSize, String fileUrl) {
+    public void updateFile(String fileName, Long fileSize, String fileType, String fileUrl) {
         this.fileName = fileName;
         this.fileSize = fileSize;
+        this.fileType = QuotationFileType.ofExtension(fileType);
         this.fileUrl = fileUrl;
     }
 

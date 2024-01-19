@@ -1,15 +1,22 @@
 package com.laser.ordermanage.common.exception;
 
 import com.laser.ordermanage.user.exception.UserErrorCode;
+import com.slack.api.Slack;
+import com.slack.api.model.Attachment;
+import com.slack.api.model.Field;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.tomcat.util.http.fileupload.impl.FileSizeLimitExceededException;
 import org.apache.tomcat.util.http.fileupload.impl.SizeLimitExceededException;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.security.core.Authentication;
+import org.springframework.util.StreamUtils;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -20,14 +27,27 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.multipart.support.MissingServletRequestPartException;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 
+import static com.slack.api.webhook.WebhookPayloads.payload;
+
+@Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    private final Slack slackClient = Slack.getInstance();
+
+    @Value("${slack.webhook.url}")
+    private String webhookUrl;
+
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<?> handleUnknownException(Exception e) {
-        e.printStackTrace();
+    public ResponseEntity<?> handleUnknownException(Exception e, HttpServletRequest request) {
+        sendSlackAlertErrorLog(e, request); // 슬랙 알림 보내는 메서드
         CustomCommonException exception = new CustomCommonException(CommonErrorCode.UNKNOWN_ERROR);
         return exception.toErrorResponse();
     }
@@ -128,4 +148,48 @@ public class GlobalExceptionHandler {
         CustomCommonException exception = new CustomCommonException(CommonErrorCode.METHOD_NOT_ALLOWED);
         return exception.toErrorResponse();
     }
+
+    // 슬랙 알림 보내는 메서드
+    private void sendSlackAlertErrorLog(Exception e, HttpServletRequest request) {
+        try {
+            slackClient.send(webhookUrl, payload(p -> p
+                    .text("서버 에러 발생!")
+                    .attachments(
+                            List.of(generateSlackAttachment(e, request))
+                    )
+            ));
+        } catch (IOException slackError) {
+            // slack 통신 시 발생한 예외에서 Exception을 던져준다면 재귀적인 예외가 발생합니다.
+            // 따라서 로깅으로 처리하였고, 서버 에러는 아니므로 `error` 레벨보다 낮은 레벨로 설정했습니다.
+            log.debug("Slack 통신과의 예외 발생");
+        }
+    }
+
+    // attachment 생성 메서드
+    private Attachment generateSlackAttachment(Exception e, HttpServletRequest request) {
+        String requestTime = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS").format(LocalDateTime.now());
+        String xffHeader = request.getHeader("X-FORWARDED-FOR");
+
+        List<Field> fieldList = new ArrayList<>();
+        fieldList.add(new Field("Request IP", xffHeader == null ? request.getRemoteAddr() : xffHeader, false));
+        fieldList.add(new Field("Request URL", request.getMethod() + " " + request.getRequestURL(), false));
+
+        if (request.getContentType() != null && request.getContentType().contains("application/json")) {
+            try {
+                String messageBody = StreamUtils.copyToString(request.getInputStream(), StandardCharsets.UTF_8);
+                fieldList.add(new Field("Request Body", messageBody, false));
+            } catch (IOException ex) {
+                log.debug("Extract Request Body 예외 발생");
+            }
+        }
+
+        fieldList.add(new Field("Error Message", e.getMessage(), false));
+
+        return Attachment.builder()
+                .color("ff0000")  // 붉은 색으로 보이도록
+                .title(requestTime + " 발생한 에러 로그")
+                .fields(fieldList)
+                .build();
+    }
+
 }

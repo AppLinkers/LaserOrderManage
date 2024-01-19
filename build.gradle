@@ -91,6 +91,9 @@ dependencies {
 
 	// test-containers
 	testImplementation group: 'org.testcontainers', name: 'testcontainers', version: '1.17.2'
+
+	// slack
+	implementation 'com.slack.api:slack-api-client:1.37.0'
 }
 
 tasks.named('test') {

@@ -36,7 +36,7 @@ public class FactoryOrderAPI {
      * - path parameter {order-id} 에 해당하는 거래 조회
      * - 거래 긴급 설정 가능 단계 확인 (견적 대기, 견적 승인, 제작 중, 배송 중)
      * - 거래 긴급을 isUrgent 에 맞춰서 설정
-     * - 거래의 고객에게 메일 전송
+     * - 거래의 고객에게 이메일 전송
      */
     @PatchMapping("/{order-id}/urgent")
     public ResponseEntity<?> updateOrderIsUrgent(
@@ -56,7 +56,7 @@ public class FactoryOrderAPI {
      * - 거래 견적서 작성 및 수정 가능 단계 확인 (견적 대기)
      * - 거래 견적서의 납기일이 거래 생성일 이후인지 확인
      * - 거래 견적서 작성 및 수정
-     * - 거래의 고객에게 메일 전송
+     * - 거래의 고객에게 이메일 전송
      */
     @PutMapping("/{order-id}/quotation")
     public ResponseEntity<?> createOrUpdateOrderQuotation(
@@ -92,7 +92,7 @@ public class FactoryOrderAPI {
      * - 거래 발주서 승인 가능 단계 확인 (견적 승인)
      * - 거래 발주서 유무 확인
      * - 거래 단계 변경 : 견적 승인 -> 제작 중
-     * - 거래의 고객에게 메일 전송
+     * - 거래의 고객에게 이메일 전송
      */
     @PatchMapping("/{order-id}/purchase-order")
     public ResponseEntity<?> approvePurchaseOrder(@PathVariable("order-id") Long orderId) {
@@ -108,7 +108,7 @@ public class FactoryOrderAPI {
      * - path parameter {order-id} 에 해당하는 거래 조회
      * - 거래 제작 완료 가능 단계 확인 (제작 중)
      * - 거래 단계 변경 : 제작 중 -> 제작 완료
-     * - 거래의 고객에게 메일 전송
+     * - 거래의 고객에게 이메일 전송
      * - 7일 후, 거래 단계 변경 (제작 완료 -> 거래 완료) 를 위한 Job 을 Schedule 에 등록
      */
     @PatchMapping("/{order-id}/stage/production-completed")
@@ -127,7 +127,7 @@ public class FactoryOrderAPI {
      * 거래 완료 - 이메일로 인수자 확인 및 서명 링크 전송
      * - path parameter {order-id} 에 해당하는 거래 조회
      * - 거래 완료 가능 단계 확인 (제작 완료)
-     * - 공장에게 인수자 확인 및 서명 링크를 메일로 전송합니다.
+     * - 공장에게 인수자 확인 및 서명 링크를 이메일로 전송합니다.
      */
     @PostMapping("/{order-id}/acquirer/email-link")
     public ResponseEntity<?> sendEmailForAcquirer(
@@ -149,7 +149,7 @@ public class FactoryOrderAPI {
      * - 인수자 정보 데이터 생성 및 거래와 연관관계 매핑
      * - Schedule 에 등록되어 있는 {order-id} 에 해당하는 거래 단계 변경 (제작 완료 -> 거래 완료) 를 위한 Job 이 있다면, 해당 Job 제거
      * - 거래 단계 변경 : 제작 완료 -> 거래 완료 (해당 고객이 신규 고객이면, 신규 고객 -> 기존 고객 변경)
-     * - 거래의 고객에게 메일 전송
+     * - 거래의 고객에게 이메일 전송
      */
     @PostMapping("/{order-id}/stage/completed")
     public ResponseEntity<?> changeStageToCompleted(

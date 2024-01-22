@@ -53,7 +53,7 @@ public class CustomerOrderAPI {
      * - 거래에 대한 현재 로그인한 회원의 접근 권한 확인 (거래의 고객 회원)
      * - 거래 배송지 수정 가능 단계 확인 (견적 대기, 견적 승인, 제작 중, 배송 중)
      * - 거래 배송지를 deliveryAddressId 에 맞춰서 설정
-     * - 공장에게 메일 전송
+     * - 공장에게 이메일 전송
      */
     @PatchMapping("/{order-id}/delivery-address")
     public ResponseEntity<?> updateOrderDeliveryAddress(
@@ -79,7 +79,7 @@ public class CustomerOrderAPI {
      * - 거래에 대한 현재 로그인한 회원의 접근 권한 확인 (거래의 고객 회원)
      * - 거래 도면 항목 추가 가능 단계 확인 (견적 대기, 견적 승인, 제작 중)
      * - 거래 도면 항목 추가
-     * - 공장에게 메일 전송
+     * - 공장에게 이메일 전송
      */
     @PostMapping("/{order-id}/drawing")
     public ResponseEntity<?> createOrderDrawing(
@@ -108,7 +108,7 @@ public class CustomerOrderAPI {
      * - 거래 도면 항목 수정 가능 단계 확인 (견적 대기, 견적 승인, 제작 중)
      * - path parameter {drawing-id} 에 해당하는 도면 항목 조회
      * - 거래 도면 항목 수정
-     * - 공장에게 메일 전송
+     * - 공장에게 이메일 전송
      */
     @PatchMapping("/{order-id}/drawing/{drawing-id}")
     public ResponseEntity<?> updateOrderDrawing(
@@ -134,7 +134,7 @@ public class CustomerOrderAPI {
      * - 거래 도면 항목 삭제 가능 단계 확인 (견적 대기, 견적 승인, 제작 중)
      * - 거래 도면 개수 조건 확인 (1개 초과)
      * - path parameter {drawing-id} 에 해당하는 도면 삭제
-     * - 공장에게 메일 전송
+     * - 공장에게 이메일 전송
      */
     @DeleteMapping("/{order-id}/drawing/{drawing-id}")
     public ResponseEntity<?> deleteOrderDrawing(
@@ -159,7 +159,7 @@ public class CustomerOrderAPI {
      * - 거래 견적서 승인 가능 단계 확인 (견적 대기)
      * - 거래 견적서 유무 확인
      * - 거래 단계 변경 : 견적 대기 -> 견적 승인
-     * - 공장에게 메일 전송
+     * - 공장에게 이메일 전송
      */
     @PatchMapping("/{order-id}/quotation")
     public ResponseEntity<?> approveQuotation(@PathVariable("order-id") Long orderId) {
@@ -181,7 +181,7 @@ public class CustomerOrderAPI {
      * - 거래 발주서 작성 및 수정 가능 단계 확인 (견적 승인)
      * - 거래 발주서의 검수 기간 및 지급일이 거래의 견적서 납기일 이후인지 확인
      * - 거래 발주서 작성 및 수정
-     * - 공장에게 메일 전송
+     * - 공장에게 이메일 전송
      */
     @PutMapping("/{order-id}/purchase-order")
     public ResponseEntity<?> createOrUpdateOrderPurchaseOrder(

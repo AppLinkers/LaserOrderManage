@@ -14,7 +14,6 @@ import com.laser.ordermanage.order.domain.Acquirer;
 import com.laser.ordermanage.order.domain.Order;
 import com.laser.ordermanage.order.domain.PurchaseOrder;
 import com.laser.ordermanage.order.domain.Quotation;
-import com.laser.ordermanage.order.domain.type.QuotationFileType;
 import com.laser.ordermanage.order.exception.OrderErrorCode;
 import com.laser.ordermanage.order.repository.AcquirerRepository;
 import com.laser.ordermanage.order.repository.QuotationRepository;
@@ -69,10 +68,10 @@ public class FactoryOrderService {
                 .deliveryDate(request.deliveryDate())
                 .build();
 
-        Quotation savedQuotation = quotationRepository.save(quotation);
-        order.createQuotation(savedQuotation);
+        Quotation createdQuotation = quotationRepository.save(quotation);
+        order.createQuotation(createdQuotation);
 
-        return FactoryCreateOrUpdateOrderQuotationResponse.from(savedQuotation);
+        return FactoryCreateOrUpdateOrderQuotationResponse.from(createdQuotation);
     }
 
     @Transactional
@@ -143,8 +142,8 @@ public class FactoryOrderService {
                 .signatureFileUrl(acquirerSignatureFileUrl)
                 .build();
 
-        Acquirer savedAcquirer = acquirerRepository.save(acquirer);
-        order.createAcquirer(savedAcquirer);
+        Acquirer createdAcquirer = acquirerRepository.save(acquirer);
+        order.createAcquirer(createdAcquirer);
     }
 
     @Transactional

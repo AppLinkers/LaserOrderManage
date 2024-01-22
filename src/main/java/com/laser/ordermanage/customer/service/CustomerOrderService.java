@@ -117,9 +117,9 @@ public class CustomerOrderService {
                 .thickness(request.thickness())
                 .build();
 
-        Drawing savedDrawing = drawingRepository.save(drawing);
+        Drawing createdDrawing = drawingRepository.save(drawing);
 
-        return savedDrawing.getId();
+        return createdDrawing.getId();
     }
 
     @Transactional
@@ -200,10 +200,10 @@ public class CustomerOrderService {
                 .fileUrl(purchaseOrderFileUrl)
                 .build();
 
-        PurchaseOrder savedPurchaseOrder = purchaseOrderRepository.save(purchaseOrder);
-        order.createPurchaseOrder(savedPurchaseOrder);
+        PurchaseOrder createdPurchaseOrder = purchaseOrderRepository.save(purchaseOrder);
+        order.createPurchaseOrder(createdPurchaseOrder);
 
-        return CustomerCreateOrUpdateOrderPurchaseOrderResponse.from(savedPurchaseOrder);
+        return CustomerCreateOrUpdateOrderPurchaseOrderResponse.from(createdPurchaseOrder);
     }
 
     @Transactional

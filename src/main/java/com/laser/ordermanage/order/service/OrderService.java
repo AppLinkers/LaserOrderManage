@@ -65,9 +65,9 @@ public class OrderService {
                 .content(request.content())
                 .build();
 
-        Comment savedComment = commentRepository.save(comment);
+        Comment createdComment = commentRepository.save(comment);
 
-        return savedComment.getId();
+        return createdComment.getId();
     }
 
     @Transactional(readOnly = true)

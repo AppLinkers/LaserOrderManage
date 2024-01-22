@@ -20,6 +20,44 @@ public class CustomerOrderEmailService {
     private final EmailService emailService;
 
     @Transactional(readOnly = true)
+    public void sendEmailForCreateOrder(Long orderId) {
+        GetEmailRecipientResponse emailRecipient = orderEmailService.getEmailRecipient(orderId, Role.ROLE_FACTORY);
+
+        if (!emailRecipient.emailNotification()) {
+            return;
+        }
+
+        Order order = orderService.getOrderById(orderId);
+        StringBuilder sbSubject = new StringBuilder();
+        sbSubject.append("[신규 거래] ")
+                .append(order.getCustomer().getName())
+                .append(" - ")
+                .append(order.getName())
+                .append(" 거래가 생성 되었습니다.");
+        String subject = sbSubject.toString();
+
+        String title = "신규 거래 생성";
+
+        StringBuilder sbContent = new StringBuilder();
+        sbContent.append(order.getCustomer().getName())
+                .append(order.getCustomer().hasCompanyName() ? " - " + order.getCustomer().getCompanyName() : " ")
+                .append("고객님의, ")
+                .append(order.getName())
+                .append(" 거래가 생성 되었습니다.");
+        String content = sbContent.toString();
+
+        EmailWithButtonRequest emailWithButtonRequest = EmailWithButtonRequest.builder()
+                .recipient(emailRecipient.email())
+                .subject(subject)
+                .title(title)
+                .content(content)
+                .buttonText("거래 정보 확인하기")
+                .buttonUrl("https://www.kumoh.org/order/" + order.getId())
+                .build();
+        emailService.sendEmailWithButton(emailWithButtonRequest);
+    }
+
+    @Transactional(readOnly = true)
     public void sendEmailForUpdateOrderDeliveryAddress(Long orderId) {
         GetEmailRecipientResponse emailRecipient = orderEmailService.getEmailRecipient(orderId, Role.ROLE_FACTORY);
 

@@ -36,13 +36,16 @@ public class CustomerOrderAPI {
      * - 제조 서비스 및 후처리 서비스 데이터 생성 및 거래 데이터와 연관관계 매핑
      * - 거래 데이터 생성
      * - 도면 데이터 생성 및 거래 데이터와 연관관계 매핑
+     * - 공장에게 이메일 전송
      */
     @PostMapping("")
     public ResponseEntity<?> createOrder(@RequestBody @Valid CustomerCreateOrderRequest request) {
 
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        customerOrderService.createOrder(user, request);
+        Long orderId = customerOrderService.createOrder(user, request);
+
+        customerOrderEmailService.sendEmailForCreateOrder(orderId);
 
         return ResponseEntity.ok().build();
     }

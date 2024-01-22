@@ -39,7 +39,7 @@ public class CustomerOrderService {
     private final S3Service s3Service;
 
     @Transactional
-    public void createOrder(User user, CustomerCreateOrderRequest request) {
+    public Long createOrder(User user, CustomerCreateOrderRequest request) {
         Customer customer = customerRepository.findFirstByUserEmail(user.getUsername());
 
         OrderDeliveryAddress deliveryAddress = OrderDeliveryAddress.ofRequest(request.deliveryAddress());
@@ -80,6 +80,8 @@ public class CustomerOrderService {
         );
 
         drawingRepository.saveAll(drawingList);
+
+        return createdOrder.getId();
     }
 
     @Transactional

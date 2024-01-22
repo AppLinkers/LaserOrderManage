@@ -1,5 +1,6 @@
 package com.laser.ordermanage.common.exception;
 
+import com.laser.ordermanage.common.util.NetworkUtil;
 import com.laser.ordermanage.user.exception.UserErrorCode;
 import com.slack.api.Slack;
 import com.slack.api.model.Attachment;
@@ -168,10 +169,10 @@ public class GlobalExceptionHandler {
     // attachment 생성 메서드
     private Attachment generateSlackAttachment(Exception e, HttpServletRequest request) {
         String requestTime = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS").format(LocalDateTime.now());
-        String xffHeader = request.getHeader("X-FORWARDED-FOR");
+        String requestIP = NetworkUtil.getClientIp(request);
 
         List<Field> fieldList = new ArrayList<>();
-        fieldList.add(new Field("Request IP", xffHeader == null ? request.getRemoteAddr() : xffHeader, false));
+        fieldList.add(new Field("Request IP", requestIP, false));
         fieldList.add(new Field("Request URL", request.getMethod() + " " + request.getRequestURL(), false));
 
         if (request.getContentType() != null && request.getContentType().contains("application/json")) {

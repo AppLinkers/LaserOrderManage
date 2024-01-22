@@ -1,7 +1,7 @@
 package com.laser.ordermanage.order.service;
 
 import com.laser.ordermanage.common.email.EmailService;
-import com.laser.ordermanage.common.email.dto.EmailRequest;
+import com.laser.ordermanage.common.email.dto.EmailWithButtonRequest;
 import com.laser.ordermanage.order.domain.Comment;
 import com.laser.ordermanage.order.domain.Order;
 import com.laser.ordermanage.order.dto.response.GetEmailRecipientResponse;
@@ -50,7 +50,7 @@ public class OrderEmailService {
                     .append(" 거래에 새로운 댓글이 작성되었습니다.");
             String content = sbContent.toString();
 
-            EmailRequest emailRequest = EmailRequest.builder()
+            EmailWithButtonRequest emailWithButtonRequest = EmailWithButtonRequest.builder()
                     .recipient(emailRecipient.email())
                     .subject(subject)
                     .title(title)
@@ -58,7 +58,7 @@ public class OrderEmailService {
                     .buttonText("거래 정보 확인하기")
                     .buttonUrl("https://www.kumoh.org/order/" + order.getId())
                     .build();
-            emailService.sendEmail(emailRequest);
+            emailService.sendEmailWithButton(emailWithButtonRequest);
 
         } else if (user.getRole().equals(Role.ROLE_CUSTOMER)) {
             GetEmailRecipientResponse emailRecipient = getEmailRecipient(order.getId(), Role.ROLE_FACTORY);
@@ -85,7 +85,7 @@ public class OrderEmailService {
                     .append(" 거래에 새로운 댓글이 작성되었습니다.");
             String content = sbContent.toString();
 
-            EmailRequest emailRequest = EmailRequest.builder()
+            EmailWithButtonRequest emailWithButtonRequest = EmailWithButtonRequest.builder()
                     .recipient(emailRecipient.email())
                     .subject(subject)
                     .title(title)
@@ -93,7 +93,7 @@ public class OrderEmailService {
                     .buttonText("거래 정보 확인하기")
                     .buttonUrl("https://www.kumoh.org/order/" + order.getId())
                     .build();
-            emailService.sendEmail(emailRequest);
+            emailService.sendEmailWithButton(emailWithButtonRequest);
         }
     }
 

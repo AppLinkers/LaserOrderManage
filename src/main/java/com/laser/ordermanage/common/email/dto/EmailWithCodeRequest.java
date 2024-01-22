@@ -3,8 +3,11 @@ package com.laser.ordermanage.common.email.dto;
 import lombok.Builder;
 
 @Builder
-public record EmailRequest(
+public record EmailWithCodeRequest(
         String recipient,
         String subject,
-        String text
-) { }
+        String title,
+        String content,
+        String code
+) {
+}

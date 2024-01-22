@@ -1,7 +1,7 @@
 package com.laser.ordermanage.factory.service;
 
 import com.laser.ordermanage.common.email.EmailService;
-import com.laser.ordermanage.common.email.dto.EmailRequest;
+import com.laser.ordermanage.common.email.dto.EmailWithButtonRequest;
 import com.laser.ordermanage.common.exception.CustomCommonException;
 import com.laser.ordermanage.order.domain.Order;
 import com.laser.ordermanage.order.dto.response.GetEmailRecipientResponse;
@@ -68,7 +68,7 @@ public class FactoryOrderEmailService {
         String title = sbTitle.toString();
         String content = sbContent.toString();
 
-        EmailRequest emailRequest = EmailRequest.builder()
+        EmailWithButtonRequest emailWithButtonRequest = EmailWithButtonRequest.builder()
                 .recipient(emailRecipient.email())
                 .subject(subject)
                 .title(title)
@@ -76,7 +76,7 @@ public class FactoryOrderEmailService {
                 .buttonText("거래 정보 확인하기")
                 .buttonUrl("https://www.kumoh.org/order/" + order.getId())
                 .build();
-        emailService.sendEmail(emailRequest);
+        emailService.sendEmailWithButton(emailWithButtonRequest);
     }
 
     @Transactional(readOnly = true)
@@ -106,7 +106,7 @@ public class FactoryOrderEmailService {
                 .append(" 거래의 견적서가 작성되었습니다.");
         String content = sbContent.toString();
 
-        EmailRequest emailRequest = EmailRequest.builder()
+        EmailWithButtonRequest emailWithButtonRequest = EmailWithButtonRequest.builder()
                 .recipient(emailRecipient.email())
                 .subject(subject)
                 .title(title)
@@ -114,7 +114,7 @@ public class FactoryOrderEmailService {
                 .buttonText("거래 정보 확인하기")
                 .buttonUrl("https://www.kumoh.org/order/" + order.getId())
                 .build();
-        emailService.sendEmail(emailRequest);
+        emailService.sendEmailWithButton(emailWithButtonRequest);
     }
 
     @Transactional(readOnly = true)
@@ -144,7 +144,7 @@ public class FactoryOrderEmailService {
                 .append(" 거래의 견적서가 수정되었습니다.");
         String content = sbContent.toString();
 
-        EmailRequest emailRequest = EmailRequest.builder()
+        EmailWithButtonRequest emailWithButtonRequest = EmailWithButtonRequest.builder()
                 .recipient(emailRecipient.email())
                 .subject(subject)
                 .title(title)
@@ -152,7 +152,7 @@ public class FactoryOrderEmailService {
                 .buttonText("거래 정보 확인하기")
                 .buttonUrl("https://www.kumoh.org/order/" + order.getId())
                 .build();
-        emailService.sendEmail(emailRequest);
+        emailService.sendEmailWithButton(emailWithButtonRequest);
     }
 
     @Transactional(readOnly = true)
@@ -182,7 +182,7 @@ public class FactoryOrderEmailService {
                 .append(" 거래의 발주서가 승인되었습니다.");
         String content = sbContent.toString();
 
-        EmailRequest emailRequest = EmailRequest.builder()
+        EmailWithButtonRequest emailWithButtonRequest = EmailWithButtonRequest.builder()
                 .recipient(emailRecipient.email())
                 .subject(subject)
                 .title(title)
@@ -190,7 +190,7 @@ public class FactoryOrderEmailService {
                 .buttonText("거래 정보 확인하기")
                 .buttonUrl("https://www.kumoh.org/order/" + order.getId())
                 .build();
-        emailService.sendEmail(emailRequest);
+        emailService.sendEmailWithButton(emailWithButtonRequest);
     }
 
     @Transactional(readOnly = true)
@@ -220,7 +220,7 @@ public class FactoryOrderEmailService {
                 .append(" 거래의 제작이 완료되었습니다.");
         String content = sbContent.toString();
 
-        EmailRequest emailRequest = EmailRequest.builder()
+        EmailWithButtonRequest emailWithButtonRequest = EmailWithButtonRequest.builder()
                 .recipient(emailRecipient.email())
                 .subject(subject)
                 .title(title)
@@ -228,7 +228,7 @@ public class FactoryOrderEmailService {
                 .buttonText("거래 정보 확인하기")
                 .buttonUrl("https://www.kumoh.org/order/" + order.getId())
                 .build();
-        emailService.sendEmail(emailRequest);
+        emailService.sendEmailWithButton(emailWithButtonRequest);
     }
 
     @Transactional(readOnly = true)
@@ -269,7 +269,7 @@ public class FactoryOrderEmailService {
                 .append(" 거래에 대한 품목 확인 및 인수자 서명을 받아주세요.");
         String content = sbContent.toString();
 
-        EmailRequest emailRequest = EmailRequest.builder()
+        EmailWithButtonRequest emailWithButtonRequest = EmailWithButtonRequest.builder()
                 .recipient(emailRecipient.email())
                 .subject(subject)
                 .title(title)
@@ -277,7 +277,7 @@ public class FactoryOrderEmailService {
                 .buttonText("서명 링크 이동")
                 .buttonUrl(acquireSignatureUrl)
                 .build();
-        emailService.sendEmail(emailRequest);
+        emailService.sendEmailWithButton(emailWithButtonRequest);
     }
 
     @Transactional(readOnly = true)
@@ -315,7 +315,7 @@ public class FactoryOrderEmailService {
 
         String content = sbContent.toString();
 
-        EmailRequest emailRequest = EmailRequest.builder()
+        EmailWithButtonRequest emailWithButtonRequest = EmailWithButtonRequest.builder()
                 .recipient(emailRecipient.email())
                 .subject(subject)
                 .title(title)
@@ -323,6 +323,6 @@ public class FactoryOrderEmailService {
                 .buttonText("거래 정보 확인하기")
                 .buttonUrl("https://www.kumoh.org/order/" + order.getId())
                 .build();
-        emailService.sendEmail(emailRequest);
+        emailService.sendEmailWithButton(emailWithButtonRequest);
     }
 }

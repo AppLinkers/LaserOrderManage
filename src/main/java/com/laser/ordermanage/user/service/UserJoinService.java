@@ -3,7 +3,7 @@ package com.laser.ordermanage.user.service;
 import com.laser.ordermanage.common.cache.redis.dao.VerifyCode;
 import com.laser.ordermanage.common.cache.redis.repository.VerifyCodeRedisRepository;
 import com.laser.ordermanage.common.email.EmailService;
-import com.laser.ordermanage.common.email.dto.EmailRequest;
+import com.laser.ordermanage.common.email.dto.EmailWithCodeRequest;
 import com.laser.ordermanage.common.exception.CommonErrorCode;
 import com.laser.ordermanage.common.exception.CustomCommonException;
 import com.laser.ordermanage.customer.domain.Customer;
@@ -46,21 +46,17 @@ public class UserJoinService {
             String subject = "[이메일 인증] 회원가입 이메일 인증 번호";
             String title = "이메일 인증";
 
-            StringBuilder sbContent = new StringBuilder();
-            sbContent.append("가입 화면에서 아래 인증번호를 입력해주세요.<br/>");
+            String content = "가입 화면에서 아래 인증번호를 입력해주세요.";
             String verifyCode = createVerifyCode();
-            sbContent.append(verifyCode);
-            String content = sbContent.toString();
 
-            EmailRequest emailRequest = EmailRequest.builder()
+            EmailWithCodeRequest emailWithCodeRequest = EmailWithCodeRequest.builder()
                     .recipient(email)
                     .subject(subject)
                     .title(title)
                     .content(content)
-                    .buttonText("금오 레이저")
-                    .buttonUrl("https://www.kumoh.org/")
+                    .code(verifyCode)
                     .build();
-            emailService.sendEmail(emailRequest);
+            emailService.sendEmailWithCode(emailWithCodeRequest);
 
             // 이메일 인증번호 Redis 에 저장
             verifyCodeRedisRepository.save(

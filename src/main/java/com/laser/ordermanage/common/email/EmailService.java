@@ -1,6 +1,8 @@
 package com.laser.ordermanage.common.email;
 
 import com.laser.ordermanage.common.email.dto.EmailRequest;
+import com.laser.ordermanage.common.email.dto.EmailWithButtonRequest;
+import com.laser.ordermanage.common.email.dto.EmailWithCodeRequest;
 import com.laser.ordermanage.common.exception.CommonErrorCode;
 import com.laser.ordermanage.common.exception.CustomCommonException;
 import jakarta.mail.MessagingException;
@@ -9,8 +11,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
-import org.thymeleaf.spring6.SpringTemplateEngine;
 
 
 @Service
@@ -18,9 +20,8 @@ import org.thymeleaf.spring6.SpringTemplateEngine;
 public class EmailService {
 
     private final JavaMailSender emailSender;
-    private final SpringTemplateEngine templateEngine;
+    private final TemplateEngine templateEngine;
 
-    @Async("mailExecutor")
     public void sendEmail(EmailRequest emailRequest) {
         try {
             MimeMessage emailForm = createEmailForm(emailRequest);
@@ -36,15 +37,44 @@ public class EmailService {
         MimeMessage message = emailSender.createMimeMessage();
         message.addRecipients(MimeMessage.RecipientType.TO, emailRequest.recipient());
         message.setSubject(emailRequest.subject());
-
-        Context context = new Context();
-        context.setVariable("title", emailRequest.title());
-        context.setVariable("content", emailRequest.content());
-        context.setVariable("buttonText", emailRequest.buttonText());
-        context.setVariable("buttonUrl", emailRequest.buttonUrl());
-        message.setText(templateEngine.process("mail", context), "utf-8", "html");
+        message.setText(emailRequest.text(), "utf-8", "html");
 
         return message;
+    }
+
+    @Async("mailExecutor")
+    public void sendEmailWithButton(EmailWithButtonRequest request) {
+        Context context = new Context();
+        context.setVariable("title", request.title());
+        context.setVariable("content", request.content());
+        context.setVariable("buttonText", request.buttonText());
+        context.setVariable("buttonUrl", request.buttonUrl());
+        String text = templateEngine.process("email-with-button", context);
+
+        EmailRequest emailRequest = EmailRequest.builder()
+                .recipient(request.recipient())
+                .subject(request.subject())
+                .text(text)
+                .build();
+
+        sendEmail(emailRequest);
+    }
+
+    @Async("mailExecutor")
+    public void sendEmailWithCode(EmailWithCodeRequest request) {
+        Context context = new Context();
+        context.setVariable("title", request.title());
+        context.setVariable("content", request.content());
+        context.setVariable("code", request.code());
+        String text = templateEngine.process("email-with-code", context);
+
+        EmailRequest emailRequest = EmailRequest.builder()
+                .recipient(request.recipient())
+                .subject(request.subject())
+                .text(text)
+                .build();
+
+        sendEmail(emailRequest);
     }
 
 }

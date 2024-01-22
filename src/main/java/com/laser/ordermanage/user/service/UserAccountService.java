@@ -3,7 +3,7 @@ package com.laser.ordermanage.user.service;
 import com.laser.ordermanage.common.cache.redis.dao.ChangePasswordToken;
 import com.laser.ordermanage.common.cache.redis.repository.ChangePasswordTokenRedisRepository;
 import com.laser.ordermanage.common.email.EmailService;
-import com.laser.ordermanage.common.email.dto.EmailRequest;
+import com.laser.ordermanage.common.email.dto.EmailWithButtonRequest;
 import com.laser.ordermanage.common.exception.CustomCommonException;
 import com.laser.ordermanage.common.paging.ListResponse;
 import com.laser.ordermanage.common.security.jwt.component.JwtProvider;
@@ -64,7 +64,7 @@ public class UserAccountService {
         String title = "비밀번호 변경";
         String content = "아래의 비밀번호 변경 버튼을 클릭하면 비밀번호를 재설정할 수 있습니다.";
 
-        EmailRequest emailRequest = EmailRequest.builder()
+        EmailWithButtonRequest emailWithButtonRequest = EmailWithButtonRequest.builder()
                 .recipient(user.getEmail())
                 .subject(subject)
                 .title(title)
@@ -72,7 +72,7 @@ public class UserAccountService {
                 .buttonText("비밀번호 변경하기")
                 .buttonUrl(changePasswordLink)
                 .build();
-        emailService.sendEmail(emailRequest);
+        emailService.sendEmailWithButton(emailWithButtonRequest);
     }
 
     @Transactional

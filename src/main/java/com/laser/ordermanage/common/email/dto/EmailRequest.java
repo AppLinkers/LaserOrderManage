@@ -1,9 +1,9 @@
-package com.laser.ordermanage.common.mail.dto;
+package com.laser.ordermanage.common.email.dto;
 
 import lombok.Builder;
 
-public record MailRequest(
-        String toEmail,
+public record EmailRequest(
+        String recipient,
         String subject,
         String title,
         String content,
@@ -12,8 +12,8 @@ public record MailRequest(
 ) {
 
     @Builder
-    public MailRequest(String toEmail, String subject, String title, String content, String buttonText, String buttonUrl) {
-        this.toEmail = toEmail;
+    public EmailRequest(String recipient, String subject, String title, String content, String buttonText, String buttonUrl) {
+        this.recipient = recipient;
         this.subject = subject;
         this.title = title;
         this.content = content;

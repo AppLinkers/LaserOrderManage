@@ -6,7 +6,7 @@ import com.laser.ordermanage.customer.dto.request.*;
 import com.laser.ordermanage.customer.dto.response.CustomerCreateDrawingResponse;
 import com.laser.ordermanage.customer.dto.response.CustomerCreateOrUpdateOrderPurchaseOrderResponse;
 import com.laser.ordermanage.customer.service.CustomerDeliveryAddressService;
-import com.laser.ordermanage.customer.service.CustomerOrderMailService;
+import com.laser.ordermanage.customer.service.CustomerOrderEmailService;
 import com.laser.ordermanage.customer.service.CustomerOrderService;
 import com.laser.ordermanage.order.domain.Order;
 import com.laser.ordermanage.order.exception.OrderErrorCode;
@@ -26,7 +26,7 @@ public class CustomerOrderAPI {
 
     private final OrderService orderService;
     private final CustomerOrderService customerOrderService;
-    private final CustomerOrderMailService customerOrderMailService;
+    private final CustomerOrderEmailService customerOrderEmailService;
     private final CustomerDeliveryAddressService customerDeliveryAddressService;
 
     /**
@@ -68,7 +68,7 @@ public class CustomerOrderAPI {
 
         customerOrderService.updateOrderDeliveryAddress(orderId, request);
 
-        customerOrderMailService.sendEmailForUpdateOrderDeliveryAddress(orderId);
+        customerOrderEmailService.sendEmailForUpdateOrderDeliveryAddress(orderId);
 
         return ResponseEntity.ok().build();
     }
@@ -92,7 +92,7 @@ public class CustomerOrderAPI {
 
         Long drawingId = customerOrderService.createOrderDrawing(orderId, request);
 
-        customerOrderMailService.sendEmailForCreateOrderDrawing(orderId);
+        customerOrderEmailService.sendEmailForCreateOrderDrawing(orderId);
 
         return ResponseEntity.ok(
                 CustomerCreateDrawingResponse.builder()
@@ -122,7 +122,7 @@ public class CustomerOrderAPI {
 
         customerOrderService.updateOrderDrawing(orderId, drawingId, request);
 
-        customerOrderMailService.sendEmailForUpdateOrderDrawing(orderId);
+        customerOrderEmailService.sendEmailForUpdateOrderDrawing(orderId);
 
         return ResponseEntity.ok().build();
     }
@@ -147,7 +147,7 @@ public class CustomerOrderAPI {
 
         customerOrderService.deleteOrderDrawing(orderId, drawingId);
 
-        customerOrderMailService.sendEmailForDeleteOrderDrawing(orderId);
+        customerOrderEmailService.sendEmailForDeleteOrderDrawing(orderId);
 
         return ResponseEntity.ok().build();
     }
@@ -170,7 +170,7 @@ public class CustomerOrderAPI {
 
         customerOrderService.approveQuotation(orderId);
 
-        customerOrderMailService.sendEmailForApproveQuotation(orderId);
+        customerOrderEmailService.sendEmailForApproveQuotation(orderId);
         return ResponseEntity.ok().build();
     }
 
@@ -207,10 +207,10 @@ public class CustomerOrderAPI {
 
         if (order.hasPurchaseOrder()) {
             response = customerOrderService.updateOrderPurchaseOrder(orderId, file, request);
-            customerOrderMailService.sendEmailForUpdateOrderPurchaseOrder(orderId);
+            customerOrderEmailService.sendEmailForUpdateOrderPurchaseOrder(orderId);
         } else {
             response = customerOrderService.createOrderPurchaseOrder(orderId, file, request);
-            customerOrderMailService.sendEmailForCreateOrderPurchaseOrder(orderId);
+            customerOrderEmailService.sendEmailForCreateOrderPurchaseOrder(orderId);
         }
 
         return ResponseEntity.ok(response);

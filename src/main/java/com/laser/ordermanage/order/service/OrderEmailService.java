@@ -1,10 +1,10 @@
 package com.laser.ordermanage.order.service;
 
-import com.laser.ordermanage.common.mail.MailService;
-import com.laser.ordermanage.common.mail.dto.MailRequest;
+import com.laser.ordermanage.common.email.EmailService;
+import com.laser.ordermanage.common.email.dto.EmailRequest;
 import com.laser.ordermanage.order.domain.Comment;
 import com.laser.ordermanage.order.domain.Order;
-import com.laser.ordermanage.order.dto.response.GetEmailReceiverResponse;
+import com.laser.ordermanage.order.dto.response.GetEmailRecipientResponse;
 import com.laser.ordermanage.user.domain.UserEntity;
 import com.laser.ordermanage.user.domain.type.Role;
 import com.laser.ordermanage.user.service.UserAuthService;
@@ -14,11 +14,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
 @Service
-public class OrderMailService {
+public class OrderEmailService {
 
     private final UserAuthService userAuthService;
     private final OrderService orderService;
-    private final MailService mailService;
+    private final EmailService emailService;
 
     @Transactional(readOnly = true)
     public void sendEmailForCreateOrderComment(Long commentId) {
@@ -27,9 +27,9 @@ public class OrderMailService {
         UserEntity user = comment.getUser();
 
         if (user.getRole().equals(Role.ROLE_FACTORY)) {
-            GetEmailReceiverResponse emailReceiver = getMailReceiver(order.getId(), Role.ROLE_CUSTOMER);
+            GetEmailRecipientResponse emailRecipient = getEmailRecipient(order.getId(), Role.ROLE_CUSTOMER);
 
-            if (!emailReceiver.emailNotification()) {
+            if (!emailRecipient.emailNotification()) {
                 return;
             }
 
@@ -50,20 +50,20 @@ public class OrderMailService {
                     .append(" 거래에 새로운 댓글이 작성되었습니다.");
             String content = sbContent.toString();
 
-            MailRequest mailRequest = MailRequest.builder()
-                    .toEmail(emailReceiver.email())
+            EmailRequest emailRequest = EmailRequest.builder()
+                    .recipient(emailRecipient.email())
                     .subject(subject)
                     .title(title)
                     .content(content)
                     .buttonText("거래 정보 확인하기")
                     .buttonUrl("https://www.kumoh.org/order/" + order.getId())
                     .build();
-            mailService.sendEmail(mailRequest);
+            emailService.sendEmail(emailRequest);
 
         } else if (user.getRole().equals(Role.ROLE_CUSTOMER)) {
-            GetEmailReceiverResponse emailReceiver = getMailReceiver(order.getId(), Role.ROLE_FACTORY);
+            GetEmailRecipientResponse emailRecipient = getEmailRecipient(order.getId(), Role.ROLE_FACTORY);
 
-            if (!emailReceiver.emailNotification()) {
+            if (!emailRecipient.emailNotification()) {
                 return;
             }
 
@@ -85,32 +85,32 @@ public class OrderMailService {
                     .append(" 거래에 새로운 댓글이 작성되었습니다.");
             String content = sbContent.toString();
 
-            MailRequest mailRequest = MailRequest.builder()
-                    .toEmail(emailReceiver.email())
+            EmailRequest emailRequest = EmailRequest.builder()
+                    .recipient(emailRecipient.email())
                     .subject(subject)
                     .title(title)
                     .content(content)
                     .buttonText("거래 정보 확인하기")
                     .buttonUrl("https://www.kumoh.org/order/" + order.getId())
                     .build();
-            mailService.sendEmail(mailRequest);
+            emailService.sendEmail(emailRequest);
         }
     }
 
     @Transactional(readOnly = true)
-    public GetEmailReceiverResponse getMailReceiver(Long orderId, Role userRole) {
+    public GetEmailRecipientResponse getEmailRecipient(Long orderId, Role userRole) {
 
         if (userRole.equals(Role.ROLE_FACTORY)) {
             UserEntity factoryUser = userAuthService.getUserByEmail("admin@kumoh.org");
 
-            return GetEmailReceiverResponse.builder()
+            return GetEmailRecipientResponse.builder()
                     .emailNotification(factoryUser.getEmailNotification())
                     .email(factoryUser.getEmail())
                     .build();
         } else {
             UserEntity customerUser = orderService.getOrderById(orderId).getCustomer().getUser();
 
-            return GetEmailReceiverResponse.builder()
+            return GetEmailRecipientResponse.builder()
                     .emailNotification(customerUser.getEmailNotification())
                     .email(customerUser.getEmail())
                     .build();

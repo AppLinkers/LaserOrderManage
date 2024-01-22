@@ -2,10 +2,10 @@ package com.laser.ordermanage.user.service;
 
 import com.laser.ordermanage.common.cache.redis.dao.VerifyCode;
 import com.laser.ordermanage.common.cache.redis.repository.VerifyCodeRedisRepository;
+import com.laser.ordermanage.common.email.EmailService;
+import com.laser.ordermanage.common.email.dto.EmailRequest;
 import com.laser.ordermanage.common.exception.CommonErrorCode;
 import com.laser.ordermanage.common.exception.CustomCommonException;
-import com.laser.ordermanage.common.mail.MailService;
-import com.laser.ordermanage.common.mail.dto.MailRequest;
 import com.laser.ordermanage.customer.domain.Customer;
 import com.laser.ordermanage.customer.domain.DeliveryAddress;
 import com.laser.ordermanage.customer.repository.DeliveryAddressRepository;
@@ -32,7 +32,7 @@ public class UserJoinService {
 
     private final PasswordEncoder passwordEncoder;
 
-    private final MailService mailService;
+    private final EmailService emailService;
 
     private final UserEntityRepository userRepository;
     private final DeliveryAddressRepository deliveryAddressRepository;
@@ -52,15 +52,15 @@ public class UserJoinService {
             sbContent.append(verifyCode);
             String content = sbContent.toString();
 
-            MailRequest mailRequest = MailRequest.builder()
-                    .toEmail(email)
+            EmailRequest emailRequest = EmailRequest.builder()
+                    .recipient(email)
                     .subject(subject)
                     .title(title)
                     .content(content)
                     .buttonText("금오 레이저")
                     .buttonUrl("https://www.kumoh.org/")
                     .build();
-            mailService.sendEmail(mailRequest);
+            emailService.sendEmail(emailRequest);
 
             // 이메일 인증번호 Redis 에 저장
             verifyCodeRedisRepository.save(

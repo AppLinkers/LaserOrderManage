@@ -1,6 +1,6 @@
 package com.laser.ordermanage.common.scheduler.job;
 
-import com.laser.ordermanage.factory.service.FactoryOrderMailService;
+import com.laser.ordermanage.factory.service.FactoryOrderEmailService;
 import com.laser.ordermanage.factory.service.FactoryOrderService;
 import com.laser.ordermanage.order.domain.Order;
 import com.laser.ordermanage.order.service.OrderService;
@@ -15,7 +15,7 @@ public class ChangeStageToCompletedJob implements Job {
 
     private final OrderService orderService;
     private final FactoryOrderService factoryOrderService;
-    private final FactoryOrderMailService factoryOrderMailService;
+    private final FactoryOrderEmailService factoryOrderEmailService;
 
     @Override
     public void execute(JobExecutionContext context) {
@@ -29,6 +29,6 @@ public class ChangeStageToCompletedJob implements Job {
 
         factoryOrderService.changeStageToCompleted(orderId);
 
-        factoryOrderMailService.sendEmailForChangeStageToCompleted(orderId);
+        factoryOrderEmailService.sendEmailForChangeStageToCompleted(orderId);
     }
 }

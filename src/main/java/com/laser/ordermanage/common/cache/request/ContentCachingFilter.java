@@ -19,7 +19,12 @@ public class ContentCachingFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, FilterChain filterChain) throws ServletException, IOException {
-        CachedBodyHttpServletRequest cachedBodyHttpServletRequest = new CachedBodyHttpServletRequest(httpServletRequest);
-        filterChain.doFilter(cachedBodyHttpServletRequest, httpServletResponse);
+        if (httpServletRequest.getContentType() != null && httpServletRequest.getContentType().contains("application/json")) {
+            CachedBodyHttpServletRequest cachedBodyHttpServletRequest = new CachedBodyHttpServletRequest(httpServletRequest);
+            filterChain.doFilter(cachedBodyHttpServletRequest, httpServletResponse);
+        } else {
+            filterChain.doFilter(httpServletRequest, httpServletResponse);
+        }
+
     }
 }

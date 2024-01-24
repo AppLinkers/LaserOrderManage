@@ -1,6 +1,7 @@
 package com.laser.ordermanage.order.domain;
 
 import com.laser.ordermanage.common.entity.CreatedAtEntity;
+import com.laser.ordermanage.common.entity.embedded.File;
 import com.laser.ordermanage.customer.dto.request.CustomerCreateOrUpdateOrderPurchaseOrderRequest;
 import com.laser.ordermanage.order.domain.type.PurchaseOrderFileType;
 import jakarta.persistence.*;
@@ -31,35 +32,19 @@ public class PurchaseOrder extends CreatedAtEntity {
     @Column(name = "payment_date", nullable = false)
     private LocalDate paymentDate;
 
-    @Column(name = "file_name", nullable = false)
-    private String fileName;
-
-    @Column(name = "file_size", nullable = false)
-    private Long fileSize;
-
-    @Enumerated(value = EnumType.STRING)
-    @Column(name = "file_type", nullable = false)
-    private PurchaseOrderFileType fileType;
-
-    @Column(name = "file_url", nullable = false)
-    private String fileUrl;
+    @Embedded
+    private File<PurchaseOrderFileType> file;
 
     @Builder
-    public PurchaseOrder(LocalDate inspectionPeriod, String inspectionCondition, LocalDate paymentDate, String fileName, Long fileSize, String fileType, String fileUrl) {
+    public PurchaseOrder(LocalDate inspectionPeriod, String inspectionCondition, LocalDate paymentDate, File<PurchaseOrderFileType> file) {
         this.inspectionPeriod = inspectionPeriod;
         this.inspectionCondition = inspectionCondition;
         this.paymentDate = paymentDate;
-        this.fileName = fileName;
-        this.fileSize = fileSize;
-        this.fileType = PurchaseOrderFileType.ofExtension(fileType);
-        this.fileUrl = fileUrl;
+        this.file = file;
     }
 
-    public void updateFile(String fileName, Long fileSize, String fileType, String fileUrl) {
-        this.fileName = fileName;
-        this.fileSize = fileSize;
-        this.fileType = PurchaseOrderFileType.ofExtension(fileType);
-        this.fileUrl = fileUrl;
+    public void updateFile(File<PurchaseOrderFileType> file) {
+        this.file = file;
     }
 
     public void updateProperties(CustomerCreateOrUpdateOrderPurchaseOrderRequest request) {

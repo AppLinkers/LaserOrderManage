@@ -108,7 +108,7 @@ public class Order extends CreatedAtEntity {
     }
 
     public void updateDeliveryAddress(DeliveryAddress deliveryAddress) {
-        this.deliveryAddress.updateProperties(deliveryAddress);
+        this.deliveryAddress.updateDeliveryAddress(deliveryAddress);
     }
 
     public boolean enableManageDrawing() {

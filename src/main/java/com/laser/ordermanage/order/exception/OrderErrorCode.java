@@ -18,6 +18,7 @@ public enum OrderErrorCode implements ErrorCode {
     REQUIRED_QUOTATION_FILE("ORDER_400_06", HttpStatus.BAD_REQUEST, "견적서 최초 작성 시, 견적서 파일은 필수 사항입니다."),
     UNSUPPORTED_PURCHASE_ORDER_FILE_EXTENSION("ORDER_400_07", HttpStatus.BAD_REQUEST, "지원하지 않는 발주서 파일 형식입니다."),
     REQUIRED_PURCHASE_ORDER_FILE("ORDER_400_08", HttpStatus.BAD_REQUEST, "발주서 최초 작성 시, 발주서 파일은 필수 사항입니다."),
+    UNSUPPORTED_SIGNATURE_FILE_EXTENSION("ORDER_400_09", HttpStatus.BAD_REQUEST, "지원하지 않는 서명 파일 형식입니다."),
 
     // 403 FORBIDDEN 인증 필요
     DENIED_ACCESS_TO_ORDER("ORDER_403_01", HttpStatus.FORBIDDEN, "거래에 대한 접근 권한이 없습니다."),

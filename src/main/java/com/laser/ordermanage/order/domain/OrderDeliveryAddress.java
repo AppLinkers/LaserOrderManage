@@ -1,5 +1,6 @@
 package com.laser.ordermanage.order.domain;
 
+import com.laser.ordermanage.common.entity.embedded.Address;
 import com.laser.ordermanage.customer.domain.DeliveryAddress;
 import com.laser.ordermanage.customer.dto.request.CustomerCreateOrderDeliveryAddressRequest;
 import jakarta.persistence.*;
@@ -22,14 +23,8 @@ public class OrderDeliveryAddress {
     @Column(name = "name", nullable = false, length = 20)
     private String name;
 
-    @Column(name = "zip_code", nullable = false, length = 5)
-    private String zipCode;
-
-    @Column(name = "address", nullable = false)
-    private String address;
-
-    @Column(name = "detail_address")
-    private String detailAddress;
+    @Embedded
+    private Address address;
 
     @Column(name = "receiver", nullable = false, length = 10)
     private String receiver;
@@ -41,11 +36,9 @@ public class OrderDeliveryAddress {
     private String phone2;
 
     @Builder
-    public OrderDeliveryAddress(String name, String zipCode, String address, String detailAddress, String receiver, String phone1, String phone2) {
+    public OrderDeliveryAddress(String name, Address address, String receiver, String phone1, String phone2) {
         this.name = name;
-        this.zipCode = zipCode;
         this.address = address;
-        this.detailAddress = detailAddress;
         this.receiver = receiver;
         this.phone1 = phone1;
         this.phone2 = phone2;
@@ -54,20 +47,20 @@ public class OrderDeliveryAddress {
     public static OrderDeliveryAddress ofRequest(CustomerCreateOrderDeliveryAddressRequest request) {
         return OrderDeliveryAddress.builder()
                 .name(request.name())
-                .zipCode(request.zipCode())
-                .address(request.address())
-                .detailAddress(request.detailAddress())
+                .address(Address.builder()
+                        .zipCode(request.zipCode())
+                        .address(request.address())
+                        .detailAddress(request.detailAddress())
+                        .build())
                 .receiver(request.receiver())
                 .phone1(request.phone1())
                 .phone2(request.phone2())
                 .build();
     }
 
-    public void updateProperties(DeliveryAddress deliveryAddress) {
+    public void updateDeliveryAddress(DeliveryAddress deliveryAddress) {
         this.name = deliveryAddress.getName();
-        this.zipCode = deliveryAddress.getZipCode();
         this.address = deliveryAddress.getAddress();
-        this.detailAddress = deliveryAddress.getDetailAddress();
         this.receiver = deliveryAddress.getReceiver();
         this.phone1 = deliveryAddress.getPhone1();
         this.phone2 = deliveryAddress.getPhone2();

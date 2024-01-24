@@ -4,11 +4,17 @@ on:
   pull_request:
     branches: [ main ]
 jobs:
-  sonar:
+  test:
 
     runs-on: ubuntu-latest
 
     steps:
+      # JDK를 17 버전으로 셋팅합니다.
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
       # Cache for SonarCloud
       - name: SonarCloud packages Caching
         uses: actions/cache@v3

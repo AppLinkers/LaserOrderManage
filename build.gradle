@@ -2,6 +2,8 @@ plugins {
 	id 'java'
 	id 'org.springframework.boot' version '3.1.4'
 	id 'io.spring.dependency-management' version '1.1.3'
+	id 'jacoco'
+	id("org.sonarqube") version "4.4.1.3373"
 }
 
 group = 'com.laser'
@@ -97,7 +99,11 @@ dependencies {
 }
 
 tasks.named('test') {
+	jacoco {
+		destinationFile = file("$buildDir/jacoco/jacoco.exec")
+	}
 	useJUnitPlatform()
+	finalizedBy 'jacocoTestReport'
 }
 
 task copyPrivate(type: Copy) {
@@ -110,5 +116,13 @@ task copyPrivate(type: Copy) {
 		from './laser-ordermanage-server-submodule-config'
 		include 'application-test.yml', '*.sql'
 		into 'src/test/resources'
+	}
+}
+
+sonar {
+	properties {
+		property "sonar.projectKey", "AppLinkers_LaserOrderManage-server"
+		property "sonar.organization", "applinkers"
+		property "sonar.host.url", "https://sonarcloud.io"
 	}
 }

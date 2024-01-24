@@ -27,7 +27,6 @@ public class EmailService {
             MimeMessage emailForm = createEmailForm(emailRequest);
             emailSender.send(emailForm);
         } catch (Exception e) {
-            e.printStackTrace();
             throw new CustomCommonException(CommonErrorCode.UNABLE_TO_SEND_EMAIL);
         }
     }

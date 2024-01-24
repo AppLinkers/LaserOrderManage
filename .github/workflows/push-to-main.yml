@@ -1,4 +1,3 @@
-#
 # Workflow의 이름을 지정합니다.
 name: Java CI with Gradle
 
@@ -38,11 +37,11 @@ jobs:
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
           restore-keys: |
             ${{ runner.os }}-gradle-
-      # Assemble 수행
-      - name: Assemble with Gradle
+      # Build 수행
+      - name: Build with Gradle
         uses: gradle/gradle-build-action@bd5760595778326ba7f1441bcf7e88b49de61a25 # v2.6.0
         with:
-          arguments: assemble
+          arguments: build
       # build report 파일 압축
       - name: Compress all report files
         run: |

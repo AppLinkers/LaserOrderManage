@@ -1,5 +1,6 @@
 package com.laser.ordermanage.factory.dto.response;
 
+import com.laser.ordermanage.common.entity.embedded.Address;
 import com.querydsl.core.annotations.QueryProjection;
 
 public record FactoryGetUserAccountResponse(
@@ -14,15 +15,17 @@ public record FactoryGetUserAccountResponse(
         Boolean emailNotification
 ) {
     @QueryProjection
-    public FactoryGetUserAccountResponse(String email, String companyName, String representative, String phone, String fax, String zipCode, String address, String detailAddress, Boolean emailNotification) {
-        this.email = email;
-        this.companyName = companyName;
-        this.representative = representative;
-        this.phone = phone;
-        this.fax = fax;
-        this.zipCode = zipCode;
-        this.address = address;
-        this.detailAddress = detailAddress;
-        this.emailNotification = emailNotification;
+    public FactoryGetUserAccountResponse(String email, String companyName, String representative, String phone, String fax, Address address, Boolean emailNotification) {
+        this(
+                email,
+                companyName,
+                representative,
+                phone,
+                fax,
+                address.getZipCode(),
+                address.getAddress(),
+                address.getDetailAddress(),
+                emailNotification
+        );
     }
 }

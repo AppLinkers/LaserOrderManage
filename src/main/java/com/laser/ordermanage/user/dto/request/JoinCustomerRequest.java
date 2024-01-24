@@ -31,6 +31,7 @@ public record JoinCustomerRequest (
     @NotEmpty(message = "기본 주소는 필수 입력값입니다.")
     String address,
 
+    @Pattern(regexp = "^.{0,30}$", message = "상세 주소의 최대 글자수는 30자입니다.")
     String detailAddress
 
 ) {}

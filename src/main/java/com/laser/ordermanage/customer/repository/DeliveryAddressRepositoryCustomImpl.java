@@ -23,9 +23,7 @@ public class DeliveryAddressRepositoryCustomImpl implements DeliveryAddressRepos
                 .select(new QCustomerGetDeliveryAddressResponse(
                         deliveryAddress.id,
                         deliveryAddress.name,
-                        deliveryAddress.zipCode,
                         deliveryAddress.address,
-                        deliveryAddress.detailAddress,
                         deliveryAddress.receiver,
                         deliveryAddress.phone1,
                         deliveryAddress.phone2,

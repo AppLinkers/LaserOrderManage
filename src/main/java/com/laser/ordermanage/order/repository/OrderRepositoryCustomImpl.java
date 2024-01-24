@@ -300,9 +300,7 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
                                         new QGetOrderDeliveryAddressResponse(
                                                 orderDeliveryAddress.id,
                                                 orderDeliveryAddress.name,
-                                                orderDeliveryAddress.zipCode,
                                                 orderDeliveryAddress.address,
-                                                orderDeliveryAddress.detailAddress,
                                                 orderDeliveryAddress.receiver,
                                                 orderDeliveryAddress.phone1,
                                                 orderDeliveryAddress.phone2
@@ -360,9 +358,7 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
                                                new QGetOrderDeliveryAddressResponse(
                                                        orderDeliveryAddress.id,
                                                        orderDeliveryAddress.name,
-                                                       orderDeliveryAddress.zipCode,
                                                        orderDeliveryAddress.address,
-                                                       orderDeliveryAddress.detailAddress,
                                                        orderDeliveryAddress.receiver,
                                                        orderDeliveryAddress.phone1,
                                                        orderDeliveryAddress.phone2

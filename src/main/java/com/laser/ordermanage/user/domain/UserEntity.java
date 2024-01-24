@@ -2,6 +2,7 @@ package com.laser.ordermanage.user.domain;
 
 import com.laser.ordermanage.common.converter.BooleanToYNConverter;
 import com.laser.ordermanage.common.entity.CreatedAtEntity;
+import com.laser.ordermanage.common.entity.embedded.Address;
 import com.laser.ordermanage.user.domain.type.Role;
 import com.laser.ordermanage.user.dto.request.UpdateUserAccountRequest;
 import jakarta.persistence.*;
@@ -40,28 +41,20 @@ public class UserEntity extends CreatedAtEntity implements UserDetails {
     @Column(name = "phone", nullable = false, length = 11)
     private String phone;
 
-    @Column(name = "zip_code", nullable = false)
-    private String zipCode;
-
-    @Column(name = "address", nullable = false)
-    private String address;
-
-    @Column(name = "detail_address")
-    private String detailAddress;
+    @Embedded
+    private Address address;
 
     @Convert(converter = BooleanToYNConverter.class)
     @Column(name = "email_notification", nullable = false, length = 1)
     private Boolean emailNotification = Boolean.TRUE;
 
     @Builder
-    public UserEntity(String email, String password, Role role, String phone, String zipCode, String address, String detailAddress) {
+    public UserEntity(String email, String password, Role role, String phone, Address address) {
         this.email = email;
         this.password = password;
         this.role = role;
         this.phone = phone;
-        this.zipCode = zipCode;
         this.address = address;
-        this.detailAddress = detailAddress;
     }
 
     @Override
@@ -107,8 +100,6 @@ public class UserEntity extends CreatedAtEntity implements UserDetails {
 
     public void updateProperties(UpdateUserAccountRequest request) {
         this.phone = request.phone();
-        this.zipCode = request.zipCode();
-        this.address = request.address();
-        this.detailAddress = request.detailAddress();
+        this.address.updateProperties(request.zipCode(), request.address(), request.detailAddress());
     }
 }

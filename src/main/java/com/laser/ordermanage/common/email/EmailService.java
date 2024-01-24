@@ -14,6 +14,8 @@ import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
+import static jakarta.mail.Message.RecipientType.TO;
+
 
 @Service
 @RequiredArgsConstructor
@@ -34,7 +36,7 @@ public class EmailService {
     // 발신할 이메일 데이터 세팅
     private MimeMessage createEmailForm(EmailRequest emailRequest) throws MessagingException {
         MimeMessage message = emailSender.createMimeMessage();
-        message.addRecipients(MimeMessage.RecipientType.TO, emailRequest.recipient());
+        message.addRecipients(TO, emailRequest.recipient());
         message.setSubject(emailRequest.subject());
         message.setText(emailRequest.text(), "utf-8", "html");
 

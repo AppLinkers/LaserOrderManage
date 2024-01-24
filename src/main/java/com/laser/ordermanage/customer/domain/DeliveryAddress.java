@@ -2,6 +2,7 @@ package com.laser.ordermanage.customer.domain;
 
 import com.laser.ordermanage.common.converter.BooleanToYNConverter;
 import com.laser.ordermanage.common.entity.CreatedAtEntity;
+import com.laser.ordermanage.common.entity.embedded.Address;
 import com.laser.ordermanage.customer.dto.request.CustomerCreateOrUpdateDeliveryAddressRequest;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -27,14 +28,8 @@ public class DeliveryAddress extends CreatedAtEntity {
     @Column(name = "name", nullable = false, length = 20)
     private String name;
 
-    @Column(name = "zip_code", nullable = false, length = 5)
-    private String zipCode;
-
-    @Column(name = "address", nullable = false)
-    private String address;
-
-    @Column(name = "detail_address")
-    private String detailAddress;
+    @Embedded
+    private Address address;
 
     @Column(name = "receiver", nullable = false, length = 10)
     private String receiver;
@@ -50,12 +45,10 @@ public class DeliveryAddress extends CreatedAtEntity {
     private Boolean isDefault;
 
     @Builder
-    public DeliveryAddress(Customer customer, String name, String zipCode, String address, String detailAddress, String receiver, String phone1, String phone2, Boolean isDefault) {
+    public DeliveryAddress(Customer customer, String name, Address address, String receiver, String phone1, String phone2, Boolean isDefault) {
         this.customer = customer;
         this.name = name;
-        this.zipCode = zipCode;
         this.address = address;
-        this.detailAddress = detailAddress;
         this.receiver = receiver;
         this.phone1 = phone1;
         this.phone2 = phone2;
@@ -68,9 +61,7 @@ public class DeliveryAddress extends CreatedAtEntity {
 
     public void updateProperties(CustomerCreateOrUpdateDeliveryAddressRequest request) {
         this.name = request.name();
-        this.zipCode = request.zipCode();
-        this.address = request.address();
-        this.detailAddress = request.detailAddress();
+        this.address.updateProperties(request.zipCode(), request.address(), request.detailAddress());
         this.receiver = request.receiver();
         this.phone1 = request.phone1();
         this.phone2 = request.phone2();

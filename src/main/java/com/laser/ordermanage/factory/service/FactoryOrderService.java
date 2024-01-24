@@ -1,6 +1,7 @@
 package com.laser.ordermanage.factory.service;
 
 import com.laser.ordermanage.common.cloud.aws.S3Service;
+import com.laser.ordermanage.common.entity.embedded.File;
 import com.laser.ordermanage.common.exception.CustomCommonException;
 import com.laser.ordermanage.common.util.FileUtil;
 import com.laser.ordermanage.customer.domain.Customer;
@@ -14,6 +15,8 @@ import com.laser.ordermanage.order.domain.Acquirer;
 import com.laser.ordermanage.order.domain.Order;
 import com.laser.ordermanage.order.domain.PurchaseOrder;
 import com.laser.ordermanage.order.domain.Quotation;
+import com.laser.ordermanage.order.domain.type.QuotationFileType;
+import com.laser.ordermanage.order.domain.type.SignatureFileType;
 import com.laser.ordermanage.order.exception.OrderErrorCode;
 import com.laser.ordermanage.order.repository.AcquirerRepository;
 import com.laser.ordermanage.order.repository.QuotationRepository;
@@ -52,19 +55,11 @@ public class FactoryOrderService {
             throw new CustomCommonException(OrderErrorCode.REQUIRED_QUOTATION_FILE);
         }
 
-        String fileName = file.getOriginalFilename();
-        Long fileSize = file.getSize();
-        String fileType = FileUtil.getExtension(file);
-
-        // 견적서 파일 업로드
-        String quotationFileUrl = uploadQuotationFile(file);
+        File<QuotationFileType> quotationFile = uploadQuotationFile(file);
 
         Quotation quotation = Quotation.builder()
                 .totalCost(request.totalCost())
-                .fileName(fileName)
-                .fileSize(fileSize)
-                .fileType(fileType)
-                .fileUrl(quotationFileUrl)
+                .file(quotationFile)
                 .deliveryDate(request.deliveryDate())
                 .build();
 
@@ -81,14 +76,10 @@ public class FactoryOrderService {
 
         // 견적서 파일 유무 확인
         if (file != null && !file.isEmpty()) {
-            String fileName = file.getOriginalFilename();
-            Long fileSize = file.getSize();
-            String fileType = FileUtil.getExtension(file);
 
-            // 견적서 파일 업로드
-            String quotationFileUrl = uploadQuotationFile(file);
+            File<QuotationFileType> quotationFile = uploadQuotationFile(file);
 
-            quotation.updateFile(fileName, fileSize, fileType, quotationFileUrl);
+            quotation.updateFile(quotationFile);
         }
 
         quotation.updateProperties(request);
@@ -128,18 +119,13 @@ public class FactoryOrderService {
     public void createOrderAcquirer(Long orderId, FactoryCreateOrderAcquirerRequest request, MultipartFile file) {
         Order order = orderService.getOrderById(orderId);
 
-        String fileName = file.getOriginalFilename();
-        Long fileSize = file.getSize();
-
         // 인수자 서명 파일 업로드
-        String acquirerSignatureFileUrl = uploadAcquirerSignatureFile(file);
+        File<SignatureFileType> signatureFile = uploadAcquirerSignatureFile(file);
 
         Acquirer acquirer = Acquirer.builder()
                 .name(request.name())
                 .phone(request.phone())
-                .signatureFileName(fileName)
-                .signatureFileSize(fileSize)
-                .signatureFileUrl(acquirerSignatureFileUrl)
+                .signatureFile(signatureFile)
                 .build();
 
         Acquirer createdAcquirer = acquirerRepository.save(acquirer);
@@ -170,8 +156,8 @@ public class FactoryOrderService {
 
         return FactoryGetPurchaseOrderFileResponse.builder()
                 .id(purchaseOrder.getId())
-                .fileName(purchaseOrder.getFileName())
-                .fileUrl(purchaseOrder.getFileUrl())
+                .fileName(purchaseOrder.getFile().getName())
+                .fileUrl(purchaseOrder.getFile().getUrl())
                 .build();
     }
 
@@ -188,11 +174,38 @@ public class FactoryOrderService {
                 .build();
     }
 
-    private String uploadQuotationFile(MultipartFile multipartFile) {
-        return s3Service.upload("quotation", multipartFile);
+    private File<QuotationFileType> uploadQuotationFile(MultipartFile file) {
+        String fileName = file.getOriginalFilename();
+        Long fileSize = file.getSize();
+        QuotationFileType fileType = QuotationFileType.ofExtension(FileUtil.getExtension(file));
+
+        // 견적서 파일 업로드
+        String fileUrl = s3Service.upload("quotation", file);
+
+        File<QuotationFileType> quotationFile = File.<QuotationFileType>builder()
+                .name(fileName)
+                .size(fileSize)
+                .type(fileType)
+                .url(fileUrl)
+                .build();
+
+        return quotationFile;
     }
 
-    private String uploadAcquirerSignatureFile(MultipartFile multipartFile) {
-        return s3Service.upload("acquirer-signature", multipartFile);
+    private File<SignatureFileType> uploadAcquirerSignatureFile(MultipartFile file) {
+        String fileName = file.getOriginalFilename();
+        Long fileSize = file.getSize();
+        SignatureFileType fileType = SignatureFileType.ofExtension(FileUtil.getExtension(file));
+
+        // 인수자 서명 파일 업로드
+        String fileUrl = s3Service.upload("acquirer-signature", file);
+
+        File<SignatureFileType> signatureFile = File.<SignatureFileType>builder()
+                .name(fileName)
+                .size(fileSize)
+                .type(fileType)
+                .url(fileUrl)
+                .build();
+        return signatureFile;
     }
 }

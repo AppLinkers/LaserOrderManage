@@ -1,6 +1,7 @@
 package com.laser.ordermanage.customer.service;
 
 import com.laser.ordermanage.common.cloud.aws.S3Service;
+import com.laser.ordermanage.common.entity.embedded.File;
 import com.laser.ordermanage.common.exception.CustomCommonException;
 import com.laser.ordermanage.common.util.FileUtil;
 import com.laser.ordermanage.customer.domain.Customer;
@@ -9,6 +10,8 @@ import com.laser.ordermanage.customer.dto.request.*;
 import com.laser.ordermanage.customer.dto.response.CustomerCreateOrUpdateOrderPurchaseOrderResponse;
 import com.laser.ordermanage.customer.repository.CustomerRepository;
 import com.laser.ordermanage.order.domain.*;
+import com.laser.ordermanage.order.domain.type.DrawingFileType;
+import com.laser.ordermanage.order.domain.type.PurchaseOrderFileType;
 import com.laser.ordermanage.order.exception.OrderErrorCode;
 import com.laser.ordermanage.order.repository.DrawingRepository;
 import com.laser.ordermanage.order.repository.OrderRepository;
@@ -63,13 +66,17 @@ public class CustomerOrderService {
         List<Drawing> drawingList = new ArrayList<>();
         request.drawingList().forEach(
                 drawingRequest -> {
+                    File<DrawingFileType> file = File.<DrawingFileType>builder()
+                            .name(drawingRequest.fileName())
+                            .size(drawingRequest.fileSize())
+                            .type(DrawingFileType.ofExtension(drawingRequest.fileType()))
+                            .url(drawingRequest.fileUrl())
+                            .build();
+
                     drawingList.add(
                             Drawing.builder()
                                     .order(createdOrder)
-                                    .fileName(drawingRequest.fileName())
-                                    .fileSize(drawingRequest.fileSize())
-                                    .fileType(drawingRequest.fileType())
-                                    .fileUrl(drawingRequest.fileUrl())
+                                    .file(file)
                                     .thumbnailUrl(drawingRequest.thumbnailUrl())
                                     .count(drawingRequest.count())
                                     .ingredient(drawingRequest.ingredient())
@@ -105,12 +112,16 @@ public class CustomerOrderService {
             throw new CustomCommonException(OrderErrorCode.INVALID_ORDER_STAGE, order.getStage().getValue());
         }
 
+        File<DrawingFileType> drawingFile = File.<DrawingFileType>builder()
+                .name(request.fileName())
+                .size(request.fileSize())
+                .type(DrawingFileType.ofExtension(request.fileType()))
+                .url(request.fileUrl())
+                .build();
+
         Drawing drawing = Drawing.builder()
                 .order(order)
-                .fileName(request.fileName())
-                .fileSize(request.fileSize())
-                .fileType(request.fileType())
-                .fileUrl(request.fileUrl())
+                .file(drawingFile)
                 .thumbnailUrl(request.thumbnailUrl())
                 .count(request.count())
                 .ingredient(request.ingredient())
@@ -183,21 +194,13 @@ public class CustomerOrderService {
             throw new CustomCommonException(OrderErrorCode.REQUIRED_PURCHASE_ORDER_FILE);
         }
 
-        String fileName = file.getOriginalFilename();
-        Long fileSize = file.getSize();
-        String fileType = FileUtil.getExtension(file);
-
-        // 발주서 파일 업로드
-        String purchaseOrderFileUrl = uploadPurchaseOrderFile(file);
+        File<PurchaseOrderFileType> purchaseOrderFile = uploadPurchaseOrderFile(file);
 
         PurchaseOrder purchaseOrder = PurchaseOrder.builder()
                 .inspectionPeriod(request.inspectionPeriod())
                 .inspectionCondition(request.inspectionCondition())
                 .paymentDate(request.paymentDate())
-                .fileName(fileName)
-                .fileSize(fileSize)
-                .fileType(fileType)
-                .fileUrl(purchaseOrderFileUrl)
+                .file(purchaseOrderFile)
                 .build();
 
         PurchaseOrder createdPurchaseOrder = purchaseOrderRepository.save(purchaseOrder);
@@ -213,14 +216,10 @@ public class CustomerOrderService {
 
         // 발주서 파일 유무 확인
         if (file != null && !file.isEmpty()) {
-            String fileName = file.getOriginalFilename();
-            Long fileSize = file.getSize();
-            String fileType = FileUtil.getExtension(file);
 
-            // 발주서 파일 업로드
-            String purchaseOrderFileUrl = uploadPurchaseOrderFile(file);
+            File<PurchaseOrderFileType> purchaseOrderFile = uploadPurchaseOrderFile(file);
 
-            purchaseOrder.updateFile(fileName, fileSize, fileType, purchaseOrderFileUrl);
+            purchaseOrder.updateFile(purchaseOrderFile);
         }
 
         purchaseOrder.updateProperties(request);
@@ -228,7 +227,21 @@ public class CustomerOrderService {
         return CustomerCreateOrUpdateOrderPurchaseOrderResponse.from(purchaseOrder);
     }
 
-    private String uploadPurchaseOrderFile(MultipartFile file) {
-        return s3Service.upload("purchase-order", file);
+    private File<PurchaseOrderFileType> uploadPurchaseOrderFile(MultipartFile file) {
+        String fileName = file.getOriginalFilename();
+        Long fileSize = file.getSize();
+        PurchaseOrderFileType fileType = PurchaseOrderFileType.ofExtension(FileUtil.getExtension(file));
+
+        // 발주서 파일 업로드
+        String fileUrl = s3Service.upload("purchase-order", file);
+
+        File<PurchaseOrderFileType> purchaseOrderFile = File.<PurchaseOrderFileType>builder()
+                .name(fileName)
+                .size(fileSize)
+                .type(fileType)
+                .url(fileUrl)
+                .build();
+
+        return purchaseOrderFile;
     }
 }

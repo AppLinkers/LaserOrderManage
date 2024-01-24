@@ -1,7 +1,7 @@
 package com.laser.ordermanage.order.repository;
 
-import com.laser.ordermanage.common.exception.CustomCommonException;
 import com.laser.ordermanage.common.exception.CommonErrorCode;
+import com.laser.ordermanage.common.exception.CustomCommonException;
 import com.laser.ordermanage.customer.dto.response.*;
 import com.laser.ordermanage.factory.dto.response.*;
 import com.laser.ordermanage.order.domain.type.Stage;
@@ -286,10 +286,9 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
                                         list(
                                                 new QGetDrawingResponse(
                                                         drawing.id,
-                                                        drawing.fileName,
-                                                        drawing.fileSize,
-                                                        drawing.fileType,
-                                                        drawing.fileUrl,
+                                                        drawing.file.name,
+                                                        drawing.file.size,
+                                                        drawing.file.url,
                                                         drawing.thumbnailUrl,
                                                         drawing.count,
                                                         drawing.ingredient,
@@ -300,9 +299,9 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
                                         new QGetOrderDeliveryAddressResponse(
                                                 orderDeliveryAddress.id,
                                                 orderDeliveryAddress.name,
-                                                orderDeliveryAddress.zipCode,
-                                                orderDeliveryAddress.address,
-                                                orderDeliveryAddress.detailAddress,
+                                                orderDeliveryAddress.address.zipCode,
+                                                orderDeliveryAddress.address.address,
+                                                orderDeliveryAddress.address.detailAddress,
                                                 orderDeliveryAddress.receiver,
                                                 orderDeliveryAddress.phone1,
                                                 orderDeliveryAddress.phone2
@@ -346,10 +345,9 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
                                               list(
                                                       new QGetDrawingResponse(
                                                               drawing.id,
-                                                              drawing.fileName,
-                                                              drawing.fileSize,
-                                                              drawing.fileType,
-                                                              drawing.fileUrl,
+                                                              drawing.file.name,
+                                                              drawing.file.size,
+                                                              drawing.file.url,
                                                               drawing.thumbnailUrl,
                                                               drawing.count,
                                                               drawing.ingredient,
@@ -360,9 +358,9 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
                                                new QGetOrderDeliveryAddressResponse(
                                                        orderDeliveryAddress.id,
                                                        orderDeliveryAddress.name,
-                                                       orderDeliveryAddress.zipCode,
-                                                       orderDeliveryAddress.address,
-                                                       orderDeliveryAddress.detailAddress,
+                                                       orderDeliveryAddress.address.zipCode,
+                                                       orderDeliveryAddress.address.address,
+                                                       orderDeliveryAddress.address.detailAddress,
                                                        orderDeliveryAddress.receiver,
                                                        orderDeliveryAddress.phone1,
                                                        orderDeliveryAddress.phone2
@@ -371,16 +369,16 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
                                        ),
                                        new QGetQuotationResponse(
                                                quotation.id,
-                                               quotation.fileName,
-                                               quotation.fileUrl,
+                                               quotation.file.name,
+                                               quotation.file.url,
                                                quotation.totalCost,
                                                quotation.deliveryDate,
                                                quotation.createdAt
                                        ).skipNulls(),
                                        new QGetPurchaseOrderResponse(
                                                purchaseOrder.id,
-                                               purchaseOrder.fileName,
-                                               purchaseOrder.fileUrl,
+                                               purchaseOrder.file.name,
+                                               purchaseOrder.file.url,
                                                purchaseOrder.inspectionPeriod,
                                                purchaseOrder.inspectionCondition,
                                                purchaseOrder.paymentDate,
@@ -390,8 +388,8 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
                                                acquirer.id,
                                                acquirer.name,
                                                acquirer.phone,
-                                               acquirer.signatureFileName,
-                                               acquirer.signatureFileUrl
+                                               acquirer.signatureFile.name,
+                                               acquirer.signatureFile.url
                                        ).skipNulls()
                                )
                         )

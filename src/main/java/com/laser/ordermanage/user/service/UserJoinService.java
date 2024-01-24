@@ -4,6 +4,7 @@ import com.laser.ordermanage.common.cache.redis.dao.VerifyCode;
 import com.laser.ordermanage.common.cache.redis.repository.VerifyCodeRedisRepository;
 import com.laser.ordermanage.common.email.EmailService;
 import com.laser.ordermanage.common.email.dto.EmailWithCodeRequest;
+import com.laser.ordermanage.common.entity.embedded.Address;
 import com.laser.ordermanage.common.exception.CommonErrorCode;
 import com.laser.ordermanage.common.exception.CustomCommonException;
 import com.laser.ordermanage.customer.domain.Customer;
@@ -95,14 +96,18 @@ public class UserJoinService {
         UserJoinStatusResponse response = checkDuplicatedEmail(request.email());
 
         if (JoinStatus.isPossible(response.status())) {
+            Address address = Address.builder()
+                    .zipCode(request.zipCode())
+                    .address(request.address())
+                    .detailAddress(request.detailAddress())
+                    .build();
+
             UserEntity user = UserEntity.builder()
                     .email(request.email())
                     .password(passwordEncoder.encode(request.password()))
                     .role(Role.ROLE_CUSTOMER)
                     .phone(request.phone())
-                    .zipCode(request.zipCode())
-                    .address(request.address())
-                    .detailAddress(request.detailAddress())
+                    .address(address)
                     .build();
 
             Customer customer = Customer.builder()
@@ -114,9 +119,7 @@ public class UserJoinService {
             DeliveryAddress deliveryAddress = DeliveryAddress.builder()
                     .customer(customer)
                     .name(customer.getName())
-                    .zipCode(user.getZipCode())
                     .address(user.getAddress())
-                    .detailAddress(user.getDetailAddress())
                     .receiver(customer.getName())
                     .phone1(user.getPhone())
                     .phone2(user.getPhone())

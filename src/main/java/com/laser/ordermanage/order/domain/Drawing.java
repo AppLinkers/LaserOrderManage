@@ -1,5 +1,6 @@
 package com.laser.ordermanage.order.domain;
 
+import com.laser.ordermanage.common.entity.embedded.File;
 import com.laser.ordermanage.customer.dto.request.CustomerUpdateDrawingRequest;
 import com.laser.ordermanage.order.domain.type.DrawingFileType;
 import com.laser.ordermanage.order.domain.type.Ingredient;
@@ -24,18 +25,8 @@ public class Drawing {
     @JoinColumn(name = "order_id", nullable = false, updatable = false)
     private Order order;
 
-    @Column(name = "file_name", nullable = false)
-    private String fileName;
-
-    @Column(name = "file_size", nullable = false)
-    private Long fileSize;
-
-    @Enumerated(value = EnumType.STRING)
-    @Column(name = "file_type", nullable = false)
-    private DrawingFileType fileType;
-
-    @Column(name = "file_url", nullable = false)
-    private String fileUrl;
+    @Embedded
+    private File<DrawingFileType> file;
 
     @Column(name = "thumbnail_url", nullable = false)
     private String thumbnailUrl;
@@ -51,12 +42,9 @@ public class Drawing {
     private Integer thickness;
 
     @Builder
-    public Drawing(Order order, String fileName, Long fileSize, String fileType, String fileUrl, String thumbnailUrl, Integer count, String ingredient, Integer thickness) {
+    public Drawing(Order order, File<DrawingFileType> file, String thumbnailUrl, Integer count, String ingredient, Integer thickness) {
         this.order = order;
-        this.fileName = fileName;
-        this.fileSize = fileSize;
-        this.fileType = DrawingFileType.ofExtension(fileType);
-        this.fileUrl = fileUrl;
+        this.file = file;
         this.thumbnailUrl = thumbnailUrl;
         this.count = count;
         this.ingredient = Ingredient.ofValue(ingredient);

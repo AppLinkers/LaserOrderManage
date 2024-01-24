@@ -10,8 +10,8 @@ public record CustomerCreateOrUpdateOrderPurchaseOrderResponse(
     public static CustomerCreateOrUpdateOrderPurchaseOrderResponse from(PurchaseOrder purchaseOrder) {
         return new CustomerCreateOrUpdateOrderPurchaseOrderResponse(
                 purchaseOrder.getId(),
-                purchaseOrder.getFileName(),
-                purchaseOrder.getFileUrl()
+                purchaseOrder.getFile().getName(),
+                purchaseOrder.getFile().getUrl()
         );
     }
 }

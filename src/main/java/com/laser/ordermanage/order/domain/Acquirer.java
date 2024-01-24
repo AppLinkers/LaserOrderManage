@@ -1,6 +1,8 @@
 package com.laser.ordermanage.order.domain;
 
 import com.laser.ordermanage.common.entity.CreatedAtEntity;
+import com.laser.ordermanage.common.entity.embedded.File;
+import com.laser.ordermanage.order.domain.type.SignatureFileType;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -24,21 +26,20 @@ public class Acquirer extends CreatedAtEntity {
     @Column(name = "phone", nullable = false, length = 11)
     private String phone;
 
-    @Column(name = "signature_file_name", nullable = false)
-    private String signatureFileName;
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "name", column = @Column(name="signature_file_name")),
+            @AttributeOverride(name = "size", column = @Column(name="signature_file_size")),
+            @AttributeOverride(name = "type", column = @Column(name="signature_file_type")),
+            @AttributeOverride(name = "url", column = @Column(name="signature_file_url"))
+    })
+    private File<SignatureFileType> signatureFile;
 
-    @Column(name = "signature_file_size", nullable = false)
-    private Long signatureFileSize;
-
-    @Column(name = "signature_file_url", nullable = false)
-    private String signatureFileUrl;
 
     @Builder
-    public Acquirer(String name, String phone, String signatureFileName, Long signatureFileSize, String signatureFileUrl) {
+    public Acquirer(String name, String phone, File<SignatureFileType> signatureFile) {
         this.name = name;
         this.phone = phone;
-        this.signatureFileName = signatureFileName;
-        this.signatureFileSize = signatureFileSize;
-        this.signatureFileUrl = signatureFileUrl;
+        this.signatureFile = signatureFile;
     }
 }

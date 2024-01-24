@@ -56,7 +56,9 @@ public class UserEntityRepositoryCustomImpl implements UserEntityRepositoryCusto
                         factory.representative,
                         userEntity.phone,
                         factory.fax,
-                        userEntity.address,
+                        userEntity.address.zipCode,
+                        userEntity.address.address,
+                        userEntity.address.detailAddress,
                         userEntity.emailNotification
                 ))
                 .from(userEntity)
@@ -74,7 +76,9 @@ public class UserEntityRepositoryCustomImpl implements UserEntityRepositoryCusto
                         userEntity.email,
                         customer.name,
                         userEntity.phone,
-                        userEntity.address,
+                        userEntity.address.zipCode,
+                        userEntity.address.address,
+                        userEntity.address.detailAddress,
                         customer.companyName,
                         userEntity.emailNotification
                 ))

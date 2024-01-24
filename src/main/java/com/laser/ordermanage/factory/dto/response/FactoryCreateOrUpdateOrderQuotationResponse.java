@@ -10,8 +10,8 @@ public record FactoryCreateOrUpdateOrderQuotationResponse(
     public static FactoryCreateOrUpdateOrderQuotationResponse from(Quotation quotation) {
         return new FactoryCreateOrUpdateOrderQuotationResponse(
                 quotation.getId(),
-                quotation.getFileName(),
-                quotation.getFileUrl()
+                quotation.getFile().getName(),
+                quotation.getFile().getUrl()
         );
     }
 }

@@ -2,7 +2,6 @@ package com.laser.ordermanage.customer.api;
 
 import com.laser.ordermanage.customer.dto.request.CustomerUpdateUserAccountRequest;
 import com.laser.ordermanage.customer.service.CustomerUserAccountService;
-import com.laser.ordermanage.customer.dto.request.JoinCustomerRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -16,18 +15,6 @@ import org.springframework.web.bind.annotation.*;
 public class CustomerUserAccountAPI {
 
     private final CustomerUserAccountService customerUserAccountService;
-
-    /**
-     * 고객 회원가입
-     * - 이메일 중복 검사 수행
-     * - 회원 데이터 생성
-     * - 고객 데이터 생성 및 회원 데이터와 연관관계 매핑
-     * - 기본 배송지 데이터 생성 및 고객 데이터와 연관관계 매핑
-     */
-    @PostMapping("")
-    public ResponseEntity<?> join(@RequestBody @Valid JoinCustomerRequest request) {
-        return ResponseEntity.ok(customerUserAccountService.join(request));
-    }
 
     /**
      * 고객의 마이페이지 계정 정보 조회

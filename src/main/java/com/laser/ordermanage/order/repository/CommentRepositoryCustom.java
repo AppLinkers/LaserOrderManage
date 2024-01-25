@@ -8,4 +8,5 @@ public interface CommentRepositoryCustom {
 
     List<GetCommentResponse> findCommentByOrder(Long orderId);
 
+    void deleteAllByOrder(Long orderId);
 }

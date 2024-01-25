@@ -43,4 +43,12 @@ public class CommentRepositoryCustomImpl implements CommentRepositoryCustom{
 
         return getCommentResponseList;
     }
+
+    @Override
+    public void deleteAllByOrder(Long orderId) {
+        queryFactory
+                .delete(comment)
+                .where(comment.order.id.eq(orderId))
+                .execute();
+    }
 }

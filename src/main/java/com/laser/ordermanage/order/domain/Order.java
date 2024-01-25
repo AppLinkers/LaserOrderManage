@@ -31,7 +31,7 @@ public class Order extends CreatedAtEntity {
     @JoinColumn(name = "customer_id", nullable = false)
     private Customer customer;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    @OneToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
     @JoinColumn(name = "delivery_address_id", nullable = false)
     private OrderDeliveryAddress deliveryAddress;
 
@@ -48,12 +48,13 @@ public class Order extends CreatedAtEntity {
     private static final EnumSet<Stage> ENABLE_UPDATE_IS_URGENT_STAGE_LIST = EnumSet.of(Stage.NEW, Stage.QUOTE_APPROVAL, Stage.IN_PRODUCTION, Stage.PRODUCTION_COMPLETED);
     private static final EnumSet<Stage> ENABLE_UPDATE_DELIVERY_ADDRESS_STAGE_LIST = EnumSet.of(Stage.NEW, Stage.QUOTE_APPROVAL, Stage.IN_PRODUCTION);
     private static final EnumSet<Stage> ENABLE_MANAGE_DRAWING_STAGE_LIST = EnumSet.of(Stage.NEW, Stage.QUOTE_APPROVAL, Stage.IN_PRODUCTION);
+    private static final EnumSet<Stage> ENABLE_DELETE_ORDER = EnumSet.of(Stage.NEW, Stage.QUOTE_APPROVAL);
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    @OneToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
     @JoinColumn(name = "manufacturing_id", nullable = false)
     private OrderManufacturing manufacturing;
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    @OneToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
     @JoinColumn(name = "post_processing_id", nullable = false)
     private OrderPostProcessing postProcessing;
 
@@ -71,11 +72,11 @@ public class Order extends CreatedAtEntity {
     @Column(name = "is_new_issue", nullable = false, length = 1)
     private Boolean isNewIssue;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "quotation_id")
     private Quotation quotation;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "purchase_order_id")
     private PurchaseOrder purchaseOrder;
 
@@ -178,5 +179,9 @@ public class Order extends CreatedAtEntity {
 
     public boolean hasAcquirer() {
         return acquirer != null;
+    }
+
+    public boolean enableDelete() {
+        return ENABLE_DELETE_ORDER.contains(this.stage);
     }
 }

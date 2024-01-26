@@ -67,6 +67,10 @@ public class OrderEmailService {
             emailService.sendEmailWithButton(emailWithButtonRequest);
 
         } else if (user.getRole().equals(Role.ROLE_CUSTOMER)) {
+            if (!order.hasCustomer()) {
+                return;
+            }
+
             GetEmailRecipientResponse emailRecipient = getEmailRecipient(order.getId(), Role.ROLE_FACTORY);
 
             if (!emailRecipient.emailNotification()) {

@@ -198,7 +198,7 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
                         order.request
                 ))
                 .from(order)
-                .join(order.customer, customer)
+                .leftJoin(order.customer, customer)
                 .leftJoin(order.quotation, quotation)
                 .where(
                         eqIsCompleted(isCompleted),
@@ -216,7 +216,7 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
         JPAQuery<Long> countQuery = queryFactory
                 .select(order.count())
                 .from(order)
-                .join(order.customer, customer)
+                .leftJoin(order.customer, customer)
                 .leftJoin(order.quotation, quotation)
                 .where(
                         eqIsCompleted(isCompleted),
@@ -319,8 +319,8 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
     public GetOrderDetailResponse findDetailByOrder(Long orderId) {
         List<GetOrderDetailResponse> getOrderDetailResponseList = queryFactory
                 .selectFrom(order)
-                .join(order.customer, customer)
-                .join(customer.user, userEntity)
+                .leftJoin(order.customer, customer)
+                .leftJoin(customer.user, userEntity)
                 .join(drawing).on(order.id.eq(drawing.order.id))
                 .join(order.deliveryAddress, orderDeliveryAddress)
                 .leftJoin(order.quotation, quotation)
@@ -336,7 +336,7 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
                                               customer.companyName,
                                               userEntity.phone,
                                               userEntity.email
-                                       ),
+                                       ).skipNulls(),
                                        new QGetOrderResponse(
                                               order.id,
                                               order.name,

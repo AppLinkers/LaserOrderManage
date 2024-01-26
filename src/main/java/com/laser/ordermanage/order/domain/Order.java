@@ -193,4 +193,8 @@ public class Order extends CreatedAtEntity {
         this.customer = null;
         this.isDeleted = Boolean.TRUE;
     }
+
+    public boolean hasCustomer() {
+        return customer != null;
+    }
 }

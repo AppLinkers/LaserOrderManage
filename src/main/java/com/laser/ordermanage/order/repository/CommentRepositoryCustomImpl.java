@@ -34,7 +34,7 @@ public class CommentRepositoryCustomImpl implements CommentRepositoryCustom{
                         comment.createdAt
                 ))
                 .from(comment)
-                .join(comment.user, userEntity)
+                .leftJoin(comment.user, userEntity)
                 .leftJoin(factory).on(factory.user.id.eq(userEntity.id))
                 .leftJoin(customer).on(customer.user.id.eq(userEntity.id))
                 .join(comment.order, order)

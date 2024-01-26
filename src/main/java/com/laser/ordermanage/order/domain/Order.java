@@ -28,7 +28,7 @@ public class Order extends CreatedAtEntity {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "customer_id", nullable = false)
+    @JoinColumn(name = "customer_id")
     private Customer customer;
 
     @OneToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
@@ -83,6 +83,10 @@ public class Order extends CreatedAtEntity {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "acquirer_id")
     private Acquirer acquirer;
+
+    @Convert(converter = BooleanToYNConverter.class)
+    @Column(name = "is_deleted", nullable = false, length = 1)
+    private Boolean isDeleted = Boolean.FALSE;
 
     @Builder
     public Order(Customer customer, OrderDeliveryAddress deliveryAddress, String name, String imgUrl, OrderManufacturing manufacturing, OrderPostProcessing postProcessing, String request, Boolean isNewIssue) {
@@ -183,5 +187,10 @@ public class Order extends CreatedAtEntity {
 
     public boolean enableDelete() {
         return ENABLE_DELETE_ORDER.contains(this.stage);
+    }
+
+    public void delete() {
+        this.customer = null;
+        this.isDeleted = Boolean.TRUE;
     }
 }

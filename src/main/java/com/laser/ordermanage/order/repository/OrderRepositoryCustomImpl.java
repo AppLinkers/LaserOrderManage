@@ -4,6 +4,7 @@ import com.laser.ordermanage.common.exception.CommonErrorCode;
 import com.laser.ordermanage.common.exception.CustomCommonException;
 import com.laser.ordermanage.customer.dto.response.*;
 import com.laser.ordermanage.factory.dto.response.*;
+import com.laser.ordermanage.order.domain.Order;
 import com.laser.ordermanage.order.domain.type.Stage;
 import com.laser.ordermanage.order.dto.response.*;
 import com.querydsl.core.BooleanBuilder;
@@ -413,6 +414,37 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
         return Optional.ofNullable(userEmail);
     }
 
+    @Override
+    public List<Order> findByCustomerAndStageCompleted(String email) {
+        List<Order> orderList = queryFactory
+                .select(order)
+                .from(order)
+                .join(order.customer, customer)
+                .join(customer.user, userEntity)
+                .where(
+                        userEntity.email.eq(email),
+                        order.stage.eq(Stage.COMPLETED)
+                )
+                .fetch();
+
+        return orderList;
+    }
+
+    @Override
+    public List<Long> findIdByCustomerAndStageNotCompleted(String email) {
+        List<Long> orderIdList = queryFactory
+                .select(order.id)
+                .from(order)
+                .join(order.customer, customer)
+                .join(customer.user, userEntity)
+                .where(
+                        userEntity.email.eq(email),
+                        order.stage.ne(Stage.COMPLETED)
+                )
+                .fetch();
+
+        return orderIdList;
+    }
 
     private BooleanBuilder eqStage(List<String> stageRequestList) {
 

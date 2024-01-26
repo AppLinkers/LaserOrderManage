@@ -1,7 +1,10 @@
 package com.laser.ordermanage.customer.api;
 
 import com.laser.ordermanage.customer.dto.request.CustomerUpdateUserAccountRequest;
+import com.laser.ordermanage.customer.service.CustomerOrderService;
 import com.laser.ordermanage.customer.service.CustomerUserAccountService;
+import com.laser.ordermanage.user.service.UserAuthService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +17,8 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 public class CustomerUserAccountAPI {
 
+    private final UserAuthService userAuthService;
+    private final CustomerOrderService customerOrderService;
     private final CustomerUserAccountService customerUserAccountService;
 
     /**
@@ -38,6 +43,33 @@ public class CustomerUserAccountAPI {
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         customerUserAccountService.updateUserAccount(user.getUsername(), request);
+
+        return ResponseEntity.ok().build();
+    }
+
+    /**
+     * 고객 회원의 회원 탈퇴
+     * - 로그아웃 수행
+     * - 거래 데이터 삭제 및 고객과의 연관관계 제거
+     *      - 거래 단계 (견적 대기, 견적 승인, 제작 중, 제작 완료) : 데이터 삭제
+     *          - 거래 제조 서비스, 거래 후처리 서비스, 도면, 거래 배송지, 견적서, 발주서, 댓글 데이터 삭제
+     *      - 거래 단계 (거래 완료) : 고객과의 연관관계 제거 및 삭제 표시
+     *          - 거래와 고객의 연관관계 제거
+     *          - 거래 삭제 표시
+     *          - 거래 댓글과 사용자의 연관관계 제거
+     * - 고객 데이터삭제 (고객, 배송지, 사용자)
+     */
+    @DeleteMapping("")
+    public ResponseEntity<?> deleteUserAccount(HttpServletRequest httpServletRequest) {
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        userAuthService.logout(httpServletRequest);
+
+        customerOrderService.deleteOrderByStageNotCompleted(user.getUsername());
+
+        customerOrderService.deleteOrderByStageCompleted(user.getUsername());
+
+        customerUserAccountService.deleteUser(user.getUsername());
 
         return ResponseEntity.ok().build();
     }

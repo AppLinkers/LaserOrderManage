@@ -6,6 +6,7 @@ import com.laser.ordermanage.customer.dto.response.CustomerGetOrderIsCompletedHi
 import com.laser.ordermanage.factory.dto.response.FactoryGetOrderHistoryResponse;
 import com.laser.ordermanage.factory.dto.response.FactoryGetOrderIsNewAndIsNewIssueHistoryResponse;
 import com.laser.ordermanage.factory.dto.response.FactoryGetOrderIsNewAndIsReIssueHistoryResponse;
+import com.laser.ordermanage.order.domain.Order;
 import com.laser.ordermanage.order.dto.response.GetOrderDetailResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -31,4 +32,8 @@ public interface OrderRepositoryCustom {
     GetOrderDetailResponse findDetailByOrder(Long orderId);
 
     Optional<String> findUserEmailById(Long orderId);
+
+    List<Order> findByCustomerAndStageCompleted(String email);
+
+    List<Long> findIdByCustomerAndStageNotCompleted(String email);
 }

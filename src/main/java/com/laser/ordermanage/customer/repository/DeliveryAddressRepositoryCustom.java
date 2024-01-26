@@ -9,4 +9,6 @@ public interface DeliveryAddressRepositoryCustom {
     List<CustomerGetDeliveryAddressResponse> findByCustomer(String email);
 
     Optional<String> findUserEmailById(Long deliveryAddressId);
+
+    void deleteByCustomer(Long customerId);
 }

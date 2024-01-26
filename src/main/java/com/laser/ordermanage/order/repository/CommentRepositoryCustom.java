@@ -9,4 +9,8 @@ public interface CommentRepositoryCustom {
     List<GetCommentResponse> findCommentByOrder(Long orderId);
 
     void deleteAllByOrder(Long orderId);
+
+    void deleteAllByOrderList(List<Long> orderIdList);
+
+    void updateCommentUserAsNullByUserAndOrder(String email, List<Long> orderIdList);
 }

@@ -54,4 +54,11 @@ public class DeliveryAddressRepositoryCustomImpl implements DeliveryAddressRepos
         return Optional.ofNullable(userEmail);
     }
 
+    @Override
+    public void deleteByCustomer(Long customerId) {
+        queryFactory
+                .delete(deliveryAddress)
+                .where(deliveryAddress.customer.id.eq(customerId))
+                .execute();
+    }
 }

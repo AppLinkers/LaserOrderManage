@@ -13,6 +13,7 @@ import com.laser.ordermanage.order.domain.*;
 import com.laser.ordermanage.order.domain.type.DrawingFileType;
 import com.laser.ordermanage.order.domain.type.PurchaseOrderFileType;
 import com.laser.ordermanage.order.exception.OrderErrorCode;
+import com.laser.ordermanage.order.repository.CommentRepository;
 import com.laser.ordermanage.order.repository.DrawingRepository;
 import com.laser.ordermanage.order.repository.OrderRepository;
 import com.laser.ordermanage.order.repository.PurchaseOrderRepository;
@@ -31,6 +32,7 @@ import java.util.List;
 @Service
 public class CustomerOrderService {
 
+    private final CommentRepository commentRepository;
     private final DrawingRepository drawingRepository;
     private final OrderRepository orderRepository;
     private final CustomerRepository customerRepository;
@@ -225,6 +227,36 @@ public class CustomerOrderService {
         purchaseOrder.updateProperties(request);
 
         return CustomerCreateOrUpdateOrderPurchaseOrderResponse.from(purchaseOrder);
+    }
+
+    @Transactional
+    public void deleteOrderByStageNotCompleted(String email) {
+        // 거래 목록 조회 (견적 대기, 견적 승인, 제작 중, 제작 완료)
+        List<Long> orderIdList = orderRepository.findIdByCustomerAndStageNotCompleted(email);
+
+        // 거래 도면 데이터 삭제
+        drawingRepository.deleteAllByOrderList(orderIdList);
+
+        // 거래 댓글 데이터 삭제
+        commentRepository.deleteAllByOrderList(orderIdList);
+
+        // 거래 데이터 삭제 및 연관 데이터 삭제 (거래 제조 서비스, 거래 후처리 서비스, 거래 배송지, 견적서, 발주서)
+        orderRepository.deleteAllByIdIn(orderIdList);
+    }
+
+    @Transactional
+    public void deleteOrderByStageCompleted(String email) {
+        // 거래 목록 조회 (거래 완료)
+        List<Order> orderList = orderRepository.findByCustomerAndStageCompleted(email);
+        List<Long> orderIdList = orderList.stream().map(Order::getId).toList();
+
+        // 거래 댓글과 사용자의 연관관계 제거
+        commentRepository.updateCommentUserAsNullByUserAndOrder(email, orderIdList);
+
+        // 거래와 고객의 연관관계 제거 및 삭제 표시
+        orderList.forEach(order -> {
+            order.delete();
+        });
     }
 
     private File<PurchaseOrderFileType> uploadPurchaseOrderFile(MultipartFile file) {

@@ -248,15 +248,13 @@ public class CustomerOrderService {
     public void deleteOrderByStageCompleted(String email) {
         // 거래 목록 조회 (거래 완료)
         List<Order> orderList = orderRepository.findByCustomerAndStageCompleted(email);
-        List<Long> orderIdList = orderList.stream().map(Order::getId).toList();
+        List<Long> orderIdList = orderList.stream().map(order -> order.getId()).toList();
 
         // 거래 댓글과 사용자의 연관관계 제거
         commentRepository.updateCommentUserAsNullByUserAndOrder(email, orderIdList);
 
         // 거래와 고객의 연관관계 제거 및 삭제 표시
-        orderList.forEach(order -> {
-            order.delete();
-        });
+        orderList.forEach(order -> order.delete());
     }
 
     private File<PurchaseOrderFileType> uploadPurchaseOrderFile(MultipartFile file) {

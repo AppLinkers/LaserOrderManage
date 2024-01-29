@@ -143,6 +143,7 @@ public class OrderEmailService {
                     .buttonText("거래 내역 확인하기")
                     .buttonUrl("https://www.kumoh.org/customer/order")
                     .build();
+            emailService.sendEmailWithButton(emailWithButtonRequest);
         } else if (userEntity.getRole().equals(Role.ROLE_CUSTOMER)) {
             UserEntity emailRecipient = userAuthService.getUserByEmail("admin@kumoh.org");
 
@@ -182,22 +183,16 @@ public class OrderEmailService {
 
     @Transactional(readOnly = true)
     public GetEmailRecipientResponse getEmailRecipient(Long orderId, Role userRole) {
-
+        UserEntity user;
         if (userRole.equals(Role.ROLE_FACTORY)) {
-            UserEntity factoryUser = userAuthService.getUserByEmail("admin@kumoh.org");
-
-            return GetEmailRecipientResponse.builder()
-                    .emailNotification(factoryUser.getEmailNotification())
-                    .email(factoryUser.getEmail())
-                    .build();
+            user = userAuthService.getUserByEmail("admin@kumoh.org");
         } else {
-            UserEntity customerUser = orderService.getOrderById(orderId).getCustomer().getUser();
-
-            return GetEmailRecipientResponse.builder()
-                    .emailNotification(customerUser.getEmailNotification())
-                    .email(customerUser.getEmail())
-                    .build();
+            user = orderService.getOrderById(orderId).getCustomer().getUser();
         }
 
+        return GetEmailRecipientResponse.builder()
+                .emailNotification(user.getEmailNotification())
+                .email(user.getEmail())
+                .build();
     }
 }

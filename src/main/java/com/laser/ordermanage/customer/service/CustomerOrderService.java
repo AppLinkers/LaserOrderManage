@@ -263,7 +263,7 @@ public class CustomerOrderService {
         PurchaseOrderFileType fileType = PurchaseOrderFileType.ofExtension(FileUtil.getExtension(file));
 
         // 발주서 파일 업로드
-        String fileUrl = s3Service.upload("purchase-order", file);
+        String fileUrl = s3Service.upload("purchase-order", file, "purchase-order." + fileType.getExtension());
 
         File<PurchaseOrderFileType> purchaseOrderFile = File.<PurchaseOrderFileType>builder()
                 .name(fileName)

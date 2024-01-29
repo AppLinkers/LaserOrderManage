@@ -4,6 +4,7 @@ import com.laser.ordermanage.customer.domain.Customer;
 import com.laser.ordermanage.customer.dto.request.CustomerUpdateUserAccountRequest;
 import com.laser.ordermanage.customer.dto.response.CustomerGetUserAccountResponse;
 import com.laser.ordermanage.customer.repository.CustomerRepository;
+import com.laser.ordermanage.customer.repository.DeliveryAddressRepository;
 import com.laser.ordermanage.user.repository.UserEntityRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -13,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class CustomerUserAccountService {
 
+    private final DeliveryAddressRepository deliveryAddressRepository;
     private final CustomerRepository customerRepository;
     private final UserEntityRepository userRepository;
 
@@ -27,5 +29,16 @@ public class CustomerUserAccountService {
         Customer customer = customerRepository.findFirstByUserEmail(email);
 
         customer.updateProperties(request);
+    }
+
+    @Transactional
+    public void deleteUser(String email) {
+        Customer customer = customerRepository.findFirstByUserEmail(email);
+
+        // 고객 회원의 배송지 목록 삭제
+        deliveryAddressRepository.deleteByCustomer(customer.getId());
+
+        // 고객 회원 데이터 삭제 (고객, 사용자)
+        customerRepository.delete(customer);
     }
 }

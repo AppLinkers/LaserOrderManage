@@ -1,6 +1,7 @@
 package com.laser.ordermanage.order.api;
 
 import com.laser.ordermanage.order.dto.request.CreateCommentRequest;
+import com.laser.ordermanage.order.dto.response.DeleteOrderResponse;
 import com.laser.ordermanage.order.service.OrderEmailService;
 import com.laser.ordermanage.order.service.OrderService;
 import jakarta.validation.Valid;
@@ -72,4 +73,24 @@ public class OrderAPI {
         return ResponseEntity.ok().build();
     }
 
+    /**
+     * 거래 삭제
+     * - 거래에 대한 현재 로그인한 회원의 접근 권한 확인 (공장 or 거래의 고객 회원)
+     * - 거래 삭제 가능 단계 확인 (견적 대기, 견적 승인)
+     * - 거래 데이터 삭제 및 연관 데이터 삭제 (거래 제조 서비스, 거래 후처리 서비스, 도면, 거래 배송지, 견적서, 발주서, 댓글)
+     * - 거래 삭제에 대한 이메일 전송
+     */
+    @DeleteMapping("/{order-id}")
+    public ResponseEntity<?> deleteOrder(@PathVariable("order-id") Long orderId) {
+
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        orderService.checkAuthorityCustomerOfOrderOrFactory(user, orderId);
+
+        DeleteOrderResponse deletedOrder = orderService.deleteOrder(orderId);
+
+        orderEmailService.sendEmailForDeleteOrder(user, deletedOrder);
+
+        return ResponseEntity.ok().build();
+    }
 }

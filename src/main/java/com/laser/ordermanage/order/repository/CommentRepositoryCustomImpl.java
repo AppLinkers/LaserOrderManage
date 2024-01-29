@@ -3,6 +3,7 @@ package com.laser.ordermanage.order.repository;
 import com.laser.ordermanage.order.dto.response.GetCommentResponse;
 import com.laser.ordermanage.order.dto.response.QGetCommentResponse;
 import com.querydsl.core.types.dsl.CaseBuilder;
+import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 
@@ -33,7 +34,7 @@ public class CommentRepositoryCustomImpl implements CommentRepositoryCustom{
                         comment.createdAt
                 ))
                 .from(comment)
-                .join(comment.user, userEntity)
+                .leftJoin(comment.user, userEntity)
                 .leftJoin(factory).on(factory.user.id.eq(userEntity.id))
                 .leftJoin(customer).on(customer.user.id.eq(userEntity.id))
                 .join(comment.order, order)
@@ -42,5 +43,38 @@ public class CommentRepositoryCustomImpl implements CommentRepositoryCustom{
                 .fetch();
 
         return getCommentResponseList;
+    }
+
+    @Override
+    public void deleteAllByOrder(Long orderId) {
+        queryFactory
+                .delete(comment)
+                .where(comment.order.id.eq(orderId))
+                .execute();
+    }
+
+    @Override
+    public void deleteAllByOrderList(List<Long> orderIdList) {
+        queryFactory
+                .delete(comment)
+                .where(comment.order.id.in(orderIdList))
+                .execute();
+    }
+
+    @Override
+    public void updateCommentUserAsNullByUserAndOrder(String email, List<Long> orderIdList) {
+        queryFactory
+                .update(comment)
+                .setNull(comment.user)
+                .where(
+                        comment.order.id.in(orderIdList),
+                        comment.user.id.eq(
+                                JPAExpressions
+                                        .select(userEntity.id)
+                                        .from(userEntity)
+                                        .where(userEntity.email.eq(email))
+                        )
+                )
+                .execute();
     }
 }

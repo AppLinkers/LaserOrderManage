@@ -4,6 +4,7 @@ import com.laser.ordermanage.common.exception.CommonErrorCode;
 import com.laser.ordermanage.common.exception.CustomCommonException;
 import com.laser.ordermanage.customer.dto.response.*;
 import com.laser.ordermanage.factory.dto.response.*;
+import com.laser.ordermanage.order.domain.Order;
 import com.laser.ordermanage.order.domain.type.Stage;
 import com.laser.ordermanage.order.dto.response.*;
 import com.querydsl.core.BooleanBuilder;
@@ -197,7 +198,7 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
                         order.request
                 ))
                 .from(order)
-                .join(order.customer, customer)
+                .leftJoin(order.customer, customer)
                 .leftJoin(order.quotation, quotation)
                 .where(
                         eqIsCompleted(isCompleted),
@@ -215,7 +216,7 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
         JPAQuery<Long> countQuery = queryFactory
                 .select(order.count())
                 .from(order)
-                .join(order.customer, customer)
+                .leftJoin(order.customer, customer)
                 .leftJoin(order.quotation, quotation)
                 .where(
                         eqIsCompleted(isCompleted),
@@ -318,8 +319,8 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
     public GetOrderDetailResponse findDetailByOrder(Long orderId) {
         List<GetOrderDetailResponse> getOrderDetailResponseList = queryFactory
                 .selectFrom(order)
-                .join(order.customer, customer)
-                .join(customer.user, userEntity)
+                .leftJoin(order.customer, customer)
+                .leftJoin(customer.user, userEntity)
                 .join(drawing).on(order.id.eq(drawing.order.id))
                 .join(order.deliveryAddress, orderDeliveryAddress)
                 .leftJoin(order.quotation, quotation)
@@ -335,7 +336,7 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
                                               customer.companyName,
                                               userEntity.phone,
                                               userEntity.email
-                                       ),
+                                       ).skipNulls(),
                                        new QGetOrderResponse(
                                               order.id,
                                               order.name,
@@ -413,6 +414,37 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
         return Optional.ofNullable(userEmail);
     }
 
+    @Override
+    public List<Order> findByCustomerAndStageCompleted(String email) {
+        List<Order> orderList = queryFactory
+                .select(order)
+                .from(order)
+                .join(order.customer, customer)
+                .join(customer.user, userEntity)
+                .where(
+                        userEntity.email.eq(email),
+                        order.stage.eq(Stage.COMPLETED)
+                )
+                .fetch();
+
+        return orderList;
+    }
+
+    @Override
+    public List<Long> findIdByCustomerAndStageNotCompleted(String email) {
+        List<Long> orderIdList = queryFactory
+                .select(order.id)
+                .from(order)
+                .join(order.customer, customer)
+                .join(customer.user, userEntity)
+                .where(
+                        userEntity.email.eq(email),
+                        order.stage.ne(Stage.COMPLETED)
+                )
+                .fetch();
+
+        return orderIdList;
+    }
 
     private BooleanBuilder eqStage(List<String> stageRequestList) {
 

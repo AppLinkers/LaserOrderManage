@@ -1,6 +1,6 @@
 package com.laser.ordermanage.user.api;
 
-import com.laser.ordermanage.user.dto.request.JoinCustomerRequest;
+import com.laser.ordermanage.customer.dto.request.JoinCustomerRequest;
 import com.laser.ordermanage.user.dto.request.VerifyEmailRequest;
 import com.laser.ordermanage.user.service.UserJoinService;
 import jakarta.validation.Valid;
@@ -46,13 +46,13 @@ public class UserJoinAPI {
     }
 
     /**
-     * 회원가입
+     * 고객 회원가입
      * - 이메일 중복 검사 수행
      * - 회원 데이터 생성
      * - 고객 데이터 생성 및 회원 데이터와 연관관계 매핑
      * - 기본 배송지 데이터 생성 및 고객 데이터와 연관관계 매핑
      */
-    @PostMapping("/join/customer")
+    @PostMapping("/customer")
     public ResponseEntity<?> joinCustomer(@RequestBody @Valid JoinCustomerRequest request) {
         return ResponseEntity.ok(userJoinService.joinCustomer(request));
     }

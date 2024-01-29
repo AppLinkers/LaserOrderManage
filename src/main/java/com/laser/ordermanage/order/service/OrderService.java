@@ -5,16 +5,17 @@ import com.laser.ordermanage.common.paging.ListResponse;
 import com.laser.ordermanage.order.domain.Comment;
 import com.laser.ordermanage.order.domain.Order;
 import com.laser.ordermanage.order.dto.request.CreateCommentRequest;
+import com.laser.ordermanage.order.dto.response.DeleteOrderResponse;
 import com.laser.ordermanage.order.dto.response.GetCommentResponse;
 import com.laser.ordermanage.order.dto.response.GetOrderDetailResponse;
 import com.laser.ordermanage.order.exception.OrderErrorCode;
 import com.laser.ordermanage.order.repository.CommentRepository;
+import com.laser.ordermanage.order.repository.DrawingRepository;
 import com.laser.ordermanage.order.repository.OrderRepository;
 import com.laser.ordermanage.user.domain.UserEntity;
 import com.laser.ordermanage.user.domain.type.Role;
 import com.laser.ordermanage.user.service.UserAuthService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class OrderService {
 
     private final CommentRepository commentRepository;
+    private final DrawingRepository drawingRepository;
     private final OrderRepository orderRepository;
 
     private final UserAuthService userAuthService;
@@ -70,9 +72,35 @@ public class OrderService {
         return createdComment.getId();
     }
 
+    @Transactional
+    public DeleteOrderResponse deleteOrder(Long orderId) {
+        Order order = this.getOrderById(orderId);
+
+        if (!order.enableDelete()) {
+            throw new CustomCommonException(OrderErrorCode.INVALID_ORDER_STAGE, order.getStage().getValue());
+        }
+
+        DeleteOrderResponse response = DeleteOrderResponse.builder()
+                .name(order.getName())
+                .customerUserEmail(order.getCustomer().getUser().getEmail())
+                .build();
+
+        // 거래 도면 데이터 삭제
+        drawingRepository.deleteAllByOrder(orderId);
+
+        // 거래 댓글 데이터 삭제
+        commentRepository.deleteAllByOrder(orderId);
+
+        // 거래 데이터 삭제 및 연관 데이터 삭제 (거래 제조 서비스, 거래 후처리 서비스, 거래 배송지, 견적서, 발주서)
+        orderRepository.delete(order);
+
+        return response;
+    }
+
     @Transactional(readOnly = true)
     public void checkAuthorityCustomerOfOrderOrFactory(User user, Long orderId) {
-        if (user.getAuthorities().contains(new SimpleGrantedAuthority(Role.ROLE_FACTORY.name()))) {
+        UserEntity userEntity = userAuthService.getUserByEmail(user.getUsername());
+        if (userEntity.getRole().equals(Role.ROLE_FACTORY)) {
             return;
         }
 

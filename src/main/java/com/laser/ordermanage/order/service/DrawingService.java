@@ -3,11 +3,13 @@ package com.laser.ordermanage.order.service;
 import com.laser.ordermanage.common.cloud.aws.S3Service;
 import com.laser.ordermanage.common.exception.CustomCommonException;
 import com.laser.ordermanage.common.util.CADUtil;
+import com.laser.ordermanage.common.util.FileUtil;
 import com.laser.ordermanage.common.util.ImageUtil;
 import com.laser.ordermanage.common.util.PDFUtil;
 import com.laser.ordermanage.order.domain.Drawing;
 import com.laser.ordermanage.order.domain.Order;
 import com.laser.ordermanage.order.domain.type.DrawingFileType;
+import com.laser.ordermanage.order.dto.response.UploadDrawingFileResponse;
 import com.laser.ordermanage.order.exception.OrderErrorCode;
 import com.laser.ordermanage.order.repository.DrawingRepository;
 import lombok.RequiredArgsConstructor;
@@ -46,11 +48,31 @@ public class DrawingService {
         };
     }
 
-    public String uploadDrawingFile(MultipartFile multipartFile) {
-        return s3Service.upload("drawing", multipartFile);
+    public String uploadThumbnailFile(String tempThumbnailFilePath) {
+        return s3Service.upload("drawing-thumbnail", tempThumbnailFilePath, "drawing-thumbnail.");
     }
 
-    public String uploadThumbnailFile(String tempThumbnailFilePath) {
-        return s3Service.upload("drawing-thumbnail", tempThumbnailFilePath);
+    public UploadDrawingFileResponse uploadDrawingFile(MultipartFile file) {
+        String fileName = file.getOriginalFilename();
+        Long fileSize = file.getSize();
+        DrawingFileType fileType = DrawingFileType.ofExtension(FileUtil.getExtension(file));
+
+        String fileUrl = s3Service.upload("drawing", file, "drawing." + fileType.getExtension());
+
+        // 썸네일 추출
+        String tempThumbnailFilePath = this.extractThumbnail(file, fileType);
+
+        // 썸네일 파일 업로드
+        String thumbnailFileUrl = this.uploadThumbnailFile(tempThumbnailFilePath);
+
+        UploadDrawingFileResponse uploadDrawingFileResponse = UploadDrawingFileResponse.builder()
+                .thumbnailUrl(thumbnailFileUrl)
+                .fileName(fileName)
+                .fileType(fileType.getExtension())
+                .fileUrl(fileUrl)
+                .fileSize(fileSize)
+                .build();
+
+        return uploadDrawingFileResponse;
     }
 }

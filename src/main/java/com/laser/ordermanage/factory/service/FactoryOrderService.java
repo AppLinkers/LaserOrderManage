@@ -180,7 +180,7 @@ public class FactoryOrderService {
         QuotationFileType fileType = QuotationFileType.ofExtension(FileUtil.getExtension(file));
 
         // 견적서 파일 업로드
-        String fileUrl = s3Service.upload("quotation", file);
+        String fileUrl = s3Service.upload("quotation", file, "quotation." + fileType.getExtension());
 
         File<QuotationFileType> quotationFile = File.<QuotationFileType>builder()
                 .name(fileName)
@@ -198,7 +198,7 @@ public class FactoryOrderService {
         SignatureFileType fileType = SignatureFileType.ofExtension(FileUtil.getExtension(file));
 
         // 인수자 서명 파일 업로드
-        String fileUrl = s3Service.upload("acquirer-signature", file);
+        String fileUrl = s3Service.upload("acquirer-signature", file, "acquirer-signature." + fileType.getExtension());
 
         File<SignatureFileType> signatureFile = File.<SignatureFileType>builder()
                 .name(fileName)

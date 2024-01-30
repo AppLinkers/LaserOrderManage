@@ -9,10 +9,10 @@ import com.laser.ordermanage.common.exception.CommonErrorCode;
 import com.laser.ordermanage.common.exception.CustomCommonException;
 import com.laser.ordermanage.customer.domain.Customer;
 import com.laser.ordermanage.customer.domain.DeliveryAddress;
+import com.laser.ordermanage.customer.dto.request.JoinCustomerRequest;
 import com.laser.ordermanage.customer.repository.DeliveryAddressRepository;
 import com.laser.ordermanage.user.domain.UserEntity;
 import com.laser.ordermanage.user.domain.type.Role;
-import com.laser.ordermanage.user.dto.request.JoinCustomerRequest;
 import com.laser.ordermanage.user.dto.request.VerifyEmailRequest;
 import com.laser.ordermanage.user.dto.response.UserJoinStatusResponse;
 import com.laser.ordermanage.user.dto.type.JoinStatus;
@@ -35,8 +35,8 @@ public class UserJoinService {
 
     private final EmailService emailService;
 
-    private final UserEntityRepository userRepository;
     private final DeliveryAddressRepository deliveryAddressRepository;
+    private final UserEntityRepository userRepository;
     private final VerifyCodeRedisRepository verifyCodeRedisRepository;
 
     @Transactional

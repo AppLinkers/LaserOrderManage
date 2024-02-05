@@ -8,8 +8,8 @@ public class UserEntityBuilder {
     public static UserEntity build() {
         Address address = Address.builder()
                 .zipCode("11111")
-                .address("고객 주소")
-                .detailAddress("고객 상세 주소")
+                .address("user1_address")
+                .detailAddress("user1_detail_address")
                 .build();
 
         return UserEntity.builder()

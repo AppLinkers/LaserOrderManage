@@ -1,12 +1,12 @@
 package com.laser.ordermanage.common.cache.redis.config;
 
-import org.springframework.context.annotation.Configuration;
+import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Profile;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.utility.DockerImageName;
 
 @Profile("test")
-@Configuration
+@TestConfiguration
 public class RedisTestContainers {
 
     private static final String REDIS_DOCKER_IMAGE = "redis:5.0.3-alpine";

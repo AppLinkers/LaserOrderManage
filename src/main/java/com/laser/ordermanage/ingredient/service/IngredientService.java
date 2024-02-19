@@ -1,6 +1,7 @@
 package com.laser.ordermanage.ingredient.service;
 
 import com.laser.ordermanage.common.exception.CustomCommonException;
+import com.laser.ordermanage.common.paging.ListResponse;
 import com.laser.ordermanage.factory.domain.Factory;
 import com.laser.ordermanage.factory.repository.FactoryRepository;
 import com.laser.ordermanage.ingredient.domain.Ingredient;
@@ -8,6 +9,7 @@ import com.laser.ordermanage.ingredient.domain.IngredientPrice;
 import com.laser.ordermanage.ingredient.domain.IngredientStock;
 import com.laser.ordermanage.ingredient.dto.request.CreateIngredientRequest;
 import com.laser.ordermanage.ingredient.dto.request.UpdateIngredientRequest;
+import com.laser.ordermanage.ingredient.dto.response.GetIngredientInfoResponse;
 import com.laser.ordermanage.ingredient.dto.response.GetIngredientStockResponse;
 import com.laser.ordermanage.ingredient.exception.IngredientErrorCode;
 import com.laser.ordermanage.ingredient.repository.IngredientPriceRepository;
@@ -19,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @RequiredArgsConstructor
 @Service
@@ -115,5 +118,9 @@ public class IngredientService {
         }
 
         ingredient.delete();
+    }
+
+    public ListResponse<GetIngredientInfoResponse> getIngredient(String email) {
+        return new ListResponse<GetIngredientInfoResponse>(ingredientRepository.findIngredientByFactory(email));
     }
 }

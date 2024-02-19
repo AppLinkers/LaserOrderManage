@@ -81,6 +81,8 @@ public class IngredientAPI {
 
     /**
      * 자재 삭제 API 개발
+     * - path parameter {ingredient-id} 에 해당하는 자재 조회
+     * - 자재 삭제 여부 확인 및 삭제 수행 (삭제 날짜 표시)
      */
     @DeleteMapping("/{ingredient-id}")
     public ResponseEntity<?> deleteIngredient(
@@ -96,4 +98,15 @@ public class IngredientAPI {
         return ResponseEntity.ok().build();
     }
 
+    /**
+     * 자재 목록 조회
+     * - 현재 로그인한 공장 회원의 자재 목록 조회
+     */
+    @GetMapping("")
+    public ResponseEntity<?> getIngredient() {
+
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        return ResponseEntity.ok(ingredientService.getIngredient(user.getUsername()));
+    }
 }

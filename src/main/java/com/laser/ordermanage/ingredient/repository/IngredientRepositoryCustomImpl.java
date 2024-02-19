@@ -149,4 +149,21 @@ public class IngredientRepositoryCustomImpl implements IngredientRepositoryCusto
 
         return Optional.ofNullable(userEmail);
     }
+
+    @Override
+    public List<GetIngredientInfoResponse> findIngredientByFactory(String email) {
+        List<GetIngredientInfoResponse> ingredientInfoResponseList = queryFactory
+                .select(new QGetIngredientInfoResponse(
+                        ingredient.id,
+                        ingredient.texture,
+                        ingredient.thickness
+                ))
+                .from(ingredient)
+                .join(ingredient.factory, factory)
+                .join(factory.user, userEntity)
+                .where(userEntity.email.eq(email))
+                .fetch();
+
+        return ingredientInfoResponseList;
+    }
 }

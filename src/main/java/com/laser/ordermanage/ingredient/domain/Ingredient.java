@@ -4,6 +4,7 @@ import com.laser.ordermanage.common.entity.CreatedAtEntity;
 import com.laser.ordermanage.factory.domain.Factory;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -41,4 +42,14 @@ public class Ingredient extends CreatedAtEntity {
 
     @Column(name = "deleted_at")
     private LocalDate deletedAt;
+
+    @Builder
+    public Ingredient(Factory factory, String texture, Double thickness, Integer width, Integer height, Double weight) {
+        this.factory = factory;
+        this.texture = texture;
+        this.thickness = thickness;
+        this.width = width;
+        this.height = height;
+        this.weight = weight;
+    }
 }

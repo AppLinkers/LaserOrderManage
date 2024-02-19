@@ -3,6 +3,7 @@ package com.laser.ordermanage.ingredient.domain;
 import com.laser.ordermanage.common.entity.CreatedAtEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -22,14 +23,20 @@ public class IngredientStock extends CreatedAtEntity {
     private Ingredient ingredient;
 
     @Column(name = "incoming", nullable = false)
-    private Integer incoming;
+    private Integer incoming = 0;
 
     @Column(name = "production", nullable = false)
-    private Integer production;
+    private Integer production = 0;
 
     @Column(name = "stock", nullable = false)
-    private Integer stock;
+    private Integer stock = 0;
 
     @Column(name = "optimal")
     private Integer optimal;
+
+    @Builder
+    public IngredientStock(Ingredient ingredient, Integer optimal) {
+        this.ingredient = ingredient;
+        this.optimal = optimal;
+    }
 }

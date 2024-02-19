@@ -3,6 +3,7 @@ package com.laser.ordermanage.ingredient.domain;
 import com.laser.ordermanage.common.entity.CreatedAtEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -26,4 +27,11 @@ public class IngredientPrice extends CreatedAtEntity {
 
     @Column(name = "sell", nullable = false)
     private Integer sell;
+
+    @Builder
+    public IngredientPrice(Ingredient ingredient, Integer purchase, Integer sell) {
+        this.ingredient = ingredient;
+        this.purchase = purchase;
+        this.sell = sell;
+    }
 }

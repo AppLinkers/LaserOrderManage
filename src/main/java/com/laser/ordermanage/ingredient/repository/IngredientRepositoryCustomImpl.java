@@ -19,7 +19,6 @@ import static com.laser.ordermanage.ingredient.domain.QIngredientPrice.ingredien
 import static com.laser.ordermanage.ingredient.domain.QIngredientStock.ingredientStock;
 import static com.laser.ordermanage.user.domain.QUserEntity.userEntity;
 
-@Repository
 @RequiredArgsConstructor
 public class IngredientRepositoryCustomImpl implements IngredientRepositoryCustom{
 

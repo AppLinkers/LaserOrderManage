@@ -52,4 +52,8 @@ public class Ingredient extends CreatedAtEntity {
         this.height = height;
         this.weight = weight;
     }
+
+    public void delete() {
+        this.deletedAt = LocalDate.now();
+    }
 }

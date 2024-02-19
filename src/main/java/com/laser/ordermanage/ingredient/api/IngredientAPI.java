@@ -70,7 +70,6 @@ public class IngredientAPI {
             @PathVariable("ingredient-id") Long ingredientId,
             @RequestBody @Valid UpdateIngredientRequest request) {
 
-
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         ingredientService.checkAuthorityOfIngredient(user, ingredientId);
@@ -80,5 +79,21 @@ public class IngredientAPI {
         return ResponseEntity.ok().build();
     }
 
+    /**
+     * 자재 삭제 API 개발
+     */
+    @DeleteMapping("/{ingredient-id}")
+    public ResponseEntity<?> deleteIngredient(
+            @PathVariable("ingredient-id") Long ingredientId
+    ) {
+
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        ingredientService.checkAuthorityOfIngredient(user, ingredientId);
+
+        ingredientService.deleteIngredient(ingredientId);
+
+        return ResponseEntity.ok().build();
+    }
 
 }

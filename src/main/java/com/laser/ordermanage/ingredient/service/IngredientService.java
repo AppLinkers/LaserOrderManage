@@ -105,4 +105,15 @@ public class IngredientService {
 
         ingredientPriceRepository.save(ingredientPrice);
     }
+
+    @Transactional
+    public void deleteIngredient(Long ingredientId) {
+        Ingredient ingredient = getIngredientById(ingredientId);
+
+        if (ingredient.getDeletedAt() != null) {
+            throw new CustomCommonException(IngredientErrorCode.UNABLE_DELETE_DELETED_INGREDIENT);
+        }
+
+        ingredient.delete();
+    }
 }

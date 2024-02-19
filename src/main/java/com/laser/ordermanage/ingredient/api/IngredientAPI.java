@@ -3,6 +3,7 @@ package com.laser.ordermanage.ingredient.api;
 import com.laser.ordermanage.common.exception.CommonErrorCode;
 import com.laser.ordermanage.common.exception.CustomCommonException;
 import com.laser.ordermanage.ingredient.dto.request.CreateIngredientRequest;
+import com.laser.ordermanage.ingredient.dto.request.UpdateIngredientRequest;
 import com.laser.ordermanage.ingredient.service.IngredientService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -57,5 +58,27 @@ public class IngredientAPI {
 
         return ResponseEntity.ok().build();
     }
+
+    /**
+     * 자재 재고 및 단가 수정
+     * - path parameter {ingredient-id} 에 해당하는 자재 조회
+     * - 자재 재고 데이터 생성 및 자재 데이터와 연관관계 매핑
+     * - 자재 단가 데이터 생성 및 자재 데이터와 연관관계 매핑
+     */
+    @PatchMapping("/{ingredient-id}")
+    public ResponseEntity<?> updateIngredient(
+            @PathVariable("ingredient-id") Long ingredientId,
+            @RequestBody @Valid UpdateIngredientRequest request) {
+
+
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        ingredientService.checkAuthorityOfIngredient(user, ingredientId);
+
+        ingredientService.updateIngredient(ingredientId, request);
+
+        return ResponseEntity.ok().build();
+    }
+
 
 }

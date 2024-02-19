@@ -35,6 +35,14 @@ public class IngredientStock extends CreatedAtEntity {
     private Integer optimal;
 
     @Builder
+    public IngredientStock(Ingredient ingredient, Integer incoming, Integer production, Integer stock, Integer optimal) {
+        this.ingredient = ingredient;
+        this.incoming = incoming;
+        this.production = production;
+        this.stock = stock;
+        this.optimal = optimal;
+    }
+
     public IngredientStock(Ingredient ingredient, Integer optimal) {
         this.ingredient = ingredient;
         this.optimal = optimal;

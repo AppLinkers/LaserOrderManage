@@ -6,12 +6,12 @@ import com.laser.ordermanage.ingredient.dto.response.*;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import io.jsonwebtoken.lang.Assert;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static com.laser.ordermanage.factory.domain.QFactory.factory;
 import static com.laser.ordermanage.ingredient.domain.QIngredient.ingredient;
@@ -135,5 +135,18 @@ public class IngredientRepositoryCustomImpl implements IngredientRepositoryCusto
                 getIngredientResponseList,
                 date
         );
+    }
+
+    @Override
+    public Optional<String> findUserEmailById(Long ingredientId) {
+        String userEmail = queryFactory
+                .select(userEntity.email)
+                .from(ingredient)
+                .join(ingredient.factory, factory)
+                .join(factory.user, userEntity)
+                .where(ingredient.id.eq(ingredientId))
+                .fetchOne();
+
+        return Optional.ofNullable(userEmail);
     }
 }

@@ -1,16 +1,19 @@
 package com.laser.ordermanage.ingredient.domain;
 
+import com.laser.ordermanage.common.entity.CreatedAtEntity;
 import com.laser.ordermanage.factory.domain.Factory;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
+
 @Entity
 @Table(name = "ingredient")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-public class Ingredient {
+public class Ingredient extends CreatedAtEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -35,4 +38,7 @@ public class Ingredient {
 
     @Column(name = "weight", nullable = false)
     private Double weight;
+
+    @Column(name = "deleted_at")
+    private LocalDate deletedAt;
 }

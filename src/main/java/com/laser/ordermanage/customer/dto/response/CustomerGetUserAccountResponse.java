@@ -1,7 +1,9 @@
 package com.laser.ordermanage.customer.dto.response;
 
 import com.querydsl.core.annotations.QueryProjection;
+import lombok.Builder;
 
+@Builder
 public record CustomerGetUserAccountResponse(
         String email,
         String name,

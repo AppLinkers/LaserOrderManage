@@ -96,6 +96,10 @@ dependencies {
 	implementation 'com.slack.api:slack-api-client:1.37.0'
 }
 
+configurations.all {
+	exclude group: 'commons-logging', module: 'commons-logging'
+}
+
 task copyPrivate(type: Copy) {
 	copy {
 		from './laser-ordermanage-server-submodule-config'

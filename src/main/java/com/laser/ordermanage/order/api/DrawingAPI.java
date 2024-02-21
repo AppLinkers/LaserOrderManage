@@ -1,8 +1,6 @@
 package com.laser.ordermanage.order.api;
 
-import com.laser.ordermanage.common.util.FileUtil;
 import com.laser.ordermanage.common.validation.constraints.ValidFile;
-import com.laser.ordermanage.order.domain.type.DrawingFileType;
 import com.laser.ordermanage.order.dto.response.UploadDrawingFileResponse;
 import com.laser.ordermanage.order.service.DrawingService;
 import lombok.RequiredArgsConstructor;

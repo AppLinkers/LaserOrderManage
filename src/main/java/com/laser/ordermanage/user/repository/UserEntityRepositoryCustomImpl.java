@@ -1,11 +1,10 @@
 package com.laser.ordermanage.user.repository;
 
-import com.laser.ordermanage.customer.domain.QCustomer;
 import com.laser.ordermanage.customer.dto.response.CustomerGetUserAccountResponse;
 import com.laser.ordermanage.customer.dto.response.QCustomerGetUserAccountResponse;
-import com.laser.ordermanage.factory.domain.QFactory;
 import com.laser.ordermanage.factory.dto.response.FactoryGetUserAccountResponse;
 import com.laser.ordermanage.factory.dto.response.QFactoryGetUserAccountResponse;
+import com.laser.ordermanage.user.domain.type.Role;
 import com.laser.ordermanage.user.dto.response.GetUserEmailResponse;
 import com.laser.ordermanage.user.dto.response.QGetUserEmailResponse;
 import com.querydsl.core.BooleanBuilder;
@@ -38,7 +37,7 @@ public class UserEntityRepositoryCustomImpl implements UserEntityRepositoryCusto
                 .leftJoin(factory).on(factory.user.id.eq(userEntity.id))
                 .leftJoin(customer).on(customer.user.id.eq(userEntity.id))
                 .where(
-                        eqName(factory, customer, name),
+                        eqName(name),
                         userEntity.phone.eq(phone)
                 )
                 .orderBy(userEntity.createdAt.desc())
@@ -62,8 +61,11 @@ public class UserEntityRepositoryCustomImpl implements UserEntityRepositoryCusto
                         userEntity.emailNotification
                 ))
                 .from(userEntity)
-                .leftJoin(factory).on(factory.user.id.eq(userEntity.id))
-                .where(userEntity.email.eq(email))
+                .join(factory).on(factory.user.eq(userEntity))
+                .where(
+                        userEntity.email.eq(email),
+                        userEntity.role.eq(Role.ROLE_FACTORY)
+                )
                 .fetchOne();
 
         return factoryGetUserAccountResponse;
@@ -83,14 +85,17 @@ public class UserEntityRepositoryCustomImpl implements UserEntityRepositoryCusto
                         userEntity.emailNotification
                 ))
                 .from(userEntity)
-                .leftJoin(customer).on(customer.user.id.eq(userEntity.id))
-                .where(userEntity.email.eq(email))
+                .join(customer).on(customer.user.eq(userEntity))
+                .where(
+                        userEntity.email.eq(email),
+                        userEntity.role.eq(Role.ROLE_CUSTOMER)
+                )
                 .fetchOne();
 
         return customerGetUserAccountResponse;
     }
 
-    private BooleanBuilder eqName(QFactory factory, QCustomer customer, String name) {
+    private BooleanBuilder eqName(String name) {
         BooleanBuilder booleanBuilder = new BooleanBuilder();
 
             booleanBuilder.or(factory.companyName.eq(name));

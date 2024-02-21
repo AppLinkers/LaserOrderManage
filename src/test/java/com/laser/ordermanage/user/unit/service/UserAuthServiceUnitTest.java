@@ -4,7 +4,6 @@ import com.laser.ordermanage.common.ServiceUnitTest;
 import com.laser.ordermanage.common.cache.redis.dao.RefreshToken;
 import com.laser.ordermanage.common.cache.redis.repository.BlackListRedisRepository;
 import com.laser.ordermanage.common.cache.redis.repository.RefreshTokenRedisRepository;
-import com.laser.ordermanage.common.exception.CommonErrorCode;
 import com.laser.ordermanage.common.exception.CustomCommonException;
 import com.laser.ordermanage.common.security.jwt.component.JwtProvider;
 import com.laser.ordermanage.common.util.NetworkUtil;

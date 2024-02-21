@@ -4,7 +4,6 @@ import com.laser.ordermanage.ingredient.domain.Ingredient;
 import com.laser.ordermanage.ingredient.domain.IngredientStock;
 import com.laser.ordermanage.ingredient.dto.response.*;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import io.jsonwebtoken.lang.Assert;
 import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDate;
@@ -57,19 +56,9 @@ public class IngredientRepositoryCustomImpl implements IngredientRepositoryCusto
                             .join(ingredientPrice.ingredient, ingredient)
                             .where(
                                     ingredient.id.eq(ingredientEntity.getId()),
-                                    ingredientPrice.createdAt.loe(date.atTime(LocalTime.MAX))
+                                    ingredientPrice.createdAt.loe(date)
                             )
                             .orderBy(ingredientPrice.createdAt.desc())
-                            .fetchFirst();
-
-                    IngredientStock ingredientStockEntity = queryFactory
-                            .selectFrom(ingredientStock)
-                            .join(ingredientStock.ingredient, ingredient)
-                            .where(
-                                    ingredient.id.eq(ingredientEntity.getId()),
-                                    ingredientStock.createdAt.loe(date.atTime(LocalTime.MAX))
-                            )
-                            .orderBy(ingredientStock.createdAt.desc())
                             .fetchFirst();
 
                     IngredientStock ingredientPreviousStockEntity = queryFactory
@@ -77,13 +66,30 @@ public class IngredientRepositoryCustomImpl implements IngredientRepositoryCusto
                             .join(ingredientStock.ingredient, ingredient)
                             .where(
                                     ingredient.id.eq(ingredientEntity.getId()),
-                                    ingredientStock.createdAt.loe(date.minusDays(1).atTime(LocalTime.MAX))
+                                    ingredientStock.createdAt.loe(date.minusDays(1))
                             )
                             .orderBy(ingredientStock.createdAt.desc())
                             .fetchFirst();
 
-                    Assert.notNull(ingredientPriceResponse);
-                    Assert.notNull(ingredientStockEntity);
+                    IngredientStock ingredientStockEntity = queryFactory
+                            .selectFrom(ingredientStock)
+                            .join(ingredientStock.ingredient, ingredient)
+                            .where(
+                                    ingredient.id.eq(ingredientEntity.getId()),
+                                    ingredientStock.createdAt.eq(date)
+                            )
+                            .orderBy(ingredientStock.createdAt.desc())
+                            .fetchFirst();
+
+                    if (ingredientStockEntity == null) {
+                        ingredientStockEntity = IngredientStock.builder()
+                                .ingredient(null)
+                                .incoming(0)
+                                .production(0)
+                                .stock(ingredientPreviousStockEntity.getStock())
+                                .optimal(ingredientPreviousStockEntity.getOptimal())
+                                .build();
+                    }
 
                     GetIngredientStockDetailResponse getIngredientStockDetailResponse;
                     if (unit.equals("count")) {

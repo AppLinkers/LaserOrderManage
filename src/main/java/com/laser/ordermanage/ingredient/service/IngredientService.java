@@ -41,8 +41,8 @@ public class IngredientService {
     }
 
     @Transactional(readOnly = true)
-    public GetIngredientStockResponse getIngredientStock(String email, LocalDate date, String unit) {
-        return ingredientRepository.findIngredientStockByFactoryAndDate(email, date, unit);
+    public GetIngredientStockResponse getIngredientStock(String email, LocalDate date) {
+        return ingredientRepository.findIngredientStockByFactoryAndDate(email, date);
     }
 
     @Transactional

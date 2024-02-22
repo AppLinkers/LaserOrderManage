@@ -116,6 +116,7 @@ public class IngredientRepositoryCustomImpl implements IngredientRepositoryCusto
                                     ingredientEntity.getThickness(),
                                     ingredientEntity.getWidth(),
                                     ingredientEntity.getHeight(),
+                                    ingredientEntity.getWeight(),
                                     getIngredientStockCountDetailResponse,
                                     getIngredientStockWeightDetailResponse,
                                     ingredientPriceResponse

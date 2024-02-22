@@ -119,7 +119,8 @@ public class IngredientRepositoryCustomImpl implements IngredientRepositoryCusto
                                     ingredientEntity.getWeight(),
                                     getIngredientStockCountDetailResponse,
                                     getIngredientStockWeightDetailResponse,
-                                    ingredientPriceResponse
+                                    ingredientPriceResponse,
+                                    ingredientEntity.getDeletedAt() != null
                             )
                     );
 

@@ -25,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
@@ -99,13 +100,15 @@ public class IngredientService {
             throw new CustomCommonException(IngredientErrorCode.UNABLE_UPDATE_DELETED_INGREDIENT);
         }
 
-        IngredientStock latestIngredientStock = ingredientStockRepository.findFirstByIngredient_idOrderByCreatedAtDesc(ingredientId);
+        IngredientStock previousIngredientStock = ingredientStockRepository.findPreviousByIngredientIdAndDate(ingredientId, nowDate);
 
         // 가장 최근 자재 데이터와의 계산 일치 유무 확인
-        IngredientStock.validate(latestIngredientStock, request.stock());
+        IngredientStock.validate(previousIngredientStock, request.stock());
 
-        if (nowDate.isEqual(latestIngredientStock.getCreatedAt())) {
-            latestIngredientStock.updateStock(request.stock(), request.optimalStock());
+        // 당일 자재 재고 현황 조회
+        Optional<IngredientStock> ingredientStockOptional = ingredientStockRepository.findByIngredientIdAndCreatedAt(ingredientId, nowDate);
+        if (ingredientStockOptional.isPresent()) {
+            ingredientStockOptional.get().updateStock(request.stock(), request.optimalStock());
         } else {
             IngredientStock ingredientStock = IngredientStock.builder()
                     .ingredient(ingredient)
@@ -118,10 +121,10 @@ public class IngredientService {
             ingredientStockRepository.save(ingredientStock);
         }
 
-        IngredientPrice latestIngredientPrice = ingredientPriceRepository.findFirstByIngredient_idOrderByCreatedAtDesc(ingredientId);
+        Optional<IngredientPrice> ingredientPriceOptional = ingredientPriceRepository.findByIngredientIdAndCreatedAt(ingredientId, nowDate);
 
-        if (nowDate.isEqual(latestIngredientPrice.getCreatedAt())) {
-            latestIngredientPrice.updatePrice(request.price());
+        if (ingredientPriceOptional.isPresent()) {
+            ingredientPriceOptional.get().updatePrice(request.price());
         } else {
             IngredientPrice ingredientPrice = IngredientPrice.builder()
                     .ingredient(ingredient)

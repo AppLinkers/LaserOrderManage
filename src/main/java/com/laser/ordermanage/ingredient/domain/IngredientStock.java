@@ -1,8 +1,6 @@
 package com.laser.ordermanage.ingredient.domain;
 
-import com.laser.ordermanage.common.entity.CreatedAtEntity;
 import com.laser.ordermanage.common.exception.CustomCommonException;
-import com.laser.ordermanage.ingredient.dto.request.UpdateIngredientRequest;
 import com.laser.ordermanage.ingredient.dto.request.UpdateIngredientStockRequest;
 import com.laser.ordermanage.ingredient.exception.IngredientErrorCode;
 import jakarta.persistence.*;
@@ -63,8 +61,8 @@ public class IngredientStock {
     }
 
     public void updateStock(UpdateIngredientStockRequest stockRequest, Integer optimalRequest) {
-        this.incoming += stockRequest.incoming();
-        this.production += stockRequest.production();
+        this.incoming = stockRequest.incoming();
+        this.production = stockRequest.production();
         this.stock = stockRequest.currentDay();
         this.optimal = optimalRequest;
     }

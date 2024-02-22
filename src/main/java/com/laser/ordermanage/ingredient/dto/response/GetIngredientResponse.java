@@ -9,5 +9,6 @@ public record GetIngredientResponse (
         Double weight,
         GetIngredientStockDetailResponse stockCount,
         GetIngredientStockDetailResponse stockWeight,
-        GetIngredientPriceResponse price
+        GetIngredientPriceResponse price,
+        Boolean isDeleted
 ) { }

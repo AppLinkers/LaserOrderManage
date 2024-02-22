@@ -93,24 +93,21 @@ public class IngredientRepositoryCustomImpl implements IngredientRepositoryCusto
                     }
                     BigDecimal ingredientWeight = BigDecimal.valueOf(ingredientEntity.getWeight());
 
-                    GetIngredientStockDetailResponse getIngredientStockDetailResponse;
-                    if (unit.equals("count")) {
-                        getIngredientStockDetailResponse = new GetIngredientStockDetailResponse(
-                                ingredientPreviousStockEntity == null ? 0 : ingredientPreviousStockEntity.getStock(),
-                                ingredientStockEntity.getIncoming(),
-                                ingredientStockEntity.getProduction(),
-                                ingredientStockEntity.getStock(),
-                                ingredientStockEntity.getOptimal()
-                        );
-                    } else {
-                        getIngredientStockDetailResponse = new GetIngredientStockDetailResponse(
-                                ingredientPreviousStockEntity == null ? 0 : ingredientWeight.multiply(BigDecimal.valueOf(ingredientPreviousStockEntity.getStock())),
-                                ingredientWeight.multiply(BigDecimal.valueOf(ingredientStockEntity.getIncoming())),
-                                ingredientWeight.multiply(BigDecimal.valueOf(ingredientStockEntity.getProduction())),
-                                ingredientWeight.multiply(BigDecimal.valueOf(ingredientStockEntity.getStock())),
-                                ingredientWeight.multiply(BigDecimal.valueOf(ingredientStockEntity.getOptimal()))
-                        );
-                    }
+                    GetIngredientStockDetailResponse getIngredientStockCountDetailResponse = new GetIngredientStockDetailResponse(
+                            ingredientPreviousStockEntity == null ? 0 : ingredientPreviousStockEntity.getStock(),
+                            ingredientStockEntity.getIncoming(),
+                            ingredientStockEntity.getProduction(),
+                            ingredientStockEntity.getStock(),
+                            ingredientStockEntity.getOptimal()
+                    );
+
+                    GetIngredientStockDetailResponse getIngredientStockWeightDetailResponse = new GetIngredientStockDetailResponse(
+                            ingredientPreviousStockEntity == null ? 0 : ingredientWeight.multiply(BigDecimal.valueOf(ingredientPreviousStockEntity.getStock())),
+                            ingredientWeight.multiply(BigDecimal.valueOf(ingredientStockEntity.getIncoming())),
+                            ingredientWeight.multiply(BigDecimal.valueOf(ingredientStockEntity.getProduction())),
+                            ingredientWeight.multiply(BigDecimal.valueOf(ingredientStockEntity.getStock())),
+                            ingredientWeight.multiply(BigDecimal.valueOf(ingredientStockEntity.getOptimal()))
+                    );
 
                     getIngredientResponseList.add(
                             new GetIngredientResponse(
@@ -119,7 +116,8 @@ public class IngredientRepositoryCustomImpl implements IngredientRepositoryCusto
                                     ingredientEntity.getThickness(),
                                     ingredientEntity.getWidth(),
                                     ingredientEntity.getHeight(),
-                                    getIngredientStockDetailResponse,
+                                    getIngredientStockCountDetailResponse,
+                                    getIngredientStockWeightDetailResponse,
                                     ingredientPriceResponse
                             )
                     );

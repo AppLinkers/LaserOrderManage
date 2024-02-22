@@ -6,6 +6,7 @@ public record GetIngredientResponse (
         Double thickness,
         Integer width,
         Integer height,
-        GetIngredientStockDetailResponse stock,
+        GetIngredientStockDetailResponse stockCount,
+        GetIngredientStockDetailResponse stockWeight,
         GetIngredientPriceResponse price
 ) { }

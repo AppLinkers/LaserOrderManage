@@ -25,7 +25,7 @@ public class IngredientRepositoryCustomImpl implements IngredientRepositoryCusto
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public GetIngredientStockResponse findIngredientStockByFactoryAndDate(String email, LocalDate date, String unit) {
+    public GetIngredientStockResponse findIngredientStockByFactoryAndDate(String email, LocalDate date) {
         // 자재 목록 조회
         List<Ingredient> ingredientList = queryFactory
                 .selectFrom(ingredient)

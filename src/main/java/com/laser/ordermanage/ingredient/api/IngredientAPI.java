@@ -34,17 +34,11 @@ public class IngredientAPI {
      */
     @GetMapping("/stock")
     public ResponseEntity<?> getIngredientStock(
-            @RequestParam(value = "date") @DateTimeFormat(pattern = "yyyy-mm-dd") LocalDate date,
-            @RequestParam(value = "unit") String unit
+            @RequestParam(value = "date") @DateTimeFormat(pattern = "yyyy-mm-dd") LocalDate date
     ) {
-
-        if (!(unit.equals("count") || unit.equals("weight"))) {
-            throw new CustomCommonException(CommonErrorCode.INVALID_PARAMETER, "unit 파라미터가 올바르지 않습니다.");
-        }
-
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        return ResponseEntity.ok(ingredientService.getIngredientStock(user.getUsername(), date, unit));
+        return ResponseEntity.ok(ingredientService.getIngredientStock(user.getUsername(), date));
     }
 
     /**

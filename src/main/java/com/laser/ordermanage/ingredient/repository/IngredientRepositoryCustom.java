@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface IngredientRepositoryCustom {
-    GetIngredientStockResponse findIngredientStockByFactoryAndDate(String email, LocalDate date, String unit);
+    GetIngredientStockResponse findIngredientStockByFactoryAndDate(String email, LocalDate date);
 
     Optional<String> findUserEmailById(Long ingredientId);
 

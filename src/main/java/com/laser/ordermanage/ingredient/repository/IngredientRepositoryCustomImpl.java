@@ -6,6 +6,7 @@ import com.laser.ordermanage.ingredient.dto.response.*;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -41,7 +42,7 @@ public class IngredientRepositoryCustomImpl implements IngredientRepositoryCusto
         List<Integer> purchasePriceList = new ArrayList<>();
         List<Integer> sellPriceList = new ArrayList<>();
         List<Integer> stockCountList = new ArrayList<>();
-        List<Double> stockWeightList = new ArrayList<>();
+        List<Number> stockWeightList = new ArrayList<>();
 
         ingredientList.forEach(
                 ingredientEntity -> {
@@ -90,6 +91,7 @@ public class IngredientRepositoryCustomImpl implements IngredientRepositoryCusto
                                 .optimal(ingredientPreviousStockEntity.getOptimal())
                                 .build();
                     }
+                    BigDecimal ingredientWeight = BigDecimal.valueOf(ingredientEntity.getWeight());
 
                     GetIngredientStockDetailResponse getIngredientStockDetailResponse;
                     if (unit.equals("count")) {
@@ -102,11 +104,11 @@ public class IngredientRepositoryCustomImpl implements IngredientRepositoryCusto
                         );
                     } else {
                         getIngredientStockDetailResponse = new GetIngredientStockDetailResponse(
-                                ingredientPreviousStockEntity == null ? 0 : ingredientPreviousStockEntity.getStock().doubleValue() * ingredientEntity.getWeight(),
-                                ingredientStockEntity.getIncoming().doubleValue() * ingredientEntity.getWeight(),
-                                ingredientStockEntity.getProduction().doubleValue() * ingredientEntity.getWeight(),
-                                ingredientStockEntity.getStock().doubleValue() * ingredientEntity.getWeight(),
-                                ingredientStockEntity.getOptimal().doubleValue() * ingredientEntity.getWeight()
+                                ingredientPreviousStockEntity == null ? 0 : ingredientWeight.multiply(BigDecimal.valueOf(ingredientPreviousStockEntity.getStock())),
+                                ingredientWeight.multiply(BigDecimal.valueOf(ingredientStockEntity.getIncoming())),
+                                ingredientWeight.multiply(BigDecimal.valueOf(ingredientStockEntity.getProduction())),
+                                ingredientWeight.multiply(BigDecimal.valueOf(ingredientStockEntity.getStock())),
+                                ingredientWeight.multiply(BigDecimal.valueOf(ingredientStockEntity.getOptimal()))
                         );
                     }
 
@@ -125,7 +127,7 @@ public class IngredientRepositoryCustomImpl implements IngredientRepositoryCusto
                     purchasePriceList.add(ingredientPriceResponse.purchase());
                     sellPriceList.add(ingredientPriceResponse.sell());
                     stockCountList.add(ingredientStockEntity.getStock());
-                    stockWeightList.add(ingredientStockEntity.getStock().doubleValue() * ingredientEntity.getWeight());
+                    stockWeightList.add(ingredientWeight.multiply(BigDecimal.valueOf(ingredientStockEntity.getStock())));
                 }
         );
 
@@ -136,7 +138,7 @@ public class IngredientRepositoryCustomImpl implements IngredientRepositoryCusto
                 ),
                 new GetIngredientTotalStockResponse(
                         stockCountList.stream().mapToInt(stockCount -> stockCount).sum(),
-                        stockWeightList.stream().mapToDouble(stockWeight -> stockWeight).sum()
+                        stockWeightList.stream().mapToDouble(stockWeight -> stockWeight.doubleValue()).sum()
                 ),
                 getIngredientResponseList,
                 date

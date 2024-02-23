@@ -1,148 +1,101 @@
 package com.laser.ordermanage.ingredient.repository;
 
-import com.laser.ordermanage.ingredient.domain.Ingredient;
-import com.laser.ordermanage.ingredient.domain.IngredientStock;
 import com.laser.ordermanage.ingredient.dto.response.*;
+import com.laser.ordermanage.ingredient.repository.mapper.IngredientRowMapper;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import static com.laser.ordermanage.factory.domain.QFactory.factory;
 import static com.laser.ordermanage.ingredient.domain.QIngredient.ingredient;
-import static com.laser.ordermanage.ingredient.domain.QIngredientPrice.ingredientPrice;
-import static com.laser.ordermanage.ingredient.domain.QIngredientStock.ingredientStock;
 import static com.laser.ordermanage.user.domain.QUserEntity.userEntity;
 
 @RequiredArgsConstructor
 public class IngredientRepositoryCustomImpl implements IngredientRepositoryCustom{
 
+    private final NamedParameterJdbcTemplate jdbcTemplate;
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public GetIngredientStockResponse findIngredientStockByFactoryAndDate(String email, LocalDate date) {
-        // 자재 목록 조회
-        List<Ingredient> ingredientList = queryFactory
-                .selectFrom(ingredient)
-                .join(ingredient.factory, factory)
-                .join(factory.user, userEntity)
-                .where(
-                        ingredient.createdAt.loe(date.atTime(LocalTime.MAX)),
-                        ingredient.deletedAt.isNull().or(ingredient.deletedAt.goe(date)),
-                        userEntity.email.eq(email)
-                )
-                .fetch();
+    public List<GetIngredientResponse> findIngredientStatusByFactoryAndDate(String email, LocalDate date) {
+        SqlParameterSource namedParameters = new MapSqlParameterSource()
+                .addValue("email", email)
+                .addValue("date", date);
 
-        List<GetIngredientResponse> getIngredientResponseList = new ArrayList<>();
-        List<Integer> purchasePriceList = new ArrayList<>();
-        List<Integer> sellPriceList = new ArrayList<>();
-        List<Integer> stockCountList = new ArrayList<>();
-        List<Number> stockWeightList = new ArrayList<>();
+        String getIngredientQuery = """
+            SELECT
+                ingredient.id AS id,
+                ingredient.texture AS texture,
+                ingredient.thickness AS thickness,
+                ingredient.width AS width,
+                ingredient.height AS height,
+                ingredient.weight AS weight,
+                ISNULL(ingredient.deleted_at) AS isDeleted,
+                ingredient_price_data.purchase AS purchase,
+                ingredient_price_data.sell AS sell,
+                COALESCE(ingredient_previous_stock_data.stock, 0) AS previousDay,
+                COALESCE(ingredient_stock_data.incoming, 0) AS incoming,
+                COALESCE(ingredient_stock_data.production, 0) AS production,
+                COALESCE(ingredient_stock_data.stock, COALESCE(ingredient_previous_stock_data.stock, 0)) AS currentDay,
+                COALESCE(ingredient_stock_data.optimal, ingredient_previous_stock_data.optimal) AS optimal
+            FROM ingredient
+            JOIN factory ON ingredient.factory_id = factory.id
+            JOIN user_table on factory.user_id = user_table.id
+            JOIN (
+                SELECT
+                    ranked_data.ingredient_id,
+                    ranked_data.purchase,
+                    ranked_data.sell
+                FROM (
+                    SELECT
+                        ingredient_price.ingredient_id,
+                        ingredient_price.purchase,
+                        ingredient_price.sell,
+                        ROW_NUMBER() OVER (PARTITION BY ingredient_price.ingredient_id ORDER BY ingredient_price.created_at DESC) AS rn
+                    FROM ingredient_price
+                    WHERE ingredient_price.created_at <= :date
+                ) AS ranked_data
+                WHERE ranked_data.rn = 1
+            ) AS ingredient_price_data ON ingredient_price_data.ingredient_id = ingredient.id
+            LEFT OUTER JOIN (
+                SELECT
+                    ranked_data.ingredient_id,
+                    ranked_data.stock,
+                    ranked_data.optimal
+                FROM (
+                    SELECT
+                        ingredient_stock.ingredient_id,
+                        ingredient_stock.stock,
+                        ingredient_stock.optimal,
+                        ROW_NUMBER() OVER (PARTITION BY ingredient_stock.ingredient_id ORDER BY ingredient_stock.created_at DESC) AS rn
+                    FROM ingredient_stock
+                    WHERE ingredient_stock.created_at <= DATE_SUB(:date, INTERVAL 1 DAY )
+                ) AS ranked_data
+                WHERE ranked_data.rn = 1
+            ) AS ingredient_previous_stock_data ON ingredient_previous_stock_data.ingredient_id = ingredient.id
+            LEFT OUTER JOIN (
+                SELECT
+                    ingredient_stock.ingredient_id,
+                    ingredient_stock.incoming,
+                    ingredient_stock.production,
+                    ingredient_stock.stock,
+                    ingredient_stock.optimal
+                FROM ingredient_stock
+                WHERE ingredient_stock.created_at = :date
+            ) AS ingredient_stock_data ON ingredient_stock_data.ingredient_id = ingredient.id
+            WHERE
+                ingredient.created_at < DATE_ADD(:date, INTERVAL 1 DAY ) AND
+                (ISNULL(ingredient.deleted_at) or ingredient.deleted_at >= :date) AND
+                user_table.email = :email
+            """;
 
-        ingredientList.forEach(
-                ingredientEntity -> {
-                    GetIngredientPriceResponse ingredientPriceResponse = queryFactory
-                            .select(
-                                    new QGetIngredientPriceResponse(
-                                            ingredientPrice.purchase,
-                                            ingredientPrice.sell
-                                    )
-                            )
-                            .from(ingredientPrice)
-                            .join(ingredientPrice.ingredient, ingredient)
-                            .where(
-                                    ingredient.id.eq(ingredientEntity.getId()),
-                                    ingredientPrice.createdAt.loe(date)
-                            )
-                            .orderBy(ingredientPrice.createdAt.desc())
-                            .fetchFirst();
-
-                    IngredientStock ingredientPreviousStockEntity = queryFactory
-                            .selectFrom(ingredientStock)
-                            .join(ingredientStock.ingredient, ingredient)
-                            .where(
-                                    ingredient.id.eq(ingredientEntity.getId()),
-                                    ingredientStock.createdAt.loe(date.minusDays(1))
-                            )
-                            .orderBy(ingredientStock.createdAt.desc())
-                            .fetchFirst();
-
-                    IngredientStock ingredientStockEntity = queryFactory
-                            .selectFrom(ingredientStock)
-                            .join(ingredientStock.ingredient, ingredient)
-                            .where(
-                                    ingredient.id.eq(ingredientEntity.getId()),
-                                    ingredientStock.createdAt.eq(date)
-                            )
-                            .orderBy(ingredientStock.createdAt.desc())
-                            .fetchFirst();
-
-                    if (ingredientStockEntity == null) {
-                        ingredientStockEntity = IngredientStock.builder()
-                                .ingredient(null)
-                                .incoming(0)
-                                .production(0)
-                                .stock(ingredientPreviousStockEntity.getStock())
-                                .optimal(ingredientPreviousStockEntity.getOptimal())
-                                .build();
-                    }
-                    BigDecimal ingredientWeight = BigDecimal.valueOf(ingredientEntity.getWeight());
-
-                    GetIngredientStockDetailResponse getIngredientStockCountDetailResponse = new GetIngredientStockDetailResponse(
-                            ingredientPreviousStockEntity == null ? 0 : ingredientPreviousStockEntity.getStock(),
-                            ingredientStockEntity.getIncoming(),
-                            ingredientStockEntity.getProduction(),
-                            ingredientStockEntity.getStock(),
-                            ingredientStockEntity.getOptimal()
-                    );
-
-                    GetIngredientStockDetailResponse getIngredientStockWeightDetailResponse = new GetIngredientStockDetailResponse(
-                            ingredientPreviousStockEntity == null ? 0 : ingredientWeight.multiply(BigDecimal.valueOf(ingredientPreviousStockEntity.getStock())),
-                            ingredientWeight.multiply(BigDecimal.valueOf(ingredientStockEntity.getIncoming())),
-                            ingredientWeight.multiply(BigDecimal.valueOf(ingredientStockEntity.getProduction())),
-                            ingredientWeight.multiply(BigDecimal.valueOf(ingredientStockEntity.getStock())),
-                            ingredientWeight.multiply(BigDecimal.valueOf(ingredientStockEntity.getOptimal()))
-                    );
-
-                    getIngredientResponseList.add(
-                            new GetIngredientResponse(
-                                    ingredientEntity.getId(),
-                                    ingredientEntity.getTexture(),
-                                    ingredientEntity.getThickness(),
-                                    ingredientEntity.getWidth(),
-                                    ingredientEntity.getHeight(),
-                                    ingredientEntity.getWeight(),
-                                    getIngredientStockCountDetailResponse,
-                                    getIngredientStockWeightDetailResponse,
-                                    ingredientPriceResponse,
-                                    ingredientEntity.getDeletedAt() != null
-                            )
-                    );
-
-                    purchasePriceList.add(ingredientPriceResponse.purchase());
-                    sellPriceList.add(ingredientPriceResponse.sell());
-                    stockCountList.add(ingredientStockEntity.getStock());
-                    stockWeightList.add(ingredientWeight.multiply(BigDecimal.valueOf(ingredientStockEntity.getStock())));
-                }
-        );
-
-        return new GetIngredientStockResponse(
-                new GetIngredientPriceResponse(
-                        (int)purchasePriceList.stream().mapToInt(purchasePrice -> purchasePrice).average().orElse(0),
-                        (int)sellPriceList.stream().mapToInt(sellPrice -> sellPrice).average().orElse(0)
-                ),
-                new GetIngredientTotalStockResponse(
-                        stockCountList.stream().mapToInt(stockCount -> stockCount).sum(),
-                        stockWeightList.stream().mapToDouble(stockWeight -> stockWeight.doubleValue()).sum()
-                ),
-                getIngredientResponseList,
-                date
-        );
+        return jdbcTemplate.query(getIngredientQuery, namedParameters, new IngredientRowMapper());
     }
 
     @Override

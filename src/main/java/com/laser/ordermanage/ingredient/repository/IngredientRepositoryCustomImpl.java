@@ -36,7 +36,7 @@ public class IngredientRepositoryCustomImpl implements IngredientRepositoryCusto
                 ingredient.width AS width,
                 ingredient.height AS height,
                 ingredient.weight AS weight,
-                ISNULL(ingredient.deleted_at) AS isDeleted,
+                NOT ISNULL(ingredient.deleted_at) AS isDeleted,
                 ingredient_price_data.purchase AS purchase,
                 ingredient_price_data.sell AS sell,
                 COALESCE(ingredient_previous_stock_data.stock, 0) AS previousDay,

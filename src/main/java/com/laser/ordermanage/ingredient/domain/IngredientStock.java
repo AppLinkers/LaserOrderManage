@@ -55,16 +55,9 @@ public class IngredientStock {
     }
 
     public static void validate(IngredientStock previousStock, UpdateIngredientStockRequest stockRequest) {
-        if (previousStock != null) {
-            if (!((previousStock.stock + stockRequest.incoming() - stockRequest.production()) == stockRequest.currentDay())) {
-                throw new CustomCommonException(IngredientErrorCode.INVALID_INGREDIENT_STOCK);
-            }
-        } else {
-            if (!((stockRequest.incoming() - stockRequest.production()) == stockRequest.currentDay())) {
-                throw new CustomCommonException(IngredientErrorCode.INVALID_INGREDIENT_STOCK);
-            }
+        if (((previousStock != null ? previousStock.stock : 0) + stockRequest.incoming() - stockRequest.production()) != stockRequest.currentDay()) {
+            throw new CustomCommonException(IngredientErrorCode.INVALID_INGREDIENT_STOCK);
         }
-
     }
 
     public void updateStock(UpdateIngredientStockRequest stockRequest, Integer optimalRequest) {

@@ -1,5 +1,6 @@
 package com.laser.ordermanage.ingredient.dto.request;
 
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
@@ -19,9 +20,10 @@ public record CreateIngredientRequest(
         @NotNull(message = "높이는 필수 입력값입니다.")
         Integer height,
 
-        @NotNull(message = "무게 필수 입력값입니다.")
+        @NotNull(message = "무게는 필수 입력값입니다.")
         Double weight,
 
+        @Valid
         IngredientPriceRequest price,
 
         Integer optimalStock

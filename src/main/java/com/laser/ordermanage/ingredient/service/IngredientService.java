@@ -11,9 +11,7 @@ import com.laser.ordermanage.ingredient.domain.type.IngredientPriceType;
 import com.laser.ordermanage.ingredient.domain.type.IngredientStockType;
 import com.laser.ordermanage.ingredient.dto.request.CreateIngredientRequest;
 import com.laser.ordermanage.ingredient.dto.request.UpdateIngredientRequest;
-import com.laser.ordermanage.ingredient.dto.response.GetIngredientAnalysisResponse;
-import com.laser.ordermanage.ingredient.dto.response.GetIngredientInfoResponse;
-import com.laser.ordermanage.ingredient.dto.response.GetIngredientStockResponse;
+import com.laser.ordermanage.ingredient.dto.response.*;
 import com.laser.ordermanage.ingredient.exception.IngredientErrorCode;
 import com.laser.ordermanage.ingredient.repository.IngredientPriceRepository;
 import com.laser.ordermanage.ingredient.repository.IngredientRepository;
@@ -42,8 +40,51 @@ public class IngredientService {
     }
 
     @Transactional(readOnly = true)
-    public GetIngredientStockResponse getIngredientStock(String email, LocalDate date) {
-        return ingredientRepository.findIngredientStockByFactoryAndDate(email, date);
+    public String getUserEmailByIngredient(Long ingredientId) {
+        return ingredientRepository.findUserEmailById(ingredientId).orElseThrow(() -> new CustomCommonException(IngredientErrorCode.NOT_FOUND_INGREDIENT));
+    }
+
+    @Transactional(readOnly = true)
+    public GetIngredientStatusResponse getIngredientStatus(String email, LocalDate date) {
+        List<GetIngredientResponse> getIngredientResponseList = ingredientRepository.findIngredientStatusByFactoryAndDate(email, date);
+
+        // average price 와 total stock 구하기
+        Integer sumPurchasePrice = 0;
+        Integer sumSellPrice = 0;
+        Integer totalStockCount = 0;
+        Double totalStockWeight = 0.0;
+
+        Integer averagePurchase = 0;
+        Integer averageSell = 0;
+
+        if (getIngredientResponseList.size() > 0) {
+            for (GetIngredientResponse ingredientResponse : getIngredientResponseList) {
+                sumPurchasePrice += ingredientResponse.price().purchase();
+                sumSellPrice += ingredientResponse.price().sell();
+                totalStockCount += (Integer) ingredientResponse.stockCount().currentDay();
+                totalStockWeight += (Double) ingredientResponse.stockWeight().currentDay();
+            }
+
+            averagePurchase = sumPurchasePrice / getIngredientResponseList.size();
+            averageSell = sumSellPrice / getIngredientResponseList.size();
+        }
+
+        return GetIngredientStatusResponse.builder()
+                .averagePrice(
+                        GetIngredientPriceResponse.builder()
+                                .purchase(averagePurchase)
+                                .sell(averageSell)
+                                .build()
+                )
+                .totalStock(
+                        GetIngredientTotalStockResponse.builder()
+                                .count(totalStockCount)
+                                .weight(totalStockWeight)
+                                .build()
+                )
+                .ingredientList(getIngredientResponseList)
+                .date(date)
+                .build();
     }
 
     @Transactional
@@ -61,7 +102,7 @@ public class IngredientService {
         Ingredient savedIngredient = ingredientRepository.save(ingredient);
 
         IngredientStock ingredientStock = IngredientStock.builder()
-                .ingredient(ingredient)
+                .ingredient(savedIngredient)
                 .incoming(0)
                 .production(0)
                 .stock(0)
@@ -79,33 +120,21 @@ public class IngredientService {
         ingredientPriceRepository.save(ingredientPrice);
     }
 
-    @Transactional(readOnly = true)
-    public String getUserEmailByIngredient(Long ingredientId) {
-        return ingredientRepository.findUserEmailById(ingredientId).orElseThrow(() -> new CustomCommonException(IngredientErrorCode.NOT_FOUND_INGREDIENT));
-    }
-
-    @Transactional(readOnly = true)
-    public void checkAuthorityOfIngredient(User user, Long ingredientId) {
-        if (!getUserEmailByIngredient(ingredientId).equals(user.getUsername())) {
-            throw new CustomCommonException(IngredientErrorCode.DENIED_ACCESS_TO_INGREDIENT);
-        }
-    }
-
     @Transactional
     public void updateIngredient(Long ingredientId, UpdateIngredientRequest request) {
-        LocalDate nowDate = LocalDate.now();
         Ingredient ingredient = getIngredientById(ingredientId);
 
         if (ingredient.getDeletedAt() != null) {
             throw new CustomCommonException(IngredientErrorCode.UNABLE_UPDATE_DELETED_INGREDIENT);
         }
 
-        IngredientStock previousIngredientStock = ingredientStockRepository.findPreviousByIngredientIdAndDate(ingredientId, nowDate);
+        LocalDate nowDate = LocalDate.now();
 
         // 가장 최근 자재 데이터와의 계산 일치 유무 확인
+        IngredientStock previousIngredientStock = ingredientStockRepository.findPreviousByIngredientIdAndDate(ingredientId, nowDate);
         IngredientStock.validate(previousIngredientStock, request.stock());
 
-        // 당일 자재 재고 현황 조회
+        // 당일 자재 재고 현황 조회 및 업데이트
         Optional<IngredientStock> ingredientStockOptional = ingredientStockRepository.findByIngredientIdAndCreatedAt(ingredientId, nowDate);
         if (ingredientStockOptional.isPresent()) {
             ingredientStockOptional.get().updateStock(request.stock(), request.optimalStock());
@@ -121,8 +150,8 @@ public class IngredientService {
             ingredientStockRepository.save(ingredientStock);
         }
 
+        // 당일 자재 가격 현황 조회 및 업데이트
         Optional<IngredientPrice> ingredientPriceOptional = ingredientPriceRepository.findByIngredientIdAndCreatedAt(ingredientId, nowDate);
-
         if (ingredientPriceOptional.isPresent()) {
             ingredientPriceOptional.get().updatePrice(request.price());
         } else {
@@ -227,4 +256,11 @@ public class IngredientService {
 //            }
 //        }
 //    }
+
+    @Transactional(readOnly = true)
+    public void checkAuthorityOfIngredient(User user, Long ingredientId) {
+        if (!getUserEmailByIngredient(ingredientId).equals(user.getUsername())) {
+            throw new CustomCommonException(IngredientErrorCode.DENIED_ACCESS_TO_INGREDIENT);
+        }
+    }
 }

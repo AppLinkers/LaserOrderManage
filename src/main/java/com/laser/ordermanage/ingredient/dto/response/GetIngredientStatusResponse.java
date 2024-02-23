@@ -1,9 +1,12 @@
 package com.laser.ordermanage.ingredient.dto.response;
 
+import lombok.Builder;
+
 import java.time.LocalDate;
 import java.util.List;
 
-public record GetIngredientStockResponse (
+@Builder
+public record GetIngredientStatusResponse (
     GetIngredientPriceResponse averagePrice,
     GetIngredientTotalStockResponse totalStock,
     List<GetIngredientResponse> ingredientList,

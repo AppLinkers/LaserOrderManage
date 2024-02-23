@@ -29,16 +29,16 @@ public class IngredientAPI {
     private final IngredientService ingredientService;
 
     /**
-     * 자재 재고 현황 데이터 조회
-     * - 날짜 및 조회 데이터 단위에 맞는 자재 재고 현황 데이터 조회
+     * 자재 현황 데이터 조회
+     * - 날짜 및 조회 데이터 단위에 맞는 자재 현황 데이터 조회 (자재 정보, 단가, 재고)
      */
-    @GetMapping("/stock")
-    public ResponseEntity<?> getIngredientStock(
+    @GetMapping("/status")
+    public ResponseEntity<?> getIngredientStatus(
             @RequestParam(value = "date") @DateTimeFormat(pattern = "yyyy-mm-dd") LocalDate date
     ) {
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        return ResponseEntity.ok(ingredientService.getIngredientStock(user.getUsername(), date));
+        return ResponseEntity.ok(ingredientService.getIngredientStatus(user.getUsername(), date));
     }
 
     /**
@@ -60,8 +60,10 @@ public class IngredientAPI {
     /**
      * 자재 재고 및 단가 수정
      * - path parameter {ingredient-id} 에 해당하는 자재 조회
-     * - 자재 재고 데이터 생성 및 자재 데이터와 연관관계 매핑
-     * - 자재 단가 데이터 생성 및 자재 데이터와 연관관계 매핑
+     * - 자재 삭제 여부 확인
+     * - 자재 재고 데이터 계산 검증
+     * - 자재 재고 데이터 수정 또는 생성 및 자재 데이터와 연관관계 매핑
+     * - 자재 단가 데이터 수정 또는 생성 및 자재 데이터와 연관관계 매핑
      */
     @PatchMapping("/{ingredient-id}")
     public ResponseEntity<?> updateIngredient(
@@ -78,7 +80,7 @@ public class IngredientAPI {
     }
 
     /**
-     * 자재 삭제 API 개발
+     * 자재 삭제
      * - path parameter {ingredient-id} 에 해당하는 자재 조회
      * - 자재 삭제 여부 확인 및 삭제 수행 (삭제 날짜 표시)
      */

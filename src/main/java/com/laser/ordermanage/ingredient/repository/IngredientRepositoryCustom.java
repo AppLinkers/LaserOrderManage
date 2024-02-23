@@ -1,14 +1,14 @@
 package com.laser.ordermanage.ingredient.repository;
 
 import com.laser.ordermanage.ingredient.dto.response.GetIngredientInfoResponse;
-import com.laser.ordermanage.ingredient.dto.response.GetIngredientStockResponse;
+import com.laser.ordermanage.ingredient.dto.response.GetIngredientResponse;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
 public interface IngredientRepositoryCustom {
-    GetIngredientStockResponse findIngredientStockByFactoryAndDate(String email, LocalDate date);
+    List<GetIngredientResponse> findIngredientStatusByFactoryAndDate(String email, LocalDate date);
 
     Optional<String> findUserEmailById(Long ingredientId);
 

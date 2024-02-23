@@ -1,5 +1,8 @@
 package com.laser.ordermanage.ingredient.dto.response;
 
+import lombok.Builder;
+
+@Builder
 public record GetIngredientResponse (
         Long id,
         String texture,
@@ -9,5 +12,6 @@ public record GetIngredientResponse (
         Double weight,
         GetIngredientStockDetailResponse stockCount,
         GetIngredientStockDetailResponse stockWeight,
-        GetIngredientPriceResponse price
+        GetIngredientPriceResponse price,
+        Boolean isDeleted
 ) { }

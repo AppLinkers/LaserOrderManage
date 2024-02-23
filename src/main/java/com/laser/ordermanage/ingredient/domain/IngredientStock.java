@@ -55,7 +55,7 @@ public class IngredientStock {
     }
 
     public static void validate(IngredientStock previousStock, UpdateIngredientStockRequest stockRequest) {
-        if (!((previousStock.stock + stockRequest.incoming() - stockRequest.production()) == stockRequest.currentDay())) {
+        if (((previousStock != null ? previousStock.stock : 0) + stockRequest.incoming() - stockRequest.production()) != stockRequest.currentDay()) {
             throw new CustomCommonException(IngredientErrorCode.INVALID_INGREDIENT_STOCK);
         }
     }

@@ -16,7 +16,7 @@ public enum IngredientStockType {
     INCOMING("incoming"),
     PRODUCTION("production"),
     STOCK("stock"),
-    OPTIMAL_STOCK("optimal-stock");
+    OPTIMAL("optimal");
 
     @Getter
     private final String request;
@@ -26,6 +26,10 @@ public enum IngredientStockType {
                     .collect(Collectors.toMap(IngredientStockType::getRequest, Function.identity())));
 
     public static List<IngredientStockType> ofRequest(List<String> requestList) {
+        if (requestList.contains(ALL.request)) {
+            return ingredientStockTypeMap.values().stream().filter((stockType)-> !stockType.equals(ALL)).toList();
+        }
+
         return requestList.stream()
                 .map(
                         request -> Optional.ofNullable(ingredientStockTypeMap.get(request))

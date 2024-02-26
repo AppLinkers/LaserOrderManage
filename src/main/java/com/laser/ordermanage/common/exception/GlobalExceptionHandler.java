@@ -49,7 +49,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<?> handleUnknownException(Exception e, HttpServletRequest request) {
         e.printStackTrace();
-//        sendSlackAlertErrorLog(e, request); // 슬랙 알림 보내는 메서드
+        sendSlackAlertErrorLog(e, request); // 슬랙 알림 보내는 메서드
         CustomCommonException exception = new CustomCommonException(CommonErrorCode.UNKNOWN_ERROR);
         return exception.toErrorResponse();
     }

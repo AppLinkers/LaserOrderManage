@@ -127,6 +127,7 @@ public class IngredientAPI {
             @RequestParam(value = "end-date") @DateTimeFormat(pattern = "yyyy-mm-dd") LocalDate endDate,
             @RequestParam(value = "item-unit") String itemUnit,
             @RequestParam(value = "stock-item", required = false, defaultValue = "all") List<String> stockItem,
+            @RequestParam(value = "stock-unit", required = false) String stockUnit,
             @RequestParam(value = "price-item", required = false, defaultValue = "all") List<String> priceItem) {
 
         // validate parameter
@@ -147,14 +148,13 @@ public class IngredientAPI {
         }
 
         // todo: 조회 시작 날짜 검증
-
         LocalDate nowDate = LocalDate.now();
-        if (timeUnit.equals("year") && (nowDate.getYear() < endDate.getYear())) {
-            throw new CustomCommonException(CommonErrorCode.INVALID_PARAMETER, "조회 종료 날짜는 현재 날짜 이전이어야 합니다.");
+        if (timeUnit.equals("year") && (nowDate.getYear() < startDate.getYear() || nowDate.getYear() < endDate.getYear())) {
+            throw new CustomCommonException(CommonErrorCode.INVALID_PARAMETER, "조회 시작 및 종료 날짜는 현재 날짜 이전이어야 합니다.");
         }
 
-        if (timeUnit.equals("month") && (YearMonth.from(nowDate).isBefore(YearMonth.from(endDate)))) {
-            throw new CustomCommonException(CommonErrorCode.INVALID_PARAMETER, "조회 종료 날짜는 현재 날짜 이전이어야 합니다.");
+        if (timeUnit.equals("month") && (YearMonth.from(nowDate).isBefore(YearMonth.from(startDate)) || YearMonth.from(nowDate).isBefore(YearMonth.from(endDate)))) {
+            throw new CustomCommonException(CommonErrorCode.INVALID_PARAMETER, "조회 시작 및 종료 날짜는 현재 날짜 이전이어야 합니다.");
         }
 
         if (!(itemUnit.equals("stock") || itemUnit.equals("price"))) {
@@ -164,6 +164,14 @@ public class IngredientAPI {
         List<IngredientStockType> ingredientStockTypeList = null;
         if (itemUnit.equals("stock")) {
             ingredientStockTypeList = IngredientStockType.ofRequest(stockItem);
+
+            if (stockUnit == null) {
+                throw new CustomCommonException(CommonErrorCode.INVALID_PARAMETER, "stock-unit 파라미터는 필수 입력값입니다.");
+            }
+
+            if (!(stockUnit.equals("count") || stockUnit.equals("weight"))) {
+                throw new CustomCommonException(CommonErrorCode.INVALID_PARAMETER, "stock-unit 파라미터가 올바르지 않습니다.");
+            }
         }
 
         List<IngredientPriceType> ingredientPriceTypeList = null;
@@ -171,7 +179,9 @@ public class IngredientAPI {
             ingredientPriceTypeList = IngredientPriceType.ofRequest(priceItem);
         }
 
-        return ResponseEntity.ok(ingredientService.getIngredientAnalysisByFactory(data, ingredientId, timeUnit, startDate, endDate, itemUnit, ingredientStockTypeList, ingredientPriceTypeList));
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        return ResponseEntity.ok(ingredientService.getIngredientAnalysisByFactory(user, data, ingredientId, timeUnit, startDate, endDate, itemUnit, ingredientStockTypeList, stockUnit, ingredientPriceTypeList));
 
     }
 }

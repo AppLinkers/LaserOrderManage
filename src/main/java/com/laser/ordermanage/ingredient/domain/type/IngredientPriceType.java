@@ -27,6 +27,10 @@ public enum IngredientPriceType {
                     .collect(Collectors.toMap(IngredientPriceType::getRequest, Function.identity())));
 
     public static List<IngredientPriceType> ofRequest(List<String> requestList) {
+        if (requestList.contains(ALL.request)) {
+            return ingredientPriceTypeMap.values().stream().filter((priceType)-> !priceType.equals(ALL)).toList();
+        }
+
         return requestList.stream()
                 .map(
                         request -> Optional.ofNullable(ingredientPriceTypeMap.get(request))

@@ -6,6 +6,8 @@ import org.springframework.data.repository.CrudRepository;
 import java.time.LocalDate;
 import java.util.Optional;
 
-public interface IngredientPriceRepository extends CrudRepository<IngredientPrice, Long> {
+public interface IngredientPriceRepository extends CrudRepository<IngredientPrice, Long>, IngredientPriceRepositoryCustom {
     Optional<IngredientPrice> findByIngredientIdAndCreatedAt(Long ingredientId, LocalDate date);
+
+    IngredientPrice findFirstByIngredientIdOrderByCreatedAtDesc(Long ingredientId);
 }

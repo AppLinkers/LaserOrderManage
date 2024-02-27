@@ -3,6 +3,8 @@ package com.laser.ordermanage.common.scheduler.service;
 import com.laser.ordermanage.common.exception.CustomCommonException;
 import com.laser.ordermanage.common.exception.CommonErrorCode;
 import com.laser.ordermanage.common.scheduler.dto.request.JobRequest;
+import com.laser.ordermanage.common.scheduler.job.CreateIngredientStockAndPriceJob;
+import com.laser.ordermanage.common.scheduler.job.type.JobType;
 import com.laser.ordermanage.common.scheduler.util.JobUtil;
 import com.laser.ordermanage.common.scheduler.job.ChangeStageToCompletedJob;
 import lombok.RequiredArgsConstructor;
@@ -22,9 +24,19 @@ public class ScheduleService {
         JobRequest jobRequest = JobRequest.builder()
                 .name(orderId.toString())
                 .group(ChangeStageToCompletedJob.class.getName()) // orderId 에 해당하는 거래의 상태를 COMPLETED 로 변경하는 작업
+                .jobType(JobType.ONE_TIME)
                 .startAt(DateBuilder.futureDate(7, DateBuilder.IntervalUnit.DAY)) // 7일 후
                 .build();
         this.addJob(jobRequest, ChangeStageToCompletedJob.class);
+    }
+
+    public void createJobForCreateIngredientStockAndPrice() {
+        JobRequest jobRequest = JobRequest.builder()
+                .name(CreateIngredientStockAndPriceJob.class.getName())
+                .group(CreateIngredientStockAndPriceJob.class.getName())
+                .jobType(JobType.MONTHLY)
+                .build();
+        this.addJob(jobRequest, CreateIngredientStockAndPriceJob.class);
     }
 
     private void addJob(JobRequest jobRequest, Class<? extends Job> jobClass) {

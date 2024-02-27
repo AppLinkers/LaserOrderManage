@@ -22,6 +22,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.YearMonth;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -195,11 +197,11 @@ public class IngredientService {
         }
 
         return GetIngredientAnalysisResponse.builder()
-        .timeUnit(timeUnit)
-        .startDate(startDate)
-        .endDate(endDate)
-        .itemList(new ListResponse<>(ingredientAnalysisItemList))
-        .build();
+                .timeUnit(timeUnit)
+                .startDate(startDate)
+                .endDate(endDate)
+                .itemList(new ListResponse<>(ingredientAnalysisItemList))
+                .build();
     }
 
     private List<GetIngredientAnalysisItemResponse> getIngredientAnalysisAsTotalByFactory(String email, String timeUnit, LocalDate startDate, LocalDate endDate, String itemUnit, List<IngredientStockType> stockTypeList, String stockUnit, List<IngredientPriceType> priceTypeList) {
@@ -268,4 +270,43 @@ public class IngredientService {
             throw new CustomCommonException(IngredientErrorCode.DENIED_ACCESS_TO_INGREDIENT);
         }
     }
+
+    @Transactional
+    public void createIngredientStockAndPriceMonthly(YearMonth yearMonth) {
+        List<IngredientStock> ingredientStockList = new ArrayList<>();
+        List<IngredientPrice> ingredientPriceList = new ArrayList<>();
+
+        List<Ingredient> ingredientList = ingredientRepository.findByDeletedAtIsNull();
+        ingredientList.forEach(
+                ingredient -> {
+                    IngredientStock latestIngredientStock = ingredientStockRepository.findFirstByIngredientIdOrderByCreatedAtDesc(ingredient.getId());
+                    if (YearMonth.from(latestIngredientStock.getCreatedAt()).isBefore(yearMonth)) {
+                        IngredientStock ingredientStock = IngredientStock.builder()
+                                .ingredient(ingredient)
+                                .incoming(0)
+                                .production(0)
+                                .stock(latestIngredientStock.getStock())
+                                .optimal(latestIngredientStock.getOptimal())
+                                .build();
+
+                        ingredientStockList.add(ingredientStock);
+                    }
+
+                    IngredientPrice latestIngredientPrice = ingredientPriceRepository.findFirstByIngredientIdOrderByCreatedAtDesc(ingredient.getId());
+                    if (YearMonth.from(latestIngredientPrice.getCreatedAt()).isBefore(yearMonth)) {
+                        IngredientPrice ingredientPrice = IngredientPrice.builder()
+                                .ingredient(ingredient)
+                                .purchase(latestIngredientPrice.getPurchase())
+                                .sell(latestIngredientPrice.getSell())
+                                .build();
+
+                        ingredientPriceList.add(ingredientPrice);
+                    }
+                }
+        );
+
+        ingredientStockRepository.saveAll(ingredientStockList);
+        ingredientPriceRepository.saveAll(ingredientPriceList);
+    }
+
 }

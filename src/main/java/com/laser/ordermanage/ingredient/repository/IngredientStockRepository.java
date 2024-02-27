@@ -8,4 +8,6 @@ import java.util.Optional;
 
 public interface IngredientStockRepository extends CrudRepository<IngredientStock, Long>, IngredientStockRepositoryCustom {
     Optional<IngredientStock> findByIngredientIdAndCreatedAt(Long ingredientId, LocalDate date);
+
+    IngredientStock findFirstByIngredientIdOrderByCreatedAtDesc(Long ingredientId);
 }

@@ -375,7 +375,7 @@ public class IngredientRepositoryCustomImpl implements IngredientRepositoryCusto
                                 JOIN factory ON factory.id = ingredient.factory_id
                                 JOIN user_table ON user_table.id = factory.user_id
                                 WHERE
-                                    ingredient_stock.created_at >= :startDate AND ingredient_stock.created_at < DATE_ADD(:endYear, INTERVAL 1 YEAR ) AND
+                                    ingredient_stock.created_at >= :startDate AND ingredient_stock.created_at < DATE_ADD(:endDate, INTERVAL 1 YEAR ) AND
                                     user_table.email = :email
                                 GROUP BY ingredient_stock.ingredient_id, year
                             ) AS ingredient_stock_data_1
@@ -406,7 +406,7 @@ public class IngredientRepositoryCustomImpl implements IngredientRepositoryCusto
                                     JOIN factory ON factory.id = ingredient.factory_id
                                     JOIN user_table ON user_table.id = factory.user_id
                                     WHERE
-                                        ingredient_stock.created_at >= :startDate AND ingredient_stock.created_at < DATE_ADD(:endYear, INTERVAL 1 YEAR ) AND
+                                        ingredient_stock.created_at >= :startDate AND ingredient_stock.created_at < DATE_ADD(:endDate, INTERVAL 1 YEAR ) AND
                                         user_table.email = :email
                                 ) AS ranked_data
                                 WHERE ranked_data.rn = 1
@@ -481,7 +481,7 @@ public class IngredientRepositoryCustomImpl implements IngredientRepositoryCusto
                            JOIN factory ON factory.id = ingredient.factory_id
                            JOIN user_table ON user_table.id = factory.user_id
                            WHERE
-                               ingredient_price.created_at >= :startDate AND ingredient_price.created_at < DATE_ADD(:endYear, INTERVAL 1 YEAR ) AND
+                               ingredient_price.created_at >= :startDate AND ingredient_price.created_at < DATE_ADD(:endDate, INTERVAL 1 YEAR ) AND
                                user_table.email = :email
                        ) AS ranked_data
                        WHERE ranked_data.rn = 1
@@ -757,7 +757,7 @@ public class IngredientRepositoryCustomImpl implements IngredientRepositoryCusto
                                 JOIN factory ON factory.id = ingredient.factory_id
                                 JOIN user_table ON user_table.id = factory.user_id
                                 WHERE
-                                    ingredient_stock.created_at >= :startDate AND ingredient_stock.created_at < DATE_ADD(:endYear, INTERVAL 1 YEAR ) AND
+                                    ingredient_stock.created_at >= :startDate AND ingredient_stock.created_at < DATE_ADD(:endDate, INTERVAL 1 YEAR ) AND
                                     user_table.email = :email
                                 GROUP BY ingredient_stock.ingredient_id, year
                             ) AS ingredient_stock_data_1
@@ -788,7 +788,7 @@ public class IngredientRepositoryCustomImpl implements IngredientRepositoryCusto
                                     JOIN factory ON factory.id = ingredient.factory_id
                                     JOIN user_table ON user_table.id = factory.user_id
                                     WHERE
-                                        ingredient_stock.created_at >= :startDate AND ingredient_stock.created_at < DATE_ADD(:endYear, INTERVAL 1 YEAR ) AND
+                                        ingredient_stock.created_at >= :startDate AND ingredient_stock.created_at < DATE_ADD(:endDate, INTERVAL 1 YEAR ) AND
                                         user_table.email = :email
                                 ) AS ranked_data
                                 WHERE ranked_data.rn = 1

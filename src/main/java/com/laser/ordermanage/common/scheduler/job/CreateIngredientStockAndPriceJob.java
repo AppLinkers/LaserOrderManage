@@ -7,6 +7,8 @@ import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.springframework.stereotype.Component;
 
+import java.time.ZoneId;
+
 @Slf4j
 @RequiredArgsConstructor
 @Component
@@ -16,7 +18,7 @@ public class CreateIngredientStockAndPriceJob implements Job {
 
     @Override
     public void execute(JobExecutionContext context) {
-        log.info("create ingredient stock and price job 실행");
-//        ingredientService.createIngredientStockAndPriceMonthly(YearMonth.from(context.getFireTime().toInstant().atZone(ZoneId.systemDefault()).plusDays(1).toLocalDate()));
+        log.info(context.getFireTime().toInstant().atZone(ZoneId.systemDefault()).toString());
+//        ingredientService.createIngredientStockAndPriceMonthly(YearMonth.from(context.getFireTime().toInstant().atZone(ZoneId.systemDefault()).toLocalDate()));
     }
 }

@@ -20,7 +20,7 @@ public class JobUtil {
         } else {
             return TriggerBuilder.newTrigger()
                     .withIdentity(triggerKey)
-                    .withSchedule(CronScheduleBuilder.cronSchedule("0 0 1 * * ?"))
+                    .withSchedule(CronScheduleBuilder.cronSchedule("0 0 0 1 * ?"))
                     .startNow()
                     .build();
         }

@@ -1,7 +1,5 @@
 package com.laser.ordermanage.ingredient.repository;
 
-import com.laser.ordermanage.ingredient.domain.type.IngredientPriceType;
-import com.laser.ordermanage.ingredient.domain.type.IngredientStockType;
 import com.laser.ordermanage.ingredient.dto.response.GetIngredientAnalysisItemResponse;
 import com.laser.ordermanage.ingredient.dto.response.GetIngredientInfoResponse;
 import com.laser.ordermanage.ingredient.dto.response.GetIngredientResponse;
@@ -134,7 +132,7 @@ public class IngredientRepositoryCustomImpl implements IngredientRepositoryCusto
     }
 
     @Override
-    public List<GetIngredientAnalysisItemResponse> findIngredientAnalysisAsTotalAndMonthAndStockByFactory(String email, LocalDate startDate, LocalDate endDate, List<IngredientStockType> stockTypeList, String stockUnit) {
+    public List<GetIngredientAnalysisItemResponse> findIngredientAnalysisAsTotalAndMonthAndStockByFactory(String email, LocalDate startDate, LocalDate endDate, List<String> itemTypeList, String stockUnit) {
         SqlParameterSource namedParameters = new MapSqlParameterSource()
                 .addValue("email", email)
                 .addValue("startDate", startDate)
@@ -227,33 +225,11 @@ public class IngredientRepositoryCustomImpl implements IngredientRepositoryCusto
                 ORDER BY date.yearmonth
                 """;
 
-        ColumnMapRowMapper rowMapper = new ColumnMapRowMapper();
-        List<Map<String, Object>> ingredientAnalysisDataList = jdbcTemplate.query(findIngredientAnalysisQuery, namedParameters, rowMapper);
-
-        Map<String, List<Number>> ingredientAnalysisDataMap = new HashMap<>();
-        for (IngredientStockType ingredientStockType : stockTypeList) {
-            ingredientAnalysisDataMap.put(ingredientStockType.getRequest(), new ArrayList<>());
-        }
-
-        for(Map<String, Object> ingredientAnalysisData: ingredientAnalysisDataList){
-            for (IngredientStockType ingredientStockType : stockTypeList) {
-                ingredientAnalysisDataMap.get(ingredientStockType.getRequest()).add((Number) ingredientAnalysisData.get(ingredientStockType.getRequest()));
-            }
-        }
-
-        List<GetIngredientAnalysisItemResponse> getIngredientAnalysisItemResponseList = new ArrayList<>();
-        for (Map.Entry<String, List<Number>> entry : ingredientAnalysisDataMap.entrySet()) {
-            getIngredientAnalysisItemResponseList.add(GetIngredientAnalysisItemResponse.builder()
-                    .item(entry.getKey())
-                    .data(entry.getValue())
-                    .build());
-        }
-
-        return getIngredientAnalysisItemResponseList;
+        return extractAnalysisResponse(itemTypeList, jdbcTemplate.query(findIngredientAnalysisQuery, namedParameters, new ColumnMapRowMapper()));
     }
 
     @Override
-    public List<GetIngredientAnalysisItemResponse> findIngredientAnalysisAsTotalAndMonthAndPriceByFactory(String email, LocalDate startDate, LocalDate endDate, List<IngredientPriceType> priceTypeList) {
+    public List<GetIngredientAnalysisItemResponse> findIngredientAnalysisAsTotalAndMonthAndPriceByFactory(String email, LocalDate startDate, LocalDate endDate, List<String> itemTypeList) {
         SqlParameterSource namedParameters = new MapSqlParameterSource()
                 .addValue("email", email)
                 .addValue("startDate", startDate)
@@ -299,33 +275,11 @@ public class IngredientRepositoryCustomImpl implements IngredientRepositoryCusto
                 ORDER BY date.yearmonth
                 """;
 
-        ColumnMapRowMapper rowMapper = new ColumnMapRowMapper();
-        List<Map<String, Object>> ingredientAnalysisDataList = jdbcTemplate.query(findIngredientAnalysisQuery, namedParameters, rowMapper);
-
-        Map<String, List<Number>> ingredientAnalysisDataMap = new HashMap<>();
-        for (IngredientPriceType ingredientPriceType : priceTypeList) {
-            ingredientAnalysisDataMap.put(ingredientPriceType.getRequest(), new ArrayList<>());
-        }
-
-        for(Map<String, Object> ingredientAnalysisData: ingredientAnalysisDataList){
-            for (IngredientPriceType ingredientPriceType : priceTypeList) {
-                ingredientAnalysisDataMap.get(ingredientPriceType.getRequest()).add((Number) ingredientAnalysisData.get(ingredientPriceType.getRequest()));
-            }
-        }
-
-        List<GetIngredientAnalysisItemResponse> getIngredientAnalysisItemResponseList = new ArrayList<>();
-        for (Map.Entry<String, List<Number>> entry : ingredientAnalysisDataMap.entrySet()) {
-            getIngredientAnalysisItemResponseList.add(GetIngredientAnalysisItemResponse.builder()
-                    .item(entry.getKey())
-                    .data(entry.getValue())
-                    .build());
-        }
-
-        return getIngredientAnalysisItemResponseList;
+        return extractAnalysisResponse(itemTypeList, jdbcTemplate.query(findIngredientAnalysisQuery, namedParameters, new ColumnMapRowMapper()));
     }
 
     @Override
-    public List<GetIngredientAnalysisItemResponse> findIngredientAnalysisAsTotalAndYearAndStockByFactory(String email, LocalDate startDate, LocalDate endDate, List<IngredientStockType> stockTypeList, String stockUnit) {
+    public List<GetIngredientAnalysisItemResponse> findIngredientAnalysisAsTotalAndYearAndStockByFactory(String email, LocalDate startDate, LocalDate endDate, List<String> itemTypeList, String stockUnit) {
         SqlParameterSource namedParameters = new MapSqlParameterSource()
                 .addValue("email", email)
                 .addValue("startDate", startDate)
@@ -418,33 +372,11 @@ public class IngredientRepositoryCustomImpl implements IngredientRepositoryCusto
                 ORDER BY date.year
                 """;
 
-        ColumnMapRowMapper rowMapper = new ColumnMapRowMapper();
-        List<Map<String, Object>> ingredientAnalysisDataList = jdbcTemplate.query(findIngredientAnalysisQuery, namedParameters, rowMapper);
-
-        Map<String, List<Number>> ingredientAnalysisDataMap = new HashMap<>();
-        for (IngredientStockType ingredientStockType : stockTypeList) {
-            ingredientAnalysisDataMap.put(ingredientStockType.getRequest(), new ArrayList<>());
-        }
-
-        for(Map<String, Object> ingredientAnalysisData: ingredientAnalysisDataList){
-            for (IngredientStockType ingredientStockType : stockTypeList) {
-                ingredientAnalysisDataMap.get(ingredientStockType.getRequest()).add((Number) ingredientAnalysisData.get(ingredientStockType.getRequest()));
-            }
-        }
-
-        List<GetIngredientAnalysisItemResponse> getIngredientAnalysisItemResponseList = new ArrayList<>();
-        for (Map.Entry<String, List<Number>> entry : ingredientAnalysisDataMap.entrySet()) {
-            getIngredientAnalysisItemResponseList.add(GetIngredientAnalysisItemResponse.builder()
-                    .item(entry.getKey())
-                    .data(entry.getValue())
-                    .build());
-        }
-
-        return getIngredientAnalysisItemResponseList;
+        return extractAnalysisResponse(itemTypeList, jdbcTemplate.query(findIngredientAnalysisQuery, namedParameters, new ColumnMapRowMapper()));
     }
 
     @Override
-    public List<GetIngredientAnalysisItemResponse> findIngredientAnalysisAsTotalAndYearAndPriceByFactory(String email, LocalDate startDate, LocalDate endDate, List<IngredientPriceType> priceTypeList) {
+    public List<GetIngredientAnalysisItemResponse> findIngredientAnalysisAsTotalAndYearAndPriceByFactory(String email, LocalDate startDate, LocalDate endDate, List<String> itemTypeList) {
         SqlParameterSource namedParameters = new MapSqlParameterSource()
                 .addValue("email", email)
                 .addValue("startDate", startDate)
@@ -490,33 +422,11 @@ public class IngredientRepositoryCustomImpl implements IngredientRepositoryCusto
                 ORDER BY date.year
                 """;
 
-        ColumnMapRowMapper rowMapper = new ColumnMapRowMapper();
-        List<Map<String, Object>> ingredientAnalysisDataList = jdbcTemplate.query(findIngredientAnalysisQuery, namedParameters, rowMapper);
-
-        Map<String, List<Number>> ingredientAnalysisDataMap = new HashMap<>();
-        for (IngredientPriceType ingredientPriceType : priceTypeList) {
-            ingredientAnalysisDataMap.put(ingredientPriceType.getRequest(), new ArrayList<>());
-        }
-
-        for(Map<String, Object> ingredientAnalysisData: ingredientAnalysisDataList){
-            for (IngredientPriceType ingredientPriceType : priceTypeList) {
-                ingredientAnalysisDataMap.get(ingredientPriceType.getRequest()).add((Number) ingredientAnalysisData.get(ingredientPriceType.getRequest()));
-            }
-        }
-
-        List<GetIngredientAnalysisItemResponse> getIngredientAnalysisItemResponseList = new ArrayList<>();
-        for (Map.Entry<String, List<Number>> entry : ingredientAnalysisDataMap.entrySet()) {
-            getIngredientAnalysisItemResponseList.add(GetIngredientAnalysisItemResponse.builder()
-                    .item(entry.getKey())
-                    .data(entry.getValue())
-                    .build());
-        }
-
-        return getIngredientAnalysisItemResponseList;
+        return extractAnalysisResponse(itemTypeList, jdbcTemplate.query(findIngredientAnalysisQuery, namedParameters, new ColumnMapRowMapper()));
     }
 
     @Override
-    public List<GetIngredientAnalysisItemResponse> findIngredientAnalysisAsAverageAndMonthAndStockByFactory(String email, LocalDate startDate, LocalDate endDate, List<IngredientStockType> stockTypeList, String stockUnit) {
+    public List<GetIngredientAnalysisItemResponse> findIngredientAnalysisAsAverageAndMonthAndStockByFactory(String email, LocalDate startDate, LocalDate endDate, List<String> itemTypeList, String stockUnit) {
         SqlParameterSource namedParameters = new MapSqlParameterSource()
                 .addValue("email", email)
                 .addValue("startDate", startDate)
@@ -609,33 +519,11 @@ public class IngredientRepositoryCustomImpl implements IngredientRepositoryCusto
                 ORDER BY date.yearmonth
                 """;
 
-        ColumnMapRowMapper rowMapper = new ColumnMapRowMapper();
-        List<Map<String, Object>> ingredientAnalysisDataList = jdbcTemplate.query(findIngredientAnalysisQuery, namedParameters, rowMapper);
-
-        Map<String, List<Number>> ingredientAnalysisDataMap = new HashMap<>();
-        for (IngredientStockType ingredientStockType : stockTypeList) {
-            ingredientAnalysisDataMap.put(ingredientStockType.getRequest(), new ArrayList<>());
-        }
-
-        for(Map<String, Object> ingredientAnalysisData: ingredientAnalysisDataList){
-            for (IngredientStockType ingredientStockType : stockTypeList) {
-                ingredientAnalysisDataMap.get(ingredientStockType.getRequest()).add((Number) ingredientAnalysisData.get(ingredientStockType.getRequest()));
-            }
-        }
-
-        List<GetIngredientAnalysisItemResponse> getIngredientAnalysisItemResponseList = new ArrayList<>();
-        for (Map.Entry<String, List<Number>> entry : ingredientAnalysisDataMap.entrySet()) {
-            getIngredientAnalysisItemResponseList.add(GetIngredientAnalysisItemResponse.builder()
-                    .item(entry.getKey())
-                    .data(entry.getValue())
-                    .build());
-        }
-
-        return getIngredientAnalysisItemResponseList;
+        return extractAnalysisResponse(itemTypeList, jdbcTemplate.query(findIngredientAnalysisQuery, namedParameters, new ColumnMapRowMapper()));
     }
 
     @Override
-    public List<GetIngredientAnalysisItemResponse> findIngredientAnalysisAsAverageAndMonthAndPriceByFactory(String email, LocalDate startDate, LocalDate endDate, List<IngredientPriceType> priceTypeList) {
+    public List<GetIngredientAnalysisItemResponse> findIngredientAnalysisAsAverageAndMonthAndPriceByFactory(String email, LocalDate startDate, LocalDate endDate, List<String> itemTypeList) {
         SqlParameterSource namedParameters = new MapSqlParameterSource()
                 .addValue("email", email)
                 .addValue("startDate", startDate)
@@ -681,33 +569,11 @@ public class IngredientRepositoryCustomImpl implements IngredientRepositoryCusto
                 ORDER BY date.yearmonth
                 """;
 
-        ColumnMapRowMapper rowMapper = new ColumnMapRowMapper();
-        List<Map<String, Object>> ingredientAnalysisDataList = jdbcTemplate.query(findIngredientAnalysisQuery, namedParameters, rowMapper);
-
-        Map<String, List<Number>> ingredientAnalysisDataMap = new HashMap<>();
-        for (IngredientPriceType ingredientPriceType : priceTypeList) {
-            ingredientAnalysisDataMap.put(ingredientPriceType.getRequest(), new ArrayList<>());
-        }
-
-        for(Map<String, Object> ingredientAnalysisData: ingredientAnalysisDataList){
-            for (IngredientPriceType ingredientPriceType : priceTypeList) {
-                ingredientAnalysisDataMap.get(ingredientPriceType.getRequest()).add((Number) ingredientAnalysisData.get(ingredientPriceType.getRequest()));
-            }
-        }
-
-        List<GetIngredientAnalysisItemResponse> getIngredientAnalysisItemResponseList = new ArrayList<>();
-        for (Map.Entry<String, List<Number>> entry : ingredientAnalysisDataMap.entrySet()) {
-            getIngredientAnalysisItemResponseList.add(GetIngredientAnalysisItemResponse.builder()
-                    .item(entry.getKey())
-                    .data(entry.getValue())
-                    .build());
-        }
-
-        return getIngredientAnalysisItemResponseList;
+        return extractAnalysisResponse(itemTypeList, jdbcTemplate.query(findIngredientAnalysisQuery, namedParameters, new ColumnMapRowMapper()));
     }
 
     @Override
-    public List<GetIngredientAnalysisItemResponse> findIngredientAnalysisAsAverageAndYearAndStockByFactory(String email, LocalDate startDate, LocalDate endDate, List<IngredientStockType> stockTypeList, String stockUnit) {
+    public List<GetIngredientAnalysisItemResponse> findIngredientAnalysisAsAverageAndYearAndStockByFactory(String email, LocalDate startDate, LocalDate endDate, List<String> itemTypeList, String stockUnit) {
         SqlParameterSource namedParameters = new MapSqlParameterSource()
                 .addValue("email", email)
                 .addValue("startDate", startDate)
@@ -800,33 +666,11 @@ public class IngredientRepositoryCustomImpl implements IngredientRepositoryCusto
                 ORDER BY date.year
                 """;
 
-        ColumnMapRowMapper rowMapper = new ColumnMapRowMapper();
-        List<Map<String, Object>> ingredientAnalysisDataList = jdbcTemplate.query(findIngredientAnalysisQuery, namedParameters, rowMapper);
-
-        Map<String, List<Number>> ingredientAnalysisDataMap = new HashMap<>();
-        for (IngredientStockType ingredientStockType : stockTypeList) {
-            ingredientAnalysisDataMap.put(ingredientStockType.getRequest(), new ArrayList<>());
-        }
-
-        for(Map<String, Object> ingredientAnalysisData: ingredientAnalysisDataList){
-            for (IngredientStockType ingredientStockType : stockTypeList) {
-                ingredientAnalysisDataMap.get(ingredientStockType.getRequest()).add((Number) ingredientAnalysisData.get(ingredientStockType.getRequest()));
-            }
-        }
-
-        List<GetIngredientAnalysisItemResponse> getIngredientAnalysisItemResponseList = new ArrayList<>();
-        for (Map.Entry<String, List<Number>> entry : ingredientAnalysisDataMap.entrySet()) {
-            getIngredientAnalysisItemResponseList.add(GetIngredientAnalysisItemResponse.builder()
-                    .item(entry.getKey())
-                    .data(entry.getValue())
-                    .build());
-        }
-
-        return getIngredientAnalysisItemResponseList;
+        return extractAnalysisResponse(itemTypeList, jdbcTemplate.query(findIngredientAnalysisQuery, namedParameters, new ColumnMapRowMapper()));
     }
 
     @Override
-    public List<GetIngredientAnalysisItemResponse> findIngredientAnalysisAsAverageAndYearAndPriceByFactory(String email, LocalDate startDate, LocalDate endDate, List<IngredientPriceType> priceTypeList) {
+    public List<GetIngredientAnalysisItemResponse> findIngredientAnalysisAsAverageAndYearAndPriceByFactory(String email, LocalDate startDate, LocalDate endDate, List<String> itemTypeList) {
         SqlParameterSource namedParameters = new MapSqlParameterSource()
                 .addValue("email", email)
                 .addValue("startDate", startDate)
@@ -872,33 +716,11 @@ public class IngredientRepositoryCustomImpl implements IngredientRepositoryCusto
                 ORDER BY date.year
                 """;
 
-        ColumnMapRowMapper rowMapper = new ColumnMapRowMapper();
-        List<Map<String, Object>> ingredientAnalysisDataList = jdbcTemplate.query(findIngredientAnalysisQuery, namedParameters, rowMapper);
-
-        Map<String, List<Number>> ingredientAnalysisDataMap = new HashMap<>();
-        for (IngredientPriceType ingredientPriceType : priceTypeList) {
-            ingredientAnalysisDataMap.put(ingredientPriceType.getRequest(), new ArrayList<>());
-        }
-
-        for(Map<String, Object> ingredientAnalysisData: ingredientAnalysisDataList){
-            for (IngredientPriceType ingredientPriceType : priceTypeList) {
-                ingredientAnalysisDataMap.get(ingredientPriceType.getRequest()).add((Number) ingredientAnalysisData.get(ingredientPriceType.getRequest()));
-            }
-        }
-
-        List<GetIngredientAnalysisItemResponse> getIngredientAnalysisItemResponseList = new ArrayList<>();
-        for (Map.Entry<String, List<Number>> entry : ingredientAnalysisDataMap.entrySet()) {
-            getIngredientAnalysisItemResponseList.add(GetIngredientAnalysisItemResponse.builder()
-                    .item(entry.getKey())
-                    .data(entry.getValue())
-                    .build());
-        }
-
-        return getIngredientAnalysisItemResponseList;
+        return extractAnalysisResponse(itemTypeList, jdbcTemplate.query(findIngredientAnalysisQuery, namedParameters, new ColumnMapRowMapper()));
     }
 
     @Override
-    public List<GetIngredientAnalysisItemResponse> findIngredientAnalysisAsIngredientAndMonthAndStock(Long ingredientId, LocalDate startDate, LocalDate endDate, List<IngredientStockType> stockTypeList, String stockUnit) {
+    public List<GetIngredientAnalysisItemResponse> findIngredientAnalysisAsIngredientAndMonthAndStock(Long ingredientId, LocalDate startDate, LocalDate endDate, List<String> itemTypeList, String stockUnit) {
         SqlParameterSource namedParameters = new MapSqlParameterSource()
                 .addValue("ingredientId", ingredientId)
                 .addValue("startDate", startDate)
@@ -983,33 +805,11 @@ public class IngredientRepositoryCustomImpl implements IngredientRepositoryCusto
                 ORDER BY date.yearmonth
                 """;
 
-        ColumnMapRowMapper rowMapper = new ColumnMapRowMapper();
-        List<Map<String, Object>> ingredientAnalysisDataList = jdbcTemplate.query(findIngredientAnalysisQuery, namedParameters, rowMapper);
-
-        Map<String, List<Number>> ingredientAnalysisDataMap = new HashMap<>();
-        for (IngredientStockType ingredientStockType : stockTypeList) {
-            ingredientAnalysisDataMap.put(ingredientStockType.getRequest(), new ArrayList<>());
-        }
-
-        for(Map<String, Object> ingredientAnalysisData: ingredientAnalysisDataList){
-            for (IngredientStockType ingredientStockType : stockTypeList) {
-                ingredientAnalysisDataMap.get(ingredientStockType.getRequest()).add((Number) ingredientAnalysisData.get(ingredientStockType.getRequest()));
-            }
-        }
-
-        List<GetIngredientAnalysisItemResponse> getIngredientAnalysisItemResponseList = new ArrayList<>();
-        for (Map.Entry<String, List<Number>> entry : ingredientAnalysisDataMap.entrySet()) {
-            getIngredientAnalysisItemResponseList.add(GetIngredientAnalysisItemResponse.builder()
-                    .item(entry.getKey())
-                    .data(entry.getValue())
-                    .build());
-        }
-
-        return getIngredientAnalysisItemResponseList;
+        return extractAnalysisResponse(itemTypeList, jdbcTemplate.query(findIngredientAnalysisQuery, namedParameters, new ColumnMapRowMapper()));
     }
 
     @Override
-    public List<GetIngredientAnalysisItemResponse> findIngredientAnalysisAsIngredientAndMonthAndPrice(Long ingredientId, LocalDate startDate, LocalDate endDate, List<IngredientPriceType> priceTypeList) {
+    public List<GetIngredientAnalysisItemResponse> findIngredientAnalysisAsIngredientAndMonthAndPrice(Long ingredientId, LocalDate startDate, LocalDate endDate, List<String> itemTypeList) {
         SqlParameterSource namedParameters = new MapSqlParameterSource()
                 .addValue("ingredientId", ingredientId)
                 .addValue("startDate", startDate)
@@ -1051,33 +851,11 @@ public class IngredientRepositoryCustomImpl implements IngredientRepositoryCusto
                 ORDER BY date.yearmonth
                 """;
 
-        ColumnMapRowMapper rowMapper = new ColumnMapRowMapper();
-        List<Map<String, Object>> ingredientAnalysisDataList = jdbcTemplate.query(findIngredientAnalysisQuery, namedParameters, rowMapper);
-
-        Map<String, List<Number>> ingredientAnalysisDataMap = new HashMap<>();
-        for (IngredientPriceType ingredientPriceType : priceTypeList) {
-            ingredientAnalysisDataMap.put(ingredientPriceType.getRequest(), new ArrayList<>());
-        }
-
-        for(Map<String, Object> ingredientAnalysisData: ingredientAnalysisDataList){
-            for (IngredientPriceType ingredientPriceType : priceTypeList) {
-                ingredientAnalysisDataMap.get(ingredientPriceType.getRequest()).add((Number) ingredientAnalysisData.get(ingredientPriceType.getRequest()));
-            }
-        }
-
-        List<GetIngredientAnalysisItemResponse> getIngredientAnalysisItemResponseList = new ArrayList<>();
-        for (Map.Entry<String, List<Number>> entry : ingredientAnalysisDataMap.entrySet()) {
-            getIngredientAnalysisItemResponseList.add(GetIngredientAnalysisItemResponse.builder()
-                    .item(entry.getKey())
-                    .data(entry.getValue())
-                    .build());
-        }
-
-        return getIngredientAnalysisItemResponseList;
+        return extractAnalysisResponse(itemTypeList, jdbcTemplate.query(findIngredientAnalysisQuery, namedParameters, new ColumnMapRowMapper()));
     }
 
     @Override
-    public List<GetIngredientAnalysisItemResponse> findIngredientAnalysisAsIngredientAndYearAndStock(Long ingredientId, LocalDate startDate, LocalDate endDate, List<IngredientStockType> stockTypeList, String stockUnit) {
+    public List<GetIngredientAnalysisItemResponse> findIngredientAnalysisAsIngredientAndYearAndStock(Long ingredientId, LocalDate startDate, LocalDate endDate, List<String> itemTypeList, String stockUnit) {
         SqlParameterSource namedParameters = new MapSqlParameterSource()
                 .addValue("ingredientId", ingredientId)
                 .addValue("startDate", startDate)
@@ -1162,33 +940,11 @@ public class IngredientRepositoryCustomImpl implements IngredientRepositoryCusto
                 ORDER BY date.year
                 """;
 
-        ColumnMapRowMapper rowMapper = new ColumnMapRowMapper();
-        List<Map<String, Object>> ingredientAnalysisDataList = jdbcTemplate.query(findIngredientAnalysisQuery, namedParameters, rowMapper);
-
-        Map<String, List<Number>> ingredientAnalysisDataMap = new HashMap<>();
-        for (IngredientStockType ingredientStockType : stockTypeList) {
-            ingredientAnalysisDataMap.put(ingredientStockType.getRequest(), new ArrayList<>());
-        }
-
-        for(Map<String, Object> ingredientAnalysisData: ingredientAnalysisDataList){
-            for (IngredientStockType ingredientStockType : stockTypeList) {
-                ingredientAnalysisDataMap.get(ingredientStockType.getRequest()).add((Number) ingredientAnalysisData.get(ingredientStockType.getRequest()));
-            }
-        }
-
-        List<GetIngredientAnalysisItemResponse> getIngredientAnalysisItemResponseList = new ArrayList<>();
-        for (Map.Entry<String, List<Number>> entry : ingredientAnalysisDataMap.entrySet()) {
-            getIngredientAnalysisItemResponseList.add(GetIngredientAnalysisItemResponse.builder()
-                    .item(entry.getKey())
-                    .data(entry.getValue())
-                    .build());
-        }
-
-        return getIngredientAnalysisItemResponseList;
+        return extractAnalysisResponse(itemTypeList, jdbcTemplate.query(findIngredientAnalysisQuery, namedParameters, new ColumnMapRowMapper()));
     }
 
     @Override
-    public List<GetIngredientAnalysisItemResponse> findIngredientAnalysisAsIngredientAndYearAndPrice(Long ingredientId, LocalDate startDate, LocalDate endDate, List<IngredientPriceType> priceTypeList) {
+    public List<GetIngredientAnalysisItemResponse> findIngredientAnalysisAsIngredientAndYearAndPrice(Long ingredientId, LocalDate startDate, LocalDate endDate, List<String> itemTypeList) {
         SqlParameterSource namedParameters = new MapSqlParameterSource()
                 .addValue("ingredientId", ingredientId)
                 .addValue("startDate", startDate)
@@ -1230,17 +986,18 @@ public class IngredientRepositoryCustomImpl implements IngredientRepositoryCusto
                 ORDER BY date.year
                 """;
 
-        ColumnMapRowMapper rowMapper = new ColumnMapRowMapper();
-        List<Map<String, Object>> ingredientAnalysisDataList = jdbcTemplate.query(findIngredientAnalysisQuery, namedParameters, rowMapper);
+        return extractAnalysisResponse(itemTypeList, jdbcTemplate.query(findIngredientAnalysisQuery, namedParameters, new ColumnMapRowMapper()));
+    }
 
+    public List<GetIngredientAnalysisItemResponse> extractAnalysisResponse(List<String> itemTypeList, List<Map<String, Object>> ingredientAnalysisDataList) {
         Map<String, List<Number>> ingredientAnalysisDataMap = new HashMap<>();
-        for (IngredientPriceType ingredientPriceType : priceTypeList) {
-            ingredientAnalysisDataMap.put(ingredientPriceType.getRequest(), new ArrayList<>());
+        for (String itemType : itemTypeList) {
+            ingredientAnalysisDataMap.put(itemType, new ArrayList<>());
         }
 
-        for(Map<String, Object> ingredientAnalysisData: ingredientAnalysisDataList){
-            for (IngredientPriceType ingredientPriceType : priceTypeList) {
-                ingredientAnalysisDataMap.get(ingredientPriceType.getRequest()).add((Number) ingredientAnalysisData.get(ingredientPriceType.getRequest()));
+        for (Map<String, Object> ingredientAnalysisData : ingredientAnalysisDataList) {
+            for (String itemType : itemTypeList) {
+                ingredientAnalysisDataMap.get(itemType).add((Number) ingredientAnalysisData.get(itemType));
             }
         }
 

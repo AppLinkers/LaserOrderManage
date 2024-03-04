@@ -15,7 +15,7 @@ public enum IngredientErrorCode implements ErrorCode {
     INVALID_INGREDIENT_STOCK("INGREDIENT_400_03", HttpStatus.BAD_REQUEST, "자재 재고에 대한 데이터가 일치하지 않습니다."),
 
     // 403 FORBIDDEN 인증 필요
-    DENIED_ACCESS_TO_INGREDIENT("INGREDIENT_403_01", HttpStatus.FORBIDDEN, "자재 대한 접근 권한이 없습니다."),
+    DENIED_ACCESS_TO_INGREDIENT("INGREDIENT_403_01", HttpStatus.FORBIDDEN, "자재에 대한 접근 권한이 없습니다."),
 
     // 404 NOT_FOUND 리소스가 존재하지 않음
     NOT_FOUND_INGREDIENT("INGREDIENT_404_01", HttpStatus.NOT_FOUND, "존재하지 않는 자재 입니다.");

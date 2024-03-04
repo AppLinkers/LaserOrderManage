@@ -60,6 +60,7 @@ public class IngredientAPI {
     /**
      * 자재 재고 및 단가 수정
      * - path parameter {ingredient-id} 에 해당하는 자재 조회
+     * - 자재에 대한 현재 로그인한 회원의 접근 권한 확인 (자재의 공장 회원)
      * - 자재 삭제 여부 확인
      * - 자재 재고 데이터 계산 검증
      * - 자재 재고 데이터 수정 또는 생성 및 자재 데이터와 연관관계 매핑
@@ -72,7 +73,7 @@ public class IngredientAPI {
 
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        ingredientService.checkAuthorityOfIngredient(user, ingredientId);
+        ingredientService.checkAuthorityOfIngredient(user.getUsername(), ingredientId);
 
         ingredientService.updateIngredient(ingredientId, request);
 
@@ -82,6 +83,7 @@ public class IngredientAPI {
     /**
      * 자재 삭제
      * - path parameter {ingredient-id} 에 해당하는 자재 조회
+     * - 자재에 대한 현재 로그인한 회원의 접근 권한 확인 (자재의 공장 회원)
      * - 자재 삭제 여부 확인 및 삭제 수행 (삭제 날짜 표시)
      */
     @DeleteMapping("/{ingredient-id}")
@@ -91,7 +93,7 @@ public class IngredientAPI {
 
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        ingredientService.checkAuthorityOfIngredient(user, ingredientId);
+        ingredientService.checkAuthorityOfIngredient(user.getUsername(), ingredientId);
 
         ingredientService.deleteIngredient(ingredientId);
 
@@ -161,9 +163,9 @@ public class IngredientAPI {
             throw new CustomCommonException(CommonErrorCode.INVALID_PARAMETER, "item-unit 파라미터가 올바르지 않습니다.");
         }
 
-        List<IngredientStockType> ingredientStockTypeList = null;
+        List<String> ingredientItemTypeList = null;
         if (itemUnit.equals("stock")) {
-            ingredientStockTypeList = IngredientStockType.ofRequest(stockItem);
+            ingredientItemTypeList = IngredientStockType.ofRequest(stockItem);
 
             if (stockUnit == null) {
                 throw new CustomCommonException(CommonErrorCode.INVALID_PARAMETER, "stock-unit 파라미터는 필수 입력값입니다.");
@@ -174,14 +176,13 @@ public class IngredientAPI {
             }
         }
 
-        List<IngredientPriceType> ingredientPriceTypeList = null;
         if (itemUnit.equals("price")) {
-            ingredientPriceTypeList = IngredientPriceType.ofRequest(priceItem);
+            ingredientItemTypeList = IngredientPriceType.ofRequest(priceItem);
         }
 
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        return ResponseEntity.ok(ingredientService.getIngredientAnalysisByFactory(user, data, ingredientId, timeUnit, startDate, endDate, itemUnit, ingredientStockTypeList, stockUnit, ingredientPriceTypeList));
+        return ResponseEntity.ok(ingredientService.getIngredientAnalysisByFactory(user.getUsername(), data, ingredientId, timeUnit, startDate, endDate, itemUnit, ingredientItemTypeList, stockUnit));
 
     }
 }

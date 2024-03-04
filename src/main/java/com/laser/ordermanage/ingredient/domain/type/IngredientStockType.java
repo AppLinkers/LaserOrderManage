@@ -25,14 +25,14 @@ public enum IngredientStockType {
             Collections.unmodifiableMap(Stream.of(values())
                     .collect(Collectors.toMap(IngredientStockType::getRequest, Function.identity())));
 
-    public static List<IngredientStockType> ofRequest(List<String> requestList) {
+    public static List<String> ofRequest(List<String> requestList) {
         if (requestList.contains(ALL.request)) {
-            return ingredientStockTypeMap.values().stream().filter((stockType)-> !stockType.equals(ALL)).toList();
+            return ingredientStockTypeMap.values().stream().filter((stockType)-> !stockType.equals(ALL)).map(value -> value.request).toList();
         }
 
         return requestList.stream()
                 .map(
-                        request -> Optional.ofNullable(ingredientStockTypeMap.get(request))
+                        request -> Optional.ofNullable(ingredientStockTypeMap.get(request).request)
                                 .orElseThrow(() -> new CustomCommonException(CommonErrorCode.INVALID_PARAMETER, "stock-item 파라미터가 올바르지 않습니다.")))
                 .collect(Collectors.toList());
     }

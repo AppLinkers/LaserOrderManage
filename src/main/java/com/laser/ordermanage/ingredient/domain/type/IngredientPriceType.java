@@ -26,14 +26,14 @@ public enum IngredientPriceType {
             Collections.unmodifiableMap(Stream.of(values())
                     .collect(Collectors.toMap(IngredientPriceType::getRequest, Function.identity())));
 
-    public static List<IngredientPriceType> ofRequest(List<String> requestList) {
+    public static List<String> ofRequest(List<String> requestList) {
         if (requestList.contains(ALL.request)) {
-            return ingredientPriceTypeMap.values().stream().filter((priceType)-> !priceType.equals(ALL)).toList();
+            return ingredientPriceTypeMap.values().stream().filter((priceType)-> !priceType.equals(ALL)).map(value -> value.request).toList();
         }
 
         return requestList.stream()
                 .map(
-                        request -> Optional.ofNullable(ingredientPriceTypeMap.get(request))
+                        request -> Optional.ofNullable(ingredientPriceTypeMap.get(request).request)
                                 .orElseThrow(() -> new CustomCommonException(CommonErrorCode.INVALID_PARAMETER, "price-item 파라미터가 올바르지 않습니다.")))
                 .collect(Collectors.toList());
     }

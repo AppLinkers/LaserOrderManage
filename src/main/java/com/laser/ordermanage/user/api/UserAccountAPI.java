@@ -31,7 +31,6 @@ public class UserAccountAPI {
             @NotEmpty(message = "이름(상호)는 필수 입력값입니다.")
             @Pattern(regexp = "^.{0,20}$", message = "이름(상호)의 최대 글자수는 20자입니다.")
             @RequestParam(value = "name") String name,
-            @NotEmpty(message = "연락처는 필수 입력값입니다.")
             @Pattern(regexp = "^\\d{3}\\d{3,4}\\d{4}$", message = "연락처 형식에 맞지 않습니다.")
             @RequestParam(value = "phone") String phone) {
         return ResponseEntity.ok(userAccountService.getUserEmail(name, phone));

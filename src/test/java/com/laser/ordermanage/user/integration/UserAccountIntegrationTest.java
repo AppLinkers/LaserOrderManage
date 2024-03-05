@@ -301,6 +301,42 @@ public class UserAccountIntegrationTest extends IntegrationTest {
         assertError(UserErrorCode.NOT_FOUND_USER, resultActions);
     }
 
+    /**
+     * 사용자 이메일 알림 설정 변경 성공
+     */
+    @Test
+    public void 사용자_이메일_알림_설정_변경_성공() throws Exception {
+        // given
+        final String accessToken = jwtBuilder.accessJwtBuild();
+        final Boolean isActivate = Boolean.TRUE;
+
+        // when
+        ResultActions resultActions = requestChangeEmailNotification(accessToken, isActivate);
+
+        // then
+        resultActions
+                .andExpect(status().isOk());
+
+    }
+
+    /**
+     * 사용자 이메일 알림 설정 변경 실패
+     * - 실패 사유 : 요청 시, Header 에 있는 Authorization(Access Token) 에 해당하는 사용자가 존재하지 않음
+     */
+    @Test
+    public void 사용자_이메일_알림_설정_변경_실패_사용자_존재() throws Exception {
+        // given
+        final String accessTokenOfUnknownUser = jwtBuilder.accessJwtOfUnknownUserBuild();
+        final Boolean isActivate = Boolean.TRUE;
+
+        // when
+        ResultActions resultActions = requestChangeEmailNotification(accessTokenOfUnknownUser, isActivate);
+
+        // then
+        assertError(UserErrorCode.NOT_FOUND_USER, resultActions);
+
+    }
+
     private ResultActions requestGetUserEmail(String name, String phone) throws Exception {
         return mvc.perform(get("/user/email")
                         .param("name", name)
@@ -341,6 +377,13 @@ public class UserAccountIntegrationTest extends IntegrationTest {
         return mvc.perform(post("/user/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
+                .andDo(print());
+    }
+
+    private ResultActions requestChangeEmailNotification(String accessToken, Boolean isActivate) throws Exception {
+        return mvc.perform(patch("/user/email-notification")
+                        .header("Authorization", "Bearer " + accessToken)
+                        .param("is-activate", String.valueOf(isActivate)))
                 .andDo(print());
     }
 }

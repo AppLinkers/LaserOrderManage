@@ -276,7 +276,7 @@ public class UserAuthIntegrationTest extends IntegrationTest {
 
     /**
      * 사용자 Access Token 을 활용한 로그아웃 실패
-     * - 요청 시, Header 에 Authorization 정보 (Access Token) 를 추가하지 않음
+     * - 실패 사유 : 요청 시, Header 에 Authorization 정보 (Access Token) 를 추가하지 않음
      */
     @Test
     public void 로그아웃_실패_Header_Authorization_존재() throws Exception {
@@ -292,7 +292,7 @@ public class UserAuthIntegrationTest extends IntegrationTest {
 
     /**
      * 사용자 Access Token 을 활용한 로그아웃 실패
-     * - 요청 시, Header 에 Authorization 정보 (Refresh Token) 를 추가함
+     * - 실패 사유 : 요청 시, Header 에 Authorization 정보 (Refresh Token) 를 추가함
      */
     @Test
     public void 로그아웃_실패_Token_Type() throws Exception {

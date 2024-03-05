@@ -7,6 +7,7 @@ import com.laser.ordermanage.user.api.UserAccountAPI;
 import com.laser.ordermanage.user.dto.request.RequestChangePasswordRequest;
 import com.laser.ordermanage.user.dto.request.RequestChangePasswordRequestBuilder;
 import com.laser.ordermanage.user.dto.response.GetUserEmailResponse;
+import com.laser.ordermanage.user.exception.UserErrorCode;
 import com.laser.ordermanage.user.service.UserAccountService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -14,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -241,6 +243,77 @@ public class UserAccountAPIUnitTest extends APIUnitTest {
         assertErrorWithMessage(CommonErrorCode.INVALID_REQUEST_BODY_FIELDS, resultActions, "base URL 형식이 유효하지 않습니다.");
     }
 
+    /**
+     * 비밀번호 변경 - 이메일로 비밀번호 변경 링크 전송 성공
+     */
+    @Test
+    @WithMockUser
+    public void 비밀번호_변경_이메일로_비밀번호_변경_링크_전송_성공() throws Exception {
+        // given
+        final String accessToken = "access-token";
+        final String baseUrl = "https://www.kumoh.org/edit-password";
+
+        // stub
+        doNothing().when(userAccountService).requestChangePassword(any());
+
+        // when
+        final ResultActions resultActions = requestForRequestChangePassword(accessToken, baseUrl);
+
+        // then
+        resultActions.andExpect(status().isOk());
+    }
+
+    /**
+     * 비밀번호 변경 - 이메일로 비밀번호 변경 링크 전송 실패
+     * - 실패 사유 : 요청 시, Header 에 Authorization 정보 (Access Token) 를 추가하지 않음
+     */
+    @Test
+    public void 비밀번호_변경_이메일로_비밀번호_변경_링크_전송_실패_Header_Authorization_존재() throws Exception {
+        // given
+        final String baseUrl = "https://www.kumoh.org/edit-password";
+
+        // when
+        final ResultActions resultActions = requestForRequestChangePasswordWithoutAccessToken(baseUrl);
+
+        // then
+        assertError(UserErrorCode.MISSING_JWT, resultActions);
+    }
+
+    /**
+     * 비밀번호 변경 - 이메일로 비밀번호 변경 링크 전송 실패
+     * - 실패 사유 : base URL 필드 - null
+     */
+    @Test
+    @WithMockUser
+    public void 비밀번호_변경_이메일로_비밀번호_변경_링크_전송_실패_base_URL_필드_null() throws Exception{
+        // given
+        final String accessToken = "access-token";
+
+        // when
+        final ResultActions resultActions = requestForRequestChangePassword(accessToken, null);
+
+        // then
+        assertErrorWithMessage(CommonErrorCode.REQUIRED_PARAMETER, resultActions, "base-url");
+    }
+
+    /**
+     * 비밀번호 찾기 - 이메일로 비밀번호 변경 링크 전송 실패
+     * - 실패 사유 : base URL 필드 유효성
+     */
+    @Test
+    @WithMockUser
+    public void 비밀번호_변경_이메일로_비밀번호_변경_링크_전송_실패_base_URL_필드_유효성() throws Exception{
+        // given
+        final String accessToken = "access-token";
+        final String invalidBaseUrl = "www.invalid.url.com";
+
+        // when
+        final ResultActions resultActions = requestForRequestChangePassword(accessToken, invalidBaseUrl);
+
+        // then
+        assertErrorWithMessage(CommonErrorCode.INVALID_PARAMETER, resultActions, "base URL 형식이 유효하지 않습니다.");
+    }
+
     private ResultActions requestGetUserEmail(String name, String phone) throws Exception {
         return mvc.perform(get("/user/email")
                         .param("name", name)
@@ -252,6 +325,19 @@ public class UserAccountAPIUnitTest extends APIUnitTest {
         return mvc.perform(post("/user/password/email-link/without-auth")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
+                .andDo(print());
+    }
+
+    private ResultActions requestForRequestChangePassword(String accessToken, String baseUrl) throws Exception {
+        return mvc.perform(post("/user/password/email-link")
+                        .header("Authorization", "Bearer " + accessToken)
+                        .param("base-url", baseUrl))
+                .andDo(print());
+    }
+
+    private ResultActions requestForRequestChangePasswordWithoutAccessToken(String baseUrl) throws Exception {
+        return mvc.perform(post("/user/password/email-link")
+                        .param("base-url", baseUrl))
                 .andDo(print());
     }
 

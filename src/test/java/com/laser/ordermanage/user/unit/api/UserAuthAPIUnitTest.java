@@ -18,7 +18,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.web.context.WebApplicationContext;
@@ -321,16 +320,12 @@ public class UserAuthAPIUnitTest extends APIUnitTest {
 
     /**
      * 사용자 Access Token 을 활용한 로그아웃 실패
-     * - 실패 사유 : 인증 정보 (Authentication) 없음.
+     * - 실패 사유 : 요청 시, Header 에 Authorization 정보 (Access Token) 를 추가하지 않음
      */
     @Test
-    @WithAnonymousUser
-    public void 로그아웃_실패_Anonymous_User() throws Exception {
-        // given
-        String accessToken = "access-token";
-
+    public void 로그아웃_실패_Header_Authorization_존재() throws Exception {
         // when
-        final ResultActions resultActions = requestLogout(accessToken);
+        final ResultActions resultActions = requestLogoutWithoutAccessToken();
 
         // then
         assertError(UserErrorCode.MISSING_JWT, resultActions);
@@ -379,6 +374,11 @@ public class UserAuthAPIUnitTest extends APIUnitTest {
     private ResultActions requestLogout(String accessToken) throws Exception {
         return mvc.perform(post("/user/logout")
                         .header("Authorization", "Bearer " + accessToken))
+                .andDo(print());
+    }
+
+    private ResultActions requestLogoutWithoutAccessToken() throws Exception {
+        return mvc.perform(post("/user/logout"))
                 .andDo(print());
     }
 

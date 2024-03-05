@@ -58,7 +58,6 @@ public class UserAccountAPI {
      */
     @PostMapping("/password/email-link")
     public ResponseEntity<?> requestChangePassword(
-            @NotEmpty(message = "base URL 은 필수 입력값입니다.")
             @Pattern(regexp = "^((http(s?))\\:\\/\\/)([0-9a-zA-Z\\-]+\\.)+[a-zA-Z]{2,6}(\\:[0-9]+)?(\\/\\S*)?$", message = "base URL 형식이 유효하지 않습니다.")
             @RequestParam(value = "base-url") String baseUrl
     ) {

@@ -2,7 +2,9 @@ package com.laser.ordermanage.user.dto.request;
 
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
+import lombok.Builder;
 
+@Builder
 public record ChangePasswordRequest (
 
     @NotEmpty(message = "비밀번호는 필수 입력값입니다.")

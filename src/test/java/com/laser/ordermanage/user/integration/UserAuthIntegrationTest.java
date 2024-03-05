@@ -65,10 +65,8 @@ public class UserAuthIntegrationTest extends IntegrationTest {
         final ResultActions resultActions = requestLogin(request);
 
         // then
-        resultActions
-                .andExpect(status().is(UserErrorCode.INVALID_CREDENTIALS.getHttpStatus().value()))
-                .andExpect(jsonPath("errorCode").value(UserErrorCode.INVALID_CREDENTIALS.getCode()))
-                .andExpect(jsonPath("message").value(UserErrorCode.INVALID_CREDENTIALS.getMessage()));
+        assertError(UserErrorCode.INVALID_CREDENTIALS, resultActions);
+
     }
 
     /**
@@ -87,10 +85,8 @@ public class UserAuthIntegrationTest extends IntegrationTest {
         final ResultActions resultActions = requestLogin(request);
 
         // then
-        resultActions
-                .andExpect(status().is(UserErrorCode.INVALID_CREDENTIALS.getHttpStatus().value()))
-                .andExpect(jsonPath("errorCode").value(UserErrorCode.INVALID_CREDENTIALS.getCode()))
-                .andExpect(jsonPath("message").value(UserErrorCode.INVALID_CREDENTIALS.getMessage()));
+        assertError(UserErrorCode.INVALID_CREDENTIALS, resultActions);
+
     }
 
     /**
@@ -134,10 +130,8 @@ public class UserAuthIntegrationTest extends IntegrationTest {
         final ResultActions resultActions = requestReIssueWithOutRefreshToken();
 
         // then
-        resultActions
-                .andExpect(status().is(CommonErrorCode.REQUIRED_COOKIE.getHttpStatus().value()))
-                .andExpect(jsonPath("errorCode").value(CommonErrorCode.REQUIRED_COOKIE.getCode()))
-                .andExpect(jsonPath("message").value("refreshToken" + CommonErrorCode.REQUIRED_COOKIE.getMessage()));
+        assertErrorWithMessage(CommonErrorCode.REQUIRED_COOKIE, resultActions, "refreshToken");
+
     }
 
     /**
@@ -160,15 +154,13 @@ public class UserAuthIntegrationTest extends IntegrationTest {
         final ResultActions resultActions = requestReIssue(accessToken);
 
         // then
-        resultActions
-                .andExpect(status().is(UserErrorCode.INVALID_REFRESH_TOKEN.getHttpStatus().value()))
-                .andExpect(jsonPath("errorCode").value(UserErrorCode.INVALID_REFRESH_TOKEN.getCode()))
-                .andExpect(jsonPath("message").value(UserErrorCode.INVALID_REFRESH_TOKEN.getMessage()));
+        assertError(UserErrorCode.INVALID_REFRESH_TOKEN, resultActions);
+
     }
 
     /**
      * 사용자 Refresh Token 을 활용한 Access Token 재발급 실패
-     * - 실패 사유 : 요청 시, Cookie 에 유효하지 않은 JWT 정보를 추가함
+     * - 실패 사유 : 요청 시, Cookie 에 비어있는 JWT 정보를 추가함
      */
     @Test
     public void Access_Token_재발급_실패_Empty_Refresh_Token() throws Exception {
@@ -179,10 +171,7 @@ public class UserAuthIntegrationTest extends IntegrationTest {
         final ResultActions resultActions = requestReIssue(emptyRefreshToken);
 
         // then
-        resultActions
-                .andExpect(status().is(UserErrorCode.INVALID_REFRESH_TOKEN.getHttpStatus().value()))
-                .andExpect(jsonPath("errorCode").value(UserErrorCode.INVALID_REFRESH_TOKEN.getCode()))
-                .andExpect(jsonPath("message").value(UserErrorCode.INVALID_REFRESH_TOKEN.getMessage()));
+        assertError(UserErrorCode.INVALID_REFRESH_TOKEN, resultActions);
 
     }
 
@@ -199,10 +188,7 @@ public class UserAuthIntegrationTest extends IntegrationTest {
         final ResultActions resultActions = requestReIssue(invalidRefreshToken);
 
         // then
-        resultActions
-                .andExpect(status().is(UserErrorCode.INVALID_JWT.getHttpStatus().value()))
-                .andExpect(jsonPath("errorCode").value(UserErrorCode.INVALID_JWT.getCode()))
-                .andExpect(jsonPath("message").value(UserErrorCode.INVALID_JWT.getMessage()));
+        assertError(UserErrorCode.INVALID_JWT, resultActions);
 
     }
 
@@ -219,10 +205,7 @@ public class UserAuthIntegrationTest extends IntegrationTest {
         final ResultActions resultActions = requestReIssue(expiredRefreshToken);
 
         // then
-        resultActions
-                .andExpect(status().is(UserErrorCode.EXPIRED_JWT.getHttpStatus().value()))
-                .andExpect(jsonPath("errorCode").value(UserErrorCode.EXPIRED_JWT.getCode()))
-                .andExpect(jsonPath("message").value(UserErrorCode.EXPIRED_JWT.getMessage()));
+        assertError(UserErrorCode.EXPIRED_JWT, resultActions);
 
     }
 
@@ -239,10 +222,7 @@ public class UserAuthIntegrationTest extends IntegrationTest {
         final ResultActions resultActions = requestReIssue(unauthorizedRefreshToken);
 
         // then
-        resultActions
-                .andExpect(status().is(UserErrorCode.UNAUTHORIZED_JWT.getHttpStatus().value()))
-                .andExpect(jsonPath("errorCode").value(UserErrorCode.UNAUTHORIZED_JWT.getCode()))
-                .andExpect(jsonPath("message").value(UserErrorCode.UNAUTHORIZED_JWT.getMessage()));
+        assertError(UserErrorCode.UNAUTHORIZED_JWT, resultActions);
 
     }
 
@@ -266,10 +246,7 @@ public class UserAuthIntegrationTest extends IntegrationTest {
         final ResultActions resultActions = requestReIssueWithDifferentIpAddress(refreshToken);
 
         // then
-        resultActions
-                .andExpect(status().is(UserErrorCode.INVALID_REFRESH_TOKEN.getHttpStatus().value()))
-                .andExpect(jsonPath("errorCode").value(UserErrorCode.INVALID_REFRESH_TOKEN.getCode()))
-                .andExpect(jsonPath("message").value(UserErrorCode.INVALID_REFRESH_TOKEN.getMessage()));
+        assertError(UserErrorCode.INVALID_REFRESH_TOKEN, resultActions);
 
     }
 
@@ -309,10 +286,7 @@ public class UserAuthIntegrationTest extends IntegrationTest {
         final ResultActions resultActions = requestLogoutWithOutAccessToken();
 
         // then
-        resultActions
-                .andExpect(status().is(UserErrorCode.MISSING_JWT.getHttpStatus().value()))
-                .andExpect(jsonPath("errorCode").value(UserErrorCode.MISSING_JWT.getCode()))
-                .andExpect(jsonPath("message").value(UserErrorCode.MISSING_JWT.getMessage()));
+        assertError(UserErrorCode.MISSING_JWT, resultActions);
 
     }
 
@@ -329,10 +303,7 @@ public class UserAuthIntegrationTest extends IntegrationTest {
         final ResultActions resultActions = requestLogout(refreshToken);
 
         // then
-        resultActions
-                .andExpect(status().is(UserErrorCode.INVALID_ACCESS_TOKEN.getHttpStatus().value()))
-                .andExpect(jsonPath("errorCode").value(UserErrorCode.INVALID_ACCESS_TOKEN.getCode()))
-                .andExpect(jsonPath("message").value(UserErrorCode.INVALID_ACCESS_TOKEN.getMessage()));
+        assertError(UserErrorCode.INVALID_ACCESS_TOKEN, resultActions);
 
     }
 
@@ -349,10 +320,7 @@ public class UserAuthIntegrationTest extends IntegrationTest {
         final ResultActions resultActions = requestLogout(expiredAccessToken);
 
         // then
-        resultActions
-                .andExpect(status().is(UserErrorCode.EXPIRED_JWT.getHttpStatus().value()))
-                .andExpect(jsonPath("errorCode").value(UserErrorCode.EXPIRED_JWT.getCode()))
-                .andExpect(jsonPath("message").value(UserErrorCode.EXPIRED_JWT.getMessage()));
+        assertError(UserErrorCode.EXPIRED_JWT, resultActions);
 
     }
 
@@ -369,10 +337,7 @@ public class UserAuthIntegrationTest extends IntegrationTest {
         final ResultActions resultActions = requestLogout(unauthorizedAccessToken);
 
         // then
-        resultActions
-                .andExpect(status().is(UserErrorCode.UNAUTHORIZED_JWT.getHttpStatus().value()))
-                .andExpect(jsonPath("errorCode").value(UserErrorCode.UNAUTHORIZED_JWT.getCode()))
-                .andExpect(jsonPath("message").value(UserErrorCode.UNAUTHORIZED_JWT.getMessage()));
+        assertError(UserErrorCode.UNAUTHORIZED_JWT, resultActions);
 
     }
 

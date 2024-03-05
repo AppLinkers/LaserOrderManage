@@ -16,4 +16,11 @@ public class LoginRequestBuilder {
                 .build();
     }
 
+    public static LoginRequest newPasswordBuild() {
+        return LoginRequest.builder()
+                .email("user1@gmail.com")
+                .password("new-user1-password")
+                .build();
+    }
+
 }

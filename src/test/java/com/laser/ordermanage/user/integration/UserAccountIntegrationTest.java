@@ -39,7 +39,6 @@ public class UserAccountIntegrationTest extends IntegrationTest {
                 .andExpect(jsonPath("totalElements").value(2))
                 .andExpect(jsonPath("contents[0].name").value(customerName))
                 .andExpect(jsonPath("contents[1].name").value(customerName));
-
     }
 
     /**
@@ -61,7 +60,6 @@ public class UserAccountIntegrationTest extends IntegrationTest {
                 .andExpect(jsonPath("contents.size()").value(1))
                 .andExpect(jsonPath("totalElements").value(1))
                 .andExpect(jsonPath("contents[0].name").value(factoryName));
-
     }
 
     /**
@@ -82,7 +80,6 @@ public class UserAccountIntegrationTest extends IntegrationTest {
                 .andExpect(jsonPath("contents").isArray())
                 .andExpect(jsonPath("contents.size()").value(0))
                 .andExpect(jsonPath("totalElements").value(0));
-
     }
 
     /**
@@ -98,7 +95,6 @@ public class UserAccountIntegrationTest extends IntegrationTest {
 
         // then
         resultActions.andExpect(status().isOk());
-
     }
 
     /**
@@ -115,7 +111,6 @@ public class UserAccountIntegrationTest extends IntegrationTest {
 
         // then
         assertError(UserErrorCode.NOT_FOUND_USER, resultActions);
-
     }
 
     /**
@@ -132,7 +127,90 @@ public class UserAccountIntegrationTest extends IntegrationTest {
 
         // then
         resultActions.andExpect(status().isOk());
+    }
 
+    /**
+     * 비밀번호 변경 - 이메일로 비밀번호 변경 링크 전송 실패
+     * - 실패 사유 : 요청 시, Header 에 Authorization 정보 (Access Token) 를 추가하지 않음
+     */
+    @Test
+    public void 비밀번호_변경_이메일로_비밀번호_변경_링크_전송_실패_Header_Authorization_존재() throws Exception {
+        // given
+        final String baseUrl = "https://www.kumoh.org/edit-password";
+
+        // when
+        ResultActions resultActions = requestForRequestChangePasswordWithOutAccessToken(baseUrl);
+
+        // then
+        assertError(UserErrorCode.MISSING_JWT, resultActions);
+    }
+
+    /**
+     * 비밀번호 변경 - 이메일로 비밀번호 변경 링크 전송 실패
+     * - 실패 사유 : 요청 시, Header 에 있는 Authorization 정보 (Access Token) 에 권한 정보가 없음
+     */
+    @Test
+    public void 비밀번호_변경_이메일로_비밀번호_변경_링크_전송_실패_Unauthorized_Access_Token() throws Exception {
+        // given
+        final String unauthorizedAccessToken = jwtBuilder.unauthorizedAccessJwtBuild();
+        final String baseUrl = "https://www.kumoh.org/edit-password";
+
+        // when
+        ResultActions resultActions = requestForRequestChangePassword(unauthorizedAccessToken, baseUrl);
+
+        // then
+        assertError(UserErrorCode.UNAUTHORIZED_JWT, resultActions);
+    }
+
+    /**
+     * 비밀번호 변경 - 이메일로 비밀번호 변경 링크 전송 실패
+     * - 실패 사유 : 요청 시, Header 에 다른 타입의 Authorization 정보 (Refresh Token) 를 추가함
+     */
+    @Test
+    public void 비밀번호_변경_이메일로_비밀번호_변경_링크_전송_실패_Token_Type() throws Exception {
+        // given
+        final String refreshToken = jwtBuilder.refreshJwtBuild();
+        final String baseUrl = "https://www.kumoh.org/edit-password";
+
+        // when
+        final ResultActions resultActions = requestForRequestChangePassword(refreshToken, baseUrl);
+
+        // then
+        assertError(UserErrorCode.INVALID_ACCESS_TOKEN, resultActions);
+    }
+
+    /**
+     * 비밀번호 변경 - 이메일로 비밀번호 변경 링크 전송 실패
+     * - 실패 사유 : 요청 시, Header 에 있는 Authorization(Access Token) 의 유효기간 만료
+     */
+    @Test
+    public void 비밀번호_변경_이메일로_비밀번호_변경_링크_전송_실패_Expired_Access_Token() throws Exception {
+        // given
+        final String expiredAccessToken = jwtBuilder.expiredAccessJwtBuild();
+        final String baseUrl = "https://www.kumoh.org/edit-password";
+
+        // when
+        final ResultActions resultActions = requestForRequestChangePassword(expiredAccessToken, baseUrl);
+
+        // then
+        assertError(UserErrorCode.EXPIRED_JWT, resultActions);
+    }
+
+    /**
+     * 비밀번호 변경 - 이메일로 비밀번호 변경 링크 전송 실패
+     * - 실패 사유 : 요청 시, Header 에 있는 Authorization(JWT) 가 유효하지 않음
+     */
+    @Test
+    public void 비밀번호_변경_이메일로_비밀번호_변경_링크_전송_실패_Invalid_Token() throws Exception {
+        // given
+        final String invalidToken = jwtBuilder.invalidJwtBuild();
+        final String baseUrl = "https://www.kumoh.org/edit-password";
+
+        // when
+        final ResultActions resultActions = requestForRequestChangePassword(invalidToken, baseUrl);
+
+        // then
+        assertError(UserErrorCode.INVALID_JWT, resultActions);
     }
 
     /**
@@ -140,7 +218,7 @@ public class UserAccountIntegrationTest extends IntegrationTest {
      * - 실패 사유 : 요청 시, Header 에 있는 Authorization(Access Token) 에 해당하는 사용자가 존재하지 않음
      */
     @Test
-    public void 비밀번호_변경_이메일로_비밀번호_변경_링크_전송_실패_사용자_존재() throws Exception{
+    public void 비밀번호_변경_이메일로_비밀번호_변경_링크_전송_실패_사용자_존재() throws Exception {
         // given
         final String accessTokenOfUnknownUser = jwtBuilder.accessJwtOfUnknownUserBuild();
         final String baseUrl = "https://www.kumoh.org/edit-password";
@@ -150,7 +228,6 @@ public class UserAccountIntegrationTest extends IntegrationTest {
 
         // then
         assertError(UserErrorCode.NOT_FOUND_USER, resultActions);
-
     }
 
     /**
@@ -166,20 +243,19 @@ public class UserAccountIntegrationTest extends IntegrationTest {
                 .build();
 
         // given
-        ResultActions resultActions = requestChangePassword(changePasswordToken, request);
+        final ResultActions resultActions = requestChangePassword(changePasswordToken, request);
 
         // then
         resultActions.andExpect(status().isOk());
 
         // then - 새로운 비밀번호로 로그인
-        ResultActions resultActionsOfLogin = requestLogin(expectedLoginRequest);
+        final ResultActions resultActionsOfLogin = requestLogin(expectedLoginRequest);
         resultActionsOfLogin.andExpect(status().isOk());
-
     }
 
     /**
      * 비밀번호 변경 실패
-     * 실패 사유 : 요청 시, Header 에 Authorization 정보 (Change Password Token) 를 추가하지 않음
+     * - 실패 사유 : 요청 시, Header 에 Authorization 정보 (Change Password Token) 를 추가하지 않음
      */
     @Test
     public void 비밀번호_변경_실패_Header_Authorization_존재() throws Exception {
@@ -191,12 +267,28 @@ public class UserAccountIntegrationTest extends IntegrationTest {
 
         // then
         assertError(UserErrorCode.MISSING_JWT, resultActions);
-
     }
 
     /**
      * 비밀번호 변경 실패
-     * - 실패 사유 : 요청 시, Header 에 Authorization 정보 (Access Token) 를 추가함
+     * - 실패 사유 : Header 에 있는 Authorization 정보 (Change Password Token) 에 권한 정보가 없음
+     */
+    @Test
+    public void 비밀번호_변경_실패_Unauthorized_Change_Password_Token() throws Exception {
+        // given
+        final String unauthorizedChangePasswordToken = jwtBuilder.unauthorizedChangePasswordJwtBuild();
+        final ChangePasswordRequest request = ChangePasswordRequestBuilder.build();
+
+        // when
+        final ResultActions resultActions = requestChangePassword(unauthorizedChangePasswordToken, request);
+
+        // then
+        assertError(UserErrorCode.UNAUTHORIZED_JWT, resultActions);
+    }
+
+    /**
+     * 비밀번호 변경 실패
+     * - 실패 사유 : 요청 시, Header 에 다른 타입의 Authorization 정보 (Access Token) 를 추가함
      */
     @Test
     public void 비밀번호_변경_실패_Token_Type() throws Exception {
@@ -205,47 +297,10 @@ public class UserAccountIntegrationTest extends IntegrationTest {
         final ChangePasswordRequest request = ChangePasswordRequestBuilder.build();
 
         // when
-        ResultActions resultActions = requestChangePassword(accessToken, request);
+        final ResultActions resultActions = requestChangePassword(accessToken, request);
 
         // then
         assertError(UserErrorCode.INVALID_CHANGE_PASSWORD_TOKEN, resultActions);
-
-    }
-
-    /**
-     * 비밀번호 변경 실패
-     * - 실패 사유 : 요청 시, Header 에 비어있는 Authorization 정보를 추가함
-     */
-    @Test
-    public void 비밀번호_변경_실패_Empty_Change_Password_Token() throws Exception{
-        // given
-        final String emptyChangePasswordToken = "";
-        final ChangePasswordRequest request = ChangePasswordRequestBuilder.build();
-
-        // when
-        ResultActions resultActions = requestChangePassword(emptyChangePasswordToken, request);
-
-        // then
-        assertError(UserErrorCode.INVALID_JWT, resultActions);
-
-    }
-
-    /**
-     * 비밀번호 변경 실패
-     * - 실패 사유 : 요청 시, Header 에 유효하지 않은 Authorization 정보를 추가함
-     */
-    @Test
-    public void 비밀번호_변경_실패_Invalid_Change_Password_Token() throws Exception{
-        // given
-        final String invalidChangePasswordToken = jwtBuilder.invalidJwtBuild();
-        final ChangePasswordRequest request = ChangePasswordRequestBuilder.build();
-
-        // when
-        ResultActions resultActions = requestChangePassword(invalidChangePasswordToken, request);
-
-        // then
-        assertError(UserErrorCode.INVALID_JWT, resultActions);
-
     }
 
     /**
@@ -253,35 +308,33 @@ public class UserAccountIntegrationTest extends IntegrationTest {
      * - 실패 사유 : 요청 시, Header 에 있는 Authorization(Change Password Token) 의 유효기간 만료
      */
     @Test
-    public void 비밀번호_변경_실패_Expired_Change_Password_Token() throws Exception{
+    public void 비밀번호_변경_실패_Expired_Change_Password_Token() throws Exception {
         // given
         final String expiredChangePasswordToken = jwtBuilder.expiredChangePasswordJwtBuild();
         final ChangePasswordRequest request = ChangePasswordRequestBuilder.build();
 
         // when
-        ResultActions resultActions = requestChangePassword(expiredChangePasswordToken, request);
+        final ResultActions resultActions = requestChangePassword(expiredChangePasswordToken, request);
 
         // then
         assertError(UserErrorCode.EXPIRED_JWT, resultActions);
-
     }
 
     /**
      * 비밀번호 변경 실패
-     * - 실패 사유 : 요청 시, Header 에 있는 Authorization 에 권한 정보가 없음
+     * - 실패 사유 : 요청 시, Header 에 있는 Authorization(JWT) 가 유효하지 않음
      */
     @Test
-    public void 비밀번호_변경_실패_Unauthorized_Change_Password_Token() throws Exception{
+    public void 비밀번호_변경_실패_Invalid_Token() throws Exception {
         // given
-        final String unauthorizedChangePasswordToken = jwtBuilder.unauthorizedChangePasswordJwtBuild();
+        final String invalidChangePasswordToken = jwtBuilder.invalidJwtBuild();
         final ChangePasswordRequest request = ChangePasswordRequestBuilder.build();
 
         // when
-        ResultActions resultActions = requestChangePassword(unauthorizedChangePasswordToken, request);
+        final ResultActions resultActions = requestChangePassword(invalidChangePasswordToken, request);
 
         // then
-        assertError(UserErrorCode.UNAUTHORIZED_JWT, resultActions);
-
+        assertError(UserErrorCode.INVALID_JWT, resultActions);
     }
 
     /**
@@ -289,13 +342,13 @@ public class UserAccountIntegrationTest extends IntegrationTest {
      * - 실패 사유 : 요청 시, Header 에 있는 Authorization(Change Password Token) 에 해당하는 사용자가 존재하지 않음
      */
     @Test
-    public void 비밀번호_변경_실패_사용자_존재() throws Exception{
+    public void 비밀번호_변경_실패_사용자_존재() throws Exception {
         // given
         final String changePasswordTokenOfUnknownUser = jwtBuilder.changePasswordJwtOfUnknownUserBuild();
         final ChangePasswordRequest request = ChangePasswordRequestBuilder.build();
 
         // when
-        ResultActions resultActions = requestChangePassword(changePasswordTokenOfUnknownUser, request);
+        final ResultActions resultActions = requestChangePassword(changePasswordTokenOfUnknownUser, request);
 
         // then
         assertError(UserErrorCode.NOT_FOUND_USER, resultActions);
@@ -311,12 +364,94 @@ public class UserAccountIntegrationTest extends IntegrationTest {
         final Boolean isActivate = Boolean.TRUE;
 
         // when
-        ResultActions resultActions = requestChangeEmailNotification(accessToken, isActivate);
+        final ResultActions resultActions = requestChangeEmailNotification(accessToken, String.valueOf(isActivate));
 
         // then
-        resultActions
-                .andExpect(status().isOk());
+        resultActions.andExpect(status().isOk());
+    }
 
+    /**
+     * 사용자 이메일 알림 설정 변경 실패
+     * - 실패 사유 : 요청 시, Header 에 Authorization 정보 (Access Token) 를 추가하지 않음
+     */
+    @Test
+    public void 사용자_이메일_알림_설정_변경_실패_Header_Authorization_존재() throws Exception {
+        // given
+        final Boolean isActivate = Boolean.TRUE;
+
+        // when
+        final ResultActions resultActions = requestChangeEmailNotificationWithOutAccessToken(String.valueOf(isActivate));
+
+        // then
+        assertError(UserErrorCode.MISSING_JWT, resultActions);
+    }
+
+    /**
+     * 사용자 이메일 알림 설정 변경 실패
+     * - 실패 사유 : 요청 시, Header 에 있는 Authorization 정보 (Access Token) 에 권한 정보가 없음
+     */
+    @Test
+    public void 사용자_이메일_알림_설정_변경_실패_Unauthorized_Access_Token() throws Exception {
+        // given
+        final String unauthorizedAccessToken = jwtBuilder.unauthorizedAccessJwtBuild();
+        final Boolean isActivate = Boolean.TRUE;
+
+        // when
+        final ResultActions resultActions = requestForRequestChangePassword(unauthorizedAccessToken, String.valueOf(isActivate));
+
+        // then
+        assertError(UserErrorCode.UNAUTHORIZED_JWT, resultActions);
+    }
+
+    /**
+     * 사용자 이메일 알림 설정 변경 실패
+     * - 실패 사유 : 요청 시, Header 에 다른 타입의 Authorization 정보 (Refresh Token) 를 추가함
+     */
+    @Test
+    public void 사용자_이메일_알림_설정_변경_실패_Token_Type() throws Exception {
+        // given
+        final String refreshToken = jwtBuilder.refreshJwtBuild();
+        final Boolean isActivate = Boolean.TRUE;
+
+        // when
+        final ResultActions resultActions = requestForRequestChangePassword(refreshToken, String.valueOf(isActivate));
+
+        // then
+        assertError(UserErrorCode.INVALID_ACCESS_TOKEN, resultActions);
+    }
+
+    /**
+     * 사용자 이메일 알림 설정 변경 실패
+     * - 실패 사유 : 요청 시, Header 에 있는 Authorization(Access Token) 의 유효기간 만료
+     */
+    @Test
+    public void 사용자_이메일_알림_설정_변경_실패_Expired_Access_Token() throws Exception {
+        // given
+        final String expiredAccessToken = jwtBuilder.expiredAccessJwtBuild();
+        final Boolean isActivate = Boolean.TRUE;
+
+        // when
+        final ResultActions resultActions = requestForRequestChangePassword(expiredAccessToken, String.valueOf(isActivate));
+
+        // then
+        assertError(UserErrorCode.EXPIRED_JWT, resultActions);
+    }
+
+    /**
+     * 사용자 이메일 알림 설정 변경 실패
+     * - 실패 사유 : 요청 시, Header 에 있는 Authorization(JWT) 가 유효하지 않음
+     */
+    @Test
+    public void 사용자_이메일_알림_설정_변경_실패_Invalid_Token() throws Exception {
+        // given
+        final String invalidToken = jwtBuilder.invalidJwtBuild();
+        final Boolean isActivate = Boolean.TRUE;
+
+        // when
+        final ResultActions resultActions = requestForRequestChangePassword(invalidToken, String.valueOf(isActivate));
+
+        // then
+        assertError(UserErrorCode.INVALID_JWT, resultActions);
     }
 
     /**
@@ -330,11 +465,10 @@ public class UserAccountIntegrationTest extends IntegrationTest {
         final Boolean isActivate = Boolean.TRUE;
 
         // when
-        ResultActions resultActions = requestChangeEmailNotification(accessTokenOfUnknownUser, isActivate);
+        final ResultActions resultActions = requestChangeEmailNotification(accessTokenOfUnknownUser, String.valueOf(isActivate));
 
         // then
         assertError(UserErrorCode.NOT_FOUND_USER, resultActions);
-
     }
 
     private ResultActions requestGetUserEmail(String name, String phone) throws Exception {
@@ -344,7 +478,7 @@ public class UserAccountIntegrationTest extends IntegrationTest {
                 .andDo(print());
     }
 
-    private ResultActions requestForRequestChangePasswordWithOutAuthentication(RequestChangePasswordRequest request) throws Exception{
+    private ResultActions requestForRequestChangePasswordWithOutAuthentication(RequestChangePasswordRequest request) throws Exception {
         return mvc.perform(post("/user/password/email-link/without-auth")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
@@ -358,6 +492,12 @@ public class UserAccountIntegrationTest extends IntegrationTest {
                 .andDo(print());
     }
 
+    private ResultActions requestForRequestChangePasswordWithOutAccessToken(String baseUrl) throws Exception {
+        return mvc.perform(post("/user/password/email-link")
+                        .param("base-url", baseUrl))
+                .andDo(print());
+    }
+
     private ResultActions requestChangePassword(String changePasswordToken, ChangePasswordRequest request) throws Exception {
         return mvc.perform(patch("/user/password")
                         .header("Authorization", "Bearer " + changePasswordToken)
@@ -366,7 +506,7 @@ public class UserAccountIntegrationTest extends IntegrationTest {
                 .andDo(print());
     }
 
-    private ResultActions requestChangePasswordWithOutChangePasswordToken(ChangePasswordRequest request) throws Exception{
+    private ResultActions requestChangePasswordWithOutChangePasswordToken(ChangePasswordRequest request) throws Exception {
         return mvc.perform(patch("/user/password")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
@@ -380,10 +520,16 @@ public class UserAccountIntegrationTest extends IntegrationTest {
                 .andDo(print());
     }
 
-    private ResultActions requestChangeEmailNotification(String accessToken, Boolean isActivate) throws Exception {
+    private ResultActions requestChangeEmailNotification(String accessToken, String isActivate) throws Exception {
         return mvc.perform(patch("/user/email-notification")
                         .header("Authorization", "Bearer " + accessToken)
-                        .param("is-activate", String.valueOf(isActivate)))
+                        .param("is-activate", isActivate))
+                .andDo(print());
+    }
+
+    private ResultActions requestChangeEmailNotificationWithOutAccessToken(String isActivate) throws Exception {
+        return mvc.perform(patch("/user/email-notification")
+                        .param("is-activate", isActivate))
                 .andDo(print());
     }
 }

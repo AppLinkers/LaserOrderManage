@@ -60,6 +60,7 @@ public class JwtBuilder {
     public String accessJwtOfUnknownUserBuild() {
         return jwtProvider.generateJWT("unknwon-user@gmail.com", Role.ROLE_CUSTOMER.name(), JwtProvider.TYPE_ACCESS, new Date(), ExpireTime.ACCESS_TOKEN_EXPIRE_TIME);
     }
+
     public String changePasswordJwtOfUnknownUserBuild() {
         return jwtProvider.generateJWT("unknwon-user@gmail.com", Role.ROLE_CUSTOMER.name(), JwtProvider.TYPE_CHANGE_PASSWORD, new Date(), ExpireTime.CHANGE_PASSWORD_TOKEN_EXPIRE_TIME);
     }

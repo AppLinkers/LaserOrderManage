@@ -7,4 +7,15 @@ public class ChangePasswordRequestBuilder {
                 .password("new-user1-password")
                 .build();
     }
+
+    public static ChangePasswordRequest nullPasswordBuild() {
+        return ChangePasswordRequest.builder()
+                .build();
+    }
+
+    public static ChangePasswordRequest invalidPasswordBuild() {
+        return ChangePasswordRequest.builder()
+                .password("invalid-password")
+                .build();
+    }
 }

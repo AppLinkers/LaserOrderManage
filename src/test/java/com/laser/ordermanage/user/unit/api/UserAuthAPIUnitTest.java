@@ -70,14 +70,12 @@ public class UserAuthAPIUnitTest extends APIUnitTest {
 
     /**
      * 사용자 로그인 실패
-     * - 실패 사유 : 이메일 필드 - null
+     * - 실패 사유 : 이메일 필드 null
      */
     @Test
     public void 로그인_실패_이메일_필드_null() throws Exception {
         // given
-        final LoginRequest request = LoginRequest.builder()
-                .password("user1-password")
-                .build();
+        final LoginRequest request = LoginRequestBuilder.nullEmailBuild();
 
         // when
         final ResultActions resultActions = requestLogin(request);
@@ -93,10 +91,7 @@ public class UserAuthAPIUnitTest extends APIUnitTest {
     @Test
     public void 로그인_실패_이메일_필드_유효성() throws Exception {
         // given
-        final LoginRequest request = LoginRequest.builder()
-                .email("invalid-email")
-                .password("user1-password")
-                .build();
+        final LoginRequest request = LoginRequestBuilder.invalidEmailBuild();
 
         // when
         final ResultActions resultActions = requestLogin(request);
@@ -107,14 +102,12 @@ public class UserAuthAPIUnitTest extends APIUnitTest {
 
     /**
      * 사용자 로그인 실패
-     * - 실패 사유 : 비밀번호 필드 - null
+     * - 실패 사유 : 비밀번호 필드 null
      */
     @Test
     public void 로그인_실패_비밀번호_필드_null() throws Exception {
         // given
-        final LoginRequest request = LoginRequest.builder()
-                .email("user1@gmail.com")
-                .build();
+        final LoginRequest request = LoginRequestBuilder.nullPasswordBuild();
 
         // when
         final ResultActions resultActions = requestLogin(request);
@@ -130,10 +123,7 @@ public class UserAuthAPIUnitTest extends APIUnitTest {
     @Test
     public void 로그인_실패_비밀번호_필드_유효성() throws Exception {
         // given
-        final LoginRequest request = LoginRequest.builder()
-                .email("user1@gmail.com")
-                .password("invalid-password")
-                .build();
+        final LoginRequest request = LoginRequestBuilder.invalidPasswordBuild();
 
         // when
         final ResultActions resultActions = requestLogin(request);
@@ -190,78 +180,6 @@ public class UserAuthAPIUnitTest extends APIUnitTest {
 
     /**
      * 사용자 Refresh Token 을 활용한 Access Token 재발급 실패
-     * - 실패 사유 : 요청 시, Cookie 에 JWT 정보를 추가하지 않음
-     */
-    @Test
-    public void Access_Token_재발급_실패_Cookie_존재() throws Exception {
-        // given
-
-        // when
-        final ResultActions resultActions = requestReIssueWithOutRefreshToken();
-
-        // then
-        assertErrorWithMessage(CommonErrorCode.REQUIRED_COOKIE, resultActions, "refreshToken");
-    }
-
-    /**
-     * 사용자 Refresh Token 을 활용한 Access Token 재발급 실패
-     * - 실패 사유 : 유효하지 않은 JWT 을 사용함.
-     */
-    @Test
-    public void Access_Token_재발급_실패_Invalid_JWT_Token() throws Exception {
-        // given
-        final String invalidJwtToken = "invalid-jwt-token";
-
-        // stub
-        when(userAuthService.reissue(any(), any())).thenThrow(new CustomCommonException(UserErrorCode.INVALID_JWT));
-
-        // when
-        final ResultActions resultActions = requestReIssue(invalidJwtToken);
-
-        // then
-        assertError(UserErrorCode.INVALID_JWT, resultActions);
-    }
-
-    /**
-     * 사용자 Refresh Token 을 활용한 Access Token 재발급 실패
-     * - 실패 사유 : 요청 시, Cookie 에 있는  JWT 의 유효기간 만료
-     */
-    @Test
-    public void Access_Token_재발급_실패_Expired_JWT() throws Exception {
-        // given
-        final String expiredJwtToken = "expired-jwt-token";
-
-        // stub
-        when(userAuthService.reissue(any(), any())).thenThrow(new CustomCommonException(UserErrorCode.EXPIRED_JWT));
-
-        // when
-        final ResultActions resultActions = requestReIssue(expiredJwtToken);
-
-        // then
-        assertError(UserErrorCode.EXPIRED_JWT, resultActions);
-    }
-
-    /**
-     * 사용자 Refresh Token 을 활용한 Access Token 재발급 실패
-     * - 실패 사유 : 요청 시, Cookie 에 있는 JWT 에 권한 정보가 없음
-     */
-    @Test
-    public void Access_Token_재발급_실패_Unauthorized_JWT() throws Exception {
-        // given
-        final String unauthorizedJwtToken = "unauthorized-jwt-token";
-
-        // stub
-        when(userAuthService.reissue(any(), any())).thenThrow(new CustomCommonException(UserErrorCode.UNAUTHORIZED_JWT));
-
-        // when
-        final ResultActions resultActions = requestReIssue(unauthorizedJwtToken);
-
-        // then
-        assertError(UserErrorCode.UNAUTHORIZED_JWT, resultActions);
-    }
-
-    /**
-     * 사용자 Refresh Token 을 활용한 Access Token 재발급 실패
      * - 실패 사유 : 유효하지 않은 Refresh Token 을 사용함.
      */
     @Test
@@ -277,25 +195,6 @@ public class UserAuthAPIUnitTest extends APIUnitTest {
 
         // then
         assertError(UserErrorCode.INVALID_REFRESH_TOKEN, resultActions);
-    }
-
-    /**
-     * 사용자 Refresh Token 을 활용한 Access Token 재발급 실패
-     * - 실패 사유 : 지원되지 않는 Refresh Token 을 사용함.
-     */
-    @Test
-    public void Access_Token_재발급_실패_Unsupported_Refresh_Token() throws Exception {
-        // given
-        final String unsupportedRefreshToken = "unsupported-refreshToken";
-
-        // stub
-        when(userAuthService.reissue(any(), any())).thenThrow(new CustomCommonException(UserErrorCode.UNSUPPORTED_JWT));
-
-        // when
-        final ResultActions resultActions = requestReIssue(unsupportedRefreshToken);
-
-        // then
-        assertError(UserErrorCode.UNSUPPORTED_JWT, resultActions);
     }
 
     /**
@@ -316,19 +215,6 @@ public class UserAuthAPIUnitTest extends APIUnitTest {
         // then
         resultActions
                 .andExpect(status().isOk());
-    }
-
-    /**
-     * 사용자 Access Token 을 활용한 로그아웃 실패
-     * - 실패 사유 : 요청 시, Header 에 Authorization 정보 (Access Token) 를 추가하지 않음
-     */
-    @Test
-    public void 로그아웃_실패_Header_Authorization_존재() throws Exception {
-        // when
-        final ResultActions resultActions = requestLogoutWithoutAccessToken();
-
-        // then
-        assertError(UserErrorCode.MISSING_JWT, resultActions);
     }
 
     /**
@@ -366,19 +252,9 @@ public class UserAuthAPIUnitTest extends APIUnitTest {
                 .andDo(print());
     }
 
-    private ResultActions requestReIssueWithOutRefreshToken() throws Exception {
-        return mvc.perform(post("/user/re-issue"))
-                .andDo(print());
-    }
-
     private ResultActions requestLogout(String accessToken) throws Exception {
         return mvc.perform(post("/user/logout")
                         .header("Authorization", "Bearer " + accessToken))
-                .andDo(print());
-    }
-
-    private ResultActions requestLogoutWithoutAccessToken() throws Exception {
-        return mvc.perform(post("/user/logout"))
                 .andDo(print());
     }
 

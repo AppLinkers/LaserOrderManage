@@ -17,6 +17,12 @@ import static org.springframework.security.test.web.servlet.setup.SecurityMockMv
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+/**
+ * API Unit Test
+ * 1. 테스트 성공
+ * 2. 요청 데이터(필드 및 파라미터) 검증
+ * 3. 해당 API 의 서비스 코드에서 발생하는 예외 검증
+ */
 @ActiveProfiles("test")
 @ContextConfiguration(classes = TestWebSecurityConfig.class)
 @Import({JwtAccessDeniedHandler.class, JwtAuthenticationEntryPoint.class})

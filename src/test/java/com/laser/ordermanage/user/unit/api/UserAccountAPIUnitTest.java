@@ -2,8 +2,11 @@ package com.laser.ordermanage.user.unit.api;
 
 import com.laser.ordermanage.common.APIUnitTest;
 import com.laser.ordermanage.common.exception.CommonErrorCode;
+import com.laser.ordermanage.common.exception.CustomCommonException;
 import com.laser.ordermanage.common.paging.ListResponse;
 import com.laser.ordermanage.user.api.UserAccountAPI;
+import com.laser.ordermanage.user.dto.request.ChangePasswordRequest;
+import com.laser.ordermanage.user.dto.request.ChangePasswordRequestBuilder;
 import com.laser.ordermanage.user.dto.request.RequestChangePasswordRequest;
 import com.laser.ordermanage.user.dto.request.RequestChangePasswordRequestBuilder;
 import com.laser.ordermanage.user.dto.response.GetUserEmailResponse;
@@ -22,10 +25,8 @@ import org.springframework.web.context.WebApplicationContext;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -80,10 +81,10 @@ public class UserAccountAPIUnitTest extends APIUnitTest {
 
     /**
      * 이메일 찾기 실패
-     * - 실패 사유 : 이름 필드 - null
+     * - 실패 사유 : 이름 파라미터 null
      */
     @Test
-    public void 이메일_찾기_실패_이름_필드_null() throws Exception{
+    public void 이메일_찾기_실패_이름_파라미터_null() throws Exception {
         // given
         final String phone = "01011111111";
 
@@ -96,10 +97,10 @@ public class UserAccountAPIUnitTest extends APIUnitTest {
 
     /**
      * 이메일 찾기 실패
-     * - 실패 사유 : 이름 필드 - empty
+     * - 실패 사유 : 이름 파라미터 - empty
      */
     @Test
-    public void 이메일_찾기_실패_이름_필드_empty() throws Exception{
+    public void 이메일_찾기_실패_이름_파라미터_empty() throws Exception {
         // given
         final String emptyName = "";
         final String phone = "01011111111";
@@ -113,10 +114,10 @@ public class UserAccountAPIUnitTest extends APIUnitTest {
 
     /**
      * 이메일 찾기 실패
-     * - 실패 사유 : 이름 필드 유효성
+     * - 실패 사유 : 이름 파라미터 유효성
      */
     @Test
-    public void 이메일_찾기_실패_이름_필드_유효성() throws Exception{
+    public void 이메일_찾기_실패_이름_파라미터_유효성() throws Exception {
         // given
         final String invalidName = "너어어어어어어어어무우우우우우우우우긴이름";
         final String phone = "01011111111";
@@ -130,10 +131,10 @@ public class UserAccountAPIUnitTest extends APIUnitTest {
 
     /**
      * 이메일 찾기 실패
-     * - 실패 사유 : 휴대폰 번호 필드 - null
+     * - 실패 사유 : 휴대폰 번호 파라미터 null
      */
     @Test
-    public void 이메일_찾기_실패_휴대폰_번호_필드_null() throws Exception {
+    public void 이메일_찾기_실패_휴대폰_번호_파라미터_null() throws Exception {
         // given
         final String name = "사용자 이름 1";
 
@@ -146,16 +147,16 @@ public class UserAccountAPIUnitTest extends APIUnitTest {
 
     /**
      * 이메일 찾기 실패
-     * - 실패 사유 : 휴대폰 번호 필드 유효성
+     * - 실패 사유 : 휴대폰 번호 파라미터 유효성
      */
     @Test
-    public void 이메일_찾기_실패_휴대폰_번호_필드_유효성() throws Exception{
+    public void 이메일_찾기_실패_휴대폰_번호_파라미터_유효성() throws Exception {
         // given
         final String name = "사용자 이름 1";
-        final String emptyPhone = "";
+        final String invalidPhone = "010-1111-1111";
 
         // when
-        final ResultActions resultActions = requestGetUserEmail(name, emptyPhone);
+        final ResultActions resultActions = requestGetUserEmail(name, invalidPhone);
 
         // then
         assertErrorWithMessage(CommonErrorCode.INVALID_PARAMETER, resultActions, "연락처 형식에 맞지 않습니다.");
@@ -181,10 +182,10 @@ public class UserAccountAPIUnitTest extends APIUnitTest {
 
     /**
      * 비밀번호 찾기 - 이메일로 비밀번호 변경 링크 전송 실패
-     * - 실패 사유 : 이메일 필드 - null
+     * - 실패 사유 : 이메일 필드 null
      */
     @Test
-    public void 비밀번호_찾기_이메일로_비밀번호_변경_링크_전송_실패_이메일_필드_null() throws Exception{
+    public void 비밀번호_찾기_이메일로_비밀번호_변경_링크_전송_실패_이메일_필드_null() throws Exception {
         // given
         final RequestChangePasswordRequest request = RequestChangePasswordRequestBuilder.nullEmailBuild();
 
@@ -200,7 +201,7 @@ public class UserAccountAPIUnitTest extends APIUnitTest {
      * - 실패 사유 : 이메일 필드 유효성
      */
     @Test
-    public void 비밀번호_찾기_이메일로_비밀번호_변경_링크_전송_실패_이메일_필드_유효성() throws Exception{
+    public void 비밀번호_찾기_이메일로_비밀번호_변경_링크_전송_실패_이메일_필드_유효성() throws Exception {
         // given
         final RequestChangePasswordRequest request = RequestChangePasswordRequestBuilder.invalidEmailBuild();
 
@@ -213,10 +214,10 @@ public class UserAccountAPIUnitTest extends APIUnitTest {
 
     /**
      * 비밀번호 찾기 - 이메일로 비밀번호 변경 링크 전송 실패
-     * - 실패 사유 : base URL 필드 - null
+     * - 실패 사유 : base URL 필드 null
      */
     @Test
-    public void 비밀번호_찾기_이메일로_비밀번호_변경_링크_전송_실패_base_URL_필드_null() throws Exception{
+    public void 비밀번호_찾기_이메일로_비밀번호_변경_링크_전송_실패_base_URL_필드_null() throws Exception {
         // given
         final RequestChangePasswordRequest request = RequestChangePasswordRequestBuilder.nullBaseURLBuild();
 
@@ -232,7 +233,7 @@ public class UserAccountAPIUnitTest extends APIUnitTest {
      * - 실패 사유 : base URL 필드 유효성
      */
     @Test
-    public void 비밀번호_찾기_이메일로_비밀번호_변경_링크_전송_실패_base_URL_필드_유효성() throws Exception{
+    public void 비밀번호_찾기_이메일로_비밀번호_변경_링크_전송_실패_base_URL_필드_유효성() throws Exception {
         // given
         final RequestChangePasswordRequest request = RequestChangePasswordRequestBuilder.invalidBaseURLBuild();
 
@@ -265,27 +266,11 @@ public class UserAccountAPIUnitTest extends APIUnitTest {
 
     /**
      * 비밀번호 변경 - 이메일로 비밀번호 변경 링크 전송 실패
-     * - 실패 사유 : 요청 시, Header 에 Authorization 정보 (Access Token) 를 추가하지 않음
-     */
-    @Test
-    public void 비밀번호_변경_이메일로_비밀번호_변경_링크_전송_실패_Header_Authorization_존재() throws Exception {
-        // given
-        final String baseUrl = "https://www.kumoh.org/edit-password";
-
-        // when
-        final ResultActions resultActions = requestForRequestChangePasswordWithoutAccessToken(baseUrl);
-
-        // then
-        assertError(UserErrorCode.MISSING_JWT, resultActions);
-    }
-
-    /**
-     * 비밀번호 변경 - 이메일로 비밀번호 변경 링크 전송 실패
-     * - 실패 사유 : base URL 필드 - null
+     * - 실패 사유 : base URL 파라미터 null
      */
     @Test
     @WithMockUser
-    public void 비밀번호_변경_이메일로_비밀번호_변경_링크_전송_실패_base_URL_필드_null() throws Exception{
+    public void 비밀번호_변경_이메일로_비밀번호_변경_링크_전송_실패_base_URL_파라미터_null() throws Exception {
         // given
         final String accessToken = "access-token";
 
@@ -298,11 +283,11 @@ public class UserAccountAPIUnitTest extends APIUnitTest {
 
     /**
      * 비밀번호 찾기 - 이메일로 비밀번호 변경 링크 전송 실패
-     * - 실패 사유 : base URL 필드 유효성
+     * - 실패 사유 : base URL 파라미터 유효성
      */
     @Test
     @WithMockUser
-    public void 비밀번호_변경_이메일로_비밀번호_변경_링크_전송_실패_base_URL_필드_유효성() throws Exception{
+    public void 비밀번호_변경_이메일로_비밀번호_변경_링크_전송_실패_base_URL_파라미터_유효성() throws Exception {
         // given
         final String accessToken = "access-token";
         final String invalidBaseUrl = "www.invalid.url.com";
@@ -314,6 +299,139 @@ public class UserAccountAPIUnitTest extends APIUnitTest {
         assertErrorWithMessage(CommonErrorCode.INVALID_PARAMETER, resultActions, "base URL 형식이 유효하지 않습니다.");
     }
 
+    /**
+     * 비밀번호 변경 성공
+     */
+    @Test
+    @WithMockUser
+    public void 비밀번호_변경_성공() throws Exception {
+        // given
+        final String changePasswordToken = "change-password-token";
+        final ChangePasswordRequest request = ChangePasswordRequestBuilder.build();
+
+        // stub
+        doNothing().when(userAccountService).changePassword(any(), any());
+
+        // when
+        final ResultActions resultActions = requestChangePassword(changePasswordToken, request);
+
+        // then
+        resultActions.andExpect(status().isOk());
+    }
+
+    /**
+     * 비밀번호 변경 실패
+     * 실패 사유 : 비밀번호 필드 null
+     */
+    @Test
+    @WithMockUser
+    public void 비밀번호_변경_실패_비밀번호_필드_null() throws Exception {
+        // given
+        final String changePasswordToken = "change-password-token";
+        final ChangePasswordRequest request = ChangePasswordRequestBuilder.nullPasswordBuild();
+
+        // when
+        final ResultActions resultActions = requestChangePassword(changePasswordToken, request);
+
+        // then
+        assertErrorWithMessage(CommonErrorCode.INVALID_REQUEST_BODY_FIELDS, resultActions, "비밀번호는 필수 입력값입니다.");
+    }
+
+    /**
+     * 비밀번호 변경 실패
+     * 실패 사유 : 비밀번호 필드 유효성
+     */
+    @Test
+    @WithMockUser
+    public void 비밀번호_변경_실패_비밀번호_필드_유효성() throws Exception {
+        // given
+        final String changePasswordToken = "change-password-token";
+        final ChangePasswordRequest request = ChangePasswordRequestBuilder.invalidPasswordBuild();
+
+        // when
+        final ResultActions resultActions = requestChangePassword(changePasswordToken, request);
+
+        // then
+        assertErrorWithMessage(CommonErrorCode.INVALID_REQUEST_BODY_FIELDS, resultActions, "비밀번호는 8 자리 이상 영문, 숫자, 특수문자를 사용하세요.");
+    }
+
+    /**
+     * 비밀번호 변경 실패
+     * 실패 사유 : 유효하지 않은 Change Password Token 을 사용함
+     */
+    @Test
+    @WithMockUser
+    public void 비밀번호_변경_실패_Invalid_Change_Password_Token() throws Exception {
+        // given
+        final String invalidChangePasswordToken = "invalid-change-password-token";
+        final ChangePasswordRequest request = ChangePasswordRequestBuilder.build();
+
+        // stub
+        doThrow(new CustomCommonException(UserErrorCode.INVALID_CHANGE_PASSWORD_TOKEN)).when(userAccountService).changePassword(any(), any());
+
+        // when
+        final ResultActions resultActions = requestChangePassword(invalidChangePasswordToken, request);
+
+        // then
+        assertError(UserErrorCode.INVALID_CHANGE_PASSWORD_TOKEN, resultActions);
+    }
+
+    /**
+     * 사용자 이메일 알림 설정 변경 성공
+     */
+    @Test
+    @WithMockUser
+    public void 사용자_이메일_알림_설정_변경_성공() throws Exception {
+        // given
+        final String accessToken = "access-token";
+        final Boolean isActivate = Boolean.TRUE;
+
+        // stub
+        doNothing().when(userAccountService).changeEmailNotification(any(), any());
+
+        // when
+        final ResultActions resultActions = requestChangeEmailNotification(accessToken, String.valueOf(isActivate));
+
+        // then
+        resultActions.andExpect(status().isOk());
+    }
+
+    /**
+     * 사용자 이메일 알림 설정 변경 실패
+     * - 실패 사유 : is-activate 파라미터 empty
+     */
+    @Test
+    @WithMockUser
+    public void 사용자_이메일_알림_설정_변경_실패_is_activate_파라미터_empty() throws Exception {
+        // given
+        final String accessToken = "access-token";
+        final String isActivate = "";
+
+        // when
+        final ResultActions resultActions = requestChangeEmailNotification(accessToken, isActivate);
+
+        // then
+        assertErrorWithMessage(CommonErrorCode.REQUIRED_PARAMETER, resultActions, "is-activate");
+    }
+
+    /**
+     * 사용자 이메일 알림 설정 변경 실패
+     * - 실패 사유 : is-activate 파라미터 type 불일치
+     */
+    @Test
+    @WithMockUser
+    public void 사용자_이메일_알림_설정_변경_실패_is_activate_파라미터_type() throws Exception {
+        // given
+        final String accessToken = "access-token";
+        final String invalidTypeIsActivate = "string";
+
+        // when
+        final ResultActions resultActions = requestChangeEmailNotification(accessToken, invalidTypeIsActivate);
+
+        // then
+        assertErrorWithMessage(CommonErrorCode.MISMATCH_PARAMETER_TYPE, resultActions, "is-activate");
+    }
+
     private ResultActions requestGetUserEmail(String name, String phone) throws Exception {
         return mvc.perform(get("/user/email")
                         .param("name", name)
@@ -321,7 +439,7 @@ public class UserAccountAPIUnitTest extends APIUnitTest {
                 .andDo(print());
     }
 
-    private ResultActions requestForRequestChangePasswordWithOutAuthentication(RequestChangePasswordRequest request) throws Exception{
+    private ResultActions requestForRequestChangePasswordWithOutAuthentication(RequestChangePasswordRequest request) throws Exception {
         return mvc.perform(post("/user/password/email-link/without-auth")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
@@ -335,10 +453,18 @@ public class UserAccountAPIUnitTest extends APIUnitTest {
                 .andDo(print());
     }
 
-    private ResultActions requestForRequestChangePasswordWithoutAccessToken(String baseUrl) throws Exception {
-        return mvc.perform(post("/user/password/email-link")
-                        .param("base-url", baseUrl))
+    private ResultActions requestChangePassword(String changePasswordToken, ChangePasswordRequest request) throws Exception {
+        return mvc.perform(patch("/user/password")
+                        .header("Authorization", "Bearer " + changePasswordToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
                 .andDo(print());
     }
 
+    private ResultActions requestChangeEmailNotification(String accessToken, String isActivate) throws Exception {
+        return mvc.perform(patch("/user/email-notification")
+                        .header("Authorization", "Bearer " + accessToken)
+                        .param("is-activate", isActivate))
+                .andDo(print());
+    }
 }

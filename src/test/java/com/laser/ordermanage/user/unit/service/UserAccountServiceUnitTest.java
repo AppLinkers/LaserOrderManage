@@ -3,9 +3,15 @@ package com.laser.ordermanage.user.unit.service;
 import com.laser.ordermanage.common.ServiceUnitTest;
 import com.laser.ordermanage.common.cache.redis.repository.ChangePasswordTokenRedisRepository;
 import com.laser.ordermanage.common.email.EmailService;
+import com.laser.ordermanage.common.exception.CustomCommonException;
 import com.laser.ordermanage.common.paging.ListResponse;
 import com.laser.ordermanage.common.security.jwt.component.JwtProvider;
+import com.laser.ordermanage.user.domain.UserEntity;
+import com.laser.ordermanage.user.domain.UserEntityBuilder;
+import com.laser.ordermanage.user.dto.request.RequestChangePasswordRequest;
+import com.laser.ordermanage.user.dto.request.RequestChangePasswordRequestBuilder;
 import com.laser.ordermanage.user.dto.response.GetUserEmailResponse;
+import com.laser.ordermanage.user.exception.UserErrorCode;
 import com.laser.ordermanage.user.repository.UserEntityRepository;
 import com.laser.ordermanage.user.service.UserAccountService;
 import com.laser.ordermanage.user.service.UserAuthService;
@@ -64,5 +70,41 @@ public class UserAccountServiceUnitTest extends ServiceUnitTest {
         Assertions.assertThat(actualUserEmailResponseListResponse.totalElements()).isEqualTo(1);
         Assertions.assertThat(actualUserEmailResponseListResponse.contents().size()).isEqualTo(1);
         Assertions.assertThat(actualUserEmailResponseListResponse.contents().get(0)).isSameAs(expectedGetUserEmailResponse);
+    }
+
+    /**
+     * 비밀번호 변경 링크 요청 성공
+     */
+    @Test
+    public void requestChangePassword_성공() {
+        // given
+        final RequestChangePasswordRequest request = RequestChangePasswordRequestBuilder.build();
+        final UserEntity user = UserEntityBuilder.build();
+        final String changePasswordToken = "change-password-token";
+
+        // stub
+        when(userAuthService.getUserByEmail(request.email())).thenReturn(user);
+        when(jwtProvider.generateChangePasswordToken(user)).thenReturn(changePasswordToken);
+
+        // when & then
+        userAccountService.requestChangePassword(request);
+    }
+
+    /**
+     * 비밀번호 변경 링크 요청 실패
+     * - 실패 사유 : 존재하지 않는 사용자
+     */
+    @Test
+    public void requestChangePassword_실패_NOT_FOUND_USER() {
+        // given
+        final RequestChangePasswordRequest request = RequestChangePasswordRequestBuilder.unknownUserBuild();
+
+        // stub
+        when(userAuthService.getUserByEmail(request.email())).thenThrow(new CustomCommonException(UserErrorCode.NOT_FOUND_USER));
+
+        // when & then
+        Assertions.assertThatThrownBy(() -> userAccountService.requestChangePassword(request))
+                .isInstanceOf(CustomCommonException.class)
+                .hasMessage(UserErrorCode.NOT_FOUND_USER.getMessage());
     }
 }

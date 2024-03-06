@@ -281,7 +281,7 @@ public class UserAuthServiceUnitTest extends ServiceUnitTest {
         httpServletRequest.setAttribute("resolvedToken", accessToken);
 
         final Collection<? extends GrantedAuthority> authorities = Collections.singleton(new SimpleGrantedAuthority(Role.ROLE_CUSTOMER.name()));
-        final Authentication authentication = new UsernamePasswordAuthenticationToken("username", "", authorities);
+        final Authentication authentication = new UsernamePasswordAuthenticationToken("user1@gmail.com", "", authorities);
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         // stub

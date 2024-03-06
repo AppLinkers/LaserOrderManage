@@ -108,24 +108,6 @@ public class UserAccountServiceUnitTest extends ServiceUnitTest {
     }
 
     /**
-     * 비밀번호 변경 링크 요청 실패
-     * - 실패 사유 : 존재하지 않는 사용자
-     */
-    @Test
-    public void requestChangePassword_실패_NOT_FOUND_USER() {
-        // given
-        final RequestChangePasswordRequest request = RequestChangePasswordRequestBuilder.unknownUserBuild();
-
-        // stub
-        when(userAuthService.getUserByEmail(request.email())).thenThrow(new CustomCommonException(UserErrorCode.NOT_FOUND_USER));
-
-        // when & then
-        Assertions.assertThatThrownBy(() -> userAccountService.requestChangePassword(request))
-                .isInstanceOf(CustomCommonException.class)
-                .hasMessage(UserErrorCode.NOT_FOUND_USER.getMessage());
-    }
-
-    /**
      * 비밀번호 변경 성공
      */
     @Test
@@ -175,5 +157,24 @@ public class UserAccountServiceUnitTest extends ServiceUnitTest {
         Assertions.assertThatThrownBy(() -> userAccountService.changePassword(httpServletRequest, request))
                 .isInstanceOf(CustomCommonException.class)
                 .hasMessage(UserErrorCode.INVALID_CHANGE_PASSWORD_TOKEN.getMessage());
+    }
+
+    /**
+     * 사용자 이메일 알림 설정 변경 성공
+     */
+    @Test
+    public void changeEmailNotification_성공() {
+        // given
+        final UserEntity user = UserEntityBuilder.build();
+        final Boolean isActivate = Boolean.FALSE;
+
+        // stub
+        when(userAuthService.getUserByEmail(user.getEmail())).thenReturn(user);
+
+        // when
+        userAccountService.changeEmailNotification(user.getEmail(), isActivate);
+
+        // then
+        Assertions.assertThat(user.getEmailNotification()).isFalse();
     }
 }

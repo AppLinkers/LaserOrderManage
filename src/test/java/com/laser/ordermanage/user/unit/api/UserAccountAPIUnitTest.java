@@ -35,7 +35,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(UserAccountAPI.class)
 public class UserAccountAPIUnitTest extends APIUnitTest {
 
-
     @Autowired
     private WebApplicationContext context;
 
@@ -314,7 +313,6 @@ public class UserAccountAPIUnitTest extends APIUnitTest {
         final ChangePasswordRequest request = ChangePasswordRequestBuilder.build();
 
         // stub
-        when(jwtProvider.resolveToken(any())).thenReturn(changePasswordToken);
         doNothing().when(userAccountService).changePassword(any(), any());
 
         // when
@@ -372,7 +370,6 @@ public class UserAccountAPIUnitTest extends APIUnitTest {
         final ChangePasswordRequest request = ChangePasswordRequestBuilder.build();
 
         // stub
-        when(jwtProvider.resolveToken(any())).thenReturn(invalidChangePasswordToken);
         doThrow(new CustomCommonException(UserErrorCode.INVALID_CHANGE_PASSWORD_TOKEN)).when(userAccountService).changePassword(any(), any());
 
         // when

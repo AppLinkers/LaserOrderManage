@@ -6,6 +6,7 @@ import com.laser.ordermanage.common.cache.redis.repository.VerifyCodeRedisReposi
 import com.laser.ordermanage.customer.dto.request.JoinCustomerRequest;
 import com.laser.ordermanage.user.dto.request.JoinCustomerRequestBuilder;
 import com.laser.ordermanage.user.dto.request.VerifyEmailRequest;
+import com.laser.ordermanage.user.dto.request.VerifyEmailRequestBuilder;
 import com.laser.ordermanage.user.dto.type.JoinStatus;
 import com.laser.ordermanage.user.exception.UserErrorCode;
 import org.assertj.core.api.Assertions;
@@ -20,7 +21,8 @@ import java.util.Optional;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class UserJoinIntegrationTest extends IntegrationTest {
 
@@ -127,12 +129,9 @@ public class UserJoinIntegrationTest extends IntegrationTest {
      * - 실패 사유 : 요청 시, 이메일에 해당하는 인증 코드가 존재하지 않음
      */
     @Test
-    public void 이메일_인증코드_검증_실패_인증코드_존재() throws Exception {
+    public void 이메일_인증코드_검증_실패_인증코드_존재_X() throws Exception {
         // given
-        final VerifyEmailRequest request = VerifyEmailRequest.builder()
-                .email("unknown-user@gmail.com")
-                .code("123456")
-                .build();
+        final VerifyEmailRequest request = VerifyEmailRequestBuilder.unknownUserBuild();
 
         // when
         final ResultActions resultActions = requestVerifyEmail(request);

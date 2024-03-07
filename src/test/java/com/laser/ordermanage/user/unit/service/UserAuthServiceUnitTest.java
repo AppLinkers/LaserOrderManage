@@ -107,18 +107,18 @@ public class UserAuthServiceUnitTest extends ServiceUnitTest {
         // given
         final LoginRequest loginRequest = LoginRequestBuilder.build();
         final Authentication authentication = new UsernamePasswordAuthenticationToken(loginRequest.email(), null, Collections.singleton(new SimpleGrantedAuthority(Role.ROLE_CUSTOMER.name())));
-        final TokenInfoResponse expectedTokenInfoResponse = TokenInfoResponseBuilder.build();
+        final TokenInfoResponse expectedResponse = TokenInfoResponseBuilder.build();
 
         // stub
         when(authenticationManager.authenticate(loginRequest.toAuthentication())).thenReturn(authentication);
         final String role = authentication.getAuthorities().iterator().next().getAuthority();
-        when(jwtProvider.generateToken(authentication.getName(), role)).thenReturn(expectedTokenInfoResponse);
+        when(jwtProvider.generateToken(authentication.getName(), role)).thenReturn(expectedResponse);
 
         // when
-        final TokenInfoResponse actualTokenInfoResponse = userAuthService.login(httpServletRequest, loginRequest);
+        final TokenInfoResponse actualResponse = userAuthService.login(httpServletRequest, loginRequest);
 
         // then
-        Assertions.assertThat(actualTokenInfoResponse).isSameAs(expectedTokenInfoResponse);
+        Assertions.assertThat(actualResponse).isSameAs(expectedResponse);
     }
 
     /**
@@ -155,19 +155,19 @@ public class UserAuthServiceUnitTest extends ServiceUnitTest {
                 .refreshToken("refreshToken")
                 .build();
 
-        final TokenInfoResponse expectedTokenInfoResponse = TokenInfoResponseBuilder.build();
+        final TokenInfoResponse expectedResponse = TokenInfoResponseBuilder.build();
 
         // stub
         when(jwtProvider.validateToken(refreshToken.getRefreshToken())).thenReturn(true);
 
         when(refreshTokenRedisRepository.findByRefreshToken(refreshToken.getRefreshToken())).thenReturn(refreshToken);
-        when(jwtProvider.generateToken(refreshToken.getId(), refreshToken.getRole())).thenReturn(expectedTokenInfoResponse);
+        when(jwtProvider.generateToken(refreshToken.getId(), refreshToken.getRole())).thenReturn(expectedResponse);
 
         // when
-        final TokenInfoResponse actualTokenInfoResponse = userAuthService.reissue(httpServletRequest, refreshToken.getRefreshToken());
+        final TokenInfoResponse actualResponse = userAuthService.reissue(httpServletRequest, refreshToken.getRefreshToken());
 
         // then
-        Assertions.assertThat(actualTokenInfoResponse).isSameAs(expectedTokenInfoResponse);
+        Assertions.assertThat(actualResponse).isSameAs(expectedResponse);
     }
 
     /**

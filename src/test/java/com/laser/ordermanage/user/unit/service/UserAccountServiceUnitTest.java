@@ -71,22 +71,22 @@ public class UserAccountServiceUnitTest extends ServiceUnitTest {
     @Test
     public void getUserEmail_성공() {
         // given
-        final GetUserEmailResponse expectedGetUserEmailResponse = GetUserEmailResponse.builder()
+        final GetUserEmailResponse expectedResponse = GetUserEmailResponse.builder()
                 .email("user@gmail.com")
                 .name("사용자 이름")
                 .build();
         final String phone = "01011111111";
 
         // stub
-        when(userRepository.findEmailByNameAndPhone(expectedGetUserEmailResponse.name(), phone)).thenReturn(List.of(expectedGetUserEmailResponse));
+        when(userRepository.findEmailByNameAndPhone(expectedResponse.name(), phone)).thenReturn(List.of(expectedResponse));
 
         // when
-        final ListResponse<GetUserEmailResponse> actualUserEmailResponseListResponse = userAccountService.getUserEmail(expectedGetUserEmailResponse.name(), phone);
+        final ListResponse<GetUserEmailResponse> actualResponse = userAccountService.getUserEmail(expectedResponse.name(), phone);
 
         // then
-        Assertions.assertThat(actualUserEmailResponseListResponse.totalElements()).isEqualTo(1);
-        Assertions.assertThat(actualUserEmailResponseListResponse.contents().size()).isEqualTo(1);
-        Assertions.assertThat(actualUserEmailResponseListResponse.contents().get(0)).isSameAs(expectedGetUserEmailResponse);
+        Assertions.assertThat(actualResponse.totalElements()).isEqualTo(1);
+        Assertions.assertThat(actualResponse.contents().size()).isEqualTo(1);
+        Assertions.assertThat(actualResponse.contents().get(0)).isSameAs(expectedResponse);
     }
 
     /**

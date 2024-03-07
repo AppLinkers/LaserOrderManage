@@ -176,7 +176,7 @@ public class UserAccountIntegrationTest extends IntegrationTest {
         final ResultActions resultActions = requestForRequestChangePassword(refreshToken, baseUrl);
 
         // then
-        assertError(UserErrorCode.INVALID_ACCESS_TOKEN, resultActions);
+        assertError(UserErrorCode.INVALID_TOKEN_TYPE, resultActions);
     }
 
     /**
@@ -300,7 +300,7 @@ public class UserAccountIntegrationTest extends IntegrationTest {
         final ResultActions resultActions = requestChangePassword(accessToken, request);
 
         // then
-        assertError(UserErrorCode.INVALID_CHANGE_PASSWORD_TOKEN, resultActions);
+        assertError(UserErrorCode.INVALID_TOKEN_TYPE, resultActions);
     }
 
     /**
@@ -397,7 +397,7 @@ public class UserAccountIntegrationTest extends IntegrationTest {
         final Boolean isActivate = Boolean.TRUE;
 
         // when
-        final ResultActions resultActions = requestForRequestChangePassword(unauthorizedAccessToken, String.valueOf(isActivate));
+        final ResultActions resultActions = requestChangeEmailNotification(unauthorizedAccessToken, String.valueOf(isActivate));
 
         // then
         assertError(UserErrorCode.UNAUTHORIZED_JWT, resultActions);
@@ -414,10 +414,10 @@ public class UserAccountIntegrationTest extends IntegrationTest {
         final Boolean isActivate = Boolean.TRUE;
 
         // when
-        final ResultActions resultActions = requestForRequestChangePassword(refreshToken, String.valueOf(isActivate));
+        final ResultActions resultActions = requestChangeEmailNotification(refreshToken, String.valueOf(isActivate));
 
         // then
-        assertError(UserErrorCode.INVALID_ACCESS_TOKEN, resultActions);
+        assertError(UserErrorCode.INVALID_TOKEN_TYPE, resultActions);
     }
 
     /**
@@ -431,7 +431,7 @@ public class UserAccountIntegrationTest extends IntegrationTest {
         final Boolean isActivate = Boolean.TRUE;
 
         // when
-        final ResultActions resultActions = requestForRequestChangePassword(expiredAccessToken, String.valueOf(isActivate));
+        final ResultActions resultActions = requestChangeEmailNotification(expiredAccessToken, String.valueOf(isActivate));
 
         // then
         assertError(UserErrorCode.EXPIRED_JWT, resultActions);
@@ -448,7 +448,7 @@ public class UserAccountIntegrationTest extends IntegrationTest {
         final Boolean isActivate = Boolean.TRUE;
 
         // when
-        final ResultActions resultActions = requestForRequestChangePassword(invalidToken, String.valueOf(isActivate));
+        final ResultActions resultActions = requestChangeEmailNotification(invalidToken, String.valueOf(isActivate));
 
         // then
         assertError(UserErrorCode.INVALID_JWT, resultActions);

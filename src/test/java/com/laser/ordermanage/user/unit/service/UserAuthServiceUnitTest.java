@@ -34,7 +34,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
 
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 public class UserAuthServiceUnitTest extends ServiceUnitTest {
 
@@ -159,7 +159,6 @@ public class UserAuthServiceUnitTest extends ServiceUnitTest {
 
         // stub
         when(jwtProvider.validateToken(refreshToken.getRefreshToken())).thenReturn(true);
-        when(jwtProvider.getType(refreshToken.getRefreshToken())).thenReturn(JwtProvider.TYPE_REFRESH);
 
         when(refreshTokenRedisRepository.findByRefreshToken(refreshToken.getRefreshToken())).thenReturn(refreshToken);
         when(jwtProvider.generateToken(refreshToken.getId(), refreshToken.getRole())).thenReturn(expectedTokenInfoResponse);
@@ -206,25 +205,6 @@ public class UserAuthServiceUnitTest extends ServiceUnitTest {
 
     /**
      * 사용자 Refresh Token 을 활용한 Access Token 재발급 실패
-     * - 실패 사유 : Access Token 을 활용해 Access Token 재발급 시도
-     */
-    @Test
-    public void reissue_실패_Token_Type() {
-        // given
-        final String accessToken = "accessToken";
-
-        // stub
-        when(jwtProvider.validateToken(accessToken)).thenReturn(true);
-        when(jwtProvider.getType(accessToken)).thenReturn(JwtProvider.TYPE_ACCESS);
-
-        // when & then
-        Assertions.assertThatThrownBy(() -> userAuthService.reissue(httpServletRequest, accessToken))
-                .isInstanceOf(CustomCommonException.class)
-                .hasMessage(UserErrorCode.INVALID_REFRESH_TOKEN.getMessage());
-    }
-
-    /**
-     * 사용자 Refresh Token 을 활용한 Access Token 재발급 실패
      * - 실패 사유 : refreshTokenRedisRepository 에 존재하지 않는 Refresh Token 사용
      */
     @Test
@@ -234,7 +214,6 @@ public class UserAuthServiceUnitTest extends ServiceUnitTest {
 
         // stub
         when(jwtProvider.validateToken(invalidRefreshToken)).thenReturn(true);
-        when(jwtProvider.getType(invalidRefreshToken)).thenReturn(JwtProvider.TYPE_REFRESH);
 
         when(refreshTokenRedisRepository.findByRefreshToken(invalidRefreshToken)).thenReturn(null);
 
@@ -260,7 +239,6 @@ public class UserAuthServiceUnitTest extends ServiceUnitTest {
 
         // stub
         when(jwtProvider.validateToken(refreshToken.getRefreshToken())).thenReturn(true);
-        when(jwtProvider.getType(refreshToken.getRefreshToken())).thenReturn(JwtProvider.TYPE_REFRESH);
 
         when(refreshTokenRedisRepository.findByRefreshToken(refreshToken.getRefreshToken())).thenReturn(refreshToken);
 
@@ -284,48 +262,8 @@ public class UserAuthServiceUnitTest extends ServiceUnitTest {
         final Authentication authentication = new UsernamePasswordAuthenticationToken("user1@gmail.com", "", authorities);
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        // stub
-        when(jwtProvider.getType(accessToken)).thenReturn(JwtProvider.TYPE_ACCESS);
-
         // when & then
         userAuthService.logout(httpServletRequest);
     }
 
-    /**
-     * 사용자 Access Token 을 활용한 로그아웃 실패
-     * - 실패 사유 : Access Token 의 값이 비어있음
-     */
-    @Test
-    public void logout_실패_Access_Token_값_존재() {
-        // given
-        final String emptyAccessToken = "";
-
-        httpServletRequest.setAttribute("resolvedToken", emptyAccessToken);
-
-        // when & then
-        Assertions.assertThatThrownBy(() -> userAuthService.logout(httpServletRequest))
-                .isInstanceOf(CustomCommonException.class)
-                .hasMessage(UserErrorCode.INVALID_ACCESS_TOKEN.getMessage());
-    }
-
-
-    /**
-     * 사용자 Access Token 을 활용한 로그아웃 실패
-     * - 실패 사유 : Refresh Token 을 활용해 로그아웃 시도
-     */
-    @Test
-    public void logout_실패_Token_Type() {
-        // given
-        final String refreshToken = "refreshToken";
-
-        httpServletRequest.setAttribute("resolvedToken", refreshToken);
-
-        // stub
-        when(jwtProvider.getType(refreshToken)).thenReturn(JwtProvider.TYPE_REFRESH);
-
-        // when & then
-        Assertions.assertThatThrownBy(() -> userAuthService.logout(httpServletRequest))
-                .isInstanceOf(CustomCommonException.class)
-                .hasMessage(UserErrorCode.INVALID_ACCESS_TOKEN.getMessage());
-    }
 }

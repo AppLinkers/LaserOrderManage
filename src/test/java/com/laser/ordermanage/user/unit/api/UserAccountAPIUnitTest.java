@@ -4,6 +4,7 @@ import com.laser.ordermanage.common.APIUnitTest;
 import com.laser.ordermanage.common.exception.CommonErrorCode;
 import com.laser.ordermanage.common.exception.CustomCommonException;
 import com.laser.ordermanage.common.paging.ListResponse;
+import com.laser.ordermanage.common.security.jwt.component.JwtProvider;
 import com.laser.ordermanage.user.api.UserAccountAPI;
 import com.laser.ordermanage.user.dto.request.ChangePasswordRequest;
 import com.laser.ordermanage.user.dto.request.ChangePasswordRequestBuilder;
@@ -37,6 +38,9 @@ public class UserAccountAPIUnitTest extends APIUnitTest {
 
     @Autowired
     private WebApplicationContext context;
+
+    @MockBean
+    private JwtProvider jwtProvider;
 
     @MockBean
     private UserAccountService userAccountService;
@@ -310,6 +314,7 @@ public class UserAccountAPIUnitTest extends APIUnitTest {
         final ChangePasswordRequest request = ChangePasswordRequestBuilder.build();
 
         // stub
+        when(jwtProvider.resolveToken(any())).thenReturn(changePasswordToken);
         doNothing().when(userAccountService).changePassword(any(), any());
 
         // when
@@ -367,6 +372,7 @@ public class UserAccountAPIUnitTest extends APIUnitTest {
         final ChangePasswordRequest request = ChangePasswordRequestBuilder.build();
 
         // stub
+        when(jwtProvider.resolveToken(any())).thenReturn(invalidChangePasswordToken);
         doThrow(new CustomCommonException(UserErrorCode.INVALID_CHANGE_PASSWORD_TOKEN)).when(userAccountService).changePassword(any(), any());
 
         // when

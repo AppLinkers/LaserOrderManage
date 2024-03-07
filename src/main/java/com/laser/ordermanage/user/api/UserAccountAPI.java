@@ -1,5 +1,6 @@
 package com.laser.ordermanage.user.api;
 
+import com.laser.ordermanage.common.security.jwt.component.JwtProvider;
 import com.laser.ordermanage.user.dto.request.ChangePasswordRequest;
 import com.laser.ordermanage.user.dto.request.RequestChangePasswordRequest;
 import com.laser.ordermanage.user.service.UserAccountService;
@@ -19,6 +20,8 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/user")
 @RestController
 public class UserAccountAPI {
+
+    private final JwtProvider jwtProvider;
 
     private final UserAccountService userAccountService;
 

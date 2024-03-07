@@ -159,7 +159,7 @@ public class UserAuthIntegrationTest extends IntegrationTest {
         final ResultActions resultActions = requestReIssue(accessToken);
 
         // then
-        assertError(UserErrorCode.INVALID_REFRESH_TOKEN, resultActions);
+        assertError(UserErrorCode.INVALID_TOKEN_TYPE, resultActions);
     }
 
     /**
@@ -306,7 +306,7 @@ public class UserAuthIntegrationTest extends IntegrationTest {
         final ResultActions resultActions = requestLogout(refreshToken);
 
         // then
-        assertError(UserErrorCode.INVALID_ACCESS_TOKEN, resultActions);
+        assertError(UserErrorCode.INVALID_TOKEN_TYPE, resultActions);
     }
 
     /**

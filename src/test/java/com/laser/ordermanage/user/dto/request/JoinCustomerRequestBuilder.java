@@ -12,7 +12,7 @@ public class JoinCustomerRequestBuilder {
                 .companyName("new-company-name")
                 .phone("01011111111")
                 .zipCode("11111")
-                .address("addresss")
+                .address("address")
                 .build();
     }
 
@@ -24,7 +24,7 @@ public class JoinCustomerRequestBuilder {
                 .companyName("company-name")
                 .phone("01011111111")
                 .zipCode("11111")
-                .address("addresss")
+                .address("address")
                 .build();
     }
 
@@ -36,7 +36,7 @@ public class JoinCustomerRequestBuilder {
                 .companyName("new-company-name")
                 .phone("01011111111")
                 .zipCode("11111")
-                .address("addresss")
+                .address("address")
                 .build();
     }
 
@@ -48,7 +48,7 @@ public class JoinCustomerRequestBuilder {
                 .companyName("new-company-name")
                 .phone("01011111111")
                 .zipCode("11111")
-                .address("addresss")
+                .address("address")
                 .build();
     }
 
@@ -60,7 +60,7 @@ public class JoinCustomerRequestBuilder {
                 .companyName("new-company-name")
                 .phone("01011111111")
                 .zipCode("11111")
-                .address("addresss")
+                .address("address")
                 .build();
     }
 
@@ -72,7 +72,7 @@ public class JoinCustomerRequestBuilder {
                 .companyName("new-company-name")
                 .phone("01011111111")
                 .zipCode("11111")
-                .address("addresss")
+                .address("address")
                 .build();
     }
 
@@ -84,7 +84,7 @@ public class JoinCustomerRequestBuilder {
                 .companyName("new-company-name")
                 .phone("01011111111")
                 .zipCode("11111")
-                .address("addresss")
+                .address("address")
                 .build();
     }
 
@@ -96,7 +96,7 @@ public class JoinCustomerRequestBuilder {
                 .companyName("new-company-name")
                 .phone("01011111111")
                 .zipCode("11111")
-                .address("addresss")
+                .address("address")
                 .build();
     }
 
@@ -108,7 +108,7 @@ public class JoinCustomerRequestBuilder {
                 .companyName("new-company-name")
                 .phone("01011111111")
                 .zipCode("11111")
-                .address("addresss")
+                .address("address")
                 .build();
     }
 
@@ -120,7 +120,7 @@ public class JoinCustomerRequestBuilder {
                 .companyName("너어어어어어어어무우우우우우우우긴회사이름")
                 .phone("01011111111")
                 .zipCode("11111")
-                .address("addresss")
+                .address("address")
                 .build();
     }
 
@@ -132,7 +132,7 @@ public class JoinCustomerRequestBuilder {
                 .companyName("new-company-name")
                 .phone(null)
                 .zipCode("11111")
-                .address("addresss")
+                .address("address")
                 .build();
     }
 
@@ -144,7 +144,7 @@ public class JoinCustomerRequestBuilder {
                 .companyName("new-company-name")
                 .phone("invalid-phone")
                 .zipCode("11111")
-                .address("addresss")
+                .address("address")
                 .build();
     }
 
@@ -156,7 +156,7 @@ public class JoinCustomerRequestBuilder {
                 .companyName("new-company-name")
                 .phone("01011111111")
                 .zipCode(null)
-                .address("addresss")
+                .address("address")
                 .build();
     }
 
@@ -168,7 +168,7 @@ public class JoinCustomerRequestBuilder {
                 .companyName("new-company-name")
                 .phone("01011111111")
                 .zipCode("invalid-zip-code")
-                .address("addresss")
+                .address("address")
                 .build();
     }
 
@@ -204,7 +204,7 @@ public class JoinCustomerRequestBuilder {
                 .companyName("new-company-name")
                 .phone("01011111111")
                 .zipCode("11111")
-                .address("addresss")
+                .address("address")
                 .detailAddress("너어어어어어어어어어어어어무우우우우우우우우우우우우긴상세주소")
                 .build();
     }

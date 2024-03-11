@@ -301,8 +301,8 @@ public class UserJoinAPIUnitTest extends APIUnitTest {
     @Test
     public void 고객_회원가입_성공_신규회원() throws Exception {
         // given
-        final UserEntity user = UserEntityBuilder.build();
-        final JoinCustomerRequest request = JoinCustomerRequestBuilder.duplicateEmailBuild();
+        final UserEntity user = UserEntityBuilder.newUserBuild();
+        final JoinCustomerRequest request = JoinCustomerRequestBuilder.build();
 
         // stub
         when(userJoinService.joinCustomer(any())).thenReturn(

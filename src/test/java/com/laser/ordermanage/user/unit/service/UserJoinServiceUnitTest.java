@@ -5,9 +5,11 @@ import com.laser.ordermanage.common.cache.redis.dao.VerifyCode;
 import com.laser.ordermanage.common.cache.redis.repository.VerifyCodeRedisRepository;
 import com.laser.ordermanage.common.email.EmailService;
 import com.laser.ordermanage.common.exception.CustomCommonException;
+import com.laser.ordermanage.customer.dto.request.JoinCustomerRequest;
 import com.laser.ordermanage.customer.repository.DeliveryAddressRepository;
 import com.laser.ordermanage.user.domain.UserEntity;
 import com.laser.ordermanage.user.domain.UserEntityBuilder;
+import com.laser.ordermanage.user.dto.request.JoinCustomerRequestBuilder;
 import com.laser.ordermanage.user.dto.request.VerifyEmailRequest;
 import com.laser.ordermanage.user.dto.request.VerifyEmailRequestBuilder;
 import com.laser.ordermanage.user.dto.response.UserJoinStatusResponse;
@@ -184,5 +186,53 @@ public class UserJoinServiceUnitTest extends ServiceUnitTest {
         Assertions.assertThatThrownBy(() -> userJoinService.verifyEmail(request))
                 .isInstanceOf(CustomCommonException.class)
                 .hasMessage(UserErrorCode.INVALID_VERIFY_CODE.getMessage());
+    }
+
+    /**
+     * 고객 회원가입 성공
+     * - 신규 회원
+     */
+    @Test
+    public void joinCustomer_성공_신규회원() {
+        // given
+        final JoinCustomerRequest request = JoinCustomerRequestBuilder.build();
+        final UserEntity user = UserEntityBuilder.newUserBuild();
+        final UserJoinStatusResponse expectedResponse = UserJoinStatusResponse.builderWithUserEntity()
+                .userEntity(user)
+                .status(JoinStatus.COMPLETED)
+                .buildWithUserEntity();
+
+        // stub
+        when(userRepository.findFirstByEmail(request.email())).thenReturn(Optional.empty());
+
+        // when
+        UserJoinStatusResponse actualResponse = userJoinService.joinCustomer(request);
+
+        // then
+        Assertions.assertThat(actualResponse).isEqualTo(expectedResponse);
+    }
+
+    /**
+     * 고객 회원가입 성공
+     * - 이메일 중복
+     */
+    @Test
+    public void joinCustomer_성공_이메일_중복() {
+        // given
+        final JoinCustomerRequest request = JoinCustomerRequestBuilder.duplicateEmailBuild();
+        final UserEntity user = UserEntityBuilder.build();
+        final UserJoinStatusResponse expectedResponse = UserJoinStatusResponse.builderWithUserEntity()
+                .userEntity(user)
+                .status(JoinStatus.IMPOSSIBLE)
+                .buildWithUserEntity();
+
+        // stub
+        when(userRepository.findFirstByEmail(request.email())).thenReturn(Optional.of(user));
+
+        // when
+        UserJoinStatusResponse actualResponse = userJoinService.joinCustomer(request);
+
+        // then
+        Assertions.assertThat(actualResponse).isEqualTo(expectedResponse);
     }
 }

@@ -7,7 +7,7 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
-public class UserEntityTest {
+public class UserEntityUnitTest {
 
     @Test
     public void changePassword() {

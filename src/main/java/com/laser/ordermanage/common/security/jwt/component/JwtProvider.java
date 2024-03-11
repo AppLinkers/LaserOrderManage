@@ -134,6 +134,12 @@ public class JwtProvider {
         }
     }
 
+    public void validateTokenType(String token, String tokenType) {
+        if (!getType(token).equals(tokenType)) {
+            throw new CustomCommonException(UserErrorCode.INVALID_TOKEN_TYPE);
+        }
+    }
+
     public Long getExpiration(String token) {
         Date expiration = parseClaims(token).getExpiration();
         // 현재 시간

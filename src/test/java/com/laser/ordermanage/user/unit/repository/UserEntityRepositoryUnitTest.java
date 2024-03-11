@@ -59,20 +59,20 @@ public class UserEntityRepositoryUnitTest extends RepositoryUnitTest {
     @Test
     public void findEmailByNameAndPhone_존재_O() {
         // given
-        final String name = "고객 이름 1";
-        final String phone = "01011111111";
+        final String expectedName = "고객 이름 1";
+        final String expectedPhone = "01011111111";
 
         // when
-        final List<GetUserEmailResponse> userEmailList = userEntityRepository.findEmailByNameAndPhone(name, phone);
+        final List<GetUserEmailResponse> actualResponseList = userEntityRepository.findEmailByNameAndPhone(expectedName, expectedPhone);
 
         // then
-        Assertions.assertThat(userEmailList.size()).isEqualTo(2);
+        Assertions.assertThat(actualResponseList.size()).isEqualTo(2);
 
-        Assertions.assertThat(userEmailList.get(0).name()).isEqualTo(name);
-        Assertions.assertThat(userEmailList.get(0).email()).isEqualTo("user1-copy@gmail.com");
+        Assertions.assertThat(actualResponseList.get(0).name()).isEqualTo(expectedName);
+        Assertions.assertThat(actualResponseList.get(0).email()).isEqualTo("user1-copy@gmail.com");
 
-        Assertions.assertThat(userEmailList.get(1).name()).isEqualTo(name);
-        Assertions.assertThat(userEmailList.get(1).email()).isEqualTo("user1@gmail.com");
+        Assertions.assertThat(actualResponseList.get(1).name()).isEqualTo(expectedName);
+        Assertions.assertThat(actualResponseList.get(1).email()).isEqualTo("user1@gmail.com");
     }
 
     @Test
@@ -82,10 +82,10 @@ public class UserEntityRepositoryUnitTest extends RepositoryUnitTest {
         final String invalidUserPhone = "12121212121";
 
         // when
-        final List<GetUserEmailResponse> userEmailList = userEntityRepository.findEmailByNameAndPhone(invalidUserName, invalidUserPhone);
+        final List<GetUserEmailResponse> actualResponseList = userEntityRepository.findEmailByNameAndPhone(invalidUserName, invalidUserPhone);
 
         // then
-        Assertions.assertThat(userEmailList.size()).isEqualTo(0);
+        Assertions.assertThat(actualResponseList.size()).isEqualTo(0);
     }
 
     @Test
@@ -95,10 +95,10 @@ public class UserEntityRepositoryUnitTest extends RepositoryUnitTest {
         final String userPhone = "01011111111";
 
         // when
-        final List<GetUserEmailResponse> userEmailList = userEntityRepository.findEmailByNameAndPhone(invalidUserName, userPhone);
+        final List<GetUserEmailResponse> actualResponseList = userEntityRepository.findEmailByNameAndPhone(invalidUserName, userPhone);
 
         // then
-        Assertions.assertThat(userEmailList.size()).isEqualTo(0);
+        Assertions.assertThat(actualResponseList.size()).isEqualTo(0);
     }
 
     @Test
@@ -108,16 +108,16 @@ public class UserEntityRepositoryUnitTest extends RepositoryUnitTest {
         final String invalidUserPhone = "12121212121";
 
         // when
-        final List<GetUserEmailResponse> userEmailList = userEntityRepository.findEmailByNameAndPhone(userName, invalidUserPhone);
+        final List<GetUserEmailResponse> actualResponseList = userEntityRepository.findEmailByNameAndPhone(userName, invalidUserPhone);
 
         // then
-        Assertions.assertThat(userEmailList.size()).isEqualTo(0);
+        Assertions.assertThat(actualResponseList.size()).isEqualTo(0);
     }
 
     @Test
     public void findUserAccountByFactory_존재_O() {
         // given
-        final FactoryGetUserAccountResponse expectedFactory = FactoryGetUserAccountResponse.builder()
+        final FactoryGetUserAccountResponse expectedResponse = FactoryGetUserAccountResponse.builder()
                 .email("admin@kumoh.org")
                 .companyName("금오 M.T")
                 .representative("정연근")
@@ -130,10 +130,10 @@ public class UserEntityRepositoryUnitTest extends RepositoryUnitTest {
                 .build();
 
         // when
-        final FactoryGetUserAccountResponse actualFactory = userEntityRepository.findUserAccountByFactory(expectedFactory.email());
+        final FactoryGetUserAccountResponse actualResponse = userEntityRepository.findUserAccountByFactory(expectedResponse.email());
 
         // then
-        Assertions.assertThat(actualFactory).isEqualTo(expectedFactory);
+        Assertions.assertThat(actualResponse).isEqualTo(expectedResponse);
     }
 
     @Test
@@ -142,10 +142,10 @@ public class UserEntityRepositoryUnitTest extends RepositoryUnitTest {
         final String invalidUserEmail = "존재하지 않는 사용자";
 
         // when
-        final FactoryGetUserAccountResponse actualFactory = userEntityRepository.findUserAccountByFactory(invalidUserEmail);
+        final FactoryGetUserAccountResponse actualResponse = userEntityRepository.findUserAccountByFactory(invalidUserEmail);
 
         // then
-        Assertions.assertThat(actualFactory).isNull();
+        Assertions.assertThat(actualResponse).isNull();
     }
 
     @Test
@@ -154,16 +154,16 @@ public class UserEntityRepositoryUnitTest extends RepositoryUnitTest {
         final String customerUserEmail = "user1@gmail.com";
 
         // when
-        final FactoryGetUserAccountResponse actualFactory = userEntityRepository.findUserAccountByFactory(customerUserEmail);
+        final FactoryGetUserAccountResponse actualResponse = userEntityRepository.findUserAccountByFactory(customerUserEmail);
 
         // then
-        Assertions.assertThat(actualFactory).isNull();
+        Assertions.assertThat(actualResponse).isNull();
     }
 
     @Test
     public void findUserAccountByCustomer_존재_O() {
         // given
-        final CustomerGetUserAccountResponse expectedCustomer = CustomerGetUserAccountResponse.builder()
+        final CustomerGetUserAccountResponse expectedResponse = CustomerGetUserAccountResponse.builder()
                 .email("user1@gmail.com")
                 .name("고객 이름 1")
                 .phone("01011111111")
@@ -175,10 +175,10 @@ public class UserEntityRepositoryUnitTest extends RepositoryUnitTest {
                 .build();
 
         // when
-        final CustomerGetUserAccountResponse actualCustomer = userEntityRepository.findUserAccountByCustomer(expectedCustomer.email());
+        final CustomerGetUserAccountResponse actualResponse = userEntityRepository.findUserAccountByCustomer(expectedResponse.email());
 
         // then
-        Assertions.assertThat(actualCustomer).isEqualTo(expectedCustomer);
+        Assertions.assertThat(actualResponse).isEqualTo(expectedResponse);
     }
 
     @Test
@@ -187,10 +187,10 @@ public class UserEntityRepositoryUnitTest extends RepositoryUnitTest {
         final String invalidUserEmail = "존재하지 않는 사용자";
 
         // when
-        final CustomerGetUserAccountResponse actualCustomer = userEntityRepository.findUserAccountByCustomer(invalidUserEmail);
+        final CustomerGetUserAccountResponse actualResponse = userEntityRepository.findUserAccountByCustomer(invalidUserEmail);
 
         // then
-        Assertions.assertThat(actualCustomer).isNull();
+        Assertions.assertThat(actualResponse).isNull();
     }
 
     @Test
@@ -199,9 +199,9 @@ public class UserEntityRepositoryUnitTest extends RepositoryUnitTest {
         final String factoryUserEmail = "admin@kumoh.org";
 
         // when
-        final CustomerGetUserAccountResponse actualCustomer = userEntityRepository.findUserAccountByCustomer(factoryUserEmail);
+        final CustomerGetUserAccountResponse actualResponse = userEntityRepository.findUserAccountByCustomer(factoryUserEmail);
 
         // then
-        Assertions.assertThat(actualCustomer).isNull();
+        Assertions.assertThat(actualResponse).isNull();
     }
 }

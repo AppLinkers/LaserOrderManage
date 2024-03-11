@@ -20,4 +20,20 @@ public class UserEntityBuilder {
                 .address(address)
                 .build();
     }
+
+    public static UserEntity newUserBuild() {
+        Address address = Address.builder()
+                .zipCode("11111")
+                .address("address")
+                .detailAddress("detail_address")
+                .build();
+
+        return UserEntity.builder()
+                .email("new-user1@gmail.com")
+                .password("new-user1-password")
+                .role(Role.ROLE_CUSTOMER)
+                .phone("01011111111")
+                .address(address)
+                .build();
+    }
 }

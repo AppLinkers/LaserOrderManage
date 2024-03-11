@@ -9,7 +9,7 @@ import com.laser.ordermanage.common.paging.ListResponse;
 import com.laser.ordermanage.common.security.jwt.component.JwtProvider;
 import com.laser.ordermanage.user.domain.UserEntity;
 import com.laser.ordermanage.user.dto.request.ChangePasswordRequest;
-import com.laser.ordermanage.user.dto.request.RequestPasswordChangeRequest;
+import com.laser.ordermanage.user.dto.request.RequestChangePasswordRequest;
 import com.laser.ordermanage.user.dto.response.GetUserEmailResponse;
 import com.laser.ordermanage.user.exception.UserErrorCode;
 import com.laser.ordermanage.user.repository.UserEntityRepository;
@@ -20,7 +20,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 import org.springframework.web.util.UriComponentsBuilder;
 
 @Service
@@ -43,7 +42,7 @@ public class UserAccountService {
     }
 
     @Transactional
-    public void requestPasswordChange(RequestPasswordChangeRequest request) {
+    public void requestChangePassword(RequestChangePasswordRequest request) {
         UserEntity user = userAuthService.getUserByEmail(request.email());
 
         String changePasswordToken = jwtProvider.generateChangePasswordToken(user);
@@ -80,7 +79,7 @@ public class UserAccountService {
 
         String resolvedToken = (String)httpServletRequest.getAttribute("resolvedToken");
 
-        if (!StringUtils.hasText(resolvedToken) || !jwtProvider.getType(resolvedToken).equals(JwtProvider.TYPE_CHANGE_PASSWORD)) {
+        if (!jwtProvider.getType(resolvedToken).equals(JwtProvider.TYPE_CHANGE_PASSWORD)) {
             throw new CustomCommonException(UserErrorCode.INVALID_CHANGE_PASSWORD_TOKEN);
         }
 

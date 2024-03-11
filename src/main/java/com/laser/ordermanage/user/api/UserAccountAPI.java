@@ -1,7 +1,8 @@
 package com.laser.ordermanage.user.api;
 
+import com.laser.ordermanage.common.security.jwt.component.JwtProvider;
 import com.laser.ordermanage.user.dto.request.ChangePasswordRequest;
-import com.laser.ordermanage.user.dto.request.RequestPasswordChangeRequest;
+import com.laser.ordermanage.user.dto.request.RequestChangePasswordRequest;
 import com.laser.ordermanage.user.service.UserAccountService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -20,6 +21,8 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 public class UserAccountAPI {
 
+    private final JwtProvider jwtProvider;
+
     private final UserAccountService userAccountService;
 
     /**
@@ -31,7 +34,6 @@ public class UserAccountAPI {
             @NotEmpty(message = "이름(상호)는 필수 입력값입니다.")
             @Pattern(regexp = "^.{0,20}$", message = "이름(상호)의 최대 글자수는 20자입니다.")
             @RequestParam(value = "name") String name,
-            @NotEmpty(message = "연락처는 필수 입력값입니다.")
             @Pattern(regexp = "^\\d{3}\\d{3,4}\\d{4}$", message = "연락처 형식에 맞지 않습니다.")
             @RequestParam(value = "phone") String phone) {
         return ResponseEntity.ok(userAccountService.getUserEmail(name, phone));
@@ -44,9 +46,9 @@ public class UserAccountAPI {
      * - 비밀번호 변경 링크(baseUrl?token={비밀번호 변경 임시 인증 토큰 값})를 사용자 이메일로 전송
      */
     @PostMapping("/password/email-link/without-auth")
-    public ResponseEntity<?> requestPasswordChangeWithOutAuthentication(@RequestBody @Valid RequestPasswordChangeRequest request) {
+    public ResponseEntity<?> requestChangePasswordWithOutAuthentication(@RequestBody @Valid RequestChangePasswordRequest request) {
 
-        userAccountService.requestPasswordChange(request);
+        userAccountService.requestChangePassword(request);
 
         return ResponseEntity.ok().build();
     }
@@ -58,20 +60,19 @@ public class UserAccountAPI {
      * - 비밀번호 변경 링크(baseUrl?token={비밀번호 변경 임시 인증 토큰 값})를 사용자 이메일로 전송
      */
     @PostMapping("/password/email-link")
-    public ResponseEntity<?> requestPasswordChange(
-            @NotEmpty(message = "base URL 은 필수 입력값입니다.")
+    public ResponseEntity<?> requestChangePassword(
             @Pattern(regexp = "^((http(s?))\\:\\/\\/)([0-9a-zA-Z\\-]+\\.)+[a-zA-Z]{2,6}(\\:[0-9]+)?(\\/\\S*)?$", message = "base URL 형식이 유효하지 않습니다.")
             @RequestParam(value = "base-url") String baseUrl
     ) {
 
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        RequestPasswordChangeRequest request = RequestPasswordChangeRequest.builder()
+        RequestChangePasswordRequest request = RequestChangePasswordRequest.builder()
                 .email(user.getUsername())
                 .baseUrl(baseUrl)
                 .build();
 
-        userAccountService.requestPasswordChange(request);
+        userAccountService.requestChangePassword(request);
 
         return ResponseEntity.ok().build();
     }

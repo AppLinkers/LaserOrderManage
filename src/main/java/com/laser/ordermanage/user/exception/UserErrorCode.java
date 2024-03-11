@@ -19,12 +19,13 @@ public enum UserErrorCode implements ErrorCode {
     UNSUPPORTED_JWT("USER_401_03", HttpStatus.UNAUTHORIZED, "지원되지 않는 JWT 입니다."),
     UNAUTHORIZED_JWT("USER_401_04", HttpStatus.UNAUTHORIZED, "JWT 에 권한정보가 존재하지 않습니다."),
 
-    INVALID_ACCESS_TOKEN("USER_401_05", HttpStatus.UNAUTHORIZED, "Access Token 정보가 유효하지 않습니다."),
-    INVALID_REFRESH_TOKEN("USER_401_06", HttpStatus.UNAUTHORIZED, "Refresh Token 정보가 유효하지 않습니다."),
+    INVALID_TOKEN_TYPE("USER_401_05", HttpStatus.UNAUTHORIZED, "잘못된 Token Type 입니다."),
 
-    INVALID_VERIFY_CODE("USER_401_07", HttpStatus.UNAUTHORIZED, "인증 코드 정보가 유효하지 않습니다."),
-
+    INVALID_ACCESS_TOKEN("USER_401_06", HttpStatus.UNAUTHORIZED, "Access Token 정보가 유효하지 않습니다."),
+    INVALID_REFRESH_TOKEN("USER_401_07", HttpStatus.UNAUTHORIZED, "Refresh Token 정보가 유효하지 않습니다."),
     INVALID_CHANGE_PASSWORD_TOKEN("USER_401_08", HttpStatus.UNAUTHORIZED, "Change Password Token 정보가 유효하지 않습니다."),
+
+    INVALID_VERIFY_CODE("USER_401_09", HttpStatus.UNAUTHORIZED, "인증 코드 정보가 유효하지 않습니다."),
 
     // 403 FORBIDDEN 인증 필요
     DENIED_ACCESS("USER_403_01", HttpStatus.FORBIDDEN, "해당 요청에 대한 접근 권한이 없습니다."),

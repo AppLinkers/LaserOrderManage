@@ -1,7 +1,6 @@
 package com.laser.ordermanage.common.security.config;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -27,7 +26,8 @@ public class TestWebSecurityConfig {
 
         http.authorizeHttpRequests((authorizeRequests) ->
                 authorizeRequests
-                        .requestMatchers("/user/logout", "/user/password").authenticated()
+                        .requestMatchers("/secure/actuator/**").permitAll() // actuator 권한 허가
+                        .requestMatchers("/user/logout", "/user/password", "/user/password/email-link", "/user/email-notification").authenticated()
                         .requestMatchers("/user/**").permitAll()
                         .requestMatchers("/customer/**", "/drawing/**").hasRole("CUSTOMER")
                         .requestMatchers("/factory/**").hasRole("FACTORY")

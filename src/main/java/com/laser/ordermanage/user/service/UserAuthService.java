@@ -70,7 +70,8 @@ public class UserAuthService {
 
     public TokenInfoResponse reissue(HttpServletRequest httpServletRequest, String refreshTokenReq) {
         // 1. refresh token 인지 확인
-        if (StringUtils.hasText(refreshTokenReq) && jwtProvider.validateToken(refreshTokenReq) && jwtProvider.getType(refreshTokenReq).equals(JwtProvider.TYPE_REFRESH)) {
+        if (StringUtils.hasText(refreshTokenReq) && jwtProvider.validateToken(refreshTokenReq)) {
+            jwtProvider.validateTokenType(refreshTokenReq, JwtProvider.TYPE_REFRESH);
             RefreshToken refreshToken = refreshTokenRedisRepository.findByRefreshToken(refreshTokenReq);
             if (refreshToken != null) {
                 // 2. 최초 로그인한 ip 와 같은지 확인 (처리 방식에 따라 재발급을 하지 않거나 메일 등의 알림을 주는 방법이 있음)
@@ -99,24 +100,17 @@ public class UserAuthService {
 
         String resolvedToken = (String)httpServletRequest.getAttribute("resolvedToken");
 
-        // 1. access token 인지 확인
-        if (StringUtils.hasText(resolvedToken) && jwtProvider.getType(resolvedToken).equals(JwtProvider.TYPE_ACCESS)) {
+        // 1. Access Token 에서 User email 을 가져옵니다.
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-            // 2. Access Token 에서 User email 을 가져옵니다.
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-            // 3. Redis 에서 해당 User email 로 저장된 Refresh Token 이 있는지 여부를 확인 후 있을 경우 삭제합니다.
-            refreshTokenRedisRepository.deleteById(authentication.getName());
-            // 4. Redis 에서 해당 Access Token 을 Black List 로 저장합니다.
-            blackListRedisRepository.save(BlackList.builder()
-                    .id(authentication.getName())
-                    .accessToken(resolvedToken)
-                    .expiration(jwtProvider.getExpiration(resolvedToken))
-                    .build());
-
-        } else {
-            throw new CustomCommonException(UserErrorCode.INVALID_ACCESS_TOKEN);
-        }
+        // 2. Redis 에서 해당 User email 로 저장된 Refresh Token 이 있는지 여부를 확인 후 있을 경우 삭제합니다.
+        refreshTokenRedisRepository.deleteById(authentication.getName());
+        // 3. Redis 에서 해당 Access Token 을 Black List 로 저장합니다.
+        blackListRedisRepository.save(BlackList.builder()
+                .id(authentication.getName())
+                .accessToken(resolvedToken)
+                .expiration(jwtProvider.getExpiration(resolvedToken))
+                .build());
 
     }
 }

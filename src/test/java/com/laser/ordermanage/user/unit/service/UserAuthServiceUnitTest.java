@@ -34,7 +34,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
 
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 public class UserAuthServiceUnitTest extends ServiceUnitTest {
 
@@ -56,11 +56,11 @@ public class UserAuthServiceUnitTest extends ServiceUnitTest {
     @Mock
     private AuthenticationManager authenticationManager;
 
-    private MockHttpServletRequest request;
+    private MockHttpServletRequest httpServletRequest;
 
     @BeforeEach
     public void setUp() {
-        request = new MockHttpServletRequest();
+        httpServletRequest = new MockHttpServletRequest();
     }
 
     /**
@@ -86,7 +86,7 @@ public class UserAuthServiceUnitTest extends ServiceUnitTest {
      * - 실패 사유 : 존재하지 않는 사용자
      */
     @Test
-    public void getUserByEmail_실패_NOT_FOUND_ENTITY() {
+    public void getUserByEmail_실패_NOT_FOUND_USER() {
         // given
         final String invalidUserEmail = "invalid-user@gmail.com";
 
@@ -107,24 +107,24 @@ public class UserAuthServiceUnitTest extends ServiceUnitTest {
         // given
         final LoginRequest loginRequest = LoginRequestBuilder.build();
         final Authentication authentication = new UsernamePasswordAuthenticationToken(loginRequest.email(), null, Collections.singleton(new SimpleGrantedAuthority(Role.ROLE_CUSTOMER.name())));
-        final TokenInfoResponse expectedTokenInfoResponse = TokenInfoResponseBuilder.build();
+        final TokenInfoResponse expectedResponse = TokenInfoResponseBuilder.build();
 
         // stub
         when(authenticationManager.authenticate(loginRequest.toAuthentication())).thenReturn(authentication);
         final String role = authentication.getAuthorities().iterator().next().getAuthority();
-        when(jwtProvider.generateToken(authentication.getName(), role)).thenReturn(expectedTokenInfoResponse);
+        when(jwtProvider.generateToken(authentication.getName(), role)).thenReturn(expectedResponse);
 
         // when
-        final TokenInfoResponse actualTokenInfoResponse = userAuthService.login(request, loginRequest);
+        final TokenInfoResponse actualResponse = userAuthService.login(httpServletRequest, loginRequest);
 
         // then
-        Assertions.assertThat(actualTokenInfoResponse).isSameAs(expectedTokenInfoResponse);
+        Assertions.assertThat(actualResponse).isSameAs(expectedResponse);
     }
 
     /**
      * 사용자 로그인 실패
      * - 실패 사유 : 요청 데이터 인증 실패
-     * - 존재하지 않는 이메일
+     * - 이메일에 해당하는 사용자가 존재하지 않음
      * - 회원 정보와 일치하지 않는 비밀번호
      */
     @Test
@@ -136,7 +136,7 @@ public class UserAuthServiceUnitTest extends ServiceUnitTest {
         when(authenticationManager.authenticate(invalidLoginRequest.toAuthentication())).thenThrow(new CustomCommonException(UserErrorCode.INVALID_CREDENTIALS));
 
         // when & then
-        Assertions.assertThatThrownBy(() -> userAuthService.login(request, invalidLoginRequest))
+        Assertions.assertThatThrownBy(() -> userAuthService.login(httpServletRequest, invalidLoginRequest))
                 .isInstanceOf(CustomCommonException.class)
                 .hasMessage(UserErrorCode.INVALID_CREDENTIALS.getMessage());
 
@@ -150,25 +150,24 @@ public class UserAuthServiceUnitTest extends ServiceUnitTest {
         // given
         final RefreshToken refreshToken = RefreshToken.builder()
                 .id("user1@gmail.com")
-                .ip(NetworkUtil.getClientIp(request))
+                .ip(NetworkUtil.getClientIp(httpServletRequest))
                 .role(Role.ROLE_CUSTOMER.name())
                 .refreshToken("refreshToken")
                 .build();
 
-        final TokenInfoResponse expectedTokenInfoResponse = TokenInfoResponseBuilder.build();
+        final TokenInfoResponse expectedResponse = TokenInfoResponseBuilder.build();
 
         // stub
         when(jwtProvider.validateToken(refreshToken.getRefreshToken())).thenReturn(true);
-        when(jwtProvider.getType(refreshToken.getRefreshToken())).thenReturn(JwtProvider.TYPE_REFRESH);
 
         when(refreshTokenRedisRepository.findByRefreshToken(refreshToken.getRefreshToken())).thenReturn(refreshToken);
-        when(jwtProvider.generateToken(refreshToken.getId(), refreshToken.getRole())).thenReturn(expectedTokenInfoResponse);
+        when(jwtProvider.generateToken(refreshToken.getId(), refreshToken.getRole())).thenReturn(expectedResponse);
 
         // when
-        final TokenInfoResponse actualTokenInfoResponse = userAuthService.reissue(request, refreshToken.getRefreshToken());
+        final TokenInfoResponse actualResponse = userAuthService.reissue(httpServletRequest, refreshToken.getRefreshToken());
 
         // then
-        Assertions.assertThat(actualTokenInfoResponse).isSameAs(expectedTokenInfoResponse);
+        Assertions.assertThat(actualResponse).isSameAs(expectedResponse);
     }
 
     /**
@@ -181,7 +180,7 @@ public class UserAuthServiceUnitTest extends ServiceUnitTest {
         final String emptyRefreshToken = "";
 
         // when & then
-        Assertions.assertThatThrownBy(() -> userAuthService.reissue(request, emptyRefreshToken))
+        Assertions.assertThatThrownBy(() -> userAuthService.reissue(httpServletRequest, emptyRefreshToken))
                 .isInstanceOf(CustomCommonException.class)
                 .hasMessage(UserErrorCode.INVALID_REFRESH_TOKEN.getMessage());
     }
@@ -199,26 +198,7 @@ public class UserAuthServiceUnitTest extends ServiceUnitTest {
         when(jwtProvider.validateToken(invalidRefreshToken)).thenReturn(false);
 
         // when & then
-        Assertions.assertThatThrownBy(() -> userAuthService.reissue(request, invalidRefreshToken))
-                .isInstanceOf(CustomCommonException.class)
-                .hasMessage(UserErrorCode.INVALID_REFRESH_TOKEN.getMessage());
-    }
-
-    /**
-     * 사용자 Refresh Token 을 활용한 Access Token 재발급 실패
-     * - 실패 사유 : Access Token 을 활용해 Access Token 재발급 시도
-     */
-    @Test
-    public void reissue_실패_Token_Type() {
-        // given
-        final String accessToken = "accessToken";
-
-        // stub
-        when(jwtProvider.validateToken(accessToken)).thenReturn(true);
-        when(jwtProvider.getType(accessToken)).thenReturn(JwtProvider.TYPE_ACCESS);
-
-        // when & then
-        Assertions.assertThatThrownBy(() -> userAuthService.reissue(request, accessToken))
+        Assertions.assertThatThrownBy(() -> userAuthService.reissue(httpServletRequest, invalidRefreshToken))
                 .isInstanceOf(CustomCommonException.class)
                 .hasMessage(UserErrorCode.INVALID_REFRESH_TOKEN.getMessage());
     }
@@ -234,12 +214,11 @@ public class UserAuthServiceUnitTest extends ServiceUnitTest {
 
         // stub
         when(jwtProvider.validateToken(invalidRefreshToken)).thenReturn(true);
-        when(jwtProvider.getType(invalidRefreshToken)).thenReturn(JwtProvider.TYPE_REFRESH);
 
         when(refreshTokenRedisRepository.findByRefreshToken(invalidRefreshToken)).thenReturn(null);
 
         // when & then
-        Assertions.assertThatThrownBy(() -> userAuthService.reissue(request, invalidRefreshToken))
+        Assertions.assertThatThrownBy(() -> userAuthService.reissue(httpServletRequest, invalidRefreshToken))
                 .isInstanceOf(CustomCommonException.class)
                 .hasMessage(UserErrorCode.INVALID_REFRESH_TOKEN.getMessage());
     }
@@ -260,12 +239,11 @@ public class UserAuthServiceUnitTest extends ServiceUnitTest {
 
         // stub
         when(jwtProvider.validateToken(refreshToken.getRefreshToken())).thenReturn(true);
-        when(jwtProvider.getType(refreshToken.getRefreshToken())).thenReturn(JwtProvider.TYPE_REFRESH);
 
         when(refreshTokenRedisRepository.findByRefreshToken(refreshToken.getRefreshToken())).thenReturn(refreshToken);
 
         // when & then
-        Assertions.assertThatThrownBy(() -> userAuthService.reissue(request, refreshToken.getRefreshToken()))
+        Assertions.assertThatThrownBy(() -> userAuthService.reissue(httpServletRequest, refreshToken.getRefreshToken()))
                 .isInstanceOf(CustomCommonException.class)
                 .hasMessage(UserErrorCode.INVALID_REFRESH_TOKEN.getMessage());
     }
@@ -278,54 +256,14 @@ public class UserAuthServiceUnitTest extends ServiceUnitTest {
         // given
         final String accessToken = "accessToken";
 
-        request.setAttribute("resolvedToken", accessToken);
+        httpServletRequest.setAttribute("resolvedToken", accessToken);
 
         final Collection<? extends GrantedAuthority> authorities = Collections.singleton(new SimpleGrantedAuthority(Role.ROLE_CUSTOMER.name()));
-        final Authentication authentication = new UsernamePasswordAuthenticationToken("username", "", authorities);
+        final Authentication authentication = new UsernamePasswordAuthenticationToken("user1@gmail.com", "", authorities);
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        // stub
-        when(jwtProvider.getType(accessToken)).thenReturn(JwtProvider.TYPE_ACCESS);
-
         // when & then
-        userAuthService.logout(request);
+        userAuthService.logout(httpServletRequest);
     }
 
-    /**
-     * 사용자 Access Token 을 활용한 로그아웃 실패
-     * - 실패 사유 : Access Token 의 값이 비어있음
-     */
-    @Test
-    public void logout_실패_Access_Token_값_존재() {
-        // given
-        final String emptyAccessToken = "";
-
-        request.setAttribute("resolvedToken", emptyAccessToken);
-
-        // when & then
-        Assertions.assertThatThrownBy(() -> userAuthService.logout(request))
-                .isInstanceOf(CustomCommonException.class)
-                .hasMessage(UserErrorCode.INVALID_ACCESS_TOKEN.getMessage());
-    }
-
-
-    /**
-     * 사용자 Access Token 을 활용한 로그아웃 실패
-     * - 실패 사유 : Refresh Token 을 활용해 로그아웃 시도
-     */
-    @Test
-    public void logout_실패_Token_Type() {
-        // given
-        final String refreshToken = "refreshToken";
-
-        request.setAttribute("resolvedToken", refreshToken);
-
-        // stub
-        when(jwtProvider.getType(refreshToken)).thenReturn(JwtProvider.TYPE_REFRESH);
-
-        // when & then
-        Assertions.assertThatThrownBy(() -> userAuthService.logout(request))
-                .isInstanceOf(CustomCommonException.class)
-                .hasMessage(UserErrorCode.INVALID_ACCESS_TOKEN.getMessage());
-    }
 }

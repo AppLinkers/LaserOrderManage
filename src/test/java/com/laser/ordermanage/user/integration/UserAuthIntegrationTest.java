@@ -46,7 +46,6 @@ public class UserAuthIntegrationTest extends IntegrationTest {
                 .andExpect(jsonPath("refreshToken").exists())
                 .andExpect(jsonPath("accessTokenExpirationTime").value(ExpireTime.ACCESS_TOKEN_EXPIRE_TIME))
                 .andExpect(jsonPath("refreshTokenExpirationTime").value(ExpireTime.REFRESH_TOKEN_EXPIRE_TIME));
-
     }
 
     /**
@@ -65,10 +64,7 @@ public class UserAuthIntegrationTest extends IntegrationTest {
         final ResultActions resultActions = requestLogin(request);
 
         // then
-        resultActions
-                .andExpect(status().is(UserErrorCode.INVALID_CREDENTIALS.getHttpStatus().value()))
-                .andExpect(jsonPath("errorCode").value(UserErrorCode.INVALID_CREDENTIALS.getCode()))
-                .andExpect(jsonPath("message").value(UserErrorCode.INVALID_CREDENTIALS.getMessage()));
+        assertError(UserErrorCode.INVALID_CREDENTIALS, resultActions);
     }
 
     /**
@@ -87,10 +83,7 @@ public class UserAuthIntegrationTest extends IntegrationTest {
         final ResultActions resultActions = requestLogin(request);
 
         // then
-        resultActions
-                .andExpect(status().is(UserErrorCode.INVALID_CREDENTIALS.getHttpStatus().value()))
-                .andExpect(jsonPath("errorCode").value(UserErrorCode.INVALID_CREDENTIALS.getCode()))
-                .andExpect(jsonPath("message").value(UserErrorCode.INVALID_CREDENTIALS.getMessage()));
+        assertError(UserErrorCode.INVALID_CREDENTIALS, resultActions);
     }
 
     /**
@@ -124,7 +117,7 @@ public class UserAuthIntegrationTest extends IntegrationTest {
 
     /**
      * 사용자 Refresh Token 을 활용한 Access Token 재발급 실패
-     * - 실패 사유 : 요청 시, Cookie 에 JWT 정보를 추가하지 않음
+     * - 실패 사유 : 요청 시, Cookie 에 Authorization 정보 (Refresh Token) 를 추가하지 않음
      */
     @Test
     public void Access_Token_재발급_실패_Cookie_존재() throws Exception {
@@ -134,56 +127,71 @@ public class UserAuthIntegrationTest extends IntegrationTest {
         final ResultActions resultActions = requestReIssueWithOutRefreshToken();
 
         // then
-        resultActions
-                .andExpect(status().is(CommonErrorCode.REQUIRED_COOKIE.getHttpStatus().value()))
-                .andExpect(jsonPath("errorCode").value(CommonErrorCode.REQUIRED_COOKIE.getCode()))
-                .andExpect(jsonPath("message").value("refreshToken" + CommonErrorCode.REQUIRED_COOKIE.getMessage()));
+        assertErrorWithMessage(CommonErrorCode.REQUIRED_COOKIE, resultActions, "refreshToken");
     }
 
     /**
      * 사용자 Refresh Token 을 활용한 Access Token 재발급 실패
-     * - 실패 사유 : 요청 시, Cookie 에 Access Token 정보를 추가함 (Refresh Token 정보를 추가해야 함)
+     * - 실패 사유 : 요청 시, Cookie 에 있는 Authorization 정보 (Refresh Token) 에 권한 정보가 없음
+     */
+    @Test
+    public void Access_Token_재발급_실패_Unauthorized_Refresh_Token() throws Exception {
+        // given
+        final String unauthorizedRefreshToken = jwtBuilder.unauthorizedRefreshJwtBuild();
+
+        // when
+        final ResultActions resultActions = requestReIssue(unauthorizedRefreshToken);
+
+        // then
+        assertError(UserErrorCode.UNAUTHORIZED_JWT, resultActions);
+    }
+
+    /**
+     * 사용자 Refresh Token 을 활용한 Access Token 재발급 실패
+     * - 실패 사유 : 요청 시, Cookie 에 다른 타입의 Authorization 정보 (Access Token) 를 추가함
      */
     @Test
     public void Access_Token_재발급_실패_Token_Type() throws Exception {
         // given
-        final LoginRequest request = LoginRequest.builder()
-                .email("user1@gmail.com")
-                .password("user1-password")
-                .build();
-
-        final String response = requestLogin(request).andReturn().getResponse().getContentAsString();
-
-        final String accessToken = objectMapper.readValue(response, TokenInfoResponse.class).accessToken();
+        final String accessToken = jwtBuilder.accessJwtBuild();
 
         // when
         final ResultActions resultActions = requestReIssue(accessToken);
 
         // then
-        resultActions
-                .andExpect(status().is(UserErrorCode.INVALID_REFRESH_TOKEN.getHttpStatus().value()))
-                .andExpect(jsonPath("errorCode").value(UserErrorCode.INVALID_REFRESH_TOKEN.getCode()))
-                .andExpect(jsonPath("message").value(UserErrorCode.INVALID_REFRESH_TOKEN.getMessage()));
+        assertError(UserErrorCode.INVALID_TOKEN_TYPE, resultActions);
     }
 
     /**
      * 사용자 Refresh Token 을 활용한 Access Token 재발급 실패
-     * - 실패 사유 : 요청 시, Cookie 에 유효하지 않은 JWT 정보를 추가함
+     * - 실패 사유 : 요청 시, Cookie 에 있는 Authorization(Refresh Token) 의 유효기간 만료
      */
     @Test
-    public void Access_Token_재발급_실패_Empty_Refresh_Token() throws Exception {
+    public void Access_Token_재발급_실패_Expired_Refresh_Token() throws Exception {
         // given
-        final String emptyRefreshToken = "";
+        final String expiredRefreshToken = jwtBuilder.expiredRefreshJwtBuild();
 
         // when
-        final ResultActions resultActions = requestReIssue(emptyRefreshToken);
+        final ResultActions resultActions = requestReIssue(expiredRefreshToken);
 
         // then
-        resultActions
-                .andExpect(status().is(UserErrorCode.INVALID_REFRESH_TOKEN.getHttpStatus().value()))
-                .andExpect(jsonPath("errorCode").value(UserErrorCode.INVALID_REFRESH_TOKEN.getCode()))
-                .andExpect(jsonPath("message").value(UserErrorCode.INVALID_REFRESH_TOKEN.getMessage()));
+        assertError(UserErrorCode.EXPIRED_JWT, resultActions);
+    }
 
+    /**
+     * 사용자 Refresh Token 을 활용한 Access Token 재발급 실패
+     * - 실패 사유 : 요청 시, Cookie 에 있는 Authorization(JWT) 가 유효하지 않음
+     */
+    @Test
+    public void Access_Token_재발급_실패_Invalid_Token() throws Exception {
+        // given
+        final String invalidRefreshToken = jwtBuilder.invalidJwtBuild();
+
+        // when
+        final ResultActions resultActions = requestReIssue(invalidRefreshToken);
+
+        // then
+        assertError(UserErrorCode.INVALID_JWT, resultActions);
     }
 
     /**
@@ -199,51 +207,7 @@ public class UserAuthIntegrationTest extends IntegrationTest {
         final ResultActions resultActions = requestReIssue(invalidRefreshToken);
 
         // then
-        resultActions
-                .andExpect(status().is(UserErrorCode.INVALID_JWT.getHttpStatus().value()))
-                .andExpect(jsonPath("errorCode").value(UserErrorCode.INVALID_JWT.getCode()))
-                .andExpect(jsonPath("message").value(UserErrorCode.INVALID_JWT.getMessage()));
-
-    }
-
-    /**
-     * 사용자 Refresh Token 을 활용한 Access Token 재발급 실패
-     * - 실패 사유 : 요청 시, Cookie 에 있는  JWT 의 유효기간 만료
-     */
-    @Test
-    public void Access_Token_재발급_실패_Expired_Refresh_Token() throws Exception {
-        // given
-        final String expiredRefreshToken = jwtBuilder.expiredRefreshJwtBuild();
-
-        // when
-        final ResultActions resultActions = requestReIssue(expiredRefreshToken);
-
-        // then
-        resultActions
-                .andExpect(status().is(UserErrorCode.EXPIRED_JWT.getHttpStatus().value()))
-                .andExpect(jsonPath("errorCode").value(UserErrorCode.EXPIRED_JWT.getCode()))
-                .andExpect(jsonPath("message").value(UserErrorCode.EXPIRED_JWT.getMessage()));
-
-    }
-
-    /**
-     * 사용자 Refresh Token 을 활용한 Access Token 재발급 실패
-     * - 실패 사유 : 요청 시, Cookie 에 있는 JWT 에 권한 정보가 없음
-     */
-    @Test
-    public void Access_Token_재발급_실패_Unauthorized_Refresh_Token() throws Exception {
-        // given
-        final String unauthorizedRefreshToken = jwtBuilder.unauthorizedRefreshJwtBuild();
-
-        // when
-        final ResultActions resultActions = requestReIssue(unauthorizedRefreshToken);
-
-        // then
-        resultActions
-                .andExpect(status().is(UserErrorCode.UNAUTHORIZED_JWT.getHttpStatus().value()))
-                .andExpect(jsonPath("errorCode").value(UserErrorCode.UNAUTHORIZED_JWT.getCode()))
-                .andExpect(jsonPath("message").value(UserErrorCode.UNAUTHORIZED_JWT.getMessage()));
-
+        assertError(UserErrorCode.INVALID_JWT, resultActions);
     }
 
     /**
@@ -266,11 +230,7 @@ public class UserAuthIntegrationTest extends IntegrationTest {
         final ResultActions resultActions = requestReIssueWithDifferentIpAddress(refreshToken);
 
         // then
-        resultActions
-                .andExpect(status().is(UserErrorCode.INVALID_REFRESH_TOKEN.getHttpStatus().value()))
-                .andExpect(jsonPath("errorCode").value(UserErrorCode.INVALID_REFRESH_TOKEN.getCode()))
-                .andExpect(jsonPath("message").value(UserErrorCode.INVALID_REFRESH_TOKEN.getMessage()));
-
+        assertError(UserErrorCode.INVALID_REFRESH_TOKEN, resultActions);
     }
 
     /**
@@ -292,14 +252,19 @@ public class UserAuthIntegrationTest extends IntegrationTest {
         final ResultActions resultActions = requestLogout(accessToken);
 
         // then
-        resultActions
-                .andExpect(status().isOk());
+        resultActions.andExpect(status().isOk());
 
+        // 로그아웃 한 accessToken 을 활용한 접근
+        // when
+        final ResultActions resultActionsAfterLogout = requestLogout(accessToken);
+
+        // then
+        assertError(UserErrorCode.INVALID_ACCESS_TOKEN, resultActionsAfterLogout);
     }
 
     /**
      * 사용자 Access Token 을 활용한 로그아웃 실패
-     * - 요청 시, Header 에 Authorization 정보 (Access Token) 를 추가하지 않음
+     * - 실패 사유 : 요청 시, Header 에 Authorization 정보 (Access Token) 를 추가하지 않음
      */
     @Test
     public void 로그아웃_실패_Header_Authorization_존재() throws Exception {
@@ -309,56 +274,12 @@ public class UserAuthIntegrationTest extends IntegrationTest {
         final ResultActions resultActions = requestLogoutWithOutAccessToken();
 
         // then
-        resultActions
-                .andExpect(status().is(UserErrorCode.MISSING_JWT.getHttpStatus().value()))
-                .andExpect(jsonPath("errorCode").value(UserErrorCode.MISSING_JWT.getCode()))
-                .andExpect(jsonPath("message").value(UserErrorCode.MISSING_JWT.getMessage()));
-
+        assertError(UserErrorCode.MISSING_JWT, resultActions);
     }
 
     /**
      * 사용자 Access Token 을 활용한 로그아웃 실패
-     * - 요청 시, Header 에 Authorization 정보 (Refresh Token) 를 추가함
-     */
-    @Test
-    public void 로그아웃_실패_Token_Type() throws Exception {
-        // given
-        final String refreshToken = jwtBuilder.refreshJwtBuild();
-
-        // when
-        final ResultActions resultActions = requestLogout(refreshToken);
-
-        // then
-        resultActions
-                .andExpect(status().is(UserErrorCode.INVALID_ACCESS_TOKEN.getHttpStatus().value()))
-                .andExpect(jsonPath("errorCode").value(UserErrorCode.INVALID_ACCESS_TOKEN.getCode()))
-                .andExpect(jsonPath("message").value(UserErrorCode.INVALID_ACCESS_TOKEN.getMessage()));
-
-    }
-
-    /**
-     * 사용자 Access Token 을 활용한 로그아웃 실패
-     * - 실패 사유 : 요청 시, Header 에 있는  JWT 의 유효기간 만료
-     */
-    @Test
-    public void 로그아웃_실패_Expired_Access_Token() throws Exception {
-        // given
-        final String expiredAccessToken = jwtBuilder.expiredAccessJwtBuild();
-
-        // when
-        final ResultActions resultActions = requestLogout(expiredAccessToken);
-
-        // then
-        resultActions
-                .andExpect(status().is(UserErrorCode.EXPIRED_JWT.getHttpStatus().value()))
-                .andExpect(jsonPath("errorCode").value(UserErrorCode.EXPIRED_JWT.getCode()))
-                .andExpect(jsonPath("message").value(UserErrorCode.EXPIRED_JWT.getMessage()));
-
-    }
-
-    /**
-     * 사용자 Refresh Token 을 활용한 Access Token 재발급 실패
-     * - 실패 사유 : 요청 시, Cookie 에 있는 JWT 에 권한 정보가 없음
+     * - 실패 사유 : 요청 시, Header 에 있는 Authorization 정보 (Access Token) 에 권한 정보가 없음
      */
     @Test
     public void 로그아웃_실패_Unauthorized_Access_Token() throws Exception {
@@ -369,11 +290,55 @@ public class UserAuthIntegrationTest extends IntegrationTest {
         final ResultActions resultActions = requestLogout(unauthorizedAccessToken);
 
         // then
-        resultActions
-                .andExpect(status().is(UserErrorCode.UNAUTHORIZED_JWT.getHttpStatus().value()))
-                .andExpect(jsonPath("errorCode").value(UserErrorCode.UNAUTHORIZED_JWT.getCode()))
-                .andExpect(jsonPath("message").value(UserErrorCode.UNAUTHORIZED_JWT.getMessage()));
+        assertError(UserErrorCode.UNAUTHORIZED_JWT, resultActions);
+    }
 
+    /**
+     * 사용자 Access Token 을 활용한 로그아웃 실패
+     * - 실패 사유 : 요청 시, Header 에 다른 타입의 Authorization 정보 (Refresh Token) 를 추가함
+     */
+    @Test
+    public void 로그아웃_실패_Token_Type() throws Exception {
+        // given
+        final String refreshToken = jwtBuilder.refreshJwtBuild();
+
+        // when
+        final ResultActions resultActions = requestLogout(refreshToken);
+
+        // then
+        assertError(UserErrorCode.INVALID_TOKEN_TYPE, resultActions);
+    }
+
+    /**
+     * 사용자 Access Token 을 활용한 로그아웃 실패
+     * - 실패 사유 : 요청 시, Header 에 있는 Authorization(Access Token) 의 유효기간 만료
+     */
+    @Test
+    public void 로그아웃_실패_Expired_Access_Token() throws Exception {
+        // given
+        final String expiredAccessToken = jwtBuilder.expiredAccessJwtBuild();
+
+        // when
+        final ResultActions resultActions = requestLogout(expiredAccessToken);
+
+        // then
+        assertError(UserErrorCode.EXPIRED_JWT, resultActions);
+    }
+
+    /**
+     * 사용자 Access Token 을 활용한 로그아웃 실패
+     * - 실패 사유 : 요청 시, Header 에 있는 Authorization(JWT) 가 유효하지 않음
+     */
+    @Test
+    public void 로그아웃_실패_Invalid_Token() throws Exception {
+        // given
+        final String invalidToken = jwtBuilder.invalidJwtBuild();
+
+        // when
+        final ResultActions resultActions = requestLogout(invalidToken);
+
+        // then
+        assertError(UserErrorCode.INVALID_JWT, resultActions);
     }
 
     private ResultActions requestLogin(LoginRequest request) throws Exception {

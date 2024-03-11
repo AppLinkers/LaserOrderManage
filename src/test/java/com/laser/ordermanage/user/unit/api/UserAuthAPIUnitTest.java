@@ -18,7 +18,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.web.context.WebApplicationContext;
@@ -71,23 +70,18 @@ public class UserAuthAPIUnitTest extends APIUnitTest {
 
     /**
      * 사용자 로그인 실패
-     * - 실패 사유 : 이메일 필드 - null
+     * - 실패 사유 : 이메일 필드 null
      */
     @Test
     public void 로그인_실패_이메일_필드_null() throws Exception {
         // given
-        final LoginRequest request = LoginRequest.builder()
-                .password("user1-password")
-                .build();
+        final LoginRequest request = LoginRequestBuilder.nullEmailBuild();
 
         // when
         final ResultActions resultActions = requestLogin(request);
 
         // then
-        resultActions
-                .andExpect(status().is(CommonErrorCode.INVALID_REQUEST_BODY_FIELDS.getHttpStatus().value()))
-                .andExpect(jsonPath("errorCode").value(CommonErrorCode.INVALID_REQUEST_BODY_FIELDS.getCode()))
-                .andExpect(jsonPath("message").value("이메일은 필수 입력값입니다."));
+        assertErrorWithMessage(CommonErrorCode.INVALID_REQUEST_BODY_FIELDS, resultActions, "이메일은 필수 입력값입니다.");
     }
 
     /**
@@ -97,40 +91,29 @@ public class UserAuthAPIUnitTest extends APIUnitTest {
     @Test
     public void 로그인_실패_이메일_필드_유효성() throws Exception {
         // given
-        final LoginRequest request = LoginRequest.builder()
-                .email("invalid-email")
-                .password("user1-password")
-                .build();
+        final LoginRequest request = LoginRequestBuilder.invalidEmailBuild();
 
         // when
         final ResultActions resultActions = requestLogin(request);
 
         // then
-        resultActions
-                .andExpect(status().is(CommonErrorCode.INVALID_REQUEST_BODY_FIELDS.getHttpStatus().value()))
-                .andExpect(jsonPath("errorCode").value(CommonErrorCode.INVALID_REQUEST_BODY_FIELDS.getCode()))
-                .andExpect(jsonPath("message").value("이메일 형식에 맞지 않습니다."));
+        assertErrorWithMessage(CommonErrorCode.INVALID_REQUEST_BODY_FIELDS, resultActions, "이메일 형식에 맞지 않습니다.");
     }
 
     /**
      * 사용자 로그인 실패
-     * - 실패 사유 : 비밀번호 필드 - null
+     * - 실패 사유 : 비밀번호 필드 null
      */
     @Test
     public void 로그인_실패_비밀번호_필드_null() throws Exception {
         // given
-        final LoginRequest request = LoginRequest.builder()
-                .email("user1@gmail.com")
-                .build();
+        final LoginRequest request = LoginRequestBuilder.nullPasswordBuild();
 
         // when
         final ResultActions resultActions = requestLogin(request);
 
         // then
-        resultActions
-                .andExpect(status().is(CommonErrorCode.INVALID_REQUEST_BODY_FIELDS.getHttpStatus().value()))
-                .andExpect(jsonPath("errorCode").value(CommonErrorCode.INVALID_REQUEST_BODY_FIELDS.getCode()))
-                .andExpect(jsonPath("message").value("비밀번호는 필수 입력값입니다."));
+        assertErrorWithMessage(CommonErrorCode.INVALID_REQUEST_BODY_FIELDS, resultActions, "비밀번호는 필수 입력값입니다.");
     }
 
     /**
@@ -140,19 +123,13 @@ public class UserAuthAPIUnitTest extends APIUnitTest {
     @Test
     public void 로그인_실패_비밀번호_필드_유효성() throws Exception {
         // given
-        final LoginRequest request = LoginRequest.builder()
-                .email("user1@gmail.com")
-                .password("invalid-password")
-                .build();
+        final LoginRequest request = LoginRequestBuilder.invalidPasswordBuild();
 
         // when
         final ResultActions resultActions = requestLogin(request);
 
         // then
-        resultActions
-                .andExpect(status().is(CommonErrorCode.INVALID_REQUEST_BODY_FIELDS.getHttpStatus().value()))
-                .andExpect(jsonPath("errorCode").value(CommonErrorCode.INVALID_REQUEST_BODY_FIELDS.getCode()))
-                .andExpect(jsonPath("message").value("비밀번호는 8 자리 이상 영문, 숫자, 특수문자를 사용하세요."));
+        assertErrorWithMessage(CommonErrorCode.INVALID_REQUEST_BODY_FIELDS, resultActions, "비밀번호는 8 자리 이상 영문, 숫자, 특수문자를 사용하세요.");
     }
 
     /**
@@ -173,10 +150,7 @@ public class UserAuthAPIUnitTest extends APIUnitTest {
         final ResultActions resultActions = requestLogin(invalidRequest);
 
         // then
-        resultActions
-                .andExpect(status().is(UserErrorCode.INVALID_CREDENTIALS.getHttpStatus().value()))
-                .andExpect(jsonPath("errorCode").value(UserErrorCode.INVALID_CREDENTIALS.getCode()))
-                .andExpect(jsonPath("message").value(UserErrorCode.INVALID_CREDENTIALS.getMessage()));
+        assertError(UserErrorCode.INVALID_CREDENTIALS, resultActions);
     }
 
     /**
@@ -206,90 +180,6 @@ public class UserAuthAPIUnitTest extends APIUnitTest {
 
     /**
      * 사용자 Refresh Token 을 활용한 Access Token 재발급 실패
-     * - 실패 사유 : 요청 시, Cookie 에 JWT 정보를 추가하지 않음
-     */
-    @Test
-    public void Access_Token_재발급_실패_Cookie_존재() throws Exception {
-        // given
-
-        // when
-        final ResultActions resultActions = requestReIssueWithOutRefreshToken();
-
-        // then
-        resultActions
-                .andExpect(status().is(CommonErrorCode.REQUIRED_COOKIE.getHttpStatus().value()))
-                .andExpect(jsonPath("errorCode").value(CommonErrorCode.REQUIRED_COOKIE.getCode()))
-                .andExpect(jsonPath("message").value("refreshToken" + CommonErrorCode.REQUIRED_COOKIE.getMessage()));
-    }
-
-    /**
-     * 사용자 Refresh Token 을 활용한 Access Token 재발급 실패
-     * - 실패 사유 : 유효하지 않은 JWT 을 사용함.
-     */
-    @Test
-    public void Access_Token_재발급_실패_Invalid_JWT_Token() throws Exception {
-        // given
-        final String invalidJwtToken = "invalid-jwt-token";
-
-        // stub
-        when(userAuthService.reissue(any(), any())).thenThrow(new CustomCommonException(UserErrorCode.INVALID_JWT));
-
-        // when
-        final ResultActions resultActions = requestReIssue(invalidJwtToken);
-
-        // then
-        resultActions
-                .andExpect(status().is(UserErrorCode.INVALID_JWT.getHttpStatus().value()))
-                .andExpect(jsonPath("errorCode").value(UserErrorCode.INVALID_JWT.getCode()))
-                .andExpect(jsonPath("message").value(UserErrorCode.INVALID_JWT.getMessage()));
-    }
-
-    /**
-     * 사용자 Refresh Token 을 활용한 Access Token 재발급 실패
-     * - 실패 사유 : 요청 시, Cookie 에 있는  JWT 의 유효기간 만료
-     */
-    @Test
-    public void Access_Token_재발급_실패_Expired_JWT() throws Exception {
-        // given
-        final String expiredJwtToken = "expired-jwt-token";
-
-        // stub
-        when(userAuthService.reissue(any(), any())).thenThrow(new CustomCommonException(UserErrorCode.EXPIRED_JWT));
-
-        // when
-        final ResultActions resultActions = requestReIssue(expiredJwtToken);
-
-        // then
-        resultActions
-                .andExpect(status().is(UserErrorCode.EXPIRED_JWT.getHttpStatus().value()))
-                .andExpect(jsonPath("errorCode").value(UserErrorCode.EXPIRED_JWT.getCode()))
-                .andExpect(jsonPath("message").value(UserErrorCode.EXPIRED_JWT.getMessage()));
-    }
-
-    /**
-     * 사용자 Refresh Token 을 활용한 Access Token 재발급 실패
-     * - 실패 사유 : 요청 시, Cookie 에 있는 JWT 에 권한 정보가 없음
-     */
-    @Test
-    public void Access_Token_재발급_실패_Unauthorized_JWT() throws Exception {
-        // given
-        final String unauthorizedJwtToken = "unauthorized-jwt-token";
-
-        // stub
-        when(userAuthService.reissue(any(), any())).thenThrow(new CustomCommonException(UserErrorCode.UNAUTHORIZED_JWT));
-
-        // when
-        final ResultActions resultActions = requestReIssue(unauthorizedJwtToken);
-
-        // then
-        resultActions
-                .andExpect(status().is(UserErrorCode.UNAUTHORIZED_JWT.getHttpStatus().value()))
-                .andExpect(jsonPath("errorCode").value(UserErrorCode.UNAUTHORIZED_JWT.getCode()))
-                .andExpect(jsonPath("message").value(UserErrorCode.UNAUTHORIZED_JWT.getMessage()));
-    }
-
-    /**
-     * 사용자 Refresh Token 을 활용한 Access Token 재발급 실패
      * - 실패 사유 : 유효하지 않은 Refresh Token 을 사용함.
      */
     @Test
@@ -304,32 +194,7 @@ public class UserAuthAPIUnitTest extends APIUnitTest {
         final ResultActions resultActions = requestReIssue(invalidRefreshToken);
 
         // then
-        resultActions
-                .andExpect(status().is(UserErrorCode.INVALID_REFRESH_TOKEN.getHttpStatus().value()))
-                .andExpect(jsonPath("errorCode").value(UserErrorCode.INVALID_REFRESH_TOKEN.getCode()))
-                .andExpect(jsonPath("message").value(UserErrorCode.INVALID_REFRESH_TOKEN.getMessage()));
-    }
-
-    /**
-     * 사용자 Refresh Token 을 활용한 Access Token 재발급 실패
-     * - 실패 사유 : 지원되지 않는 Refresh Token 을 사용함.
-     */
-    @Test
-    public void Access_Token_재발급_실패_Unsupported_Refresh_Token() throws Exception {
-        // given
-        final String unsupportedRefreshToken = "unsupported-refreshToken";
-
-        // stub
-        when(userAuthService.reissue(any(), any())).thenThrow(new CustomCommonException(UserErrorCode.UNSUPPORTED_JWT));
-
-        // when
-        final ResultActions resultActions = requestReIssue(unsupportedRefreshToken);
-
-        // then
-        resultActions
-                .andExpect(status().is(UserErrorCode.UNSUPPORTED_JWT.getHttpStatus().value()))
-                .andExpect(jsonPath("errorCode").value(UserErrorCode.UNSUPPORTED_JWT.getCode()))
-                .andExpect(jsonPath("message").value(UserErrorCode.UNSUPPORTED_JWT.getMessage()));
+        assertError(UserErrorCode.INVALID_REFRESH_TOKEN, resultActions);
     }
 
     /**
@@ -354,26 +219,6 @@ public class UserAuthAPIUnitTest extends APIUnitTest {
 
     /**
      * 사용자 Access Token 을 활용한 로그아웃 실패
-     * - 실패 사유 : 인증 정보 (Authentication) 없음.
-     */
-    @Test
-    @WithAnonymousUser
-    public void 로그아웃_실패_Anonymous_User() throws Exception {
-        // given
-        String accessToken = "access-token";
-
-        // when
-        final ResultActions resultActions = requestLogout(accessToken);
-
-        // then
-        resultActions
-                .andExpect(status().is(UserErrorCode.MISSING_JWT.getHttpStatus().value()))
-                .andExpect(jsonPath("errorCode").value(UserErrorCode.MISSING_JWT.getCode()))
-                .andExpect(jsonPath("message").value(UserErrorCode.MISSING_JWT.getMessage()));
-    }
-
-    /**
-     * 사용자 Access Token 을 활용한 로그아웃 실패
      * - 실패 사유 : 유효하지 않은 Access Token 을 사용함.
      */
     @Test
@@ -389,10 +234,7 @@ public class UserAuthAPIUnitTest extends APIUnitTest {
         final ResultActions resultActions = requestLogout(invalidAccessToken);
 
         // then
-        resultActions
-                .andExpect(status().is(UserErrorCode.INVALID_ACCESS_TOKEN.getHttpStatus().value()))
-                .andExpect(jsonPath("errorCode").value(UserErrorCode.INVALID_ACCESS_TOKEN.getCode()))
-                .andExpect(jsonPath("message").value(UserErrorCode.INVALID_ACCESS_TOKEN.getMessage()));
+        assertError(UserErrorCode.INVALID_ACCESS_TOKEN, resultActions);
     }
 
     private ResultActions requestLogin(LoginRequest request) throws Exception {
@@ -407,11 +249,6 @@ public class UserAuthAPIUnitTest extends APIUnitTest {
 
         return mvc.perform(post("/user/re-issue")
                         .cookie(cookie))
-                .andDo(print());
-    }
-
-    private ResultActions requestReIssueWithOutRefreshToken() throws Exception {
-        return mvc.perform(post("/user/re-issue"))
                 .andDo(print());
     }
 

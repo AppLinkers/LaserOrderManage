@@ -3,12 +3,14 @@ package com.laser.ordermanage.common;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.laser.ordermanage.OrderManageApplication;
 import com.laser.ordermanage.common.cache.redis.config.RedisTestContainers;
+import com.laser.ordermanage.common.email.EmailService;
 import com.laser.ordermanage.common.exception.ErrorCode;
 import lombok.SneakyThrows;
 import org.junit.After;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 import org.springframework.test.context.ActiveProfiles;
@@ -41,6 +43,9 @@ public class IntegrationTest {
 
     @Autowired
     protected SchedulerFactoryBean schedulerFactoryBean;
+
+    @MockBean
+    protected EmailService emailService;
 
     @SneakyThrows
     @After

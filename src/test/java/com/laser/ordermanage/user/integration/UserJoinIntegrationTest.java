@@ -19,6 +19,8 @@ import org.testcontainers.shaded.org.apache.commons.lang3.StringUtils;
 
 import java.util.Optional;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -37,6 +39,9 @@ public class UserJoinIntegrationTest extends IntegrationTest {
     public void 이메일_인증코드_생성_및_이메일_전송_성공_신규회원() throws Exception {
         // given
         final String email = "new-user@gmail.com";
+
+        // stub
+        doNothing().when(emailService).sendEmail(any());
 
         // when
         final ResultActions resultActions = requestForRequestEmailVerify(email);
@@ -88,6 +93,9 @@ public class UserJoinIntegrationTest extends IntegrationTest {
                 .email(email)
                 .code(verifyCode)
                 .build();
+
+        // stub
+        doNothing().when(emailService).sendEmail(any());
 
         // when
         final ResultActions resultActions = requestVerifyEmail(request);
@@ -163,6 +171,9 @@ public class UserJoinIntegrationTest extends IntegrationTest {
                 .email(email)
                 .code(invalidVerifyCode)
                 .build();
+
+        // stub
+        doNothing().when(emailService).sendEmail(any());
 
         // when
         final ResultActions resultActions = requestVerifyEmail(request);

@@ -4,6 +4,7 @@ import com.laser.ordermanage.factory.domain.Factory;
 import com.laser.ordermanage.factory.dto.request.FactoryUpdateUserAccountRequest;
 import com.laser.ordermanage.factory.dto.response.FactoryGetUserAccountResponse;
 import com.laser.ordermanage.factory.repository.FactoryRepository;
+import com.laser.ordermanage.user.domain.UserEntity;
 import com.laser.ordermanage.user.repository.UserEntityRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -23,8 +24,10 @@ public class FactoryUserAccountService {
 
     @Transactional
     public void updateUserAccount(String email, FactoryUpdateUserAccountRequest request) {
-        Factory factory = factoryRepository.findFirstByUserEmail(email);
+        Factory factory = factoryRepository.findFactoryByFactoryManager(email);
+        UserEntity user = userRepository.findFirstByEmail(email).get();
 
         factory.updateProperties(request);
+        user.updateProperties(request.user());
     }
 }

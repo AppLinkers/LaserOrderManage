@@ -49,7 +49,7 @@ public class OrderEmailService {
 
             StringBuilder sbContent = new StringBuilder();
             sbContent.append("안녕하세요 ")
-                    .append(order.getCustomer().getName())
+                    .append(order.getCustomer().getUser().getName())
                     .append(order.getCustomer().hasCompanyName() ? " - " + order.getCustomer().getCompanyName() : " ")
                     .append("고객님,\n")
                     .append(order.getName())
@@ -79,7 +79,7 @@ public class OrderEmailService {
 
             StringBuilder sbSubject = new StringBuilder();
             sbSubject.append("[댓글] ")
-                    .append(order.getCustomer().getName())
+                    .append(order.getCustomer().getUser().getName())
                     .append(" - ")
                     .append(order.getName())
                     .append(" 거래에 댓글이 작성되었습니다.");
@@ -88,7 +88,7 @@ public class OrderEmailService {
             String title = "거래 신규 댓글";
 
             StringBuilder sbContent = new StringBuilder();
-            sbContent.append(order.getCustomer().getName())
+            sbContent.append(order.getCustomer().getUser().getName())
                     .append(order.getCustomer().hasCompanyName() ? " - " + order.getCustomer().getCompanyName() : " ")
                     .append("고객님의, ")
                     .append(order.getName())
@@ -128,7 +128,7 @@ public class OrderEmailService {
             String title = "거래 삭제";
 
             StringBuilder sbContent = new StringBuilder();
-            sbContent.append(customer.getName())
+            sbContent.append(customer.getUser().getName())
                     .append(customer.hasCompanyName() ? " - " + customer.getCompanyName() : " ")
                     .append("고객님의, ")
                     .append(deletedOrder.name())
@@ -153,7 +153,7 @@ public class OrderEmailService {
 
             StringBuilder sbSubject = new StringBuilder();
             sbSubject.append("[거래 삭제] ")
-                    .append(customer.getName())
+                    .append(customer.getUser().getName())
                     .append(" - ")
                     .append(deletedOrder.name())
                     .append(" 거래가 삭제되었습니다.");
@@ -162,7 +162,7 @@ public class OrderEmailService {
             String title = "거래 신규 댓글";
 
             StringBuilder sbContent = new StringBuilder();
-            sbContent.append(customer.getName())
+            sbContent.append(customer.getUser().getName())
                     .append(customer.hasCompanyName() ? " - " + customer.getCompanyName() : " ")
                     .append("고객님의, ")
                     .append(deletedOrder.name())

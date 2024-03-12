@@ -30,7 +30,7 @@ public class CustomerOrderEmailService {
         Order order = orderService.getOrderById(orderId);
         StringBuilder sbSubject = new StringBuilder();
         sbSubject.append("[신규 거래] ")
-                .append(order.getCustomer().getName())
+                .append(order.getCustomer().getUser().getName())
                 .append(" - ")
                 .append(order.getName())
                 .append(" 거래가 생성 되었습니다.");
@@ -39,7 +39,7 @@ public class CustomerOrderEmailService {
         String title = "신규 거래 생성";
 
         StringBuilder sbContent = new StringBuilder();
-        sbContent.append(order.getCustomer().getName())
+        sbContent.append(order.getCustomer().getUser().getName())
                 .append(order.getCustomer().hasCompanyName() ? " - " + order.getCustomer().getCompanyName() : " ")
                 .append("고객님의, ")
                 .append(order.getName())
@@ -68,7 +68,7 @@ public class CustomerOrderEmailService {
         Order order = orderService.getOrderById(orderId);
         StringBuilder sbSubject = new StringBuilder();
         sbSubject.append("[거래 배송지 수정] ")
-                .append(order.getCustomer().getName())
+                .append(order.getCustomer().getUser().getName())
                 .append(" - ")
                 .append(order.getName())
                 .append(" 거래의 배송지가 수정되었습니다.");
@@ -77,7 +77,7 @@ public class CustomerOrderEmailService {
         String title = "거래 배송지 수정";
 
         StringBuilder sbContent = new StringBuilder();
-        sbContent.append(order.getCustomer().getName())
+        sbContent.append(order.getCustomer().getUser().getName())
                 .append(order.getCustomer().hasCompanyName() ? " - " + order.getCustomer().getCompanyName() : " ")
                 .append("고객님의, ")
                 .append(order.getName())
@@ -106,7 +106,7 @@ public class CustomerOrderEmailService {
         Order order = orderService.getOrderById(orderId);
         StringBuilder sbSubject = new StringBuilder();
         sbSubject.append("[거래 도면 추가] ")
-                .append(order.getCustomer().getName())
+                .append(order.getCustomer().getUser().getName())
                 .append(" - ")
                 .append(order.getName())
                 .append(" 거래의 도면이 추가되었습니다.");
@@ -115,7 +115,7 @@ public class CustomerOrderEmailService {
         String title = "거래 도면 추가";
 
         StringBuilder sbContent = new StringBuilder();
-        sbContent.append(order.getCustomer().getName())
+        sbContent.append(order.getCustomer().getUser().getName())
                 .append(order.getCustomer().hasCompanyName() ? " - " + order.getCustomer().getCompanyName() : " ")
                 .append("고객님의, ")
                 .append(order.getName())
@@ -144,7 +144,7 @@ public class CustomerOrderEmailService {
         Order order = orderService.getOrderById(orderId);
         StringBuilder sbSubject = new StringBuilder();
         sbSubject.append("[거래 도면 항목 수정] ")
-                .append(order.getCustomer().getName())
+                .append(order.getCustomer().getUser().getName())
                 .append(" - ")
                 .append(order.getName())
                 .append(" 거래의 도면 항목이 수정되었습니다.");
@@ -153,7 +153,7 @@ public class CustomerOrderEmailService {
         String title = "거래 도면 항목 수정";
 
         StringBuilder sbContent = new StringBuilder();
-        sbContent.append(order.getCustomer().getName())
+        sbContent.append(order.getCustomer().getUser().getName())
                 .append(order.getCustomer().hasCompanyName() ? " - " + order.getCustomer().getCompanyName() : " ")
                 .append("고객님의, ")
                 .append(" 거래 도면 항목이 수정되었습니다.");
@@ -181,7 +181,7 @@ public class CustomerOrderEmailService {
         Order order = orderService.getOrderById(orderId);
         StringBuilder sbSubject = new StringBuilder();
         sbSubject.append("[거래 도면 삭제] ")
-                .append(order.getCustomer().getName())
+                .append(order.getCustomer().getUser().getName())
                 .append(" - ")
                 .append(order.getName())
                 .append(" 거래의 도면이 삭제되었습니다.");
@@ -190,7 +190,7 @@ public class CustomerOrderEmailService {
         String title = "거래 도면 삭제";
 
         StringBuilder sbContent = new StringBuilder();
-        sbContent.append(order.getCustomer().getName())
+        sbContent.append(order.getCustomer().getUser().getName())
                 .append(order.getCustomer().hasCompanyName() ? " - " + order.getCustomer().getCompanyName() : " ")
                 .append("고객님의, ")
                 .append(order.getName())
@@ -219,7 +219,7 @@ public class CustomerOrderEmailService {
         Order order = orderService.getOrderById(orderId);
         StringBuilder sbSubject = new StringBuilder();
         sbSubject.append("[거래 견적서 승인] ")
-                .append(order.getCustomer().getName())
+                .append(order.getCustomer().getUser().getName())
                 .append(" - ")
                 .append(order.getName())
                 .append(" 거래의 견적서가 승인되었습니다.");
@@ -228,7 +228,7 @@ public class CustomerOrderEmailService {
         String title = "거래 견적서 승인";
 
         StringBuilder sbContent = new StringBuilder();
-        sbContent.append(order.getCustomer().getName())
+        sbContent.append(order.getCustomer().getUser().getName())
                 .append(order.getCustomer().hasCompanyName() ? " - " + order.getCustomer().getCompanyName() : " ")
                 .append("고객님의, ")
                 .append(order.getName())
@@ -257,7 +257,7 @@ public class CustomerOrderEmailService {
         Order order = orderService.getOrderById(orderId);
         StringBuilder sbSubject = new StringBuilder();
         sbSubject.append("[거래 발주서 작성] ")
-                .append(order.getCustomer().getName())
+                .append(order.getCustomer().getUser().getName())
                 .append(" - ")
                 .append(order.getName())
                 .append(" 거래의 발주서가 작성되었습니다.");
@@ -266,7 +266,7 @@ public class CustomerOrderEmailService {
         String title = "거래 발주서 작성";
 
         StringBuilder sbContent = new StringBuilder();
-        sbContent.append(order.getCustomer().getName())
+        sbContent.append(order.getCustomer().getUser().getName())
                 .append(order.getCustomer().hasCompanyName() ? " - " + order.getCustomer().getCompanyName() : " ")
                 .append("고객님의, ")
                 .append(order.getName())
@@ -295,7 +295,7 @@ public class CustomerOrderEmailService {
         Order order = orderService.getOrderById(orderId);
         StringBuilder sbSubject = new StringBuilder();
         sbSubject.append("[거래 발주서 수정] ")
-                .append(order.getCustomer().getName())
+                .append(order.getCustomer().getUser().getName())
                 .append(" - ")
                 .append(order.getName())
                 .append(" 거래의 발주서가 수정되었습니다.");
@@ -304,7 +304,7 @@ public class CustomerOrderEmailService {
         String title = "거래 발주서 수정";
 
         StringBuilder sbContent = new StringBuilder();
-        sbContent.append(order.getCustomer().getName())
+        sbContent.append(order.getCustomer().getUser().getName())
                 .append(order.getCustomer().hasCompanyName() ? " - " + order.getCustomer().getCompanyName() : " ")
                 .append("고객님의, ")
                 .append(order.getName())

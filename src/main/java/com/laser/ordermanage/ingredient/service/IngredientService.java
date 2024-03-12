@@ -88,7 +88,7 @@ public class IngredientService {
 
     @Transactional
     public void createIngredient(String email, CreateIngredientRequest request) {
-        Factory factory = factoryRepository.findFirstByUserEmail(email);
+        Factory factory = factoryRepository.findFactoryByFactoryManager(email);
         Ingredient ingredient = Ingredient.builder()
                 .factory(factory)
                 .texture(request.texture())
@@ -176,18 +176,18 @@ public class IngredientService {
     }
 
     @Transactional(readOnly = true)
-    public ListResponse<GetIngredientInfoResponse> getIngredientInfoByFactory(String email) {
-        return new ListResponse<>(ingredientRepository.findIngredientByFactory(email));
+    public ListResponse<GetIngredientInfoResponse> getIngredientInfoByFactoryManager(String email) {
+        return new ListResponse<>(ingredientRepository.findIngredientByFactoryManager(email));
     }
 
     @Transactional(readOnly = true)
-    public GetIngredientAnalysisResponse getIngredientAnalysisByFactory(String email, String data, Long ingredientId, String timeUnit, LocalDate startDate, LocalDate endDate, String itemUnit, List<String> itemTypeList, String stockUnit) {
+    public GetIngredientAnalysisResponse getIngredientAnalysisByFactoryManager(String email, String data, Long ingredientId, String timeUnit, LocalDate startDate, LocalDate endDate, String itemUnit, List<String> itemTypeList, String stockUnit) {
         List<GetIngredientAnalysisItemResponse> ingredientAnalysisItemList;
 
         if (data.equals("total")) {
-            ingredientAnalysisItemList = getIngredientAnalysisAsTotalByFactory(email, timeUnit, startDate, endDate, itemUnit, itemTypeList, stockUnit);
+            ingredientAnalysisItemList = getIngredientAnalysisAsTotalByFactoryManager(email, timeUnit, startDate, endDate, itemUnit, itemTypeList, stockUnit);
         } else if (data.equals("average")) {
-            ingredientAnalysisItemList = getIngredientAnalysisAsAverageByFactory(email, timeUnit, startDate, endDate, itemUnit, itemTypeList, stockUnit);
+            ingredientAnalysisItemList = getIngredientAnalysisAsAverageByFactoryManager(email, timeUnit, startDate, endDate, itemUnit, itemTypeList, stockUnit);
         } else {
             checkAuthorityOfIngredient(email, ingredientId);
             ingredientAnalysisItemList = getIngredientAnalysisAsIngredient(ingredientId, timeUnit, startDate, endDate, itemUnit, itemTypeList, stockUnit);
@@ -201,42 +201,42 @@ public class IngredientService {
                 .build();
     }
 
-    private List<GetIngredientAnalysisItemResponse> getIngredientAnalysisAsTotalByFactory(String email, String timeUnit, LocalDate startDate, LocalDate endDate, String itemUnit, List<String> itemTypeList, String stockUnit) {
+    private List<GetIngredientAnalysisItemResponse> getIngredientAnalysisAsTotalByFactoryManager(String email, String timeUnit, LocalDate startDate, LocalDate endDate, String itemUnit, List<String> itemTypeList, String stockUnit) {
         if (timeUnit.equals("month")) {
             if (itemUnit.equals("stock")) {
                 // total - month - stock
-                return ingredientRepository.findIngredientAnalysisAsTotalAndMonthAndStockByFactory(email, startDate, endDate, itemTypeList, stockUnit);
+                return ingredientRepository.findIngredientAnalysisAsTotalAndMonthAndStockByFactoryManager(email, startDate, endDate, itemTypeList, stockUnit);
             } else {
                 // total - month - price
-                return ingredientRepository.findIngredientAnalysisAsTotalAndMonthAndPriceByFactory(email, startDate, endDate, itemTypeList);
+                return ingredientRepository.findIngredientAnalysisAsTotalAndMonthAndPriceByFactoryManager(email, startDate, endDate, itemTypeList);
             }
         } else {
             if (itemUnit.equals("stock")) {
                 // total - year - stock
-                return ingredientRepository.findIngredientAnalysisAsTotalAndYearAndStockByFactory(email, startDate, endDate, itemTypeList, stockUnit);
+                return ingredientRepository.findIngredientAnalysisAsTotalAndYearAndStockByFactoryManager(email, startDate, endDate, itemTypeList, stockUnit);
             } else {
                 // total - year - price
-                return ingredientRepository.findIngredientAnalysisAsTotalAndYearAndPriceByFactory(email, startDate, endDate, itemTypeList);
+                return ingredientRepository.findIngredientAnalysisAsTotalAndYearAndPriceByFactoryManager(email, startDate, endDate, itemTypeList);
             }
         }
     }
 
-    private List<GetIngredientAnalysisItemResponse> getIngredientAnalysisAsAverageByFactory(String email, String timeUnit, LocalDate startDate, LocalDate endDate, String itemUnit, List<String> itemTypeList, String stockUnit) {
+    private List<GetIngredientAnalysisItemResponse> getIngredientAnalysisAsAverageByFactoryManager(String email, String timeUnit, LocalDate startDate, LocalDate endDate, String itemUnit, List<String> itemTypeList, String stockUnit) {
         if (timeUnit.equals("month")) {
             if (itemUnit.equals("stock")) {
                 // average - month - stock
-                return ingredientRepository.findIngredientAnalysisAsAverageAndMonthAndStockByFactory(email, startDate, endDate, itemTypeList, stockUnit);
+                return ingredientRepository.findIngredientAnalysisAsAverageAndMonthAndStockByFactoryManager(email, startDate, endDate, itemTypeList, stockUnit);
             } else {
                 // average - month - price
-                return ingredientRepository.findIngredientAnalysisAsAverageAndMonthAndPriceByFactory(email, startDate, endDate, itemTypeList);
+                return ingredientRepository.findIngredientAnalysisAsAverageAndMonthAndPriceByFactoryManager(email, startDate, endDate, itemTypeList);
             }
         } else {
             if (itemUnit.equals("stock")) {
                 // average - year - stock
-                return ingredientRepository.findIngredientAnalysisAsAverageAndYearAndStockByFactory(email, startDate, endDate, itemTypeList, stockUnit);
+                return ingredientRepository.findIngredientAnalysisAsAverageAndYearAndStockByFactoryManager(email, startDate, endDate, itemTypeList, stockUnit);
             } else {
                 // average - year - price
-                return ingredientRepository.findIngredientAnalysisAsAverageAndYearAndPriceByFactory(email, startDate, endDate, itemTypeList);
+                return ingredientRepository.findIngredientAnalysisAsAverageAndYearAndPriceByFactoryManager(email, startDate, endDate, itemTypeList);
             }
         }
     }
@@ -261,6 +261,7 @@ public class IngredientService {
         }
     }
 
+    // TODO: 2024/03/12  수정 필요 -> ingredient 에 해당하는 User 가 다수임.
     @Transactional(readOnly = true)
     public void checkAuthorityOfIngredient(String email, Long ingredientId) {
         if (!getUserEmailByIngredient(ingredientId).equals(email)) {

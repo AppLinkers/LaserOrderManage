@@ -44,7 +44,7 @@ public class FactoryOrderEmailService {
             sbTitle.append("거래 긴급 설정");
 
             sbContent.append("안녕하세요 ")
-                    .append(order.getCustomer().getName())
+                    .append(order.getCustomer().getUser().getName())
                     .append(order.getCustomer().hasCompanyName() ? " - " + order.getCustomer().getCompanyName() : " ")
                     .append("고객님,<br/>")
                     .append(order.getName())
@@ -57,7 +57,7 @@ public class FactoryOrderEmailService {
             sbTitle.append("거래 긴급 설정 해제");
 
             sbContent.append("안녕하세요 ")
-                    .append(order.getCustomer().getName())
+                    .append(order.getCustomer().getUser().getName())
                     .append(order.getCustomer().hasCompanyName() ? " - " + order.getCustomer().getCompanyName() : " ")
                     .append("고객님,<br/>")
                     .append(order.getName())
@@ -99,7 +99,7 @@ public class FactoryOrderEmailService {
 
         StringBuilder sbContent = new StringBuilder();
         sbContent.append("안녕하세요 ")
-                .append(order.getCustomer().getName())
+                .append(order.getCustomer().getUser().getName())
                 .append(order.getCustomer().hasCompanyName() ? " - " + order.getCustomer().getCompanyName() : " ")
                 .append("고객님,<br/>")
                 .append(order.getName())
@@ -137,7 +137,7 @@ public class FactoryOrderEmailService {
 
         StringBuilder sbContent = new StringBuilder();
         sbContent.append("안녕하세요 ")
-                .append(order.getCustomer().getName())
+                .append(order.getCustomer().getUser().getName())
                 .append(order.getCustomer().hasCompanyName() ? " - " + order.getCustomer().getCompanyName() : " ")
                 .append("고객님,<br/>")
                 .append(order.getName())
@@ -175,7 +175,7 @@ public class FactoryOrderEmailService {
 
         StringBuilder sbContent = new StringBuilder();
         sbContent.append("안녕하세요 ")
-                .append(order.getCustomer().getName())
+                .append(order.getCustomer().getUser().getName())
                 .append(order.getCustomer().hasCompanyName() ? " - " + order.getCustomer().getCompanyName() : " ")
                 .append("고객님,<br/>")
                 .append(order.getName())
@@ -213,7 +213,7 @@ public class FactoryOrderEmailService {
 
         StringBuilder sbContent = new StringBuilder();
         sbContent.append("안녕하세요 ")
-                .append(order.getCustomer().getName())
+                .append(order.getCustomer().getUser().getName())
                 .append(order.getCustomer().hasCompanyName() ? " - " + order.getCustomer().getCompanyName() : " ")
                 .append("고객님,<br/>")
                 .append(order.getName())
@@ -253,7 +253,7 @@ public class FactoryOrderEmailService {
 
         StringBuilder sbSubject = new StringBuilder();
         sbSubject.append("[거래 품목 확인 및 인수 서명 요청] ")
-                .append(order.getCustomer().getName())
+                .append(order.getCustomer().getUser().getName())
                 .append(" - ")
                 .append(order.getName())
                 .append(" 거래의 품목을 확인 후 인수자의 서명을 받아주세요.");
@@ -262,7 +262,7 @@ public class FactoryOrderEmailService {
         String title = "거래 품목 확인 및 인수 서명 요청";
 
         StringBuilder sbContent = new StringBuilder();
-        sbContent.append(order.getCustomer().getName())
+        sbContent.append(order.getCustomer().getUser().getName())
                 .append(order.getCustomer().hasCompanyName() ? " - " + order.getCustomer().getCompanyName() : " ")
                 .append("고객님의, ")
                 .append(order.getName())
@@ -300,7 +300,7 @@ public class FactoryOrderEmailService {
 
         StringBuilder sbContent = new StringBuilder();
         sbContent.append("안녕하세요 ")
-                .append(order.getCustomer().getName())
+                .append(order.getCustomer().getUser().getName())
                 .append(order.getCustomer().hasCompanyName() ? " - " + order.getCustomer().getCompanyName() : " ")
                 .append("고객님,<br/>")
                 .append(order.getName())

@@ -44,16 +44,16 @@ public class UserAccountIntegrationTest extends IntegrationTest {
     }
 
     /**
-     * 공장 이메일 찾기 성공
+     * 공장 담당자 이메일 찾기 성공
      */
     @Test
-    public void 공장_이메일_찾기_성공() throws Exception {
+    public void 공장담당자_이메일_찾기_성공() throws Exception {
         // given
-        final String factoryName = "금오 M.T";
-        final String factoryPhone = "01011111111";
+        final String factoryManagerName = "관리자";
+        final String factoryManagerPhone = "01011111111";
 
         // when
-        final ResultActions resultActions = requestGetUserEmail(factoryName, factoryPhone);
+        final ResultActions resultActions = requestGetUserEmail(factoryManagerName, factoryManagerPhone);
 
         // then
         resultActions
@@ -61,7 +61,7 @@ public class UserAccountIntegrationTest extends IntegrationTest {
                 .andExpect(jsonPath("contents").isArray())
                 .andExpect(jsonPath("contents.size()").value(1))
                 .andExpect(jsonPath("totalElements").value(1))
-                .andExpect(jsonPath("contents[0].name").value(factoryName));
+                .andExpect(jsonPath("contents[0].name").value(factoryManagerName));
     }
 
     /**

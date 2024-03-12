@@ -104,10 +104,8 @@ public class OrderService {
             return;
         }
 
-        if (this.getUserEmailByOrder(orderId).equals(user.getUsername())) {
-            return;
+        if (!getUserEmailByOrder(orderId).equals(user.getUsername())) {
+            throw new CustomCommonException(OrderErrorCode.DENIED_ACCESS_TO_ORDER);
         }
-
-        throw new CustomCommonException(OrderErrorCode.DENIED_ACCESS_TO_ORDER);
     }
 }

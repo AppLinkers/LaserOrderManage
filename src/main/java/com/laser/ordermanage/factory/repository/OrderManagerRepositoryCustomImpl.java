@@ -8,9 +8,7 @@ import lombok.RequiredArgsConstructor;
 import java.util.List;
 import java.util.Optional;
 
-import static com.laser.ordermanage.factory.domain.QFactory.factory;
 import static com.laser.ordermanage.factory.domain.QOrderManager.orderManager;
-import static com.laser.ordermanage.user.domain.QUserEntity.userEntity;
 
 @RequiredArgsConstructor
 public class OrderManagerRepositoryCustomImpl implements OrderManagerRepositoryCustom {
@@ -26,10 +24,6 @@ public class OrderManagerRepositoryCustomImpl implements OrderManagerRepositoryC
                         orderManager.phone
                 ))
                 .from(orderManager)
-                .join(orderManager.factory, factory)
-                .join(factory.user, userEntity)
-                .where(userEntity.email.eq(email))
-                .orderBy(orderManager.createdAt.desc())
                 .fetch();
 
         return factoryGetOrderManagerResponseList;
@@ -38,10 +32,8 @@ public class OrderManagerRepositoryCustomImpl implements OrderManagerRepositoryC
     @Override
     public Optional<String> findUserEmailById(Long orderManagerId) {
         String userEmail = queryFactory
-                .select(userEntity.email)
+                .select(orderManager.name)
                 .from(orderManager)
-                .join(orderManager.factory, factory)
-                .join(factory.user, userEntity)
                 .where(orderManager.id.eq(orderManagerId))
                 .fetchOne();
 

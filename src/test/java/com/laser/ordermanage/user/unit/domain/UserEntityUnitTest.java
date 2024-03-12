@@ -39,12 +39,13 @@ public class UserEntityUnitTest {
     public void updateProperties() {
         // given
         final UserEntity actualUser = UserEntityBuilder.build();
-        final UpdateUserAccountRequest expectedUserAccount = new UpdateUserAccountRequest("01011112222", "22222", "user1_address2", "user1_detail_address2");
+        final UpdateUserAccountRequest expectedUserAccount = new UpdateUserAccountRequest("고객 신규 이름 1", "01011112222", "22222", "user1_address2", "user1_detail_address2");
 
         // when
         actualUser.updateProperties(expectedUserAccount);
 
         // then
+        Assertions.assertThat(actualUser.getName()).isEqualTo(expectedUserAccount.name());
         Assertions.assertThat(actualUser.getPhone()).isEqualTo(expectedUserAccount.phone());
         Assertions.assertThat(actualUser.getAddress().getZipCode()).isEqualTo(expectedUserAccount.zipCode());
         Assertions.assertThat(actualUser.getAddress().getAddress()).isEqualTo(expectedUserAccount.address());

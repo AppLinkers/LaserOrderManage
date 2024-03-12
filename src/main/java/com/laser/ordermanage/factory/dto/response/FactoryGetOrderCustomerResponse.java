@@ -17,7 +17,7 @@ public record FactoryGetOrderCustomerResponse(
                 orderName,
                 GetCustomerResponse.builder()
                         .id(customer.getId())
-                        .name(customer.getName())
+                        .name(customer.getUser().getName())
                         .company(customer.getCompanyName())
                         .phone(customer.getUser().getPhone())
                         .email(customer.getUser().getEmail())

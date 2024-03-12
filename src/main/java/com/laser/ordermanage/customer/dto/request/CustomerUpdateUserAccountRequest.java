@@ -7,10 +7,6 @@ import jakarta.validation.constraints.Pattern;
 
 public record CustomerUpdateUserAccountRequest (
 
-    @NotEmpty(message = "이름은 필수 입력값입니다.")
-    @Pattern(regexp = "^.{0,10}$", message = "이름의 최대 글자수는 10자입니다.")
-    String name,
-
     @Valid
     UpdateUserAccountRequest user,
 

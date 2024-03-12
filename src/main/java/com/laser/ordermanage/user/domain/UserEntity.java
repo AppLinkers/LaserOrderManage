@@ -34,6 +34,9 @@ public class UserEntity extends CreatedAtEntity implements UserDetails {
     @Column(name = "password", nullable = false)
     private String password;
 
+    @Column(name = "name", nullable = false, length = 10)
+    private String name;
+
     @Enumerated(value = EnumType.STRING)
     @Column(name = "role", nullable = false, updatable = false)
     private Role role;
@@ -49,9 +52,10 @@ public class UserEntity extends CreatedAtEntity implements UserDetails {
     private Boolean emailNotification = Boolean.TRUE;
 
     @Builder
-    public UserEntity(String email, String password, Role role, String phone, Address address) {
+    public UserEntity(String email, String password, String name, Role role, String phone, Address address) {
         this.email = email;
         this.password = password;
+        this.name = name;
         this.role = role;
         this.phone = phone;
         this.address = address;
@@ -99,6 +103,7 @@ public class UserEntity extends CreatedAtEntity implements UserDetails {
     }
 
     public void updateProperties(UpdateUserAccountRequest request) {
+        this.name = request.name();
         this.phone = request.phone();
         this.address.updateProperties(request.zipCode(), request.address(), request.detailAddress());
     }

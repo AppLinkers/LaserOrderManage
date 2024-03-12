@@ -24,9 +24,6 @@ public class Customer {
     @JoinColumn(name = "user_id", nullable = false, updatable = false)
     private UserEntity user;
 
-    @Column(name = "name", nullable = false, length = 10)
-    private String name;
-
     @Column(name = "company_name", length = 20)
     private String companyName;
 
@@ -35,14 +32,12 @@ public class Customer {
     private Boolean isNew = Boolean.TRUE;
 
     @Builder
-    public Customer(UserEntity user, String name, String companyName) {
+    public Customer(UserEntity user, String companyName) {
         this.user = user;
-        this.name = name;
         this.companyName = companyName;
     }
 
     public void updateProperties(CustomerUpdateUserAccountRequest request) {
-        this.name = request.name();
         this.user.updateProperties(request.user());
         this.companyName = request.companyName();
     }

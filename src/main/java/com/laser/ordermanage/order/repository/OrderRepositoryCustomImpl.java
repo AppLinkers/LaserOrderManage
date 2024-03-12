@@ -93,7 +93,7 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
                 .select(new QFactoryGetOrderIsNewAndIsReIssueHistoryResponse(
                         order.id,
                         order.name,
-                        customer.name,
+                        userEntity.name,
                         customer.companyName,
                         quotation.isNotNull(),
                         order.imgUrl,
@@ -106,6 +106,7 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
                 ))
                 .from(order)
                 .join(order.customer, customer)
+                .join(customer.user, userEntity)
                 .leftJoin(order.quotation, quotation)
                 .where(
                         order.stage.eq(Stage.NEW),
@@ -138,7 +139,7 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
                 .select(new QFactoryGetOrderIsNewAndIsNewIssueHistoryResponse(
                         order.id,
                         order.name,
-                        customer.name,
+                        userEntity.name,
                         customer.companyName,
                         customer.isNew,
                         quotation.isNotNull(),
@@ -152,6 +153,7 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
                 ))
                 .from(order)
                 .join(order.customer, customer)
+                .join(customer.user, userEntity)
                 .leftJoin(order.quotation, quotation)
                 .where(
                         order.stage.eq(Stage.NEW),
@@ -186,7 +188,7 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
                 .select(new QFactoryGetOrderHistoryResponse(
                         order.id,
                         order.name,
-                        customer.name,
+                        userEntity.name,
                         customer.companyName,
                         order.imgUrl,
                         order.stage,
@@ -199,13 +201,14 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
                 ))
                 .from(order)
                 .leftJoin(order.customer, customer)
+                .join(customer.user, userEntity)
                 .leftJoin(order.quotation, quotation)
                 .where(
                         eqIsCompleted(isCompleted),
                         eqIsUrgent(isUrgent),
                         searchDateFilter(dateCriterion, startDate, endDate),
                         query == null ? null : order.name.contains(query)
-                                .or(customer.name.contains(query))
+                                .or(userEntity.name.contains(query))
                                 .or(customer.companyName.contains(query))
                 )
                 .orderBy(order.createdAt.desc())
@@ -217,13 +220,14 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
                 .select(order.count())
                 .from(order)
                 .leftJoin(order.customer, customer)
+                .join(customer.user, userEntity)
                 .leftJoin(order.quotation, quotation)
                 .where(
                         eqIsCompleted(isCompleted),
                         eqIsUrgent(isUrgent),
                         searchDateFilter(dateCriterion, startDate, endDate),
                         query == null ? null : order.name.contains(query)
-                                .or(customer.name.contains(query))
+                                .or(userEntity.name.contains(query))
                                 .or(customer.companyName.contains(query))
                 );
 
@@ -332,7 +336,7 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
                                new QGetOrderDetailResponse(
                                        new QGetCustomerResponse(
                                               customer.id,
-                                              customer.name,
+                                               userEntity.name,
                                               customer.companyName,
                                               userEntity.phone,
                                               userEntity.email

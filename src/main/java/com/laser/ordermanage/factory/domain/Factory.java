@@ -1,7 +1,6 @@
 package com.laser.ordermanage.factory.domain;
 
 import com.laser.ordermanage.factory.dto.request.FactoryUpdateUserAccountRequest;
-import com.laser.ordermanage.user.domain.UserEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -18,10 +17,6 @@ public class Factory {
     @Column(name = "id", updatable = false)
     private Long id;
 
-    @OneToOne
-    @JoinColumn(name = "user_id", nullable = false, updatable = false)
-    private UserEntity user;
-
     @Column(name = "company_name", nullable = false, length = 20)
     private String companyName;
 
@@ -34,7 +29,6 @@ public class Factory {
     public void updateProperties(FactoryUpdateUserAccountRequest request) {
         this.companyName = request.companyName();
         this.representative = request.representative();
-        this.user.updateProperties(request.user());
         this.fax = request.fax();
     }
 }

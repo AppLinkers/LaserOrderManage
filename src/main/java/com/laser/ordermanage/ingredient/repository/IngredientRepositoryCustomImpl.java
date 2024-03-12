@@ -16,6 +16,7 @@ import java.time.LocalDate;
 import java.util.*;
 
 import static com.laser.ordermanage.factory.domain.QFactory.factory;
+import static com.laser.ordermanage.factory.domain.QFactoryManager.factoryManager;
 import static com.laser.ordermanage.ingredient.domain.QIngredient.ingredient;
 import static com.laser.ordermanage.user.domain.QUserEntity.userEntity;
 
@@ -49,7 +50,8 @@ public class IngredientRepositoryCustomImpl implements IngredientRepositoryCusto
                 COALESCE(ingredient_stock_data.optimal, ingredient_previous_stock_data.optimal) AS optimal
             FROM ingredient
             JOIN factory ON ingredient.factory_id = factory.id
-            JOIN user_table on factory.user_id = user_table.id
+            JOIN factory_manager ON factory.id = factory_manager.factory_id
+            JOIN user_table on factory_manager.user_id = user_table.id
             JOIN (
                 SELECT
                     ranked_data.ingredient_id,
@@ -101,13 +103,15 @@ public class IngredientRepositoryCustomImpl implements IngredientRepositoryCusto
         return jdbcTemplate.query(findIngredientQuery, namedParameters, new IngredientRowMapper());
     }
 
+    // TODO: 2024/03/12 삭제 필요 -> ingredient 에 해당하는 User 가 다수임.
     @Override
     public Optional<String> findUserEmailById(Long ingredientId) {
         String userEmail = queryFactory
                 .select(userEntity.email)
                 .from(ingredient)
                 .join(ingredient.factory, factory)
-                .join(factory.user, userEntity)
+                .join(factoryManager.factory, factory)
+                .join(factoryManager.user, userEntity)
                 .where(ingredient.id.eq(ingredientId))
                 .fetchOne();
 
@@ -115,7 +119,7 @@ public class IngredientRepositoryCustomImpl implements IngredientRepositoryCusto
     }
 
     @Override
-    public List<GetIngredientInfoResponse> findIngredientByFactory(String email) {
+    public List<GetIngredientInfoResponse> findIngredientByFactoryManager(String email) {
         List<GetIngredientInfoResponse> ingredientInfoResponseList = queryFactory
                 .select(new QGetIngredientInfoResponse(
                         ingredient.id,
@@ -124,7 +128,8 @@ public class IngredientRepositoryCustomImpl implements IngredientRepositoryCusto
                 ))
                 .from(ingredient)
                 .join(ingredient.factory, factory)
-                .join(factory.user, userEntity)
+                .join(factoryManager.factory, factory)
+                .join(factoryManager.user, userEntity)
                 .where(userEntity.email.eq(email))
                 .fetch();
 
@@ -132,7 +137,7 @@ public class IngredientRepositoryCustomImpl implements IngredientRepositoryCusto
     }
 
     @Override
-    public List<GetIngredientAnalysisItemResponse> findIngredientAnalysisAsTotalAndMonthAndStockByFactory(String email, LocalDate startDate, LocalDate endDate, List<String> itemTypeList, String stockUnit) {
+    public List<GetIngredientAnalysisItemResponse> findIngredientAnalysisAsTotalAndMonthAndStockByFactoryManager(String email, LocalDate startDate, LocalDate endDate, List<String> itemTypeList, String stockUnit) {
         SqlParameterSource namedParameters = new MapSqlParameterSource()
                 .addValue("email", email)
                 .addValue("startDate", startDate)
@@ -180,7 +185,8 @@ public class IngredientRepositoryCustomImpl implements IngredientRepositoryCusto
                                 FROM ingredient_stock
                                 JOIN ingredient ON ingredient.id = ingredient_stock.ingredient_id
                                 JOIN factory ON factory.id = ingredient.factory_id
-                                JOIN user_table ON user_table.id = factory.user_id
+                                JOIN factory_manager ON factory.id = factory_manager.factory_id
+                                JOIN user_table ON user_table.id = factory_manager.user_id
                                 WHERE
                                     ingredient_stock.created_at >= :startDate AND ingredient_stock.created_at < DATE_ADD(:endDate, INTERVAL 1 MONTH ) AND
                                     user_table.email = :email
@@ -211,7 +217,8 @@ public class IngredientRepositoryCustomImpl implements IngredientRepositoryCusto
                                     FROM ingredient_stock
                                     JOIN ingredient ON ingredient.id = ingredient_stock.ingredient_id
                                     JOIN factory ON factory.id = ingredient.factory_id
-                                    JOIN user_table ON user_table.id = factory.user_id
+                                    JOIN factory_manager ON factory.id = factory_manager.factory_id
+                                    JOIN user_table ON user_table.id = factory_manager.user_id
                                     WHERE
                                         ingredient_stock.created_at >= :startDate AND ingredient_stock.created_at < DATE_ADD(:endDate, INTERVAL 1 MONTH ) AND
                                         user_table.email = :email
@@ -229,7 +236,7 @@ public class IngredientRepositoryCustomImpl implements IngredientRepositoryCusto
     }
 
     @Override
-    public List<GetIngredientAnalysisItemResponse> findIngredientAnalysisAsTotalAndMonthAndPriceByFactory(String email, LocalDate startDate, LocalDate endDate, List<String> itemTypeList) {
+    public List<GetIngredientAnalysisItemResponse> findIngredientAnalysisAsTotalAndMonthAndPriceByFactoryManager(String email, LocalDate startDate, LocalDate endDate, List<String> itemTypeList) {
         SqlParameterSource namedParameters = new MapSqlParameterSource()
                 .addValue("email", email)
                 .addValue("startDate", startDate)
@@ -264,7 +271,8 @@ public class IngredientRepositoryCustomImpl implements IngredientRepositoryCusto
                             FROM ingredient_price
                             JOIN ingredient ON ingredient.id = ingredient_price.ingredient_id
                             JOIN factory ON factory.id = ingredient.factory_id
-                            JOIN user_table ON user_table.id = factory.user_id
+                            JOIN factory_manager ON factory.id = factory_manager.factory_id
+                            JOIN user_table ON user_table.id = factory_manager.user_id
                             WHERE
                                 ingredient_price.created_at >= :startDate AND ingredient_price.created_at < DATE_ADD(:endDate, INTERVAL 1 MONTH ) AND
                                 user_table.email = :email
@@ -279,7 +287,7 @@ public class IngredientRepositoryCustomImpl implements IngredientRepositoryCusto
     }
 
     @Override
-    public List<GetIngredientAnalysisItemResponse> findIngredientAnalysisAsTotalAndYearAndStockByFactory(String email, LocalDate startDate, LocalDate endDate, List<String> itemTypeList, String stockUnit) {
+    public List<GetIngredientAnalysisItemResponse> findIngredientAnalysisAsTotalAndYearAndStockByFactoryManager(String email, LocalDate startDate, LocalDate endDate, List<String> itemTypeList, String stockUnit) {
         SqlParameterSource namedParameters = new MapSqlParameterSource()
                 .addValue("email", email)
                 .addValue("startDate", startDate)
@@ -327,7 +335,8 @@ public class IngredientRepositoryCustomImpl implements IngredientRepositoryCusto
                                 FROM ingredient_stock
                                 JOIN ingredient ON ingredient.id = ingredient_stock.ingredient_id
                                 JOIN factory ON factory.id = ingredient.factory_id
-                                JOIN user_table ON user_table.id = factory.user_id
+                                JOIN factory_manager ON factory.id = factory_manager.factory_id
+                                JOIN user_table ON user_table.id = factory_manager.user_id
                                 WHERE
                                     ingredient_stock.created_at >= :startDate AND ingredient_stock.created_at < DATE_ADD(:endDate, INTERVAL 1 YEAR ) AND
                                     user_table.email = :email
@@ -358,7 +367,8 @@ public class IngredientRepositoryCustomImpl implements IngredientRepositoryCusto
                                     FROM ingredient_stock
                                     JOIN ingredient ON ingredient.id = ingredient_stock.ingredient_id
                                     JOIN factory ON factory.id = ingredient.factory_id
-                                    JOIN user_table ON user_table.id = factory.user_id
+                                    JOIN factory_manager ON factory.id = factory_manager.factory_id
+                                    JOIN user_table ON user_table.id = factory_manager.user_id
                                     WHERE
                                         ingredient_stock.created_at >= :startDate AND ingredient_stock.created_at < DATE_ADD(:endDate, INTERVAL 1 YEAR ) AND
                                         user_table.email = :email
@@ -376,7 +386,7 @@ public class IngredientRepositoryCustomImpl implements IngredientRepositoryCusto
     }
 
     @Override
-    public List<GetIngredientAnalysisItemResponse> findIngredientAnalysisAsTotalAndYearAndPriceByFactory(String email, LocalDate startDate, LocalDate endDate, List<String> itemTypeList) {
+    public List<GetIngredientAnalysisItemResponse> findIngredientAnalysisAsTotalAndYearAndPriceByFactoryManager(String email, LocalDate startDate, LocalDate endDate, List<String> itemTypeList) {
         SqlParameterSource namedParameters = new MapSqlParameterSource()
                 .addValue("email", email)
                 .addValue("startDate", startDate)
@@ -411,7 +421,8 @@ public class IngredientRepositoryCustomImpl implements IngredientRepositoryCusto
                            FROM ingredient_price
                            JOIN ingredient ON ingredient.id = ingredient_price.ingredient_id
                            JOIN factory ON factory.id = ingredient.factory_id
-                           JOIN user_table ON user_table.id = factory.user_id
+                           JOIN factory_manager ON factory.id = factory_manager.factory_id
+                           JOIN user_table ON user_table.id = factory_manager.user_id
                            WHERE
                                ingredient_price.created_at >= :startDate AND ingredient_price.created_at < DATE_ADD(:endDate, INTERVAL 1 YEAR ) AND
                                user_table.email = :email
@@ -426,7 +437,7 @@ public class IngredientRepositoryCustomImpl implements IngredientRepositoryCusto
     }
 
     @Override
-    public List<GetIngredientAnalysisItemResponse> findIngredientAnalysisAsAverageAndMonthAndStockByFactory(String email, LocalDate startDate, LocalDate endDate, List<String> itemTypeList, String stockUnit) {
+    public List<GetIngredientAnalysisItemResponse> findIngredientAnalysisAsAverageAndMonthAndStockByFactoryManager(String email, LocalDate startDate, LocalDate endDate, List<String> itemTypeList, String stockUnit) {
         SqlParameterSource namedParameters = new MapSqlParameterSource()
                 .addValue("email", email)
                 .addValue("startDate", startDate)
@@ -474,7 +485,8 @@ public class IngredientRepositoryCustomImpl implements IngredientRepositoryCusto
                                 FROM ingredient_stock
                                 JOIN ingredient ON ingredient.id = ingredient_stock.ingredient_id
                                 JOIN factory ON factory.id = ingredient.factory_id
-                                JOIN user_table ON user_table.id = factory.user_id
+                                JOIN factory_manager ON factory.id = factory_manager.factory_id
+                                JOIN user_table ON user_table.id = factory_manager.user_id
                                 WHERE
                                     ingredient_stock.created_at >= :startDate AND ingredient_stock.created_at < DATE_ADD(:endDate, INTERVAL 1 MONTH ) AND
                                     user_table.email = :email
@@ -505,7 +517,8 @@ public class IngredientRepositoryCustomImpl implements IngredientRepositoryCusto
                                     FROM ingredient_stock
                                     JOIN ingredient ON ingredient.id = ingredient_stock.ingredient_id
                                     JOIN factory ON factory.id = ingredient.factory_id
-                                    JOIN user_table ON user_table.id = factory.user_id
+                                    JOIN factory_manager ON factory.id = factory_manager.factory_id
+                                    JOIN user_table ON user_table.id = factory_manager.user_id
                                     WHERE
                                         ingredient_stock.created_at >= :startDate AND ingredient_stock.created_at < DATE_ADD(:endDate, INTERVAL 1 MONTH ) AND
                                         user_table.email = :email
@@ -523,7 +536,7 @@ public class IngredientRepositoryCustomImpl implements IngredientRepositoryCusto
     }
 
     @Override
-    public List<GetIngredientAnalysisItemResponse> findIngredientAnalysisAsAverageAndMonthAndPriceByFactory(String email, LocalDate startDate, LocalDate endDate, List<String> itemTypeList) {
+    public List<GetIngredientAnalysisItemResponse> findIngredientAnalysisAsAverageAndMonthAndPriceByFactoryManager(String email, LocalDate startDate, LocalDate endDate, List<String> itemTypeList) {
         SqlParameterSource namedParameters = new MapSqlParameterSource()
                 .addValue("email", email)
                 .addValue("startDate", startDate)
@@ -558,7 +571,8 @@ public class IngredientRepositoryCustomImpl implements IngredientRepositoryCusto
                             FROM ingredient_price
                             JOIN ingredient ON ingredient.id = ingredient_price.ingredient_id
                             JOIN factory ON factory.id = ingredient.factory_id
-                            JOIN user_table ON user_table.id = factory.user_id
+                            JOIN factory_manager ON factory.id = factory_manager.factory_id
+                            JOIN user_table ON user_table.id = factory_manager.user_id
                             WHERE
                                 ingredient_price.created_at >= :startDate AND ingredient_price.created_at < DATE_ADD(:endDate, INTERVAL 1 MONTH ) AND
                                 user_table.email = :email
@@ -573,7 +587,7 @@ public class IngredientRepositoryCustomImpl implements IngredientRepositoryCusto
     }
 
     @Override
-    public List<GetIngredientAnalysisItemResponse> findIngredientAnalysisAsAverageAndYearAndStockByFactory(String email, LocalDate startDate, LocalDate endDate, List<String> itemTypeList, String stockUnit) {
+    public List<GetIngredientAnalysisItemResponse> findIngredientAnalysisAsAverageAndYearAndStockByFactoryManager(String email, LocalDate startDate, LocalDate endDate, List<String> itemTypeList, String stockUnit) {
         SqlParameterSource namedParameters = new MapSqlParameterSource()
                 .addValue("email", email)
                 .addValue("startDate", startDate)
@@ -621,7 +635,8 @@ public class IngredientRepositoryCustomImpl implements IngredientRepositoryCusto
                                 FROM ingredient_stock
                                 JOIN ingredient ON ingredient.id = ingredient_stock.ingredient_id
                                 JOIN factory ON factory.id = ingredient.factory_id
-                                JOIN user_table ON user_table.id = factory.user_id
+                                JOIN factory_manager ON factory.id = factory_manager.factory_id
+                                JOIN user_table ON user_table.id = factory_manager.user_id
                                 WHERE
                                     ingredient_stock.created_at >= :startDate AND ingredient_stock.created_at < DATE_ADD(:endDate, INTERVAL 1 YEAR ) AND
                                     user_table.email = :email
@@ -652,7 +667,8 @@ public class IngredientRepositoryCustomImpl implements IngredientRepositoryCusto
                                     FROM ingredient_stock
                                     JOIN ingredient ON ingredient.id = ingredient_stock.ingredient_id
                                     JOIN factory ON factory.id = ingredient.factory_id
-                                    JOIN user_table ON user_table.id = factory.user_id
+                                    JOIN factory_manager ON factory.id = factory_manager.factory_id
+                                    JOIN user_table ON user_table.id = factory_manager.user_id
                                     WHERE
                                         ingredient_stock.created_at >= :startDate AND ingredient_stock.created_at < DATE_ADD(:endDate, INTERVAL 1 YEAR ) AND
                                         user_table.email = :email
@@ -670,7 +686,7 @@ public class IngredientRepositoryCustomImpl implements IngredientRepositoryCusto
     }
 
     @Override
-    public List<GetIngredientAnalysisItemResponse> findIngredientAnalysisAsAverageAndYearAndPriceByFactory(String email, LocalDate startDate, LocalDate endDate, List<String> itemTypeList) {
+    public List<GetIngredientAnalysisItemResponse> findIngredientAnalysisAsAverageAndYearAndPriceByFactoryManager(String email, LocalDate startDate, LocalDate endDate, List<String> itemTypeList) {
         SqlParameterSource namedParameters = new MapSqlParameterSource()
                 .addValue("email", email)
                 .addValue("startDate", startDate)
@@ -705,7 +721,8 @@ public class IngredientRepositoryCustomImpl implements IngredientRepositoryCusto
                            FROM ingredient_price
                            JOIN ingredient ON ingredient.id = ingredient_price.ingredient_id
                            JOIN factory ON factory.id = ingredient.factory_id
-                           JOIN user_table ON user_table.id = factory.user_id
+                           JOIN factory_manager ON factory.id = factory_manager.factory_id
+                           JOIN user_table ON user_table.id = factory_manager.user_id
                            WHERE
                                ingredient_price.created_at >= :startDate AND ingredient_price.created_at < DATE_ADD(:endDate, INTERVAL 1 YEAR ) AND
                                user_table.email = :email

@@ -109,7 +109,7 @@ public class IngredientAPI {
 
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        return ResponseEntity.ok(ingredientService.getIngredientInfoByFactory(user.getUsername()));
+        return ResponseEntity.ok(ingredientService.getIngredientInfoByFactoryManager(user.getUsername()));
     }
 
     /**
@@ -182,7 +182,7 @@ public class IngredientAPI {
 
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        return ResponseEntity.ok(ingredientService.getIngredientAnalysisByFactory(user.getUsername(), data, ingredientId, timeUnit, startDate, endDate, itemUnit, ingredientItemTypeList, stockUnit));
+        return ResponseEntity.ok(ingredientService.getIngredientAnalysisByFactoryManager(user.getUsername(), data, ingredientId, timeUnit, startDate, endDate, itemUnit, ingredientItemTypeList, stockUnit));
 
     }
 }

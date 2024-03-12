@@ -13,23 +13,23 @@ public interface IngredientRepositoryCustom {
 
     Optional<String> findUserEmailById(Long ingredientId);
 
-    List<GetIngredientInfoResponse> findIngredientByFactory(String email);
+    List<GetIngredientInfoResponse> findIngredientByFactoryManager(String email);
 
-    List<GetIngredientAnalysisItemResponse> findIngredientAnalysisAsTotalAndMonthAndStockByFactory(String email, LocalDate startDate, LocalDate endDate, List<String> itemTypeList, String stockUnit);
+    List<GetIngredientAnalysisItemResponse> findIngredientAnalysisAsTotalAndMonthAndStockByFactoryManager(String email, LocalDate startDate, LocalDate endDate, List<String> itemTypeList, String stockUnit);
 
-    List<GetIngredientAnalysisItemResponse> findIngredientAnalysisAsTotalAndMonthAndPriceByFactory(String email, LocalDate startDate, LocalDate endDate, List<String> itemTypeList);
+    List<GetIngredientAnalysisItemResponse> findIngredientAnalysisAsTotalAndMonthAndPriceByFactoryManager(String email, LocalDate startDate, LocalDate endDate, List<String> itemTypeList);
 
-    List<GetIngredientAnalysisItemResponse> findIngredientAnalysisAsTotalAndYearAndStockByFactory(String email, LocalDate startDate, LocalDate endDate, List<String> itemTypeList, String stockUnit);
+    List<GetIngredientAnalysisItemResponse> findIngredientAnalysisAsTotalAndYearAndStockByFactoryManager(String email, LocalDate startDate, LocalDate endDate, List<String> itemTypeList, String stockUnit);
 
-    List<GetIngredientAnalysisItemResponse> findIngredientAnalysisAsTotalAndYearAndPriceByFactory(String email, LocalDate startDate, LocalDate endDate, List<String> itemTypeList);
+    List<GetIngredientAnalysisItemResponse> findIngredientAnalysisAsTotalAndYearAndPriceByFactoryManager(String email, LocalDate startDate, LocalDate endDate, List<String> itemTypeList);
 
-    List<GetIngredientAnalysisItemResponse> findIngredientAnalysisAsAverageAndMonthAndStockByFactory(String email, LocalDate startDate, LocalDate endDate, List<String> itemTypeList, String stockUnit);
+    List<GetIngredientAnalysisItemResponse> findIngredientAnalysisAsAverageAndMonthAndStockByFactoryManager(String email, LocalDate startDate, LocalDate endDate, List<String> itemTypeList, String stockUnit);
 
-    List<GetIngredientAnalysisItemResponse> findIngredientAnalysisAsAverageAndMonthAndPriceByFactory(String email, LocalDate startDate, LocalDate endDate, List<String> itemTypeList);
+    List<GetIngredientAnalysisItemResponse> findIngredientAnalysisAsAverageAndMonthAndPriceByFactoryManager(String email, LocalDate startDate, LocalDate endDate, List<String> itemTypeList);
 
-    List<GetIngredientAnalysisItemResponse> findIngredientAnalysisAsAverageAndYearAndStockByFactory(String email, LocalDate startDate, LocalDate endDate, List<String> itemTypeList, String stockUnit);
+    List<GetIngredientAnalysisItemResponse> findIngredientAnalysisAsAverageAndYearAndStockByFactoryManager(String email, LocalDate startDate, LocalDate endDate, List<String> itemTypeList, String stockUnit);
 
-    List<GetIngredientAnalysisItemResponse> findIngredientAnalysisAsAverageAndYearAndPriceByFactory(String email, LocalDate startDate, LocalDate endDate, List<String> itemTypeList);
+    List<GetIngredientAnalysisItemResponse> findIngredientAnalysisAsAverageAndYearAndPriceByFactoryManager(String email, LocalDate startDate, LocalDate endDate, List<String> itemTypeList);
 
     List<GetIngredientAnalysisItemResponse> findIngredientAnalysisAsIngredientAndMonthAndStock(Long ingredientId, LocalDate startDate, LocalDate endDate, List<String> itemTypeList, String stockUnit);
 

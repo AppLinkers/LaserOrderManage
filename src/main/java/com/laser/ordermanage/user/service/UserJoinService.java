@@ -105,6 +105,7 @@ public class UserJoinService {
             UserEntity user = UserEntity.builder()
                     .email(request.email())
                     .password(passwordEncoder.encode(request.password()))
+                    .name(request.name())
                     .role(Role.ROLE_CUSTOMER)
                     .phone(request.phone())
                     .address(address)
@@ -112,15 +113,14 @@ public class UserJoinService {
 
             Customer customer = Customer.builder()
                     .user(user)
-                    .name(request.name())
                     .companyName(request.companyName())
                     .build();
 
             DeliveryAddress deliveryAddress = DeliveryAddress.builder()
                     .customer(customer)
-                    .name(customer.getName())
+                    .name(user.getName())
                     .address(user.getAddress())
-                    .receiver(customer.getName())
+                    .receiver(user.getName())
                     .phone1(user.getPhone())
                     .phone2(user.getPhone())
                     .isDefault(Boolean.TRUE)

@@ -27,7 +27,7 @@ public class FactoryOrderManagerService {
 
     @Transactional
     public void createOrderManger(String email, FactoryCreateOrUpdateOrderManagerRequest request) {
-        Factory factory = factoryRepository.findFirstByUserEmail(email);
+        Factory factory = factoryRepository.findFactoryByFactoryManager(email);
 
         OrderManager orderManager = OrderManager.builder()
                 .factory(factory)

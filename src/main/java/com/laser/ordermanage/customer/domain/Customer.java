@@ -1,7 +1,7 @@
 package com.laser.ordermanage.customer.domain;
 
 import com.laser.ordermanage.common.converter.BooleanToYNConverter;
-import com.laser.ordermanage.customer.dto.request.CustomerUpdateUserAccountRequest;
+import com.laser.ordermanage.customer.dto.request.CustomerUpdateCustomerAccountRequest;
 import com.laser.ordermanage.user.domain.UserEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -37,8 +37,7 @@ public class Customer {
         this.companyName = companyName;
     }
 
-    public void updateProperties(CustomerUpdateUserAccountRequest request) {
-        this.user.updateProperties(request.user());
+    public void updateProperties(CustomerUpdateCustomerAccountRequest request) {
         this.companyName = request.companyName();
     }
 

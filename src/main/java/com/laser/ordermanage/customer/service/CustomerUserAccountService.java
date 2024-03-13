@@ -1,11 +1,10 @@
 package com.laser.ordermanage.customer.service;
 
 import com.laser.ordermanage.customer.domain.Customer;
-import com.laser.ordermanage.customer.dto.request.CustomerUpdateUserAccountRequest;
-import com.laser.ordermanage.customer.dto.response.CustomerGetUserAccountResponse;
+import com.laser.ordermanage.customer.dto.request.CustomerUpdateCustomerAccountRequest;
+import com.laser.ordermanage.customer.dto.response.CustomerGetCustomerAccountResponse;
 import com.laser.ordermanage.customer.repository.CustomerRepository;
 import com.laser.ordermanage.customer.repository.DeliveryAddressRepository;
-import com.laser.ordermanage.user.repository.UserEntityRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,15 +15,18 @@ public class CustomerUserAccountService {
 
     private final DeliveryAddressRepository deliveryAddressRepository;
     private final CustomerRepository customerRepository;
-    private final UserEntityRepository userRepository;
 
     @Transactional(readOnly = true)
-    public CustomerGetUserAccountResponse getUserAccount(String email) {
-        return userRepository.findUserAccountByCustomer(email);
+    public CustomerGetCustomerAccountResponse getCustomerAccount(String email) {
+        Customer customer = customerRepository.findFirstByUserEmail(email);
+
+        return CustomerGetCustomerAccountResponse.builder()
+                .companyName(customer.getCompanyName())
+                .build();
     }
 
     @Transactional
-    public void updateUserAccount(String email, CustomerUpdateUserAccountRequest request) {
+    public void updateCustomerAccount(String email, CustomerUpdateCustomerAccountRequest request) {
 
         Customer customer = customerRepository.findFirstByUserEmail(email);
 

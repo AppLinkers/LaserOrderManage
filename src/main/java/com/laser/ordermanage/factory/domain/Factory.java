@@ -1,6 +1,6 @@
 package com.laser.ordermanage.factory.domain;
 
-import com.laser.ordermanage.factory.dto.request.FactoryUpdateUserAccountRequest;
+import com.laser.ordermanage.factory.dto.request.FactoryUpdateFactoryAccountRequest;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -26,7 +26,7 @@ public class Factory {
     @Column(name = "fax", length = 11)
     private String fax;
 
-    public void updateProperties(FactoryUpdateUserAccountRequest request) {
+    public void updateProperties(FactoryUpdateFactoryAccountRequest request) {
         this.companyName = request.companyName();
         this.representative = request.representative();
         this.fax = request.fax();

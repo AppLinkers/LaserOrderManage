@@ -20,6 +20,6 @@ public class FactoryRepositoryCustomImpl implements FactoryRepositoryCustom {
                 .join(factoryManager).on(factoryManager.factory.eq(factory))
                 .join(factoryManager.user, userEntity)
                 .where(userEntity.email.eq(email))
-                .fetchFirst();
+                .fetchOne();
     }
 }

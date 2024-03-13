@@ -1,12 +1,9 @@
 package com.laser.ordermanage.factory.service;
 
 import com.laser.ordermanage.factory.domain.Factory;
-import com.laser.ordermanage.factory.dto.request.FactoryUpdateUserAccountRequest;
-import com.laser.ordermanage.factory.dto.response.FactoryGetUserAccountResponse;
+import com.laser.ordermanage.factory.dto.request.FactoryUpdateFactoryAccountRequest;
+import com.laser.ordermanage.factory.dto.response.FactoryGetFactoryAccountResponse;
 import com.laser.ordermanage.factory.repository.FactoryRepository;
-import com.laser.ordermanage.user.domain.UserEntity;
-import com.laser.ordermanage.user.repository.UserEntityRepository;
-import com.laser.ordermanage.user.service.UserAuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,22 +12,23 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class FactoryUserAccountService {
 
-    private final UserAuthService userAuthService;
-
     private final FactoryRepository factoryRepository;
-    private final UserEntityRepository userRepository;
 
     @Transactional(readOnly = true)
-    public FactoryGetUserAccountResponse getUserAccount(String email) {
-        return userRepository.findUserAccountByFactory(email);
+    public FactoryGetFactoryAccountResponse getFactoryAccount(String email) {
+        Factory factory = factoryRepository.findFactoryByFactoryManager(email);
+
+        return FactoryGetFactoryAccountResponse.builder()
+                .companyName(factory.getCompanyName())
+                .representative(factory.getRepresentative())
+                .fax(factory.getFax())
+                .build();
     }
 
     @Transactional
-    public void updateUserAccount(String email, FactoryUpdateUserAccountRequest request) {
+    public void updateFactoryAccount(String email, FactoryUpdateFactoryAccountRequest request) {
         Factory factory = factoryRepository.findFactoryByFactoryManager(email);
-        UserEntity user = userAuthService.getUserByEmail(email);
 
         factory.updateProperties(request);
-        user.updateProperties(request.user());
     }
 }

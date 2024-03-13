@@ -10,6 +10,8 @@ import com.laser.ordermanage.common.security.jwt.component.JwtProvider;
 import com.laser.ordermanage.user.domain.UserEntity;
 import com.laser.ordermanage.user.dto.request.ChangePasswordRequest;
 import com.laser.ordermanage.user.dto.request.RequestChangePasswordRequest;
+import com.laser.ordermanage.user.dto.request.UpdateUserAccountRequest;
+import com.laser.ordermanage.user.dto.response.GetUserAccountResponse;
 import com.laser.ordermanage.user.dto.response.GetUserEmailResponse;
 import com.laser.ordermanage.user.exception.UserErrorCode;
 import com.laser.ordermanage.user.repository.UserEntityRepository;
@@ -88,6 +90,18 @@ public class UserAccountService {
         UserEntity user = userAuthService.getUserByEmail(authentication.getName());
 
         user.changePassword(passwordEncoder.encode(request.password()));
+    }
+
+    @Transactional
+    public GetUserAccountResponse getUserAccount(String email) {
+        return userRepository.findUserAccountByEmail(email);
+    }
+
+    @Transactional
+    public void updateUserAccount(String email, UpdateUserAccountRequest request) {
+        UserEntity user = userAuthService.getUserByEmail(email);
+
+        user.updateProperties(request);
     }
 
     @Transactional

@@ -2,6 +2,7 @@ package com.laser.ordermanage.user.api;
 
 import com.laser.ordermanage.user.dto.request.ChangePasswordRequest;
 import com.laser.ordermanage.user.dto.request.RequestChangePasswordRequest;
+import com.laser.ordermanage.user.dto.request.UpdateUserAccountRequest;
 import com.laser.ordermanage.user.service.UserAccountService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -89,6 +90,34 @@ public class UserAccountAPI {
     ) {
 
         userAccountService.changePassword(httpServletRequest, request);
+
+        return ResponseEntity.ok().build();
+    }
+
+    /**
+     * 마이페이지 계정 기본 정보 조회
+     * - 이메일 기준으로 사용자 조회
+     * - 사용자 이메일기준으로 계정 기본 정보 조회
+     */
+    @GetMapping("")
+    public ResponseEntity<?> getUserAccount() {
+
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        return ResponseEntity.ok(userAccountService.getUserAccount(user.getUsername()));
+    }
+
+    /**
+     * 마이페이지 계정 기본 정보 변경
+     * - 이메일 기준으로 사용자 조회
+     * - 요청 데이터에 맞게 사용자 계정 기본 정보 변경
+     */
+    @PatchMapping("")
+    public ResponseEntity<?> updateUserAccount(@RequestBody @Valid UpdateUserAccountRequest request) {
+
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        userAccountService.updateUserAccount(user.getUsername(), request);
 
         return ResponseEntity.ok().build();
     }

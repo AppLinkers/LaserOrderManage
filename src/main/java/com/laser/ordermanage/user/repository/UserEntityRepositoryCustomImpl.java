@@ -5,7 +5,9 @@ import com.laser.ordermanage.customer.dto.response.QCustomerGetUserAccountRespon
 import com.laser.ordermanage.factory.dto.response.FactoryGetUserAccountResponse;
 import com.laser.ordermanage.factory.dto.response.QFactoryGetUserAccountResponse;
 import com.laser.ordermanage.user.domain.type.Role;
+import com.laser.ordermanage.user.dto.response.GetUserAccountResponse;
 import com.laser.ordermanage.user.dto.response.GetUserEmailResponse;
+import com.laser.ordermanage.user.dto.response.QGetUserAccountResponse;
 import com.laser.ordermanage.user.dto.response.QGetUserEmailResponse;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
@@ -38,6 +40,25 @@ public class UserEntityRepositoryCustomImpl implements UserEntityRepositoryCusto
                 .fetch();
 
         return getUserEmailResponseList;
+    }
+
+    @Override
+    public GetUserAccountResponse findUserAccountByEmail(String email) {
+        GetUserAccountResponse getUserAccountResponse = queryFactory
+                .select(new QGetUserAccountResponse(
+                    userEntity.email,
+                        userEntity.name,
+                        userEntity.phone,
+                        userEntity.address.zipCode,
+                        userEntity.address.address,
+                        userEntity.address.detailAddress,
+                        userEntity.emailNotification
+                ))
+                .from(userEntity)
+                .where(userEntity.email.eq(email))
+                .fetchOne();
+
+        return getUserAccountResponse;
     }
 
     @Override

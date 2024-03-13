@@ -9,6 +9,7 @@ import com.laser.ordermanage.common.security.jwt.component.JwtProvider;
 import com.laser.ordermanage.common.util.NetworkUtil;
 import com.laser.ordermanage.user.domain.UserEntity;
 import com.laser.ordermanage.user.domain.UserEntityBuilder;
+import com.laser.ordermanage.user.domain.type.Authority;
 import com.laser.ordermanage.user.domain.type.Role;
 import com.laser.ordermanage.user.dto.request.LoginRequest;
 import com.laser.ordermanage.user.dto.request.LoginRequestBuilder;
@@ -30,11 +31,10 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.when;
 
 public class UserAuthServiceUnitTest extends ServiceUnitTest {
 
@@ -111,8 +111,14 @@ public class UserAuthServiceUnitTest extends ServiceUnitTest {
 
         // stub
         when(authenticationManager.authenticate(loginRequest.toAuthentication())).thenReturn(authentication);
-        final String role = authentication.getAuthorities().iterator().next().getAuthority();
-        when(jwtProvider.generateToken(authentication.getName(), role)).thenReturn(expectedResponse);
+        final Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
+        final List<String> authorityList = new ArrayList<>();
+        for (GrantedAuthority authority : authorities) {
+            String grantedAuthorityAuthority = authority.getAuthority();
+            authorityList.add(grantedAuthorityAuthority);
+        }
+
+        when(jwtProvider.generateToken(authentication.getName(), authorityList)).thenReturn(expectedResponse);
 
         // when
         final TokenInfoResponse actualResponse = userAuthService.login(httpServletRequest, loginRequest);
@@ -151,7 +157,7 @@ public class UserAuthServiceUnitTest extends ServiceUnitTest {
         final RefreshToken refreshToken = RefreshToken.builder()
                 .id("user1@gmail.com")
                 .ip(NetworkUtil.getClientIp(httpServletRequest))
-                .role(Role.ROLE_CUSTOMER.name())
+                .authorityList(List.of(Role.ROLE_CUSTOMER.name(), Authority.AUTHORITY_ADMIN.name()))
                 .refreshToken("refreshToken")
                 .build();
 
@@ -161,7 +167,7 @@ public class UserAuthServiceUnitTest extends ServiceUnitTest {
         when(jwtProvider.validateToken(refreshToken.getRefreshToken())).thenReturn(true);
 
         when(refreshTokenRedisRepository.findByRefreshToken(refreshToken.getRefreshToken())).thenReturn(refreshToken);
-        when(jwtProvider.generateToken(refreshToken.getId(), refreshToken.getRole())).thenReturn(expectedResponse);
+        when(jwtProvider.generateToken(refreshToken.getId(), refreshToken.getAuthorityList())).thenReturn(expectedResponse);
 
         // when
         final TokenInfoResponse actualResponse = userAuthService.reissue(httpServletRequest, refreshToken.getRefreshToken());
@@ -233,7 +239,7 @@ public class UserAuthServiceUnitTest extends ServiceUnitTest {
         final RefreshToken refreshToken = RefreshToken.builder()
                 .id("user1@gmail.com")
                 .ip("256.100.100.100")
-                .role(Role.ROLE_CUSTOMER.name())
+                .authorityList(List.of(Role.ROLE_CUSTOMER.name()))
                 .refreshToken("refreshToken")
                 .build();
 

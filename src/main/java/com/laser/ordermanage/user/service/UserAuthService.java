@@ -17,10 +17,15 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
+
+import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -51,14 +56,18 @@ public class UserAuthService {
         Authentication authentication = authenticationManager.authenticate(authenticationToken);
 
         // 3. 인증 정보를 기반으로 JWT 토큰 생성
-        String role = authentication.getAuthorities().iterator().next().getAuthority();
-        TokenInfoResponse response = jwtProvider.generateToken(authentication.getName(), role);
+        Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
+        List<String> authorityList = authorities.stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.toList());
+
+        TokenInfoResponse response = jwtProvider.generateToken(authentication.getName(), authorityList);
 
         // 4. RefreshToken 을 Redis 에 저장
         refreshTokenRedisRepository.save(RefreshToken.builder()
                 .id(authentication.getName())
                 .ip(NetworkUtil.getClientIp(httpServletRequest))
-                .role(response.role())
+                .authorityList(response.authorityList())
                 .refreshToken(response.refreshToken())
                 .build());
 
@@ -78,13 +87,13 @@ public class UserAuthService {
                 String currentIpAddress = NetworkUtil.getClientIp(httpServletRequest);
                 if (refreshToken.getIp().equals(currentIpAddress)) {
                     // 3. Redis 에 저장된 RefreshToken 정보를 기반으로 JWT Token 생성
-                    TokenInfoResponse response = jwtProvider.generateToken(refreshToken.getId(), refreshToken.getRole());
+                    TokenInfoResponse response = jwtProvider.generateToken(refreshToken.getId(), refreshToken.getAuthorityList());
 
                     // 4. Redis RefreshToken update
                     refreshTokenRedisRepository.save(RefreshToken.builder()
                             .id(refreshToken.getId())
                             .ip(currentIpAddress)
-                            .role(response.role())
+                            .authorityList(response.authorityList())
                             .refreshToken(response.refreshToken())
                             .build());
 

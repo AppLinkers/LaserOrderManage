@@ -4,6 +4,7 @@ import com.laser.ordermanage.common.IntegrationTest;
 import com.laser.ordermanage.common.constants.ExpireTime;
 import com.laser.ordermanage.common.exception.CommonErrorCode;
 import com.laser.ordermanage.common.security.jwt.setup.JwtBuilder;
+import com.laser.ordermanage.user.domain.type.Authority;
 import com.laser.ordermanage.user.domain.type.Role;
 import com.laser.ordermanage.user.dto.request.LoginRequest;
 import com.laser.ordermanage.user.dto.request.LoginRequestBuilder;
@@ -15,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 
+import static org.hamcrest.Matchers.hasItem;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -40,7 +42,8 @@ public class UserAuthIntegrationTest extends IntegrationTest {
         // then
         resultActions
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("role").value(Role.ROLE_CUSTOMER.name()))
+                .andExpect(jsonPath("authorityList", hasItem(Role.ROLE_CUSTOMER.name())))
+                .andExpect(jsonPath("authorityList", hasItem(Authority.AUTHORITY_ADMIN.name())))
                 .andExpect(jsonPath("grantType").value("Bearer"))
                 .andExpect(jsonPath("accessToken").exists())
                 .andExpect(jsonPath("refreshToken").exists())
@@ -107,7 +110,8 @@ public class UserAuthIntegrationTest extends IntegrationTest {
         // then
         resultActions
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("role").value(Role.ROLE_CUSTOMER.name()))
+                .andExpect(jsonPath("authorityList", hasItem(Role.ROLE_CUSTOMER.name())))
+                .andExpect(jsonPath("authorityList", hasItem(Authority.AUTHORITY_ADMIN.name())))
                 .andExpect(jsonPath("grantType").value("Bearer"))
                 .andExpect(jsonPath("accessToken").exists())
                 .andExpect(jsonPath("refreshToken").exists())

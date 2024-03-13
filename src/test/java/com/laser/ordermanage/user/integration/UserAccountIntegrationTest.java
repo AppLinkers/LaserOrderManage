@@ -28,7 +28,7 @@ public class UserAccountIntegrationTest extends IntegrationTest {
     public void 고객_이메일_찾기_성공() throws Exception {
         // given
         final String customerName = "고객 이름 1";
-        final String customerPhone = "01011111111";
+        final String customerPhone = "01022221111";
 
         // when
         final ResultActions resultActions = requestGetUserEmail(customerName, customerPhone);

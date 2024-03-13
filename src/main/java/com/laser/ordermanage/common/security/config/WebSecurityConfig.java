@@ -1,8 +1,8 @@
 package com.laser.ordermanage.common.security.config;
 
-import com.laser.ordermanage.common.security.jwt.filter.JwtExceptionFilter;
 import com.laser.ordermanage.common.security.jwt.component.JwtProvider;
 import com.laser.ordermanage.common.security.jwt.filter.JwtAuthFilter;
+import com.laser.ordermanage.common.security.jwt.filter.JwtExceptionFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -56,7 +56,7 @@ public class WebSecurityConfig {
         http.authorizeHttpRequests((authorizeRequests) ->
                 authorizeRequests
                         .requestMatchers("/secure/actuator/**").permitAll() // actuator 권한 허가
-                        .requestMatchers("/user/logout", "/user/password",  "/user/password/email-link", "/user/email-notification").authenticated()
+                        .requestMatchers("/user/logout", "/user/password", "/user/password/email-link", "/user/email-notification").authenticated()
                         .requestMatchers("/user/**").permitAll()
                         .requestMatchers("/customer/**", "/drawing/**").hasRole("CUSTOMER")
                         .requestMatchers("/factory/**").hasRole("FACTORY")

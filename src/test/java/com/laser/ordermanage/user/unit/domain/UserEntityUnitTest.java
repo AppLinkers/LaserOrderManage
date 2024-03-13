@@ -58,8 +58,9 @@ public class UserEntityUnitTest {
         final UserEntity actualUser = UserEntityBuilder.build();
 
         // then
-        Assertions.assertThat(actualUser.getAuthorities().size()).isEqualTo(1);
+        Assertions.assertThat(actualUser.getAuthorities().size()).isEqualTo(2);
         Assertions.assertThat(actualUser.getAuthorities().toArray()).contains(new SimpleGrantedAuthority(actualUser.getRole().name()));
+        Assertions.assertThat(actualUser.getAuthorities().toArray()).contains(new SimpleGrantedAuthority(actualUser.getAuthority().name()));
 
         Assertions.assertThat(actualUser.getUsername()).isEqualTo(actualUser.getEmail());
         Assertions.assertThat(actualUser.isAccountNonExpired()).isTrue();

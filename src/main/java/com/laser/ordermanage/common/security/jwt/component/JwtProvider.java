@@ -22,15 +22,16 @@ import org.springframework.util.StringUtils;
 
 import java.security.Key;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 public class JwtProvider {
 
-    private static final String ROLE_KEY = "role";
     private static final String AUTHORIZATION_HEADER = "Authorization";
     private static final String BEARER_TYPE = "Bearer";
+    private static final String AUTHORITY_KEY = "authority";
     private static final String TYPE_KEY = "type";
 
     public static final String TYPE_ACCESS = "access";
@@ -47,20 +48,20 @@ public class JwtProvider {
     }
 
     /**
-     * email, role 을 가지고 AccessToken, RefreshToken 을 생성
+     * email, authorityList 을 가지고 AccessToken, RefreshToken 을 생성
      */
-    public TokenInfoResponse generateToken(String email, String role) {
+    public TokenInfoResponse generateToken(String email, List<String> authorityList) {
 
         Date now = new Date();
 
         // Access JWT Token 생성
-        String accessToken = generateJWT(email, role, TYPE_ACCESS, now, ExpireTime.ACCESS_TOKEN_EXPIRE_TIME);
+        String accessToken = generateJWT(email, authorityList, TYPE_ACCESS, now, ExpireTime.ACCESS_TOKEN_EXPIRE_TIME);
 
         // Refresh JWT Token 생성
-        String refreshToken = generateJWT(email, role, TYPE_REFRESH, now, ExpireTime.REFRESH_TOKEN_EXPIRE_TIME);
+        String refreshToken = generateJWT(email, authorityList, TYPE_REFRESH, now, ExpireTime.REFRESH_TOKEN_EXPIRE_TIME);
 
         return TokenInfoResponse.builder()
-                .role(role)
+                .authorityList(authorityList)
                 .grantType(BEARER_TYPE)
                 .accessToken(accessToken)
                 .accessTokenExpirationTime(ExpireTime.ACCESS_TOKEN_EXPIRE_TIME)
@@ -73,13 +74,18 @@ public class JwtProvider {
      * 사용자 정보를 활용하여 비밀번호 변경 인증 토큰 생성
      */
     public String generateChangePasswordToken(UserEntity user) {
-        return generateJWT(user.getEmail(), user.getRole().name(), TYPE_CHANGE_PASSWORD, new Date(), ExpireTime.CHANGE_PASSWORD_TOKEN_EXPIRE_TIME);
+        Collection<? extends GrantedAuthority> authorities = user.getAuthorities();
+        List<String> authorityList = authorities.stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.toList());
+
+        return generateJWT(user.getEmail(), authorityList, TYPE_CHANGE_PASSWORD, new Date(), ExpireTime.CHANGE_PASSWORD_TOKEN_EXPIRE_TIME);
     }
 
-    public String generateJWT(String subject, String role, String type, Date issuedAt, long expireTime) {
+    public String generateJWT(String subject, List<String> authorityList, String type, Date issuedAt, long expireTime) {
         return Jwts.builder()
                 .setSubject(subject)
-                .claim(ROLE_KEY, role)
+                .claim(AUTHORITY_KEY, authorityList)
                 .claim(TYPE_KEY, type)
                 .setIssuedAt(issuedAt)
                 .setExpiration(new Date(issuedAt.getTime() + expireTime)) //토큰 만료 시간 설정
@@ -102,7 +108,10 @@ public class JwtProvider {
         Claims claims = parseClaims(jwtToken);
 
         // 클레임에서 권한 정보 가져오기
-        Collection<? extends GrantedAuthority> authorities = Collections.singleton(new SimpleGrantedAuthority(claims.get(ROLE_KEY).toString()));
+        List<String> authorityList = claims.get(AUTHORITY_KEY, List.class);
+        List<GrantedAuthority> authorities = authorityList.stream()
+                .map(SimpleGrantedAuthority::new)
+                .collect(Collectors.toList());
 
         // UserDetails 객체를 만들어서 Authentication 리턴
         UserDetails principal = new User(claims.getSubject(), "", authorities);
@@ -112,8 +121,8 @@ public class JwtProvider {
     public boolean validateToken(String token) {
         try {
             Claims claims = parseClaims(token);
-
-            if (claims.get(ROLE_KEY).toString().isBlank()) {
+            List<String> authorityList = claims.get(AUTHORITY_KEY, List.class);
+            if (authorityList.isEmpty()) {
                 throw new CustomCommonException(UserErrorCode.UNAUTHORIZED_JWT);
             }
 

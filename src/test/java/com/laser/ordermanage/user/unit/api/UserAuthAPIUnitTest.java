@@ -5,6 +5,7 @@ import com.laser.ordermanage.common.constants.ExpireTime;
 import com.laser.ordermanage.common.exception.CommonErrorCode;
 import com.laser.ordermanage.common.exception.CustomCommonException;
 import com.laser.ordermanage.user.api.UserAuthAPI;
+import com.laser.ordermanage.user.domain.type.Authority;
 import com.laser.ordermanage.user.domain.type.Role;
 import com.laser.ordermanage.user.dto.request.LoginRequest;
 import com.laser.ordermanage.user.dto.request.LoginRequestBuilder;
@@ -22,6 +23,7 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.web.context.WebApplicationContext;
 
+import static org.hamcrest.Matchers.hasItem;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -60,7 +62,8 @@ public class UserAuthAPIUnitTest extends APIUnitTest {
         // then
         resultActions
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("role").value(Role.ROLE_CUSTOMER.name()))
+                .andExpect(jsonPath("authorityList", hasItem(Role.ROLE_CUSTOMER.name())))
+                .andExpect(jsonPath("authorityList", hasItem(Authority.AUTHORITY_ADMIN.name())))
                 .andExpect(jsonPath("grantType").value("Bearer"))
                 .andExpect(jsonPath("accessToken").exists())
                 .andExpect(jsonPath("refreshToken").exists())
@@ -170,7 +173,8 @@ public class UserAuthAPIUnitTest extends APIUnitTest {
         // then
         resultActions
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("role").value(Role.ROLE_CUSTOMER.name()))
+                .andExpect(jsonPath("authorityList", hasItem(Role.ROLE_CUSTOMER.name())))
+                .andExpect(jsonPath("authorityList", hasItem(Authority.AUTHORITY_ADMIN.name())))
                 .andExpect(jsonPath("grantType").value("Bearer"))
                 .andExpect(jsonPath("accessToken").exists())
                 .andExpect(jsonPath("refreshToken").exists())

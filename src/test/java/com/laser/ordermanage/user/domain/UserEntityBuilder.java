@@ -1,6 +1,7 @@
 package com.laser.ordermanage.user.domain;
 
 import com.laser.ordermanage.common.entity.embedded.Address;
+import com.laser.ordermanage.user.domain.type.Authority;
 import com.laser.ordermanage.user.domain.type.Role;
 
 public class UserEntityBuilder {
@@ -17,7 +18,8 @@ public class UserEntityBuilder {
                 .password("user1-password")
                 .name("고객 이름 1")
                 .role(Role.ROLE_CUSTOMER)
-                .phone("01011111111")
+                .authority(Authority.AUTHORITY_ADMIN)
+                .phone("01022221111")
                 .address(address)
                 .build();
     }
@@ -34,6 +36,7 @@ public class UserEntityBuilder {
                 .password("new-user1-password")
                 .name("신규 고객 이름 1")
                 .role(Role.ROLE_CUSTOMER)
+                .authority(Authority.AUTHORITY_ADMIN)
                 .phone("01011111111")
                 .address(address)
                 .build();

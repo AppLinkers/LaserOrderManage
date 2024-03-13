@@ -3,6 +3,7 @@ package com.laser.ordermanage.user.domain;
 import com.laser.ordermanage.common.converter.BooleanToYNConverter;
 import com.laser.ordermanage.common.entity.CreatedAtEntity;
 import com.laser.ordermanage.common.entity.embedded.Address;
+import com.laser.ordermanage.user.domain.type.Authority;
 import com.laser.ordermanage.user.domain.type.Role;
 import com.laser.ordermanage.user.dto.request.UpdateUserAccountRequest;
 import jakarta.persistence.*;
@@ -41,6 +42,10 @@ public class UserEntity extends CreatedAtEntity implements UserDetails {
     @Column(name = "role", nullable = false, updatable = false)
     private Role role;
 
+    @Enumerated(value = EnumType.STRING)
+    @Column(name = "authority")
+    private Authority authority;
+
     @Column(name = "phone", nullable = false, length = 11)
     private String phone;
 
@@ -52,10 +57,11 @@ public class UserEntity extends CreatedAtEntity implements UserDetails {
     private Boolean emailNotification = Boolean.TRUE;
 
     @Builder
-    public UserEntity(String email, String password, String name, Role role, String phone, Address address) {
+    public UserEntity(String email, String password, String name, Role role, Authority authority, String phone, Address address) {
         this.email = email;
         this.password = password;
         this.name = name;
+        this.authority = authority;
         this.role = role;
         this.phone = phone;
         this.address = address;
@@ -65,6 +71,9 @@ public class UserEntity extends CreatedAtEntity implements UserDetails {
     public Collection<? extends GrantedAuthority> getAuthorities() {
         Collection<SimpleGrantedAuthority> response = new ArrayList<>();
         response.add(new SimpleGrantedAuthority(role.name()));
+        if (authority != null) {
+            response.add(new SimpleGrantedAuthority(authority.name()));
+        }
 
         return response;
     }

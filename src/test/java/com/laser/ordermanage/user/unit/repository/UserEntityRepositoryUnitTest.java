@@ -60,7 +60,7 @@ public class UserEntityRepositoryUnitTest extends RepositoryUnitTest {
     public void findEmailByNameAndPhone_존재_O() {
         // given
         final String expectedName = "고객 이름 1";
-        final String expectedPhone = "01011111111";
+        final String expectedPhone = "01022221111";
 
         // when
         final List<GetUserEmailResponse> actualResponseList = userEntityRepository.findEmailByNameAndPhone(expectedName, expectedPhone);
@@ -166,7 +166,7 @@ public class UserEntityRepositoryUnitTest extends RepositoryUnitTest {
         final CustomerGetUserAccountResponse expectedResponse = CustomerGetUserAccountResponse.builder()
                 .email("user1@gmail.com")
                 .name("고객 이름 1")
-                .phone("01011111111")
+                .phone("01022221111")
                 .zipCode("11111")
                 .address("user1_address")
                 .detailAddress("user1_detail_address")

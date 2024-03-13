@@ -9,6 +9,8 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
 import org.springframework.data.redis.core.index.Indexed;
 
+import java.util.List;
+
 @Builder
 @Getter
 @AllArgsConstructor
@@ -21,7 +23,7 @@ public class RefreshToken {
 
     private String ip;
 
-    private String role;
+    private List<String> authorityList;
 
     @Indexed
     private String refreshToken;

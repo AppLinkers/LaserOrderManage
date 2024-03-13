@@ -12,6 +12,7 @@ import com.laser.ordermanage.customer.domain.DeliveryAddress;
 import com.laser.ordermanage.customer.dto.request.JoinCustomerRequest;
 import com.laser.ordermanage.customer.repository.DeliveryAddressRepository;
 import com.laser.ordermanage.user.domain.UserEntity;
+import com.laser.ordermanage.user.domain.type.Authority;
 import com.laser.ordermanage.user.domain.type.Role;
 import com.laser.ordermanage.user.dto.request.VerifyEmailRequest;
 import com.laser.ordermanage.user.dto.response.UserJoinStatusResponse;
@@ -107,6 +108,7 @@ public class UserJoinService {
                     .password(passwordEncoder.encode(request.password()))
                     .name(request.name())
                     .role(Role.ROLE_CUSTOMER)
+                    .authority(Authority.AUTHORITY_ADMIN)
                     .phone(request.phone())
                     .address(address)
                     .build();

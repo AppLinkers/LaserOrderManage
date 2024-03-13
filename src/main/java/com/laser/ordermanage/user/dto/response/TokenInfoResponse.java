@@ -2,9 +2,11 @@ package com.laser.ordermanage.user.dto.response;
 
 import lombok.Builder;
 
+import java.util.List;
+
 @Builder
 public record TokenInfoResponse(
-        String role,
+        List<String> authorityList,
         String grantType,
         String accessToken,
         Long accessTokenExpirationTime,

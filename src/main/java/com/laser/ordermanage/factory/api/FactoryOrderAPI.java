@@ -18,6 +18,7 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -38,6 +39,7 @@ public class FactoryOrderAPI {
      * - 거래 긴급을 isUrgent 에 맞춰서 설정
      * - 거래의 고객에게 이메일 전송
      */
+    @PreAuthorize("hasAuthority('AUTHORITY_ADMIN')")
     @PatchMapping("/{order-id}/urgent")
     public ResponseEntity<?> updateOrderIsUrgent(
             @PathVariable("order-id") Long orderId,
@@ -58,6 +60,7 @@ public class FactoryOrderAPI {
      * - 거래 견적서 작성 및 수정
      * - 거래의 고객에게 이메일 전송
      */
+    @PreAuthorize("hasAuthority('AUTHORITY_ADMIN')")
     @PutMapping("/{order-id}/quotation")
     public ResponseEntity<?> createOrUpdateOrderQuotation(
             @PathVariable("order-id") Long orderId,
@@ -94,6 +97,7 @@ public class FactoryOrderAPI {
      * - 거래 단계 변경 : 견적 승인 -> 제작 중
      * - 거래의 고객에게 이메일 전송
      */
+    @PreAuthorize("hasAuthority('AUTHORITY_ADMIN')")
     @PatchMapping("/{order-id}/purchase-order")
     public ResponseEntity<?> approvePurchaseOrder(@PathVariable("order-id") Long orderId) {
 
@@ -111,6 +115,7 @@ public class FactoryOrderAPI {
      * - 거래의 고객에게 이메일 전송
      * - 7일 후, 거래 단계 변경 (제작 완료 -> 거래 완료) 를 위한 Job 을 Schedule 에 등록
      */
+    @PreAuthorize("hasAuthority('AUTHORITY_ADMIN')")
     @PatchMapping("/{order-id}/stage/production-completed")
     public ResponseEntity<?> changeStageToProductionCompleted(@PathVariable("order-id") Long orderId) {
 
@@ -129,6 +134,7 @@ public class FactoryOrderAPI {
      * - 거래 완료 가능 단계 확인 (제작 완료)
      * - 공장에게 인수자 확인 및 서명 링크를 이메일로 전송합니다.
      */
+    @PreAuthorize("hasAuthority('AUTHORITY_ADMIN')")
     @PostMapping("/{order-id}/acquirer/email-link")
     public ResponseEntity<?> sendEmailForAcquirer(
             @PathVariable("order-id") Long orderId,
@@ -151,6 +157,7 @@ public class FactoryOrderAPI {
      * - 거래 단계 변경 : 제작 완료 -> 거래 완료 (해당 고객이 신규 고객이면, 신규 고객 -> 기존 고객 변경)
      * - 거래의 고객에게 이메일 전송
      */
+    @PreAuthorize("hasAuthority('AUTHORITY_ADMIN')")
     @PostMapping("/{order-id}/stage/completed")
     public ResponseEntity<?> changeStageToCompleted(
             @PathVariable("order-id") Long orderId,
@@ -180,6 +187,7 @@ public class FactoryOrderAPI {
      * - path parameter {order-id} 에 해당하는 거래 조회
      * - 거래의 고객 정보 조회
      */
+    @PreAuthorize("hasAuthority('AUTHORITY_ADMIN')")
     @GetMapping("/{order-id}/customer")
     public ResponseEntity<?> getOrderCustomer(@PathVariable("order-id") Long orderId) {
         return ResponseEntity.ok(factoryOrderService.getOrderCustomer(orderId));
@@ -190,6 +198,7 @@ public class FactoryOrderAPI {
      * - path parameter {order-id} 에 해당하는 거래 조회
      * - 거래의 발주서 파일 조회
      */
+    @PreAuthorize("hasAuthority('AUTHORITY_ADMIN')")
     @GetMapping("/{order-id}/purchase-order/file")
     public ResponseEntity<?> getOrderPurchaseOrderFile(@PathVariable("order-id") Long orderId) {
         return ResponseEntity.ok(factoryOrderService.getOrderPurchaseOrderFile(orderId));

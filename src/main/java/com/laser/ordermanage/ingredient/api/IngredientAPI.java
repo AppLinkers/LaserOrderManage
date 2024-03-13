@@ -11,6 +11,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.validation.annotation.Validated;
@@ -47,6 +48,7 @@ public class IngredientAPI {
      * - 초기 재고 데이터 생성 및 자재 데이터와 연관관계 매핑
      * - 초기 단가 데이터 생성 및 자재 데이터와 연관관계 매핑
      */
+    @PreAuthorize("hasAuthority('AUTHORITY_ADMIN')")
     @PostMapping("")
     public ResponseEntity<?> createIngredient(@RequestBody @Valid CreateIngredientRequest request) {
 
@@ -66,6 +68,7 @@ public class IngredientAPI {
      * - 자재 재고 데이터 수정 또는 생성 및 자재 데이터와 연관관계 매핑
      * - 자재 단가 데이터 수정 또는 생성 및 자재 데이터와 연관관계 매핑
      */
+    @PreAuthorize("hasAuthority('AUTHORITY_ADMIN')")
     @PatchMapping("/{ingredient-id}")
     public ResponseEntity<?> updateIngredient(
             @PathVariable("ingredient-id") Long ingredientId,
@@ -86,6 +89,7 @@ public class IngredientAPI {
      * - 자재에 대한 현재 로그인한 회원의 접근 권한 확인 (자재의 공장 회원)
      * - 자재 삭제 여부 확인 및 삭제 수행 (삭제 날짜 표시)
      */
+    @PreAuthorize("hasAuthority('AUTHORITY_ADMIN')")
     @DeleteMapping("/{ingredient-id}")
     public ResponseEntity<?> deleteIngredient(
             @PathVariable("ingredient-id") Long ingredientId

@@ -7,6 +7,7 @@ import com.laser.ordermanage.order.service.OrderService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
@@ -56,6 +57,7 @@ public class OrderAPI {
      * - 거래 PK에 해당하는 거래에 댓글 데이터 생성
      * - 댓글 수신자 (공장 or 고객) 에게 이메일 전송
      */
+    @PreAuthorize("hasAuthority('AUTHORITY_ADMIN')")
     @PostMapping("/{order-id}/comment")
     public ResponseEntity<?> createOrderComment(
             @PathVariable("order-id") Long orderId,
@@ -80,6 +82,7 @@ public class OrderAPI {
      * - 거래 데이터 삭제 및 연관 데이터 삭제 (거래 제조 서비스, 거래 후처리 서비스, 도면, 거래 배송지, 견적서, 발주서, 댓글)
      * - 거래 삭제에 대한 이메일 전송
      */
+    @PreAuthorize("hasAuthority('AUTHORITY_ADMIN')")
     @DeleteMapping("/{order-id}")
     public ResponseEntity<?> deleteOrder(@PathVariable("order-id") Long orderId) {
 

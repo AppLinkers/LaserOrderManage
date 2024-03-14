@@ -9,6 +9,7 @@ import com.laser.ordermanage.ingredient.domain.IngredientPrice;
 import com.laser.ordermanage.ingredient.domain.IngredientStock;
 import com.laser.ordermanage.ingredient.dto.request.CreateIngredientRequest;
 import com.laser.ordermanage.ingredient.dto.request.UpdateIngredientRequest;
+import com.laser.ordermanage.ingredient.dto.request.UpdateIngredientStockRequest;
 import com.laser.ordermanage.ingredient.dto.response.*;
 import com.laser.ordermanage.ingredient.exception.IngredientErrorCode;
 import com.laser.ordermanage.ingredient.repository.IngredientPriceRepository;
@@ -120,7 +121,7 @@ public class IngredientService {
     }
 
     @Transactional
-    public void updateIngredient(Long ingredientId, UpdateIngredientRequest request) {
+    public void updateIngredientStock(Long ingredientId, UpdateIngredientStockRequest request) {
         Ingredient ingredient = getIngredientById(ingredientId);
 
         if (ingredient.getDeletedAt() != null) {
@@ -131,18 +132,48 @@ public class IngredientService {
 
         // 가장 최근 자재 데이터와의 계산 일치 유무 확인
         IngredientStock previousIngredientStock = ingredientStockRepository.findPreviousByIngredientIdAndDate(ingredientId, nowDate);
-        IngredientStock.validate(previousIngredientStock, request.stock());
+        IngredientStock.validate(previousIngredientStock, request);
 
         // 당일 자재 재고 현황 조회 및 업데이트
         Optional<IngredientStock> ingredientStockOptional = ingredientStockRepository.findByIngredientIdAndCreatedAt(ingredientId, nowDate);
         if (ingredientStockOptional.isPresent()) {
-            ingredientStockOptional.get().updateStock(request.stock(), request.optimalStock());
+            ingredientStockOptional.get().updateStock(request);
         } else {
             IngredientStock ingredientStock = IngredientStock.builder()
                     .ingredient(ingredient)
-                    .incoming(request.stock().incoming())
-                    .production(request.stock().production())
-                    .stock(request.stock().currentDay())
+                    .incoming(request.incoming())
+                    .production(request.production())
+                    .stock(request.currentDay())
+                    .optimal(previousIngredientStock.getOptimal())
+                    .build();
+
+            ingredientStockRepository.save(ingredientStock);
+        }
+    }
+
+    @Transactional
+    public void updateIngredient(Long ingredientId, UpdateIngredientRequest request) {
+        Ingredient ingredient = getIngredientById(ingredientId);
+
+        if (ingredient.getDeletedAt() != null) {
+            throw new CustomCommonException(IngredientErrorCode.UNABLE_UPDATE_DELETED_INGREDIENT);
+        }
+
+        LocalDate nowDate = LocalDate.now();
+
+        // 당일 자재 재고 현황 조회 및 적정재고 업데이트
+        Optional<IngredientStock> ingredientStockOptional = ingredientStockRepository.findByIngredientIdAndCreatedAt(ingredientId, nowDate);
+        if (ingredientStockOptional.isPresent()) {
+            ingredientStockOptional.get().updateOptimalStock(request.optimalStock());
+        } else {
+            // 가장 최근 자재 데이터 조회
+            IngredientStock previousIngredientStock = ingredientStockRepository.findPreviousByIngredientIdAndDate(ingredientId, nowDate);
+
+            IngredientStock ingredientStock = IngredientStock.builder()
+                    .ingredient(ingredient)
+                    .incoming(0)
+                    .production(0)
+                    .stock(previousIngredientStock.getStock())
                     .optimal(request.optimalStock())
                     .build();
 

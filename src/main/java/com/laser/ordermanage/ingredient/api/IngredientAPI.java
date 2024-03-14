@@ -6,6 +6,7 @@ import com.laser.ordermanage.ingredient.domain.type.IngredientPriceType;
 import com.laser.ordermanage.ingredient.domain.type.IngredientStockType;
 import com.laser.ordermanage.ingredient.dto.request.CreateIngredientRequest;
 import com.laser.ordermanage.ingredient.dto.request.UpdateIngredientRequest;
+import com.laser.ordermanage.ingredient.dto.request.UpdateIngredientStockRequest;
 import com.laser.ordermanage.ingredient.service.IngredientService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -60,12 +61,33 @@ public class IngredientAPI {
     }
 
     /**
-     * 자재 재고 및 단가 수정
+     * 자재 재고 수정
      * - path parameter {ingredient-id} 에 해당하는 자재 조회
      * - 자재에 대한 현재 로그인한 회원의 접근 권한 확인 (자재의 공장 회원)
      * - 자재 삭제 여부 확인
      * - 자재 재고 데이터 계산 검증
      * - 자재 재고 데이터 수정 또는 생성 및 자재 데이터와 연관관계 매핑
+     */
+    @PatchMapping("/{ingredient-id}/stock")
+    public ResponseEntity<?> updateIngredientStock(
+            @PathVariable("ingredient-id") Long ingredientId,
+            @RequestBody @Valid UpdateIngredientStockRequest request) {
+
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        ingredientService.checkAuthorityOfIngredient(user.getUsername(), ingredientId);
+
+        ingredientService.updateIngredientStock(ingredientId, request);
+
+        return ResponseEntity.ok().build();
+    }
+
+    /**
+     * 자재 정보 (단가, 적정재고) 수정
+     * - path parameter {ingredient-id} 에 해당하는 자재 조회
+     * - 자재에 대한 현재 로그인한 회원의 접근 권한 확인 (자재의 공장 회원)
+     * - 자재 삭제 여부 확인
+     * - 자재 적정 재고 데이터 수정 또는 생성 및 자재 데이터와 연관관계 매핑
      * - 자재 단가 데이터 수정 또는 생성 및 자재 데이터와 연관관계 매핑
      */
     @PreAuthorize("hasAuthority('AUTHORITY_ADMIN')")

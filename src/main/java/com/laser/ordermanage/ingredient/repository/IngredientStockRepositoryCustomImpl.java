@@ -3,7 +3,6 @@ package com.laser.ordermanage.ingredient.repository;
 import com.laser.ordermanage.ingredient.domain.IngredientStock;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 
 import java.time.LocalDate;
 
@@ -13,7 +12,6 @@ import static com.laser.ordermanage.ingredient.domain.QIngredientStock.ingredien
 @RequiredArgsConstructor
 public class IngredientStockRepositoryCustomImpl implements IngredientStockRepositoryCustom{
 
-    private final NamedParameterJdbcTemplate jdbcTemplate;
     private final JPAQueryFactory queryFactory;
 
     @Override

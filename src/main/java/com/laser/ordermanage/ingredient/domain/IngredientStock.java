@@ -60,10 +60,13 @@ public class IngredientStock {
         }
     }
 
-    public void updateStock(UpdateIngredientStockRequest stockRequest, Integer optimalRequest) {
+    public void updateStock(UpdateIngredientStockRequest stockRequest) {
         this.incoming = stockRequest.incoming();
         this.production = stockRequest.production();
         this.stock = stockRequest.currentDay();
+    }
+
+    public void updateOptimalStock(Integer optimalRequest) {
         this.optimal = optimalRequest;
     }
 }

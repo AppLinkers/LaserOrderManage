@@ -2,6 +2,8 @@ package com.laser.ordermanage.user.integration;
 
 import com.laser.ordermanage.common.IntegrationTest;
 import com.laser.ordermanage.common.security.jwt.setup.JwtBuilder;
+import com.laser.ordermanage.user.domain.UserEntity;
+import com.laser.ordermanage.user.domain.UserEntityBuilder;
 import com.laser.ordermanage.user.dto.request.*;
 import com.laser.ordermanage.user.exception.UserErrorCode;
 import org.junit.jupiter.api.Test;
@@ -363,6 +365,226 @@ public class UserAccountIntegrationTest extends IntegrationTest {
     }
 
     /**
+     * 마이페이지 계정 기본 정보 조회 성공
+     */
+    @Test
+    public void 마이페이지_계정_기본_정보_조회_성공() throws Exception {
+        // given
+        final String accessToken = jwtBuilder.accessJwtBuild();
+        final UserEntity expectedUser = UserEntityBuilder.build();
+
+        // when
+        final ResultActions resultActions = requestGetUserAccount(accessToken);
+
+        // then
+        resultActions
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("email").value(expectedUser.getEmail()))
+                .andExpect(jsonPath("name").value(expectedUser.getName()))
+                .andExpect(jsonPath("phone").value(expectedUser.getPhone()))
+                .andExpect(jsonPath("zipCode").value(expectedUser.getAddress().getZipCode()))
+                .andExpect(jsonPath("address").value(expectedUser.getAddress().getAddress()))
+                .andExpect(jsonPath("detailAddress").value(expectedUser.getAddress().getDetailAddress()));
+    }
+
+    /**
+     * 마이페이지 계정 기본 정보 조회 실패
+     * - 실패 사유 : 요청 시, Header 에 Authorization 정보 (Access Token) 를 추가하지 않음
+     */
+    @Test
+    public void 마이페이지_계정_기본_정보_조회_실패_Header_Authorization_존재() throws Exception {
+        // given
+
+        // when
+        final ResultActions resultActions = requestGetUserAccountWithOutAccessToken();
+
+        // then
+        assertError(UserErrorCode.MISSING_JWT, resultActions);
+    }
+
+    /**
+     * 마이페이지 계정 기본 정보 조회 실패
+     * - 실패 사유 : 요청 시, Header 에 있는 Authorization 정보 (Access Token) 에 권한 정보가 없음
+     */
+    @Test
+    public void 마이페이지_계정_기본_정보_조회_실패_Unauthorized_Access_Token() throws Exception {
+        // given
+        final String unauthorizedAccessToken = jwtBuilder.unauthorizedAccessJwtBuild();
+
+        // when
+        final ResultActions resultActions = requestGetUserAccount(unauthorizedAccessToken);
+
+        // then
+        assertError(UserErrorCode.UNAUTHORIZED_JWT, resultActions);
+    }
+
+    /**
+     * 마이페이지 계정 기본 정보 조회 실패
+     * - 실패 사유 : 요청 시, Header 에 다른 타입의 Authorization 정보 (Refresh Token) 를 추가함
+     */
+    @Test
+    public void 마이페이지_계정_기본_정보_조회_실패_Token_Type() throws Exception {
+        // given
+        final String refreshToken = jwtBuilder.refreshJwtBuild();
+
+        // when
+        final ResultActions resultActions = requestGetUserAccount(refreshToken);
+
+        // then
+        assertError(UserErrorCode.INVALID_TOKEN_TYPE, resultActions);
+    }
+
+    /**
+     * 마이페이지 계정 기본 정보 조회 실패
+     * - 실패 사유 : 요청 시, Header 에 있는 Authorization(Access Token) 의 유효기간 만료
+     */
+    @Test
+    public void 마이페이지_계정_기본_정보_조회_실패_Expired_Access_Token() throws Exception {
+        // given
+        final String expiredAccessToken = jwtBuilder.expiredAccessJwtBuild();
+
+        // when
+        final ResultActions resultActions = requestGetUserAccount(expiredAccessToken);
+
+        // then
+        assertError(UserErrorCode.EXPIRED_JWT, resultActions);
+    }
+
+    /**
+     * 마이페이지 계정 기본 정보 조회 실패
+     * - 실패 사유 : 요청 시, Header 에 있는 Authorization(JWT) 가 유효하지 않음
+     */
+    @Test
+    public void 마이페이지_계정_기본_정보_조회_실패_Invalid_Token() throws Exception {
+        // given
+        final String invalidToken = jwtBuilder.invalidJwtBuild();
+
+        // when
+        final ResultActions resultActions = requestGetUserAccount(invalidToken);
+
+        // then
+        assertError(UserErrorCode.INVALID_JWT, resultActions);
+    }
+
+    /**
+     * 마이페이지 계정 기본 정보 변경 성공
+     */
+    @Test
+    public void 마이페이지_계정_기본_정보_변경_성공() throws Exception {
+        // given
+        final String accessToken = jwtBuilder.accessJwtBuild();
+        final UpdateUserAccountRequest request = UpdateUserAccountRequestBuilder.build();
+
+        // when
+        final ResultActions resultActions = requestUpdateUserAccount(accessToken, request);
+
+        // then
+        resultActions
+                .andExpect(status().isOk());
+    }
+
+    /**
+     * 마이페이지 계정 기본 정보 변경 실패
+     * - 실패 사유 : 요청 시, Header 에 Authorization 정보 (Access Token) 를 추가하지 않음
+     */
+    @Test
+    public void 마이페이지_계정_기본_정보_변경_실패_Header_Authorization_존재() throws Exception {
+        // given
+        final UpdateUserAccountRequest request = UpdateUserAccountRequestBuilder.build();
+
+        // when
+        final ResultActions resultActions = requestUpdateUserAccountWithOutAccessToken(request);
+
+        // then
+        assertError(UserErrorCode.MISSING_JWT, resultActions);
+    }
+
+    /**
+     * 마이페이지 계정 기본 정보 변경 실패
+     * - 실패 사유 : 요청 시, Header 에 있는 Authorization 정보 (Access Token) 에 권한 정보가 없음
+     */
+    @Test
+    public void 마이페이지_계정_기본_정보_변경_실패_Unauthorized_Access_Token() throws Exception {
+        // given
+        final String unauthorizedAccessToken = jwtBuilder.unauthorizedAccessJwtBuild();
+        final UpdateUserAccountRequest request = UpdateUserAccountRequestBuilder.build();
+
+        // when
+        final ResultActions resultActions = requestUpdateUserAccount(unauthorizedAccessToken, request);
+
+        // then
+        assertError(UserErrorCode.UNAUTHORIZED_JWT, resultActions);
+    }
+
+    /**
+     * 마이페이지 계정 기본 정보 변경 실패
+     * - 실패 사유 : 요청 시, Header 에 다른 타입의 Authorization 정보 (Refresh Token) 를 추가함
+     */
+    @Test
+    public void 마이페이지_계정_기본_정보_변경_실패_Token_Type() throws Exception {
+        // given
+        final String refreshToken = jwtBuilder.refreshJwtBuild();
+        final UpdateUserAccountRequest request = UpdateUserAccountRequestBuilder.build();
+
+        // when
+        final ResultActions resultActions = requestUpdateUserAccount(refreshToken, request);
+
+        // then
+        assertError(UserErrorCode.INVALID_TOKEN_TYPE, resultActions);
+    }
+
+    /**
+     * 마이페이지 계정 기본 정보 변경 실패
+     * - 실패 사유 : 요청 시, Header 에 있는 Authorization(Access Token) 의 유효기간 만료
+     */
+    @Test
+    public void 마이페이지_계정_기본_정보_변경_실패_Expired_Access_Token() throws Exception {
+        // given
+        final String expiredAccessToken = jwtBuilder.expiredAccessJwtBuild();
+        final UpdateUserAccountRequest request = UpdateUserAccountRequestBuilder.build();
+
+        // when
+        final ResultActions resultActions = requestUpdateUserAccount(expiredAccessToken, request);
+
+        // then
+        assertError(UserErrorCode.EXPIRED_JWT, resultActions);
+    }
+
+    /**
+     * 마이페이지 계정 기본 정보 변경 실패
+     * - 실패 사유 : 요청 시, Header 에 있는 Authorization(JWT) 가 유효하지 않음
+     */
+    @Test
+    public void 마이페이지_계정_기본_정보_변경_실패_Invalid_Token() throws Exception {
+        // given
+        final String invalidToken = jwtBuilder.invalidJwtBuild();
+        final UpdateUserAccountRequest request = UpdateUserAccountRequestBuilder.build();
+
+        // when
+        final ResultActions resultActions = requestUpdateUserAccount(invalidToken, request);
+
+        // then
+        assertError(UserErrorCode.INVALID_JWT, resultActions);
+    }
+
+    /**
+     * 마이페이지 계정 기본 정보 변경 실패
+     * - 실패 사유 : 요청 시, Header 에 있는 Authorization(Access Token) 에 해당하는 사용자가 존재하지 않음
+     */
+    @Test
+    public void 마이페이지_계정_기본_정보_변경_실패_사용자_존재() throws Exception {
+        // given
+        final String accessTokenOfUnknownUser = jwtBuilder.accessJwtOfUnknownUserBuild();
+        final UpdateUserAccountRequest request = UpdateUserAccountRequestBuilder.build();
+
+        // when
+        final ResultActions resultActions = requestUpdateUserAccount(accessTokenOfUnknownUser, request);
+
+        // then
+        assertError(UserErrorCode.NOT_FOUND_USER, resultActions);
+    }
+
+    /**
      * 사용자 이메일 알림 설정 변경 성공
      */
     @Test
@@ -523,6 +745,32 @@ public class UserAccountIntegrationTest extends IntegrationTest {
 
     private ResultActions requestLogin(LoginRequest request) throws Exception {
         return mvc.perform(post("/user/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andDo(print());
+    }
+
+    private ResultActions requestGetUserAccount(String accessToken) throws Exception {
+        return mvc.perform(get("/user")
+                        .header("Authorization", "Bearer " + accessToken))
+                .andDo(print());
+    }
+
+    private ResultActions requestGetUserAccountWithOutAccessToken() throws Exception {
+        return mvc.perform(get("/user"))
+                .andDo(print());
+    }
+
+    private ResultActions requestUpdateUserAccount(String accessToken, UpdateUserAccountRequest request) throws Exception {
+        return mvc.perform(patch("/user")
+                        .header("Authorization", "Bearer " + accessToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andDo(print());
+    }
+
+    private ResultActions requestUpdateUserAccountWithOutAccessToken(UpdateUserAccountRequest request) throws Exception {
+        return mvc.perform(patch("/user")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andDo(print());

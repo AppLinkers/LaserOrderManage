@@ -3,6 +3,7 @@ package com.laser.ordermanage.user.unit.domain;
 import com.laser.ordermanage.user.domain.UserEntity;
 import com.laser.ordermanage.user.domain.UserEntityBuilder;
 import com.laser.ordermanage.user.dto.request.UpdateUserAccountRequest;
+import com.laser.ordermanage.user.dto.request.UpdateUserAccountRequestBuilder;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -39,17 +40,17 @@ public class UserEntityUnitTest {
     public void updateProperties() {
         // given
         final UserEntity actualUser = UserEntityBuilder.build();
-        final UpdateUserAccountRequest expectedUserAccount = new UpdateUserAccountRequest("고객 신규 이름 1", "01011112222", "22222", "user1_address2", "user1_detail_address2");
+        final UpdateUserAccountRequest request = UpdateUserAccountRequestBuilder.build();
 
         // when
-        actualUser.updateProperties(expectedUserAccount);
+        actualUser.updateProperties(request);
 
         // then
-        Assertions.assertThat(actualUser.getName()).isEqualTo(expectedUserAccount.name());
-        Assertions.assertThat(actualUser.getPhone()).isEqualTo(expectedUserAccount.phone());
-        Assertions.assertThat(actualUser.getAddress().getZipCode()).isEqualTo(expectedUserAccount.zipCode());
-        Assertions.assertThat(actualUser.getAddress().getAddress()).isEqualTo(expectedUserAccount.address());
-        Assertions.assertThat(actualUser.getAddress().getDetailAddress()).isEqualTo(expectedUserAccount.detailAddress());
+        Assertions.assertThat(actualUser.getName()).isEqualTo(request.name());
+        Assertions.assertThat(actualUser.getPhone()).isEqualTo(request.phone());
+        Assertions.assertThat(actualUser.getAddress().getZipCode()).isEqualTo(request.zipCode());
+        Assertions.assertThat(actualUser.getAddress().getAddress()).isEqualTo(request.address());
+        Assertions.assertThat(actualUser.getAddress().getDetailAddress()).isEqualTo(request.detailAddress());
     }
 
     @Test

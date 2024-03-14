@@ -1,10 +1,9 @@
 package com.laser.ordermanage.user.unit.repository;
 
 import com.laser.ordermanage.common.RepositoryUnitTest;
-import com.laser.ordermanage.customer.dto.response.CustomerGetUserAccountResponse;
-import com.laser.ordermanage.factory.dto.response.FactoryGetUserAccountResponse;
 import com.laser.ordermanage.user.domain.UserEntity;
 import com.laser.ordermanage.user.domain.UserEntityBuilder;
+import com.laser.ordermanage.user.dto.response.GetUserAccountResponse;
 import com.laser.ordermanage.user.dto.response.GetUserEmailResponse;
 import com.laser.ordermanage.user.repository.UserEntityRepository;
 import org.assertj.core.api.Assertions;
@@ -112,6 +111,39 @@ public class UserEntityRepositoryUnitTest extends RepositoryUnitTest {
 
         // then
         Assertions.assertThat(actualResponseList.size()).isEqualTo(0);
+    }
+
+    @Test
+    public void findUserAccountByEmail_존재_O() {
+        // given
+        final UserEntity expectedUser = UserEntityBuilder.build();
+        final GetUserAccountResponse expectedResponse = GetUserAccountResponse.builder()
+                .email(expectedUser.getEmail())
+                .name(expectedUser.getName())
+                .phone(expectedUser.getPhone())
+                .zipCode(expectedUser.getAddress().getZipCode())
+                .address(expectedUser.getAddress().getAddress())
+                .detailAddress(expectedUser.getAddress().getDetailAddress())
+                .emailNotification(expectedUser.getEmailNotification())
+                .build();
+
+        // when
+        final GetUserAccountResponse actualResponse = userEntityRepository.findUserAccountByEmail(expectedUser.getEmail());
+
+        // then
+        Assertions.assertThat(actualResponse).isEqualTo(expectedResponse);
+    }
+
+    @Test
+    public void findUserAccountByEmail_존재_X() {
+        // given
+        final String invalidUserEmail = "invalid-user@gmail.com";
+
+        // when
+        final GetUserAccountResponse actualResponse = userEntityRepository.findUserAccountByEmail(invalidUserEmail);
+
+        // then
+        Assertions.assertThat(actualResponse).isNull();
     }
 
 }

@@ -9,10 +9,8 @@ import com.laser.ordermanage.common.security.jwt.component.JwtProvider;
 import com.laser.ordermanage.user.domain.UserEntity;
 import com.laser.ordermanage.user.domain.UserEntityBuilder;
 import com.laser.ordermanage.user.domain.type.Role;
-import com.laser.ordermanage.user.dto.request.ChangePasswordRequest;
-import com.laser.ordermanage.user.dto.request.ChangePasswordRequestBuilder;
-import com.laser.ordermanage.user.dto.request.RequestChangePasswordRequest;
-import com.laser.ordermanage.user.dto.request.RequestChangePasswordRequestBuilder;
+import com.laser.ordermanage.user.dto.request.*;
+import com.laser.ordermanage.user.dto.response.GetUserAccountResponse;
 import com.laser.ordermanage.user.dto.response.GetUserEmailResponse;
 import com.laser.ordermanage.user.exception.UserErrorCode;
 import com.laser.ordermanage.user.repository.UserEntityRepository;
@@ -157,6 +155,56 @@ public class UserAccountServiceUnitTest extends ServiceUnitTest {
         Assertions.assertThatThrownBy(() -> userAccountService.changePassword(httpServletRequest, request))
                 .isInstanceOf(CustomCommonException.class)
                 .hasMessage(UserErrorCode.INVALID_CHANGE_PASSWORD_TOKEN.getMessage());
+    }
+
+    /**
+     * 마이페이지 계정 기본 정보 조회 성공
+     */
+    @Test
+    public void getUserAccount_성공() {
+        // given
+        final UserEntity expectedUser = UserEntityBuilder.build();
+        final GetUserAccountResponse expectedResponse = GetUserAccountResponse.builder()
+                .email(expectedUser.getEmail())
+                .name(expectedUser.getName())
+                .phone(expectedUser.getPhone())
+                .zipCode(expectedUser.getAddress().getZipCode())
+                .address(expectedUser.getAddress().getAddress())
+                .detailAddress(expectedUser.getAddress().getDetailAddress())
+                .emailNotification(expectedUser.getEmailNotification())
+                .build();
+
+        // stub
+        when(userRepository.findUserAccountByEmail(expectedUser.getEmail())).thenReturn(expectedResponse);
+
+        // when
+        final GetUserAccountResponse actualResponse = userAccountService.getUserAccount(expectedUser.getEmail());
+
+        // then
+        Assertions.assertThat(actualResponse).isEqualTo(expectedResponse);
+    }
+
+    /**
+     * 마이페이지 계정 기본 정보 변경 성공
+     */
+    @Test
+    public void updateUserAccount_성공() {
+        // given
+        final UserEntity actualUser = UserEntityBuilder.build();
+        final UpdateUserAccountRequest request = UpdateUserAccountRequestBuilder.build();
+
+        // stub
+        when(userAuthService.getUserByEmail(actualUser.getEmail())).thenReturn(actualUser);
+
+        // when
+        userAccountService.updateUserAccount(actualUser.getEmail(), request);
+
+        // then
+        Assertions.assertThat(actualUser.getName()).isEqualTo(request.name());
+        Assertions.assertThat(actualUser.getPhone()).isEqualTo(request.phone());
+        Assertions.assertThat(actualUser.getAddress().getZipCode()).isEqualTo(request.zipCode());
+        Assertions.assertThat(actualUser.getAddress().getAddress()).isEqualTo(request.address());
+        Assertions.assertThat(actualUser.getAddress().getDetailAddress()).isEqualTo(request.detailAddress());
     }
 
     /**

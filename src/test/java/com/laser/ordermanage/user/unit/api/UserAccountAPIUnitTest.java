@@ -6,10 +6,10 @@ import com.laser.ordermanage.common.exception.CustomCommonException;
 import com.laser.ordermanage.common.paging.ListResponse;
 import com.laser.ordermanage.common.security.jwt.component.JwtProvider;
 import com.laser.ordermanage.user.api.UserAccountAPI;
-import com.laser.ordermanage.user.dto.request.ChangePasswordRequest;
-import com.laser.ordermanage.user.dto.request.ChangePasswordRequestBuilder;
-import com.laser.ordermanage.user.dto.request.RequestChangePasswordRequest;
-import com.laser.ordermanage.user.dto.request.RequestChangePasswordRequestBuilder;
+import com.laser.ordermanage.user.domain.UserEntity;
+import com.laser.ordermanage.user.domain.UserEntityBuilder;
+import com.laser.ordermanage.user.dto.request.*;
+import com.laser.ordermanage.user.dto.response.GetUserAccountResponse;
 import com.laser.ordermanage.user.dto.response.GetUserEmailResponse;
 import com.laser.ordermanage.user.exception.UserErrorCode;
 import com.laser.ordermanage.user.service.UserAccountService;
@@ -380,6 +380,242 @@ public class UserAccountAPIUnitTest extends APIUnitTest {
     }
 
     /**
+     * 마이페이지 계정 기본 정보 조회 성공
+     */
+    @Test
+    @WithMockUser
+    public void 마이페이지_계정_기본_정보_조회_성공() throws Exception {
+        // when
+        final String accessToken = "access-token";
+        final UserEntity expectedUser = UserEntityBuilder.build();
+        final GetUserAccountResponse expectedResponse = GetUserAccountResponse.builder()
+                .email(expectedUser.getEmail())
+                .name(expectedUser.getName())
+                .phone(expectedUser.getPhone())
+                .zipCode(expectedUser.getAddress().getZipCode())
+                .address(expectedUser.getAddress().getAddress())
+                .detailAddress(expectedUser.getAddress().getDetailAddress())
+                .emailNotification(expectedUser.getEmailNotification())
+                .build();
+
+        // stub
+        when(userAccountService.getUserAccount(any())).thenReturn(expectedResponse);
+
+        // when
+        final ResultActions resultActions = requestGetUserAccount(accessToken);
+
+        // then
+        resultActions
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("email").value(expectedUser.getEmail()))
+                .andExpect(jsonPath("name").value(expectedUser.getName()))
+                .andExpect(jsonPath("phone").value(expectedUser.getPhone()))
+                .andExpect(jsonPath("zipCode").value(expectedUser.getAddress().getZipCode()))
+                .andExpect(jsonPath("address").value(expectedUser.getAddress().getAddress()))
+                .andExpect(jsonPath("detailAddress").value(expectedUser.getAddress().getDetailAddress()));
+    }
+
+    /**
+     * 마이페이지 계정 기본 정보 변경 성공
+     */
+    @Test
+    @WithMockUser
+    public void 마이페이지_계정_기본_정보_변경_성공() throws Exception {
+        // when
+        final String accessToken = "access-token";
+        final UpdateUserAccountRequest request = UpdateUserAccountRequestBuilder.build();
+
+        // stub
+        doNothing().when(userAccountService).updateUserAccount(any(), any());
+
+        // when
+        final ResultActions resultActions = requestUpdateUserAccount(accessToken, request);
+
+        // then
+        resultActions.andExpect(status().isOk());
+    }
+
+    /**
+     * 마이페이지 계정 기본 정보 변경 실패
+     * - 실패 사유 : 이름 필드 null
+     */
+    @Test
+    @WithMockUser
+    public void 마이페이지_계정_기본_정보_변경_실패_이름_필드_null() throws Exception {
+        // given
+        final String accessToken = "access-token";
+        final UpdateUserAccountRequest request = UpdateUserAccountRequestBuilder.nullNameBuild();
+
+        // when
+        final ResultActions resultActions = requestUpdateUserAccount(accessToken, request);
+
+        // then
+        assertErrorWithMessage(CommonErrorCode.INVALID_REQUEST_BODY_FIELDS, resultActions, "이름은 필수 입력값입니다.");
+    }
+
+    /**
+     * 마이페이지 계정 기본 정보 변경 실패
+     * - 실패 사유 : 이름 필드 empty
+     */
+    @Test
+    @WithMockUser
+    public void 마이페이지_계정_기본_정보_변경_실패_이름_필드_empty() throws Exception {
+        // given
+        final String accessToken = "access-token";
+        final UpdateUserAccountRequest request = UpdateUserAccountRequestBuilder.emptyNameBuild();
+
+        // when
+        final ResultActions resultActions = requestUpdateUserAccount(accessToken, request);
+
+        // then
+        assertErrorWithMessage(CommonErrorCode.INVALID_REQUEST_BODY_FIELDS, resultActions, "이름은 필수 입력값입니다.");
+    }
+
+    /**
+     * 마이페이지 계정 기본 정보 변경 실패
+     * - 실패 사유 : 이름 필드 유효성
+     */
+    @Test
+    @WithMockUser
+    public void 마이페이지_계정_기본_정보_변경_실패_이름_필드_유효성() throws Exception {
+        // given
+        final String accessToken = "access-token";
+        final UpdateUserAccountRequest request = UpdateUserAccountRequestBuilder.invalidNameBuild();
+
+        // when
+        final ResultActions resultActions = requestUpdateUserAccount(accessToken, request);
+
+        // then
+        assertErrorWithMessage(CommonErrorCode.INVALID_REQUEST_BODY_FIELDS, resultActions, "이름의 최대 글자수는 10자입니다.");
+    }
+
+    /**
+     * 마이페이지 계정 기본 정보 변경 실패
+     * - 실패 사유 : 연락처 null
+     */
+    @Test
+    @WithMockUser
+    public void 마이페이지_계정_기본_정보_변경_실패_연락처_필드_null() throws Exception {
+        // given
+        final String accessToken = "access-token";
+        final UpdateUserAccountRequest request = UpdateUserAccountRequestBuilder.nullPhoneBuild();
+
+        // when
+        final ResultActions resultActions = requestUpdateUserAccount(accessToken, request);
+
+        // then
+        assertErrorWithMessage(CommonErrorCode.INVALID_REQUEST_BODY_FIELDS, resultActions, "연락처는 필수 입력값입니다.");
+    }
+
+    /**
+     * 마이페이지 계정 기본 정보 변경 실패
+     * - 실패 사유 : 연락처 유효성
+     */
+    @Test
+    @WithMockUser
+    public void 마이페이지_계정_기본_정보_변경_실패_연락처_필드_유효성() throws Exception {
+        // given
+        final String accessToken = "access-token";
+        final UpdateUserAccountRequest request = UpdateUserAccountRequestBuilder.invalidPhoneBuild();
+
+        // when
+        final ResultActions resultActions = requestUpdateUserAccount(accessToken, request);
+
+        // then
+        assertErrorWithMessage(CommonErrorCode.INVALID_REQUEST_BODY_FIELDS, resultActions, "연락처 형식에 맞지 않습니다.");
+    }
+
+    /**
+     * 마이페이지 계정 기본 정보 변경 실패
+     * - 실패 사유 : 우편번호 null
+     */
+    @Test
+    @WithMockUser
+    public void 마이페이지_계정_기본_정보_변경_실패_우편번호_필드_null() throws Exception {
+        // given
+        final String accessToken = "access-token";
+        final UpdateUserAccountRequest request = UpdateUserAccountRequestBuilder.nullZipCodeBuild();
+
+        // when
+        final ResultActions resultActions = requestUpdateUserAccount(accessToken, request);
+
+        // then
+        assertErrorWithMessage(CommonErrorCode.INVALID_REQUEST_BODY_FIELDS, resultActions, "우편번호는 필수 입력값입니다.");
+    }
+
+    /**
+     * 마이페이지 계정 기본 정보 변경 실패
+     * - 실패 사유 : 우편번호 유효성
+     */
+    @Test
+    @WithMockUser
+    public void 마이페이지_계정_기본_정보_변경_실패_우편번호_필드_유효성() throws Exception {
+        // given
+        final String accessToken = "access-token";
+        final UpdateUserAccountRequest request = UpdateUserAccountRequestBuilder.invalidZipCodeBuild();
+
+        // when
+        final ResultActions resultActions = requestUpdateUserAccount(accessToken, request);
+
+        // then
+        assertErrorWithMessage(CommonErrorCode.INVALID_REQUEST_BODY_FIELDS, resultActions, "우편번호는 5자리 정수입니다.");
+    }
+
+    /**
+     * 마이페이지 계정 기본 정보 변경 실패
+     * - 실패 사유 : 기본주소 null
+     */
+    @Test
+    @WithMockUser
+    public void 마이페이지_계정_기본_정보_변경_실패_기본주소_필드_null() throws Exception {
+        // given
+        final String accessToken = "access-token";
+        final UpdateUserAccountRequest request = UpdateUserAccountRequestBuilder.nullAddressBuild();
+
+        // when
+        final ResultActions resultActions = requestUpdateUserAccount(accessToken, request);
+
+        // then
+        assertErrorWithMessage(CommonErrorCode.INVALID_REQUEST_BODY_FIELDS, resultActions, "기본 주소는 필수 입력값입니다.");
+    }
+
+    /**
+     * 마이페이지 계정 기본 정보 변경 실패
+     * - 실패 사유 : 기본주소 empty
+     */
+    @Test
+    @WithMockUser
+    public void 마이페이지_계정_기본_정보_변경_실패_기본주소_필드_empty() throws Exception {
+        // given
+        final String accessToken = "access-token";
+        final UpdateUserAccountRequest request = UpdateUserAccountRequestBuilder.emptyAddressBuild();
+
+        // when
+        final ResultActions resultActions = requestUpdateUserAccount(accessToken, request);
+
+        // then
+        assertErrorWithMessage(CommonErrorCode.INVALID_REQUEST_BODY_FIELDS, resultActions, "기본 주소는 필수 입력값입니다.");
+    }
+
+    /**
+     * 마이페이지 계정 기본 정보 변경 실패
+     * - 실패 사유 : 상세주소 유효성
+     */
+    @Test
+    @WithMockUser
+    public void 마이페이지_계정_기본_정보_변경_실패_상세주소_필드_유효성() throws Exception {
+        // given
+        final String accessToken = "access-token";
+        final UpdateUserAccountRequest request = UpdateUserAccountRequestBuilder.invalidDetailAddressBuild();
+
+        // when
+        final ResultActions resultActions = requestUpdateUserAccount(accessToken, request);
+
+        // then
+        assertErrorWithMessage(CommonErrorCode.INVALID_REQUEST_BODY_FIELDS, resultActions, "상세 주소의 최대 글자수는 30자입니다.");
+    }
+
+    /**
      * 사용자 이메일 알림 설정 변경 성공
      */
     @Test
@@ -459,6 +695,20 @@ public class UserAccountAPIUnitTest extends APIUnitTest {
     private ResultActions requestChangePassword(String changePasswordToken, ChangePasswordRequest request) throws Exception {
         return mvc.perform(patch("/user/password")
                         .header("Authorization", "Bearer " + changePasswordToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andDo(print());
+    }
+
+    private ResultActions requestGetUserAccount(String accessToken) throws Exception {
+        return mvc.perform(get("/user")
+                        .header("Authorization", "Bearer " + accessToken))
+                .andDo(print());
+    }
+
+    private ResultActions requestUpdateUserAccount(String accessToken, UpdateUserAccountRequest request) throws Exception {
+        return mvc.perform(patch("/user")
+                        .header("Authorization", "Bearer " + accessToken)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andDo(print());

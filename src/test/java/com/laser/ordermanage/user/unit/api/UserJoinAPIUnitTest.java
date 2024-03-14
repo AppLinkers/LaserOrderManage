@@ -576,7 +576,7 @@ public class UserJoinAPIUnitTest extends APIUnitTest {
 
     /**
      * 고객 회원가입 실패
-     * - 실패 사유 : 상세 주소 유효성
+     * - 실패 사유 : 상세주소 유효성
      */
     @Test
     public void 고객_회원가입_실패_상세주소_필드_유효성() throws Exception {

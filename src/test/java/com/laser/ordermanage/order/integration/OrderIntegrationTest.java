@@ -1,7 +1,11 @@
 package com.laser.ordermanage.order.integration;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.laser.ordermanage.common.IntegrationTest;
+import com.laser.ordermanage.common.paging.ListResponse;
 import com.laser.ordermanage.common.security.jwt.setup.JwtBuilder;
+import com.laser.ordermanage.order.dto.response.GetCommentResponse;
+import com.laser.ordermanage.order.dto.response.GetCommentResponseBuilder;
 import com.laser.ordermanage.order.dto.response.GetOrderDetailResponse;
 import com.laser.ordermanage.order.dto.response.GetOrderDetailResponseBuilder;
 import com.laser.ordermanage.order.exception.OrderErrorCode;
@@ -66,11 +70,44 @@ public class OrderIntegrationTest extends IntegrationTest {
     /**
      * 거래의 댓글 목록 조회 성공
      */
+    @Test
+    public void 거래_댓글_목록_조회_성공() throws Exception {
+        // given
+        final String accessToken = jwtBuilder.accessJwtBuild();
+        final String orderId = "1";
+        final ListResponse<GetCommentResponse> expectedResponse = new ListResponse<>(GetCommentResponseBuilder.buildCommentListForOrder1());
+
+        // when
+        final ResultActions resultActions = requestGetOrderComment(accessToken, orderId);
+
+        // then
+        final String responseString = resultActions
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8);
+
+        // 응답 본문을 객체로 변환
+        final ListResponse<GetCommentResponse> actualResponse = objectMapper.readValue(responseString, new TypeReference<ListResponse<GetCommentResponse>>() {});
+
+        // 응답 객체와 예상 객체 비교
+        Assertions.assertThat(actualResponse).isEqualTo(expectedResponse);
+    }
 
     /**
      * 거래의 댓글 목록 조회 실패
      * - 실패 사유 : 거래에 대한 접근 권한이 없음
      */
+    @Test
+    public void 거래_댓글_목록_조회_실패_거래접근권한() throws Exception {
+        // given
+        final String accessTokenOfUser2 = jwtBuilder.accessJwtBuildOfUser2();
+        final String orderId = "1";
+
+        // when
+        final ResultActions resultActions = requestGetOrderComment(accessTokenOfUser2, orderId);
+
+        // then
+        assertError(OrderErrorCode.DENIED_ACCESS_TO_ORDER, resultActions);
+    }
 
     /**
      * 거래에 댓글 작성 성공
@@ -97,6 +134,12 @@ public class OrderIntegrationTest extends IntegrationTest {
 
     private ResultActions requestGetOrderDetail(String accessToken, String orderId) throws Exception {
         return mvc.perform(get("/order/{orderId}/detail", orderId)
+                        .header("Authorization", "Bearer " + accessToken))
+                .andDo(print());
+    }
+
+    private ResultActions requestGetOrderComment(String accessToken, String orderId) throws Exception {
+        return mvc.perform(get("/order/{orderId}/comment", orderId)
                         .header("Authorization", "Bearer " + accessToken))
                 .andDo(print());
     }

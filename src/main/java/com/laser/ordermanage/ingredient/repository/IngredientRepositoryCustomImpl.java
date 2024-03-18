@@ -103,21 +103,6 @@ public class IngredientRepositoryCustomImpl implements IngredientRepositoryCusto
         return jdbcTemplate.query(findIngredientQuery, namedParameters, new IngredientRowMapper());
     }
 
-    // TODO: 2024/03/12 삭제 필요 -> ingredient 에 해당하는 User 가 다수임.
-    @Override
-    public Optional<String> findUserEmailById(Long ingredientId) {
-        String userEmail = queryFactory
-                .select(userEntity.email)
-                .from(ingredient)
-                .join(ingredient.factory, factory)
-                .join(factoryManager.factory, factory)
-                .join(factoryManager.user, userEntity)
-                .where(ingredient.id.eq(ingredientId))
-                .fetchOne();
-
-        return Optional.ofNullable(userEmail);
-    }
-
     @Override
     public List<GetIngredientInfoResponse> findIngredientByFactoryManager(String email) {
         List<GetIngredientInfoResponse> ingredientInfoResponseList = queryFactory
@@ -128,7 +113,7 @@ public class IngredientRepositoryCustomImpl implements IngredientRepositoryCusto
                 ))
                 .from(ingredient)
                 .join(ingredient.factory, factory)
-                .join(factoryManager.factory, factory)
+                .join(factoryManager).on(factoryManager.factory.eq(factory))
                 .join(factoryManager.user, userEntity)
                 .where(userEntity.email.eq(email))
                 .fetch();

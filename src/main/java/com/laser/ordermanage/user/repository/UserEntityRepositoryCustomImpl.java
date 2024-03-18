@@ -38,7 +38,7 @@ public class UserEntityRepositoryCustomImpl implements UserEntityRepositoryCusto
     public GetUserAccountResponse findUserAccountByEmail(String email) {
         GetUserAccountResponse getUserAccountResponse = queryFactory
                 .select(new QGetUserAccountResponse(
-                    userEntity.email,
+                        userEntity.email,
                         userEntity.name,
                         userEntity.phone,
                         userEntity.address.zipCode,

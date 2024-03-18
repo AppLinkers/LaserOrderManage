@@ -40,11 +40,6 @@ public class IngredientService {
     }
 
     @Transactional(readOnly = true)
-    public String getUserEmailByIngredient(Long ingredientId) {
-        return ingredientRepository.findUserEmailById(ingredientId).orElseThrow(() -> new CustomCommonException(IngredientErrorCode.NOT_FOUND_INGREDIENT));
-    }
-
-    @Transactional(readOnly = true)
     public GetIngredientStatusResponse getIngredientStatus(String email, LocalDate date) {
         List<GetIngredientResponse> getIngredientResponseList = ingredientRepository.findIngredientStatusByFactoryAndDate(email, date);
 
@@ -292,10 +287,13 @@ public class IngredientService {
         }
     }
 
-    // TODO: 2024/03/12  수정 필요 -> ingredient 에 해당하는 User 가 다수임.
     @Transactional(readOnly = true)
     public void checkAuthorityOfIngredient(String email, Long ingredientId) {
-        if (!getUserEmailByIngredient(ingredientId).equals(email)) {
+        // ingredientId 에 해당하는 Ingredient 존재 여부 확인
+        Ingredient ingredient = getIngredientById(ingredientId);
+        Factory factory = factoryRepository.findFactoryByFactoryManager(email);
+
+        if (!ingredient.getFactory().getId().equals(factory.getId())) {
             throw new CustomCommonException(IngredientErrorCode.DENIED_ACCESS_TO_INGREDIENT);
         }
     }

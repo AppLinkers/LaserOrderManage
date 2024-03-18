@@ -5,6 +5,7 @@ import com.laser.ordermanage.factory.service.FactoryUserAccountService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
@@ -32,6 +33,7 @@ public class FactoryUserAccountAPI {
      * - 공장 회원의 이메일 기준으로 공장 조회
      * - 요청 데이터에 맞게 공장 정보 변경
      */
+    @PreAuthorize("hasAuthority('AUTHORITY_ADMIN')")
     @PatchMapping("")
     public ResponseEntity<?> updateFactoryAccount(@RequestBody @Valid FactoryUpdateFactoryAccountRequest request) {
 

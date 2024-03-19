@@ -22,7 +22,7 @@ public class IngredientStockRepositoryCustomImpl implements IngredientStockRepos
                 .join(ingredientStock.ingredient, ingredient)
                 .where(
                         ingredient.id.eq(ingredientId),
-                        ingredientStock.createdAt.loe(date)
+                        ingredientStock.createdAt.before(date)
                 )
                 .orderBy(ingredientStock.createdAt.desc())
                 .fetchFirst();

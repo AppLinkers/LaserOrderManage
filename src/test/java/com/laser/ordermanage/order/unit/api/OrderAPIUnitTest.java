@@ -7,6 +7,8 @@ import com.laser.ordermanage.common.exception.CommonErrorCode;
 import com.laser.ordermanage.common.exception.CustomCommonException;
 import com.laser.ordermanage.common.paging.ListResponse;
 import com.laser.ordermanage.order.api.OrderAPI;
+import com.laser.ordermanage.order.dto.request.CreateCommentRequest;
+import com.laser.ordermanage.order.dto.request.CreateCommentRequestBuilder;
 import com.laser.ordermanage.order.dto.response.GetCommentResponse;
 import com.laser.ordermanage.order.dto.response.GetCommentResponseBuilder;
 import com.laser.ordermanage.order.dto.response.GetOrderDetailResponse;
@@ -20,6 +22,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.web.context.WebApplicationContext;
@@ -29,6 +32,7 @@ import java.nio.charset.StandardCharsets;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -168,7 +172,7 @@ public class OrderAPIUnitTest extends APIUnitTest {
      */
     @Test
     @WithMockUser
-    public void 거래_댓글_목록_조회_실패_실패_거래접근권한() throws Exception {
+    public void 거래_댓글_목록_조회_실패_거래접근권한() throws Exception {
         // given
         final String accessToken = "access-token";
         final String orderId = "1";
@@ -183,6 +187,127 @@ public class OrderAPIUnitTest extends APIUnitTest {
         assertError(OrderErrorCode.DENIED_ACCESS_TO_ORDER, resultActions);
     }
 
+    /**
+     * 거래에 댓글 작성 성공
+     */
+    @Test
+    @WithMockUser
+    public void 거래_댓글_작성_성공() throws Exception {
+        // given
+        final String accessToken = "accessToken";
+        final String orderId = "1";
+        final CreateCommentRequest request = CreateCommentRequestBuilder.build();
+
+        // stub
+        doNothing().when(orderService).checkAuthorityCustomerOfOrderOrFactory(any(), any());
+        when(orderService.createOrderComment(any(), any(), any())).thenReturn(Long.valueOf(orderId));
+        doNothing().when(orderEmailService).sendEmailForCreateOrderComment(any());
+
+        // when
+        final ResultActions resultActions = requestCreateComment(accessToken, orderId, request);
+
+        // then
+        resultActions.andExpect(status().isOk());
+    }
+
+    /**
+     * 거래에 댓글 작성 실패
+     * - 실패 사유 : order-id 파라미터 타입
+     */
+    @Test
+    @WithMockUser
+    public void 거래_댓글_작성_실패_order_id_파라미터_타입() throws Exception {
+        // given
+        final String accessToken = "access-token";
+        final String invalidOrderId = "invalid-order-id";
+        final CreateCommentRequest request = CreateCommentRequestBuilder.build();
+
+        // when
+        final ResultActions resultActions = requestCreateComment(accessToken, invalidOrderId, request);
+
+        // then
+        assertErrorWithMessage(CommonErrorCode.MISMATCH_PARAMETER_TYPE, resultActions, "order-id");
+    }
+
+    /**
+     * 거래에 댓글 작성 실패
+     * - 실패 사유 : 댓글 내용 필드 null
+     */
+    @Test
+    @WithMockUser
+    public void 거래_댓글_작성_실패_댓글_내용_필드_null() throws Exception {
+        // given
+        final String accessToken = "access-token";
+        final String orderId = "1";
+        final CreateCommentRequest request = CreateCommentRequestBuilder.nullContentBuild();
+
+        // when
+        final ResultActions resultActions = requestCreateComment(accessToken, orderId, request);
+
+        // then
+        assertErrorWithMessage(CommonErrorCode.INVALID_REQUEST_BODY_FIELDS, resultActions, "댓글 내용은 필수 입력값입니다.");
+    }
+
+    /**
+     * 거래에 댓글 작성 실패
+     * - 실패 사유 : 댓글 내용 필드 empty
+     */
+    @Test
+    @WithMockUser
+    public void 거래_댓글_작성_실패_댓글_내용_필드_empty() throws Exception {
+        // given
+        final String accessToken = "access-token";
+        final String orderId = "1";
+        final CreateCommentRequest request = CreateCommentRequestBuilder.emptyContentBuild();
+
+        // when
+        final ResultActions resultActions = requestCreateComment(accessToken, orderId, request);
+
+        // then
+        assertErrorWithMessage(CommonErrorCode.INVALID_REQUEST_BODY_FIELDS, resultActions, "댓글 내용은 필수 입력값입니다.");
+    }
+
+    /**
+     * 거래에 댓글 작성 실패
+     * - 실패 사유 : 댓글 내용 필드 유효성
+     */
+    @Test
+    @WithMockUser
+    public void 거래_댓글_작성_실패_댓글_내용_필드_유효성() throws Exception {
+        // given
+        final String accessToken = "access-token";
+        final String orderId = "1";
+        final CreateCommentRequest request = CreateCommentRequestBuilder.invalidContentBuild();
+
+        // when
+        final ResultActions resultActions = requestCreateComment(accessToken, orderId, request);
+
+        // then
+        assertErrorWithMessage(CommonErrorCode.INVALID_REQUEST_BODY_FIELDS, resultActions, "댓글 내용의 최대 글자수는 200자입니다.");
+    }
+
+    /**
+     * 거래에 댓글 작성 실패
+     * - 실패 사유 : 거래에 대한 접근 권한이 없음
+     */
+    @Test
+    @WithMockUser
+    public void 거래_댓글_작성_실패_거래접근권한() throws Exception {
+        // given
+        final String accessToken = "access-token";
+        final String orderId = "1";
+        final CreateCommentRequest request = CreateCommentRequestBuilder.build();
+
+        // stub
+        doThrow(new CustomCommonException(OrderErrorCode.DENIED_ACCESS_TO_ORDER)).when(orderService).checkAuthorityCustomerOfOrderOrFactory(any(), any());
+
+        // when
+        final ResultActions resultActions = requestCreateComment(accessToken, orderId, request);
+
+        // then
+        assertError(OrderErrorCode.DENIED_ACCESS_TO_ORDER, resultActions);
+    }
+
     private ResultActions requestGetOrderDetail(String accessToken, String orderId) throws Exception {
         return mvc.perform(get("/order/{order-id}/detail", orderId)
                         .header("Authorization", "Bearer " + accessToken))
@@ -192,6 +317,14 @@ public class OrderAPIUnitTest extends APIUnitTest {
     private ResultActions requestGetOrderComment(String accessToken, String orderId) throws Exception {
         return mvc.perform(get("/order/{order-id}/comment", orderId)
                         .header("Authorization", "Bearer " + accessToken))
+                .andDo(print());
+    }
+
+    private ResultActions requestCreateComment(String accessToken, String orderId, CreateCommentRequest request) throws Exception {
+        return mvc.perform(post("/order/{order-id}/comment", orderId)
+                        .header("Authorization", "Bearer " + accessToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
                 .andDo(print());
     }
 

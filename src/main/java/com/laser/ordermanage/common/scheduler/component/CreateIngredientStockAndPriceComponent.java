@@ -14,6 +14,7 @@ public class CreateIngredientStockAndPriceComponent {
 
     @EventListener(ApplicationReadyEvent.class)
     public void onApplicationReadyEvent() {
+        scheduleService.removeJobForCreateIngredientStockAndPrice();
         scheduleService.createJobForCreateIngredientStockAndPrice();
     }
 }

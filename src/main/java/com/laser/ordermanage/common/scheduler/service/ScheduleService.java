@@ -54,6 +54,10 @@ public class ScheduleService {
         this.removeJob(String.valueOf(orderId), ChangeStageToCompletedJob.class.getName());
     }
 
+    public void removeJobForCreateIngredientStockAndPrice() {
+        this.removeJob(CreateIngredientStockAndPriceJob.class.getName(), CreateIngredientStockAndPriceJob.class.getName());
+    }
+
     private void removeJob(String jobName, String groupName) {
         JobKey jobKey = JobKey.jobKey(jobName, groupName);
 

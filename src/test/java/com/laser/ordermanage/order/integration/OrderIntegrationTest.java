@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.laser.ordermanage.common.IntegrationTest;
 import com.laser.ordermanage.common.paging.ListResponse;
 import com.laser.ordermanage.common.security.jwt.setup.JwtBuilder;
+import com.laser.ordermanage.order.domain.type.Stage;
 import com.laser.ordermanage.order.dto.request.CreateCommentRequest;
 import com.laser.ordermanage.order.dto.request.CreateCommentRequestBuilder;
 import com.laser.ordermanage.order.dto.response.GetCommentResponse;
@@ -22,8 +23,7 @@ import java.nio.charset.StandardCharsets;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -423,51 +423,188 @@ public class OrderIntegrationTest extends IntegrationTest {
     /**
      * 거래 삭제 성공
      */
+    @Test
+    public void 거래_삭제_성공() throws Exception {
+        // given
+        final String accessToken = jwtBuilder.accessJwtBuild();
+        final String orderId = "5";
+
+        // when
+        final ResultActions resultActions = requestDeleteOrder(accessToken, orderId);
+
+        // then
+        resultActions.andExpect(status().isOk());
+
+        // when after delete order
+        final ResultActions resultActionsAfterDeleteOrder = requestGetOrderDetail(accessToken, orderId);
+
+        // then
+        assertError(OrderErrorCode.NOT_FOUND_ORDER, resultActionsAfterDeleteOrder);
+    }
+
+    /**
+     * 거래 삭제 실패
+     * - 실패 사유 : 요청 시, Header 에 Authorization 정보 (Access Token) 를 추가하지 않음
+     */
+    @Test
+    public void 거래_삭제_실패_Header_Authorization_존재() throws Exception {
+        // given
+        final String orderId = "5";
+
+        // when
+        ResultActions resultActions = requestDeleteOrderWithOutAccessToken(orderId);
+
+        // then
+        assertError(UserErrorCode.MISSING_JWT, resultActions);
+    }
+
+    /**
+     * 거래 삭제 실패
+     * - 실패 사유 : 요청 시, Header 에 있는 Authorization 정보 (Access Token) 에 권한 정보가 없음
+     */
+    @Test
+    public void 거래_삭제_실패_Unauthorized_Access_Token() throws Exception {
+        // given
+        final String unauthorizedAccessToken = jwtBuilder.unauthorizedAccessJwtBuild();
+        final String orderId = "1";
+
+        // when
+        ResultActions resultActions = requestDeleteOrder(unauthorizedAccessToken, orderId);
+
+        // then
+        assertError(UserErrorCode.UNAUTHORIZED_JWT, resultActions);
+    }
+
+    /**
+     * 거래 삭제 실패
+     * - 실패 사유 : 요청 시, Header 에 다른 타입의 Authorization 정보 (Refresh Token) 를 추가함
+     */
+    @Test
+    public void 거래_삭제_실패_Token_Type() throws Exception {
+        // given
+        final String refreshToken = jwtBuilder.refreshJwtBuild();
+        final String orderId = "1";
+
+        // when
+        ResultActions resultActions = requestDeleteOrder(refreshToken, orderId);
+
+        // then
+        assertError(UserErrorCode.INVALID_TOKEN_TYPE, resultActions);
+    }
+
+    /**
+     * 거래 삭제 실패
+     * - 실패 사유 : 요청 시, Header 에 있는 Authorization(Access Token) 의 유효기간 만료
+     */
+    @Test
+    public void 거래_삭제_실패_Expired_Access_Token() throws Exception {
+        // given
+        final String expiredAccessToken = jwtBuilder.expiredAccessJwtBuild();
+        final String orderId = "1";
+
+        // when
+        ResultActions resultActions = requestDeleteOrder(expiredAccessToken, orderId);
+
+        // then
+        assertError(UserErrorCode.EXPIRED_JWT, resultActions);
+    }
+
+    /**
+     * 거래 삭제 실패
+     * - 실패 사유 : 요청 시, Header 에 있는 Authorization(JWT) 가 유효하지 않음
+     */
+    @Test
+    public void 거래_삭제_실패_Invalid_Token() throws Exception {
+        // given
+        final String invalidToken = jwtBuilder.invalidJwtBuild();
+        final String orderId = "1";
+
+        // when
+        ResultActions resultActions = requestDeleteOrder(invalidToken, orderId);
+
+        // then
+        assertError(UserErrorCode.INVALID_JWT, resultActions);
+    }
 
     /**
      * 거래 삭제 실패
      * - 실패 사유 : 거래에 대한 접근 권한이 없음
      */
+    @Test
+    public void 거래_삭제_실패_거래접근권한() throws Exception {
+        // given
+        final String accessTokenOfUser2 = jwtBuilder.accessJwtBuildOfUser2();
+        final String orderId = "5";
+
+        // when
+        final ResultActions resultActions = requestDeleteOrder(accessTokenOfUser2, orderId);
+
+        // then
+        assertError(OrderErrorCode.DENIED_ACCESS_TO_ORDER, resultActions);
+    }
 
     /**
      * 거래 삭제 실패
      * - 실패 사유 : 거래의 단계가 삭제 가능 단계(견적 대기, 견적 승인)가 아님
      */
+    @Test
+    public void 거래_삭제_실패_거래삭제_가능단계() throws Exception {
+        // given
+        final String accessToken = jwtBuilder.accessJwtBuild();
+        final String orderId = "1";
+
+        // when
+        final ResultActions resultActions = requestDeleteOrder(accessToken, orderId);
+
+        // then
+        assertErrorWithMessage(OrderErrorCode.INVALID_ORDER_STAGE, resultActions, Stage.COMPLETED.getValue());
+    }
 
     private ResultActions requestGetOrderDetail(String accessToken, String orderId) throws Exception {
-        return mvc.perform(get("/order/{orderId}/detail", orderId)
+        return mvc.perform(get("/order/{order-id}/detail", orderId)
                         .header("Authorization", "Bearer " + accessToken))
                 .andDo(print());
     }
 
     private ResultActions requestGetOrderDetailWithOutAccessToken(String orderId) throws Exception{
-        return mvc.perform(get("/order/{orderId}/detail", orderId))
+        return mvc.perform(get("/order/{order-id}/detail", orderId))
                 .andDo(print());
     }
 
     private ResultActions requestGetOrderComment(String accessToken, String orderId) throws Exception {
-        return mvc.perform(get("/order/{orderId}/comment", orderId)
+        return mvc.perform(get("/order/{order-id}/comment", orderId)
                         .header("Authorization", "Bearer " + accessToken))
                 .andDo(print());
     }
 
     private ResultActions requestGetOrderCommentWithOutAccessToken(String orderId) throws Exception {
-        return mvc.perform(get("/order/{orderId}/comment", orderId))
+        return mvc.perform(get("/order/{order-id}/comment", orderId))
                 .andDo(print());
     }
 
     private ResultActions requestCreateComment(String accessToken, String orderId, CreateCommentRequest request) throws Exception {
-        return mvc.perform(post("/order/{orderId}/comment", orderId)
+        return mvc.perform(post("/order/{order-id}/comment", orderId)
                         .header("Authorization", "Bearer " + accessToken)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andDo(print());
     }
 
-    private ResultActions requestCreateCommentWithOutAccessToken( String orderId, CreateCommentRequest request) throws Exception {
-        return mvc.perform(post("/order/{orderId}/comment", orderId)
+    private ResultActions requestCreateCommentWithOutAccessToken(String orderId, CreateCommentRequest request) throws Exception {
+        return mvc.perform(post("/order/{order-id}/comment", orderId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
+                .andDo(print());
+    }
+
+    private ResultActions requestDeleteOrder(String accessToken, String orderId) throws Exception {
+        return mvc.perform(delete("/order/{order-id}", orderId)
+                        .header("Authorization", "Bearer " + accessToken))
+                .andDo(print());
+    }
+
+    private ResultActions requestDeleteOrderWithOutAccessToken(String orderId) throws Exception {
+        return mvc.perform(delete("/order/{order-id}", orderId))
                 .andDo(print());
     }
 }

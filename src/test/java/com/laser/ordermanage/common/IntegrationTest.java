@@ -41,17 +41,8 @@ public class IntegrationTest {
     @Autowired
     protected ObjectMapper objectMapper;
 
-    @Autowired
-    protected SchedulerFactoryBean schedulerFactoryBean;
-
     @MockBean
     protected EmailService emailService;
-
-    @SneakyThrows
-    @After
-    public void 스케줄_초기화() {
-        schedulerFactoryBean.getScheduler().clear();
-    }
 
     /**
      * JWT 기반의 인증 및 권한 부여 테스트

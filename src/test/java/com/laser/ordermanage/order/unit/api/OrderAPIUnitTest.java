@@ -308,6 +308,29 @@ public class OrderAPIUnitTest extends APIUnitTest {
         assertError(OrderErrorCode.DENIED_ACCESS_TO_ORDER, resultActions);
     }
 
+    /**
+     * 거래에 댓글 작성 실패
+     * - 실패 사유 : orderId 에 해당하는 거래가 존재하지 않음
+     */
+    @Test
+    @WithMockUser
+    public void 거래_댓글_작성_실패_존재하지_않는_거래() throws Exception {
+        // given
+        final String accessToken = "access-token";
+        final String unknownOrderId = "0";
+        final CreateCommentRequest request = CreateCommentRequestBuilder.build();
+
+        // stub
+        doNothing().when(orderService).checkAuthorityCustomerOfOrderOrFactory(any(), any());
+        when(orderService.createOrderComment(any(), any(), any())).thenThrow(new CustomCommonException(OrderErrorCode.NOT_FOUND_ORDER));
+
+        // when
+        final ResultActions resultActions = requestCreateComment(accessToken, unknownOrderId, request);
+
+        // then
+        assertError(OrderErrorCode.NOT_FOUND_ORDER, resultActions);
+    }
+
     private ResultActions requestGetOrderDetail(String accessToken, String orderId) throws Exception {
         return mvc.perform(get("/order/{order-id}/detail", orderId)
                         .header("Authorization", "Bearer " + accessToken))

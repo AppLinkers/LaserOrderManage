@@ -320,7 +320,7 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
     }
 
     @Override
-    public GetOrderDetailResponse findDetailByOrder(Long orderId) {
+    public Optional<GetOrderDetailResponse> findDetailByOrder(Long orderId) {
         List<GetOrderDetailResponse> getOrderDetailResponseList = queryFactory
                 .selectFrom(order)
                 .leftJoin(order.customer, customer)
@@ -402,7 +402,7 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
                         )
                 );
 
-        return getOrderDetailResponseList.isEmpty() ? null : getOrderDetailResponseList.get(0);
+        return getOrderDetailResponseList.isEmpty() ? Optional.empty() : Optional.of(getOrderDetailResponseList.get(0));
     }
 
     @Override

@@ -40,10 +40,10 @@ public class UserAccountServiceUnitTest extends ServiceUnitTest {
     private UserAccountService userAccountService;
 
     @Mock
-    private EmailService emailService;
+    private PasswordEncoder passwordEncoder;
 
     @Mock
-    private UserAuthService userAuthService;
+    private JwtProvider jwtProvider;
 
     @Mock
     private ChangePasswordTokenRedisRepository changePasswordTokenRedisRepository;
@@ -52,10 +52,10 @@ public class UserAccountServiceUnitTest extends ServiceUnitTest {
     private UserEntityRepository userRepository;
 
     @Mock
-    private PasswordEncoder passwordEncoder;
+    private EmailService emailService;
 
     @Mock
-    private JwtProvider jwtProvider;
+    private UserAuthService userAuthService;
 
     private MockHttpServletRequest httpServletRequest;
 

@@ -36,9 +36,6 @@ public class UserJoinServiceUnitTest extends ServiceUnitTest {
     private PasswordEncoder passwordEncoder;
 
     @Mock
-    EmailService emailService;
-
-    @Mock
     DeliveryAddressRepository deliveryAddressRepository;
 
     @Mock
@@ -46,6 +43,9 @@ public class UserJoinServiceUnitTest extends ServiceUnitTest {
 
     @Mock
     VerifyCodeRedisRepository verifyCodeRedisRepository;
+
+    @Mock
+    EmailService emailService;
 
     /**
      * 이메일 인증코드 생성 및 이메일 전송 성공

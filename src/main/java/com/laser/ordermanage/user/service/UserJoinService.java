@@ -34,11 +34,12 @@ public class UserJoinService {
 
     private final PasswordEncoder passwordEncoder;
 
-    private final EmailService emailService;
-
     private final DeliveryAddressRepository deliveryAddressRepository;
     private final UserEntityRepository userRepository;
     private final VerifyCodeRedisRepository verifyCodeRedisRepository;
+
+    private final EmailService emailService;
+
 
     @Transactional
     public UserJoinStatusResponse requestEmailVerify(String email) {

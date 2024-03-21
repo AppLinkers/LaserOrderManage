@@ -14,6 +14,7 @@ import com.laser.ordermanage.order.dto.response.*;
 import com.laser.ordermanage.order.exception.OrderErrorCode;
 import com.laser.ordermanage.order.service.OrderEmailService;
 import com.laser.ordermanage.order.service.OrderService;
+import com.laser.ordermanage.user.exception.UserErrorCode;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -188,7 +189,7 @@ public class OrderAPIUnitTest extends APIUnitTest {
      * 거래에 댓글 작성 성공
      */
     @Test
-    @WithMockUser
+    @WithMockUser(authorities = {"AUTHORITY_ADMIN"})
     public void 거래_댓글_작성_성공() throws Exception {
         // given
         final String accessToken = "accessToken";
@@ -205,6 +206,25 @@ public class OrderAPIUnitTest extends APIUnitTest {
 
         // then
         resultActions.andExpect(status().isOk());
+    }
+
+    /**
+     * 거래에 댓글 작성 실패
+     * - 실패 사유 : 관리자 권한(Authority Admin)이 없음
+     */
+    @Test
+    @WithMockUser
+    public void 거래_댓글_작성_실패_사용자_권한() throws Exception {
+        // given
+        final String accessToken = "accessToken";
+        final String orderId = "1";
+        final CreateCommentRequest request = CreateCommentRequestBuilder.build();
+
+        // when
+        final ResultActions resultActions = requestCreateComment(accessToken, orderId, request);
+
+        // then
+        assertError(UserErrorCode.DENIED_ACCESS, resultActions);
     }
 
     /**
@@ -288,7 +308,7 @@ public class OrderAPIUnitTest extends APIUnitTest {
      * - 실패 사유 : 거래에 대한 접근 권한이 없음
      */
     @Test
-    @WithMockUser
+    @WithMockUser(authorities = {"AUTHORITY_ADMIN"})
     public void 거래_댓글_작성_실패_거래접근권한() throws Exception {
         // given
         final String accessToken = "access-token";
@@ -310,7 +330,7 @@ public class OrderAPIUnitTest extends APIUnitTest {
      * - 실패 사유 : orderId 에 해당하는 거래가 존재하지 않음
      */
     @Test
-    @WithMockUser
+    @WithMockUser(authorities = "AUTHORITY_ADMIN")
     public void 거래_댓글_작성_실패_존재하지_않는_거래() throws Exception {
         // given
         final String accessToken = "access-token";
@@ -332,7 +352,7 @@ public class OrderAPIUnitTest extends APIUnitTest {
      * 거래 삭제 성공
      */
     @Test
-    @WithMockUser
+    @WithMockUser(authorities = "AUTHORITY_ADMIN")
     public void 거래_삭제_성공() throws Exception {
         // given
         final String accessToken = "access-token";
@@ -349,6 +369,24 @@ public class OrderAPIUnitTest extends APIUnitTest {
 
         // then
         resultActions.andExpect(status().isOk());
+    }
+
+    /**
+     * 거래 삭제 실패
+     * - 실패 사유 : 관리자 권한(Authority Admin)이 없음
+     */
+    @Test
+    @WithMockUser
+    public void 거래_삭제_실패_사용자_권한() throws Exception {
+        // given
+        final String accessToken = "accessToken";
+        final String orderId = "1";
+
+        // when
+        final ResultActions resultActions = requestDeleteOrder(accessToken, orderId);
+
+        // then
+        assertError(UserErrorCode.DENIED_ACCESS, resultActions);
     }
 
     /**
@@ -374,7 +412,7 @@ public class OrderAPIUnitTest extends APIUnitTest {
      * - 실패 사유 : 거래에 대한 접근 권한이 없음
      */
     @Test
-    @WithMockUser
+    @WithMockUser(authorities = "AUTHORITY_ADMIN")
     public void 거래_삭제_실패_거래접근권한() throws Exception {
         // given
         final String accessToken = "access-token";
@@ -395,7 +433,7 @@ public class OrderAPIUnitTest extends APIUnitTest {
      * - 실패 사유 : 거래의 단계가 삭제 가능 단계(견적 대기, 견적 승인)가 아님
      */
     @Test
-    @WithMockUser
+    @WithMockUser(authorities = "AUTHORITY_ADMIN")
     public void 거래_삭제_실패_거래삭제_가능단계() throws Exception {
         // given
         final String accessToken = "access-token";

@@ -167,7 +167,7 @@ public class OrderIntegrationTest extends IntegrationTest {
         // given
         final String accessToken = jwtBuilder.accessJwtBuild();
         final String orderId = "1";
-        final ListResponse<GetCommentResponse> expectedResponse = new ListResponse<>(GetCommentResponseBuilder.buildCommentListForOrder1());
+        final ListResponse<GetCommentResponse> expectedResponse = new ListResponse<>(GetCommentResponseBuilder.buildListForOrder1());
 
         // when
         final ResultActions resultActions = requestGetOrderComment(accessToken, orderId);

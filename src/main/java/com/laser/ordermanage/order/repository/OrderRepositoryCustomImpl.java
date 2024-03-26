@@ -549,7 +549,8 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
             BooleanExpression isLessOrEqualToEndDate = quotation.deliveryDate.loe(endDate);
 
             return booleanBuilder.and(isGreaterOrEqualToStartDate).and(isLessOrEqualToEndDate);
+        } else {
+            throw new CustomCommonException(CommonErrorCode.INVALID_PARAMETER, "date-criterion 파라미터가 올바르지 않습니다.");
         }
-        return null;
     }
 }

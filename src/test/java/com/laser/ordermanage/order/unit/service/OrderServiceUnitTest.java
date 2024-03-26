@@ -203,7 +203,7 @@ public class OrderServiceUnitTest extends ServiceUnitTest {
     public void getCommentByOrder_성공() {
         // given
         final Long orderId = 1L;
-        final ListResponse<GetCommentResponse> expectedResponse = new ListResponse<>(GetCommentResponseBuilder.buildCommentListForOrder1());
+        final ListResponse<GetCommentResponse> expectedResponse = new ListResponse<>(GetCommentResponseBuilder.buildListForOrder1());
 
         // stub
         when(commentRepository.findCommentByOrder(orderId)).thenReturn(expectedResponse.contents());

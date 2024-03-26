@@ -128,7 +128,7 @@ public class OrderAPIUnitTest extends APIUnitTest {
         // given
         final String accessToken = "accessToken";
         final String orderId = "1";
-        final ListResponse<GetCommentResponse> expectedResponse = new ListResponse<>(GetCommentResponseBuilder.buildCommentListForOrder1());
+        final ListResponse<GetCommentResponse> expectedResponse = new ListResponse<>(GetCommentResponseBuilder.buildListForOrder1());
 
         // stub
         doNothing().when(orderService).checkAuthorityCustomerOfOrderOrFactory(any(), any());

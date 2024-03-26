@@ -46,7 +46,6 @@ public class OrderBuilder {
                 .request(null)
                 .isNewIssue(Boolean.TRUE)
                 .build();
-        order.changeStageToCompleted();
 
         return order;
     }

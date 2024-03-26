@@ -32,6 +32,8 @@ public class OrderRepositoryUnitTest extends RepositoryUnitTest {
     @Autowired
     protected JPAQueryFactory queryFactory;
 
+    private final static Pageable pageable = PageRequest.of(0, 10);
+
     @Test
     public void findFirstById_존재_O() {
         // given
@@ -94,7 +96,6 @@ public class OrderRepositoryUnitTest extends RepositoryUnitTest {
     public void findByCustomer() {
         // given
         final String email = "user1@gmail.com";
-        final Pageable pageable = PageRequest.of(0, 10);
         final List<CustomerGetOrderHistoryResponse> expectedOrderList = CustomerGetOrderHistoryResponseBuilder.buildListOfCustomer1();
 
         // when
@@ -108,7 +109,6 @@ public class OrderRepositoryUnitTest extends RepositoryUnitTest {
     public void findByCustomer_stageIsCompleted() {
         // given
         final String email = "user1@gmail.com";
-        final Pageable pageable = PageRequest.of(0, 10);
         final List<String> stageRequestList = List.of(Stage.COMPLETED.getRequest());
         final List<CustomerGetOrderHistoryResponse> expectedOrderList = CustomerGetOrderHistoryResponseBuilder.buildListOfCustomer1AndStageIsCompleted();
 
@@ -123,7 +123,6 @@ public class OrderRepositoryUnitTest extends RepositoryUnitTest {
     public void findByCustomer_실패_Stage() {
         // given
         final String email = "user1@gmail.com";
-        final Pageable pageable = PageRequest.of(0, 10);
         final List<String> invalidStageRequestList = List.of("invalid-stage");
 
         // when & then
@@ -136,7 +135,6 @@ public class OrderRepositoryUnitTest extends RepositoryUnitTest {
     public void findByCustomer_manufacturingIsLaserCutting() {
         // given
         final String email = "user1@gmail.com";
-        final Pageable pageable = PageRequest.of(0, 10);
         final List<CustomerGetOrderHistoryResponse> expectedOrderList = CustomerGetOrderHistoryResponseBuilder.buildListOfCustomer1AndManufacturingIsLaserCutting();
         final List<String> manufacturingRequestList = List.of("laser-cutting");
 
@@ -151,7 +149,6 @@ public class OrderRepositoryUnitTest extends RepositoryUnitTest {
     public void findByCustomer_manufacturingIsWelding() {
         // given
         final String email = "user1@gmail.com";
-        final Pageable pageable = PageRequest.of(0, 10);
         final List<CustomerGetOrderHistoryResponse> expectedOrderList = CustomerGetOrderHistoryResponseBuilder.buildListOfCustomer1AndManufacturingIsWelding();
         final List<String> manufacturingRequestList = List.of("welding");
 
@@ -166,7 +163,6 @@ public class OrderRepositoryUnitTest extends RepositoryUnitTest {
     public void findByCustomer_manufacturingIsBending() {
         // given
         final String email = "user1@gmail.com";
-        final Pageable pageable = PageRequest.of(0, 10);
         final List<CustomerGetOrderHistoryResponse> expectedOrderList = CustomerGetOrderHistoryResponseBuilder.buildListOfCustomer1();
         final List<String> manufacturingRequestList = List.of("bending");
 
@@ -181,7 +177,6 @@ public class OrderRepositoryUnitTest extends RepositoryUnitTest {
     public void findByCustomer_실패_manufacturing() {
         // given
         final String email = "user1@gmail.com";
-        final Pageable pageable = PageRequest.of(0, 10);
         final List<String> invalidManufacturingRequestList = List.of("invalid-manufacturing");
 
         // when & then
@@ -194,7 +189,6 @@ public class OrderRepositoryUnitTest extends RepositoryUnitTest {
     public void findByCustomer_query() {
         // given
         final String email = "user1@gmail.com";
-        final Pageable pageable = PageRequest.of(0, 10);
         final String query = "1 이름";
         final List<CustomerGetOrderHistoryResponse> expectedOrderList = CustomerGetOrderHistoryResponseBuilder.buildListOfCustomer1AndStageIsCompleted();
 
@@ -208,7 +202,6 @@ public class OrderRepositoryUnitTest extends RepositoryUnitTest {
     @Test
     public void findIsNewAndIsReIssueByFactory() {
         // given
-        final Pageable pageable = PageRequest.of(0, 10);
         final List<FactoryGetOrderIsNewAndIsReIssueHistoryResponse> expectedOrderList = FactoryGetOrderIsNewAndIsReIssueHistoryResponseBuilder.build();
 
         // when
@@ -221,7 +214,6 @@ public class OrderRepositoryUnitTest extends RepositoryUnitTest {
     @Test
     public void findIsNewAndIsReIssueByFactory_hasQuotation_True() {
         // given
-        final Pageable pageable = PageRequest.of(0, 10);
         final List<FactoryGetOrderIsNewAndIsReIssueHistoryResponse> expectedOrderList = FactoryGetOrderIsNewAndIsReIssueHistoryResponseBuilder.buildOfHasQuotationIsTrueAndIsUrgentIsTrue();
 
         // when
@@ -234,7 +226,6 @@ public class OrderRepositoryUnitTest extends RepositoryUnitTest {
     @Test
     public void findIsNewAndIsReIssueByFactory_hasQuotation_False() {
         // given
-        final Pageable pageable = PageRequest.of(0, 10);
         final List<FactoryGetOrderIsNewAndIsReIssueHistoryResponse> expectedOrderList = FactoryGetOrderIsNewAndIsReIssueHistoryResponseBuilder.buildOfHasQuotationIsFalseAndIsUrgentIsFalse();
 
         // when
@@ -247,7 +238,6 @@ public class OrderRepositoryUnitTest extends RepositoryUnitTest {
     @Test
     public void findIsNewAndIsReIssueByFactory_isUrgent_True() {
         // given
-        final Pageable pageable = PageRequest.of(0, 10);
         final List<FactoryGetOrderIsNewAndIsReIssueHistoryResponse> expectedOrderList = FactoryGetOrderIsNewAndIsReIssueHistoryResponseBuilder.buildOfHasQuotationIsTrueAndIsUrgentIsTrue();
 
         // when
@@ -260,7 +250,6 @@ public class OrderRepositoryUnitTest extends RepositoryUnitTest {
     @Test
     public void findIsNewAndIsReIssueByFactory_isUrgent_False() {
         // given
-        final Pageable pageable = PageRequest.of(0, 10);
         final List<FactoryGetOrderIsNewAndIsReIssueHistoryResponse> expectedOrderList = FactoryGetOrderIsNewAndIsReIssueHistoryResponseBuilder.buildOfHasQuotationIsFalseAndIsUrgentIsFalse();
 
         // when
@@ -273,7 +262,6 @@ public class OrderRepositoryUnitTest extends RepositoryUnitTest {
     @Test
     public void findIsNewAndIsNewIssueByFactory() {
         // given
-        final Pageable pageable = PageRequest.of(0, 10);
         final List<FactoryGetOrderIsNewAndIsNewIssueHistoryResponse> expectedOrderList = FactoryGetOrderIsNewAndIsNewIssueHistoryResponseBuilder.build();
 
         // when
@@ -286,7 +274,6 @@ public class OrderRepositoryUnitTest extends RepositoryUnitTest {
     @Test
     public void findIsNewAndIsNewIssueByFactory_hasQuotation_True() {
         // given
-        final Pageable pageable = PageRequest.of(0, 10);
         final List<FactoryGetOrderIsNewAndIsNewIssueHistoryResponse> expectedOrderList = FactoryGetOrderIsNewAndIsNewIssueHistoryResponseBuilder.buildOfHasQuotationIsTrue();
 
         // when
@@ -299,7 +286,6 @@ public class OrderRepositoryUnitTest extends RepositoryUnitTest {
     @Test
     public void findIsNewAndIsNewIssueByFactory_hasQuotation_False() {
         // given
-        final Pageable pageable = PageRequest.of(0, 10);
         final List<FactoryGetOrderIsNewAndIsNewIssueHistoryResponse> expectedOrderList = FactoryGetOrderIsNewAndIsNewIssueHistoryResponseBuilder.buildOfHasQuotationIsFalse();
 
         // when
@@ -312,7 +298,6 @@ public class OrderRepositoryUnitTest extends RepositoryUnitTest {
     @Test
     public void findIsNewAndIsNewIssueByFactory_isNewCustomer_True() {
         // given
-        final Pageable pageable = PageRequest.of(0, 10);
         final List<FactoryGetOrderIsNewAndIsNewIssueHistoryResponse> expectedOrderList = FactoryGetOrderIsNewAndIsNewIssueHistoryResponseBuilder.buildOfIsNewCustomerIsTrue();
 
         // when
@@ -325,7 +310,6 @@ public class OrderRepositoryUnitTest extends RepositoryUnitTest {
     @Test
     public void findIsNewAndIsNewIssueByFactory_isNewCustomer_False() {
         // given
-        final Pageable pageable = PageRequest.of(0, 10);
         final List<FactoryGetOrderIsNewAndIsNewIssueHistoryResponse> expectedOrderList = FactoryGetOrderIsNewAndIsNewIssueHistoryResponseBuilder.buildOfIsNewCustomerIsFalse();
 
         // when
@@ -338,7 +322,6 @@ public class OrderRepositoryUnitTest extends RepositoryUnitTest {
     @Test
     public void findIsNewAndIsNewIssueByFactory_isUrgent_True() {
         // given
-        final Pageable pageable = PageRequest.of(0, 10);
         final List<FactoryGetOrderIsNewAndIsNewIssueHistoryResponse> expectedOrderList = FactoryGetOrderIsNewAndIsNewIssueHistoryResponseBuilder.buildOfIsUrgentIsTrue();
 
         // when
@@ -351,7 +334,6 @@ public class OrderRepositoryUnitTest extends RepositoryUnitTest {
     @Test
     public void findIsNewAndIsNewIssueByFactory_isUrgent_False() {
         // given
-        final Pageable pageable = PageRequest.of(0, 10);
         final List<FactoryGetOrderIsNewAndIsNewIssueHistoryResponse> expectedOrderList = FactoryGetOrderIsNewAndIsNewIssueHistoryResponseBuilder.buildOfIsUrgentIsFalse();
 
         // when
@@ -364,7 +346,6 @@ public class OrderRepositoryUnitTest extends RepositoryUnitTest {
     @Test
     public void findByFactory_isCompleted_False() {
         // given
-        final Pageable pageable = PageRequest.of(0, 10);
         final List<FactoryGetOrderHistoryResponse> expectedOrderList = FactoryGetOrderHistoryResponseBuilder.buildOfIsCompletedFalseAndPage1();
 
         // when
@@ -377,7 +358,6 @@ public class OrderRepositoryUnitTest extends RepositoryUnitTest {
     @Test
     public void findByFactory_isCompleted_True() {
         // given
-        final Pageable pageable = PageRequest.of(0, 10);
         final List<FactoryGetOrderHistoryResponse> expectedOrderList = FactoryGetOrderHistoryResponseBuilder.buildOfIsCompletedTrue();
 
         // when
@@ -391,7 +371,6 @@ public class OrderRepositoryUnitTest extends RepositoryUnitTest {
     @Test
     public void findByFactory_isCompleted_False_isUrgent_True() {
         // given
-        final Pageable pageable = PageRequest.of(0, 10);
         final List<FactoryGetOrderHistoryResponse> expectedOrderList = FactoryGetOrderHistoryResponseBuilder.buildOfIsCompletedFalseAndIsUrgentTrue();
 
         // when
@@ -404,7 +383,6 @@ public class OrderRepositoryUnitTest extends RepositoryUnitTest {
     @Test
     public void findByFactory_isCompleted_False_isUrgent_False() {
         // given
-        final Pageable pageable = PageRequest.of(0, 10);
         final List<FactoryGetOrderHistoryResponse> expectedOrderList = FactoryGetOrderHistoryResponseBuilder.buildOfIsCompletedFalseAndIsUrgentFalse();
 
         // when
@@ -417,7 +395,6 @@ public class OrderRepositoryUnitTest extends RepositoryUnitTest {
     @Test
     public void findByFactory_isCompleted_False_dateCriterion_create() {
         // given
-        final Pageable pageable = PageRequest.of(0, 10);
         final String dateCriterion = "create";
         final LocalDate startDate = LocalDate.of(2023, 10, 16);
         final LocalDate endDate = LocalDate.of(2023, 10, 24);
@@ -433,7 +410,6 @@ public class OrderRepositoryUnitTest extends RepositoryUnitTest {
     @Test
     public void findByFactory_isCompleted_False_dateCriterion_delivery() {
         // given
-        final Pageable pageable = PageRequest.of(0, 10);
         final String dateCriterion = "delivery";
         final LocalDate startDate = LocalDate.of(2023, 10, 28);
         final LocalDate endDate = LocalDate.of(2023, 11, 1);
@@ -449,7 +425,6 @@ public class OrderRepositoryUnitTest extends RepositoryUnitTest {
     @Test
     public void findByFactory_실패_dateCriterion() {
         // given
-        final Pageable pageable = PageRequest.of(0, 10);
         final String invalidDateCriterion = "invalid-date-criterion";
         final LocalDate startDate = LocalDate.of(2023, 10, 28);
         final LocalDate endDate = LocalDate.of(2023, 11, 1);
@@ -463,7 +438,6 @@ public class OrderRepositoryUnitTest extends RepositoryUnitTest {
     @Test
     public void findByFactory_isCompleted_False_query() {
         // given
-        final Pageable pageable = PageRequest.of(0, 10);
         final String query = "거래 4 이름";
         final List<FactoryGetOrderHistoryResponse> expectedOrderList = FactoryGetOrderHistoryResponseBuilder.buildOfIsCompletedFalseAndQuery();
 
@@ -478,7 +452,6 @@ public class OrderRepositoryUnitTest extends RepositoryUnitTest {
     public void findIsCompletedByCustomer() {
         // given
         final String email = "user1@gmail.com";
-        final Pageable pageable = PageRequest.of(0, 10);
         final List<CustomerGetOrderIsCompletedHistoryResponse> expectedOrderList = CustomerGetOrderIsCompletedHistoryResponseBuilder.build();
 
         // when
@@ -492,7 +465,6 @@ public class OrderRepositoryUnitTest extends RepositoryUnitTest {
     public void findIsCompletedByCustomer_query() {
         // given
         final String email = "user1@gmail.com";
-        final Pageable pageable = PageRequest.of(0, 10);
         final String query = "거래 1 이름";
         final List<CustomerGetOrderIsCompletedHistoryResponse> expectedOrderList = CustomerGetOrderIsCompletedHistoryResponseBuilder.build();
 

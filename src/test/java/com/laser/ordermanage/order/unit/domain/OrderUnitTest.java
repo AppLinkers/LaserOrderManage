@@ -71,14 +71,7 @@ public class OrderUnitTest {
         order.updateDeliveryAddress(deliveryAddress);
 
         // then
-        Assertions.assertThat(order.getDeliveryAddress().getId()).isEqualTo(expectedDeliveryAddress.getId());
-        Assertions.assertThat(order.getDeliveryAddress().getName()).isEqualTo(expectedDeliveryAddress.getName());
-        Assertions.assertThat(order.getDeliveryAddress().getAddress().getZipCode()).isEqualTo(expectedDeliveryAddress.getAddress().getZipCode());
-        Assertions.assertThat(order.getDeliveryAddress().getAddress().getAddress()).isEqualTo(expectedDeliveryAddress.getAddress().getAddress());
-        Assertions.assertThat(order.getDeliveryAddress().getAddress().getDetailAddress()).isEqualTo(expectedDeliveryAddress.getAddress().getDetailAddress());
-        Assertions.assertThat(order.getDeliveryAddress().getReceiver()).isEqualTo(expectedDeliveryAddress.getReceiver());
-        Assertions.assertThat(order.getDeliveryAddress().getPhone1()).isEqualTo(expectedDeliveryAddress.getPhone1());
-        Assertions.assertThat(order.getDeliveryAddress().getPhone2()).isEqualTo(expectedDeliveryAddress.getPhone2());
+        OrderDeliveryAddressUnitTest.assertOrderDeliveryAddress(order.getDeliveryAddress(), expectedDeliveryAddress);
     }
 
     @Test

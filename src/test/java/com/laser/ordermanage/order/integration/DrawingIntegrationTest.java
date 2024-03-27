@@ -6,6 +6,7 @@ import com.laser.ordermanage.order.dto.response.UploadDrawingFileResponse;
 import com.laser.ordermanage.order.dto.response.UploadDrawingFileResponseBuilder;
 import com.laser.ordermanage.order.exception.OrderErrorCode;
 import com.laser.ordermanage.user.exception.UserErrorCode;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -15,13 +16,13 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.nio.charset.StandardCharsets;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class DrawingIntegrationTest extends IntegrationTest {
@@ -53,13 +54,13 @@ public class DrawingIntegrationTest extends IntegrationTest {
         final ResultActions resultActions = requestUploadDrawingFile(accessToken, file);
 
         // then
-        resultActions
+        final String responseString = resultActions
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("thumbnailUrl").value(expectedResponse.thumbnailUrl()))
-                .andExpect(jsonPath("fileName").value(expectedResponse.fileName()))
-                .andExpect(jsonPath("fileSize").value(expectedResponse.fileSize()))
-                .andExpect(jsonPath("fileType").value(expectedResponse.fileType()))
-                .andExpect(jsonPath("fileUrl").value(expectedResponse.fileUrl()));
+                .andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8);
+
+        final UploadDrawingFileResponse actualResponse = objectMapper.readValue(responseString, UploadDrawingFileResponse.class);
+
+        Assertions.assertThat(actualResponse).isEqualTo(expectedResponse);
     }
 
     /**
@@ -86,13 +87,13 @@ public class DrawingIntegrationTest extends IntegrationTest {
         final ResultActions resultActions = requestUploadDrawingFile(accessToken, file);
 
         // then
-        resultActions
+        final String responseString = resultActions
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("thumbnailUrl").value(expectedResponse.thumbnailUrl()))
-                .andExpect(jsonPath("fileName").value(expectedResponse.fileName()))
-                .andExpect(jsonPath("fileSize").value(expectedResponse.fileSize()))
-                .andExpect(jsonPath("fileType").value(expectedResponse.fileType()))
-                .andExpect(jsonPath("fileUrl").value(expectedResponse.fileUrl()));
+                .andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8);
+
+        final UploadDrawingFileResponse actualResponse = objectMapper.readValue(responseString, UploadDrawingFileResponse.class);
+
+        Assertions.assertThat(actualResponse).isEqualTo(expectedResponse);
     }
 
     /**
@@ -119,13 +120,13 @@ public class DrawingIntegrationTest extends IntegrationTest {
         final ResultActions resultActions = requestUploadDrawingFile(accessToken, file);
 
         // then
-        resultActions
+        final String responseString = resultActions
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("thumbnailUrl").value(expectedResponse.thumbnailUrl()))
-                .andExpect(jsonPath("fileName").value(expectedResponse.fileName()))
-                .andExpect(jsonPath("fileSize").value(expectedResponse.fileSize()))
-                .andExpect(jsonPath("fileType").value(expectedResponse.fileType()))
-                .andExpect(jsonPath("fileUrl").value(expectedResponse.fileUrl()));
+                .andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8);
+
+        final UploadDrawingFileResponse actualResponse = objectMapper.readValue(responseString, UploadDrawingFileResponse.class);
+
+        Assertions.assertThat(actualResponse).isEqualTo(expectedResponse);
     }
 
     /**

@@ -25,6 +25,10 @@ public class JwtBuilder {
         return jwtProvider.generateJWT("user2@gmail.com", List.of(Role.ROLE_CUSTOMER.name(), Authority.AUTHORITY_ADMIN.name()), JwtProvider.TYPE_ACCESS, new Date(), ExpireTime.ACCESS_TOKEN_EXPIRE_TIME);
     }
 
+    public String accessJwtBuildOfFactory() {
+        return jwtProvider.generateJWT("admin@kumoh.org", List.of(Role.ROLE_FACTORY.name(), Authority.AUTHORITY_ADMIN.name()), JwtProvider.TYPE_ACCESS, new Date(), ExpireTime.ACCESS_TOKEN_EXPIRE_TIME);
+    }
+
     public String refreshJwtBuild() {
         return jwtProvider.generateJWT("user1@gmail.com", List.of(Role.ROLE_CUSTOMER.name(), Authority.AUTHORITY_ADMIN.name()), JwtProvider.TYPE_REFRESH, new Date(), ExpireTime.REFRESH_TOKEN_EXPIRE_TIME);
     }

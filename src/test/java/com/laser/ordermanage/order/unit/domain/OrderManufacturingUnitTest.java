@@ -37,7 +37,7 @@ public class OrderManufacturingUnitTest {
     }
 
     @Test
-    public void ofRequest_invalid_request() {
+    public void ofRequest_실패_INVALID_REQUEST_BODY_FIELDS() {
         // given
         final List<String> invalidRequestList = List.of("invalid-request");
 

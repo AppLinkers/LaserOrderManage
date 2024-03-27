@@ -30,7 +30,7 @@ public class OrderPostProcessingUnitTest {
         final OrderPostProcessing orderPostProcessing = OrderPostProcessing.ofRequest(requestList);
 
         // then
-    Assertions.assertThat(orderPostProcessing.getId()).isNull();
+        Assertions.assertThat(orderPostProcessing.getId()).isNull();
         Assertions.assertThat(orderPostProcessing.getIsPainting()).isTrue();
         Assertions.assertThat(orderPostProcessing.getIsPlating()).isTrue();
     }

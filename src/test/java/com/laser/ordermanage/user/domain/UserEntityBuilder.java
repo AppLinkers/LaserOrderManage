@@ -24,6 +24,24 @@ public class UserEntityBuilder {
                 .build();
     }
 
+    public static UserEntity factoryAdminUserBuild() {
+        Address address = Address.builder()
+                .zipCode("11111")
+                .address("factory1_address")
+                .detailAddress("factory1_detail_address")
+                .build();
+
+        return UserEntity.builder()
+                .email("admin@kumoh.org")
+                .password("factory1-password")
+                .name("관리자")
+                .role(Role.ROLE_FACTORY)
+                .authority(Authority.AUTHORITY_ADMIN)
+                .phone("01011111111")
+                .address(address)
+                .build();
+    }
+
     public static UserEntity newUserBuild() {
         Address address = Address.builder()
                 .zipCode("11111")

@@ -29,7 +29,7 @@ public interface OrderRepositoryCustom {
 
     CustomerGetOrderCreateInformationResponse findCreateInformationByOrder(Long orderId);
 
-    GetOrderDetailResponse findDetailByOrder(Long orderId);
+    Optional<GetOrderDetailResponse> findDetailByOrder(Long orderId);
 
     Optional<String> findUserEmailById(Long orderId);
 

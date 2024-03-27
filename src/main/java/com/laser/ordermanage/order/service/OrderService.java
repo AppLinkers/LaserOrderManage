@@ -42,7 +42,7 @@ public class OrderService {
 
     @Transactional(readOnly = true)
     public GetOrderDetailResponse getOrderDetail(Long orderId) {
-        return orderRepository.findDetailByOrder(orderId);
+        return orderRepository.findDetailByOrder(orderId).orElseThrow(() -> new CustomCommonException(OrderErrorCode.NOT_FOUND_ORDER));
     }
 
     @Transactional(readOnly = true)
@@ -56,9 +56,8 @@ public class OrderService {
     }
 
     @Transactional
-    public Long createOrderComment(String userName, Long orderId, CreateCommentRequest request) {
-
-        UserEntity user = userAuthService.getUserByEmail(userName);
+    public Long createOrderComment(String email, Long orderId, CreateCommentRequest request) {
+        UserEntity user = userAuthService.getUserByEmail(email);
         Order order = this.getOrderById(orderId);
 
         Comment comment = Comment.builder()

@@ -6,7 +6,7 @@ import java.util.List;
 
 public class GetCommentResponseBuilder {
 
-    public static List<GetCommentResponse> buildCommentListForOrder1() {
+    public static List<GetCommentResponse> buildListForOrder1() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
         LocalDateTime createdAtOfComment1 = LocalDateTime.parse("2023-10-13 10:20:30", formatter);

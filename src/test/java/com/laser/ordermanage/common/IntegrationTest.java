@@ -5,14 +5,11 @@ import com.laser.ordermanage.OrderManageApplication;
 import com.laser.ordermanage.common.cache.redis.config.RedisTestContainers;
 import com.laser.ordermanage.common.email.EmailService;
 import com.laser.ordermanage.common.exception.ErrorCode;
-import lombok.SneakyThrows;
-import org.junit.After;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
-import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
@@ -41,17 +38,8 @@ public class IntegrationTest {
     @Autowired
     protected ObjectMapper objectMapper;
 
-    @Autowired
-    protected SchedulerFactoryBean schedulerFactoryBean;
-
     @MockBean
     protected EmailService emailService;
-
-    @SneakyThrows
-    @After
-    public void 스케줄_초기화() {
-        schedulerFactoryBean.getScheduler().clear();
-    }
 
     /**
      * JWT 기반의 인증 및 권한 부여 테스트

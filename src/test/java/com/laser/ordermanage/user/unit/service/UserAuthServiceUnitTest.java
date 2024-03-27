@@ -32,7 +32,6 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static org.mockito.Mockito.when;
 
@@ -42,6 +41,12 @@ public class UserAuthServiceUnitTest extends ServiceUnitTest {
     private UserAuthService userAuthService;
 
     @Mock
+    private JwtProvider jwtProvider;
+
+    @Mock
+    private AuthenticationManager authenticationManager;
+
+    @Mock
     private RefreshTokenRedisRepository refreshTokenRedisRepository;
 
     @Mock
@@ -49,12 +54,6 @@ public class UserAuthServiceUnitTest extends ServiceUnitTest {
 
     @Mock
     private UserEntityRepository userRepository;
-
-    @Mock
-    private JwtProvider jwtProvider;
-
-    @Mock
-    private AuthenticationManager authenticationManager;
 
     private MockHttpServletRequest httpServletRequest;
 
@@ -78,7 +77,7 @@ public class UserAuthServiceUnitTest extends ServiceUnitTest {
         final UserEntity actualUser = userAuthService.getUserByEmail(expectedUser.getEmail());
 
         // then
-        Assertions.assertThat(actualUser).isSameAs(expectedUser);
+        Assertions.assertThat(actualUser).isEqualTo(expectedUser);
     }
 
     /**
@@ -88,13 +87,13 @@ public class UserAuthServiceUnitTest extends ServiceUnitTest {
     @Test
     public void getUserByEmail_실패_NOT_FOUND_USER() {
         // given
-        final String invalidUserEmail = "invalid-user@gmail.com";
+        final String unknownUserEmail = "unknown-user@gmail.com";
 
         // stub
-        when(userRepository.findFirstByEmail(invalidUserEmail)).thenReturn(Optional.empty());
+        when(userRepository.findFirstByEmail(unknownUserEmail)).thenReturn(Optional.empty());
 
         // when & then
-        Assertions.assertThatThrownBy(() -> userAuthService.getUserByEmail(invalidUserEmail))
+        Assertions.assertThatThrownBy(() -> userAuthService.getUserByEmail(unknownUserEmail))
                 .isInstanceOf(CustomCommonException.class)
                 .hasMessage(UserErrorCode.NOT_FOUND_USER.getMessage());
     }
@@ -124,7 +123,7 @@ public class UserAuthServiceUnitTest extends ServiceUnitTest {
         final TokenInfoResponse actualResponse = userAuthService.login(httpServletRequest, loginRequest);
 
         // then
-        Assertions.assertThat(actualResponse).isSameAs(expectedResponse);
+        Assertions.assertThat(actualResponse).isEqualTo(expectedResponse);
     }
 
     /**
@@ -173,7 +172,7 @@ public class UserAuthServiceUnitTest extends ServiceUnitTest {
         final TokenInfoResponse actualResponse = userAuthService.reissue(httpServletRequest, refreshToken.getRefreshToken());
 
         // then
-        Assertions.assertThat(actualResponse).isSameAs(expectedResponse);
+        Assertions.assertThat(actualResponse).isEqualTo(expectedResponse);
     }
 
     /**

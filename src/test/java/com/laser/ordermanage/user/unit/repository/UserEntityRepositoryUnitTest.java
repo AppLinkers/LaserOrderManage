@@ -35,10 +35,11 @@ public class UserEntityRepositoryUnitTest extends RepositoryUnitTest {
                     Assertions.assertThat(actualUser.getId()).isEqualTo(2L);
                     Assertions.assertThat(actualUser.getEmail()).isEqualTo(expectedUser.getEmail());
                     Assertions.assertThat(actualUser.getRole()).isEqualTo(expectedUser.getRole());
+                    Assertions.assertThat(actualUser.getAuthority()).isEqualTo(expectedUser.getAuthority());
                     Assertions.assertThat(actualUser.getPhone()).isEqualTo(expectedUser.getPhone());
                     Assertions.assertThat(actualUser.getAddress().getZipCode()).isEqualTo(expectedUser.getAddress().getZipCode());
-                    Assertions.assertThat(actualUser.getAddress().getDetailAddress()).isEqualTo(expectedUser.getAddress().getDetailAddress());
                     Assertions.assertThat(actualUser.getAddress().getAddress()).isEqualTo(expectedUser.getAddress().getAddress());
+                    Assertions.assertThat(actualUser.getAddress().getDetailAddress()).isEqualTo(expectedUser.getAddress().getDetailAddress());
                 }
         );
     }
@@ -46,10 +47,10 @@ public class UserEntityRepositoryUnitTest extends RepositoryUnitTest {
     @Test
     public void findFirstByEmail_존재_X() {
         // given
-        final String invalidUserEmail = "invalid-user@gmail.com";
+        final String unknownUserEmail = "unknown-user@gmail.com";
 
         // when
-        final Optional<UserEntity> optionalUserEntity = userEntityRepository.findFirstByEmail(invalidUserEmail);
+        final Optional<UserEntity> optionalUserEntity = userEntityRepository.findFirstByEmail(unknownUserEmail);
 
         // then
         Assertions.assertThat(optionalUserEntity.isEmpty()).isTrue();
@@ -77,11 +78,11 @@ public class UserEntityRepositoryUnitTest extends RepositoryUnitTest {
     @Test
     public void findEmailByNameAndPhone_존재_X() {
         // given
-        final String invalidUserName = "존재하지 않는 사용자";
-        final String invalidUserPhone = "12121212121";
+        final String unknownUserName = "존재하지 않는 사용자";
+        final String unknownUserPhone = "12121212121";
 
         // when
-        final List<GetUserEmailResponse> actualResponseList = userEntityRepository.findEmailByNameAndPhone(invalidUserName, invalidUserPhone);
+        final List<GetUserEmailResponse> actualResponseList = userEntityRepository.findEmailByNameAndPhone(unknownUserName, unknownUserPhone);
 
         // then
         Assertions.assertThat(actualResponseList.size()).isEqualTo(0);
@@ -90,11 +91,11 @@ public class UserEntityRepositoryUnitTest extends RepositoryUnitTest {
     @Test
     public void findEmailByNameAndPhone_존재_X_By_name() {
         // given
-        final String invalidUserName = "존재하지 않는 사용자";
+        final String unknownUserName = "존재하지 않는 사용자";
         final String userPhone = "01011111111";
 
         // when
-        final List<GetUserEmailResponse> actualResponseList = userEntityRepository.findEmailByNameAndPhone(invalidUserName, userPhone);
+        final List<GetUserEmailResponse> actualResponseList = userEntityRepository.findEmailByNameAndPhone(unknownUserName, userPhone);
 
         // then
         Assertions.assertThat(actualResponseList.size()).isEqualTo(0);
@@ -104,10 +105,10 @@ public class UserEntityRepositoryUnitTest extends RepositoryUnitTest {
     public void findEmailByNameAndPhone_존재_X_By_phone() {
         // given
         final String userName = "고객 이름 1";
-        final String invalidUserPhone = "12121212121";
+        final String unknownUserPhone = "12121212121";
 
         // when
-        final List<GetUserEmailResponse> actualResponseList = userEntityRepository.findEmailByNameAndPhone(userName, invalidUserPhone);
+        final List<GetUserEmailResponse> actualResponseList = userEntityRepository.findEmailByNameAndPhone(userName, unknownUserPhone);
 
         // then
         Assertions.assertThat(actualResponseList.size()).isEqualTo(0);
@@ -137,10 +138,10 @@ public class UserEntityRepositoryUnitTest extends RepositoryUnitTest {
     @Test
     public void findUserAccountByEmail_존재_X() {
         // given
-        final String invalidUserEmail = "invalid-user@gmail.com";
+        final String unknownUserEmail = "unknown-user@gmail.com";
 
         // when
-        final GetUserAccountResponse actualResponse = userEntityRepository.findUserAccountByEmail(invalidUserEmail);
+        final GetUserAccountResponse actualResponse = userEntityRepository.findUserAccountByEmail(unknownUserEmail);
 
         // then
         Assertions.assertThat(actualResponse).isNull();

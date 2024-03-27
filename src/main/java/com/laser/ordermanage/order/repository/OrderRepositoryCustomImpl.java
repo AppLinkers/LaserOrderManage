@@ -320,7 +320,7 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
     }
 
     @Override
-    public GetOrderDetailResponse findDetailByOrder(Long orderId) {
+    public Optional<GetOrderDetailResponse> findDetailByOrder(Long orderId) {
         List<GetOrderDetailResponse> getOrderDetailResponseList = queryFactory
                 .selectFrom(order)
                 .leftJoin(order.customer, customer)
@@ -402,7 +402,7 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
                         )
                 );
 
-        return getOrderDetailResponseList.isEmpty() ? null : getOrderDetailResponseList.get(0);
+        return getOrderDetailResponseList.isEmpty() ? Optional.empty() : Optional.of(getOrderDetailResponseList.get(0));
     }
 
     @Override
@@ -549,7 +549,8 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
             BooleanExpression isLessOrEqualToEndDate = quotation.deliveryDate.loe(endDate);
 
             return booleanBuilder.and(isGreaterOrEqualToStartDate).and(isLessOrEqualToEndDate);
+        } else {
+            throw new CustomCommonException(CommonErrorCode.INVALID_PARAMETER, "date-criterion 파라미터가 올바르지 않습니다.");
         }
-        return null;
     }
 }

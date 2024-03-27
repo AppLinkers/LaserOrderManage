@@ -31,13 +31,14 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class UserAuthService {
 
+    private final JwtProvider jwtProvider;
+    private final AuthenticationManager authenticationManager;
+
     private final BlackListRedisRepository blackListRedisRepository;
     private final RefreshTokenRedisRepository refreshTokenRedisRepository;
 
     private final UserEntityRepository userRepository;
 
-    private final JwtProvider jwtProvider;
-    private final AuthenticationManager authenticationManager;
 
     @Transactional(readOnly = true)
     public UserEntity getUserByEmail(String email) {

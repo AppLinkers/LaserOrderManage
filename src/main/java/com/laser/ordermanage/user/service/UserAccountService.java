@@ -28,15 +28,17 @@ import org.springframework.web.util.UriComponentsBuilder;
 @RequiredArgsConstructor
 public class UserAccountService {
 
-    private final EmailService emailService;
-    private final UserAuthService userAuthService;
+    private final PasswordEncoder passwordEncoder;
+    private final JwtProvider jwtProvider;
 
     private final ChangePasswordTokenRedisRepository changePasswordTokenRedisRepository;
 
     private final UserEntityRepository userRepository;
 
-    private final PasswordEncoder passwordEncoder;
-    private final JwtProvider jwtProvider;
+    private final EmailService emailService;
+    private final UserAuthService userAuthService;
+
+
 
     @Transactional(readOnly = true)
     public ListResponse<GetUserEmailResponse> getUserEmail(String name, String phone) {

@@ -3,6 +3,7 @@ package com.laser.ordermanage.common;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.laser.ordermanage.OrderManageApplication;
 import com.laser.ordermanage.common.cache.redis.config.RedisTestContainers;
+import com.laser.ordermanage.common.cloud.aws.S3Service;
 import com.laser.ordermanage.common.email.EmailService;
 import com.laser.ordermanage.common.exception.ErrorCode;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,6 +41,9 @@ public class IntegrationTest {
 
     @MockBean
     protected EmailService emailService;
+
+    @MockBean
+    protected S3Service s3Service;
 
     /**
      * JWT 기반의 인증 및 권한 부여 테스트

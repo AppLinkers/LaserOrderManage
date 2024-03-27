@@ -18,6 +18,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+
 @RequiredArgsConstructor
 @Service
 public class DrawingService {
@@ -49,7 +51,10 @@ public class DrawingService {
     }
 
     public String uploadThumbnailFile(String tempThumbnailFilePath) {
-        return s3Service.upload("drawing-thumbnail", tempThumbnailFilePath, "drawing-thumbnail.png");
+        File file = new File(tempThumbnailFilePath);
+        String thumbnailFileUrl = s3Service.upload("drawing-thumbnail", file, "drawing-thumbnail.png");
+        file.delete();
+        return thumbnailFileUrl;
     }
 
     public UploadDrawingFileResponse uploadDrawingFile(MultipartFile file) {

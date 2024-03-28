@@ -20,6 +20,7 @@ public class OrderDeliveryAddressUnitTest {
         final OrderDeliveryAddress actualOrderDeliveryAddress = OrderDeliveryAddress.ofRequest(request);
 
         // then
+        Assertions.assertThat(actualOrderDeliveryAddress.getId()).isEqualTo(expectedOrderDeliveryAddress.getId());
         assertOrderDeliveryAddress(actualOrderDeliveryAddress, expectedOrderDeliveryAddress);
     }
 
@@ -34,11 +35,11 @@ public class OrderDeliveryAddressUnitTest {
         orderDeliveryAddress.updateDeliveryAddress(deliveryAddress);
 
         // then
+        Assertions.assertThat(orderDeliveryAddress.getId()).isEqualTo(expectedOrderDeliveryAddress.getId());
         assertOrderDeliveryAddress(orderDeliveryAddress, expectedOrderDeliveryAddress);
     }
 
     public static void assertOrderDeliveryAddress(OrderDeliveryAddress actualOrderDeliveryAddress, OrderDeliveryAddress expectedOrderDeliveryAddress) {
-        Assertions.assertThat(actualOrderDeliveryAddress.getId()).isEqualTo(expectedOrderDeliveryAddress.getId());
         Assertions.assertThat(actualOrderDeliveryAddress.getName()).isEqualTo(expectedOrderDeliveryAddress.getName());
         Assertions.assertThat(actualOrderDeliveryAddress.getAddress().getZipCode()).isEqualTo(expectedOrderDeliveryAddress.getAddress().getZipCode());
         Assertions.assertThat(actualOrderDeliveryAddress.getAddress().getAddress()).isEqualTo(expectedOrderDeliveryAddress.getAddress().getAddress());

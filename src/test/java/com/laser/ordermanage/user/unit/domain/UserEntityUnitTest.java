@@ -69,4 +69,14 @@ public class UserEntityUnitTest {
         Assertions.assertThat(actualUser.isCredentialsNonExpired()).isTrue();
         Assertions.assertThat(actualUser.isEnabled()).isTrue();
     }
+
+    public static void assertUserEntity(UserEntity actualUserEntity, UserEntity expectedUserEntity) {
+        Assertions.assertThat(actualUserEntity.getEmail()).isEqualTo(expectedUserEntity.getEmail());
+        Assertions.assertThat(actualUserEntity.getRole()).isEqualTo(expectedUserEntity.getRole());
+        Assertions.assertThat(actualUserEntity.getAuthority()).isEqualTo(expectedUserEntity.getAuthority());
+        Assertions.assertThat(actualUserEntity.getPhone()).isEqualTo(expectedUserEntity.getPhone());
+        Assertions.assertThat(actualUserEntity.getAddress().getZipCode()).isEqualTo(expectedUserEntity.getAddress().getZipCode());
+        Assertions.assertThat(actualUserEntity.getAddress().getAddress()).isEqualTo(expectedUserEntity.getAddress().getAddress());
+        Assertions.assertThat(actualUserEntity.getAddress().getDetailAddress()).isEqualTo(expectedUserEntity.getAddress().getDetailAddress());
+    }
 }

@@ -7,7 +7,6 @@ import com.laser.ordermanage.common.util.FileUtil;
 import com.laser.ordermanage.common.util.ImageUtil;
 import com.laser.ordermanage.common.util.PDFUtil;
 import com.laser.ordermanage.order.domain.Drawing;
-import com.laser.ordermanage.order.domain.Order;
 import com.laser.ordermanage.order.domain.type.DrawingFileType;
 import com.laser.ordermanage.order.dto.response.UploadDrawingFileResponse;
 import com.laser.ordermanage.order.exception.OrderErrorCode;
@@ -37,8 +36,8 @@ public class DrawingService {
     }
 
     @Transactional(readOnly = true)
-    public Integer countDrawingByOrder(Order order) {
-        return drawingRepository.countByOrder(order);
+    public Integer countDrawingByOrderId(Long orderId) {
+        return drawingRepository.countByOrderId(orderId);
     }
 
     public File extractThumbnail(MultipartFile multipartFile, DrawingFileType fileType) {

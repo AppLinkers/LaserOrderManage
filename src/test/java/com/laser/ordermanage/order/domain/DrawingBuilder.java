@@ -7,6 +7,7 @@ import com.laser.ordermanage.order.domain.type.Ingredient;
 public class DrawingBuilder {
     public static Drawing build() {
         Order order = OrderBuilder.build();
+        order.changeStageToCompleted();
 
         File<DrawingFileType> file = File.<DrawingFileType>builder()
                 .name("test.dwg")

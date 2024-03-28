@@ -2,7 +2,8 @@ package com.laser.ordermanage.order.domain;
 
 import com.laser.ordermanage.common.entity.embedded.Address;
 
-public class OrderDeliveryAddressBuilder {
+public class
+OrderDeliveryAddressBuilder {
     public static OrderDeliveryAddress build() {
         Address address = Address.builder()
                 .zipCode("11111")

@@ -4,6 +4,7 @@ import com.laser.ordermanage.customer.domain.DeliveryAddress;
 import com.laser.ordermanage.customer.domain.DeliveryAddressBuilder;
 import com.laser.ordermanage.order.domain.*;
 import com.laser.ordermanage.order.domain.type.Stage;
+import com.laser.ordermanage.user.unit.domain.UserEntityUnitTest;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -417,5 +418,20 @@ public class OrderUnitTest {
 
         // when & then
         Assertions.assertThat(order.hasCustomer()).isFalse();
+    }
+
+    public static void assertOrder(Order actualOrder, Order expectedOrder) {
+        UserEntityUnitTest.assertUserEntity(actualOrder.getCustomer().getUser(), expectedOrder.getCustomer().getUser());
+        Assertions.assertThat(actualOrder.getCustomer().getCompanyName()).isEqualTo(expectedOrder.getCustomer().getCompanyName());
+        Assertions.assertThat(actualOrder.getCustomer().getIsNew()).isEqualTo(expectedOrder.getCustomer().getIsNew());
+        OrderDeliveryAddressUnitTest.assertOrderDeliveryAddress(actualOrder.getDeliveryAddress(), expectedOrder.getDeliveryAddress());
+        Assertions.assertThat(actualOrder.getName()).isEqualTo(expectedOrder.getName());
+        Assertions.assertThat(actualOrder.getImgUrl()).isEqualTo(expectedOrder.getImgUrl());
+        Assertions.assertThat(actualOrder.getStage()).isEqualTo(expectedOrder.getStage());
+        OrderManufacturingUnitTest.assertOrderManufacturing(actualOrder.getManufacturing(), expectedOrder.getManufacturing());
+        OrderPostProcessingUnitTest.assertOrderPostProcessing(actualOrder.getPostProcessing(), expectedOrder.getPostProcessing());
+        Assertions.assertThat(actualOrder.getRequest()).isEqualTo(expectedOrder.getRequest());
+        Assertions.assertThat(actualOrder.getIsNewIssue()).isEqualTo(expectedOrder.getIsNewIssue());
+        Assertions.assertThat(actualOrder.getIsDeleted()).isEqualTo(expectedOrder.getIsDeleted());
     }
 }

@@ -5,8 +5,6 @@ import com.laser.ordermanage.common.cloud.aws.S3Service;
 import com.laser.ordermanage.common.exception.CustomCommonException;
 import com.laser.ordermanage.order.domain.Drawing;
 import com.laser.ordermanage.order.domain.DrawingBuilder;
-import com.laser.ordermanage.order.domain.Order;
-import com.laser.ordermanage.order.domain.OrderBuilder;
 import com.laser.ordermanage.order.domain.type.DrawingFileType;
 import com.laser.ordermanage.order.dto.response.UploadDrawingFileResponse;
 import com.laser.ordermanage.order.dto.response.UploadDrawingFileResponseBuilder;
@@ -88,14 +86,14 @@ public class DrawingServiceUnitTest extends ServiceUnitTest {
     @Test
     public void countDrawingByOrder_성공() {
         // given
-        final Order order = OrderBuilder.build();
+        final Long orderId = 1L;
         final Integer expectedCountDrawing = 1;
 
         // stub
-        when(drawingRepository.countByOrder(order)).thenReturn(expectedCountDrawing);
+        when(drawingRepository.countByOrderId(orderId)).thenReturn(expectedCountDrawing);
 
         // when
-        final Integer actualCountDrawing = drawingService.countDrawingByOrder(order);
+        final Integer actualCountDrawing = drawingService.countDrawingByOrderId(orderId);
 
         // then
         Assertions.assertThat(actualCountDrawing).isEqualTo(expectedCountDrawing);

@@ -64,6 +64,39 @@ public class DrawingIntegrationTest extends IntegrationTest {
     }
 
     /**
+     * 도면 파일 업로드 성공 (DXF)
+     */
+    @Test
+    public void 도면_파일_업로드_성공_DXF() throws Exception {
+        // given
+        final String accessToken = jwtBuilder.accessJwtBuild();
+        final String filePath = "src/test/resources/drawing/drawing.dxf";
+        final MockMultipartFile file = new MockMultipartFile(
+                "file",
+                "drawing.dxf",
+                MediaType.MULTIPART_FORM_DATA_VALUE,
+                new FileInputStream(filePath)
+        );
+        final UploadDrawingFileResponse expectedResponse = UploadDrawingFileResponseBuilder.buildOfDXFDrawing();
+
+        // stub
+        when(s3Service.upload(any(), (MultipartFile) any(), eq("drawing.dxf"))).thenReturn("drawing-file-url.dxf");
+        when(s3Service.upload(any(), (File) any(), eq("drawing-thumbnail.png"))).thenReturn("thumbnail-url.dxf");
+
+        // when
+        final ResultActions resultActions = requestUploadDrawingFile(accessToken, file);
+
+        // then
+        final String responseString = resultActions
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8);
+
+        final UploadDrawingFileResponse actualResponse = objectMapper.readValue(responseString, UploadDrawingFileResponse.class);
+
+        Assertions.assertThat(actualResponse).isEqualTo(expectedResponse);
+    }
+
+    /**
      * 도면 파일 업로드 성공 (PDF)
      */
     @Test

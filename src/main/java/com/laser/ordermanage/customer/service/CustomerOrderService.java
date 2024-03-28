@@ -143,7 +143,7 @@ public class CustomerOrderService {
             throw new CustomCommonException(OrderErrorCode.INVALID_ORDER_STAGE, order.getStage().getValue());
         }
 
-        Drawing drawing = drawingService.getDrawingByOrderAndId(order, drawingId);
+        Drawing drawing = drawingService.getDrawingById(drawingId);
 
         drawing.updateDrawingProperties(request);
     }
@@ -160,7 +160,7 @@ public class CustomerOrderService {
             throw new CustomCommonException(OrderErrorCode.LAST_DRAWING_DELETE);
         }
 
-        Drawing drawing = drawingService.getDrawingByOrderAndId(order, drawingId);
+        Drawing drawing = drawingService.getDrawingById(drawingId);
 
         drawingRepository.delete(drawing);
     }

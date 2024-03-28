@@ -32,8 +32,8 @@ public class DrawingService {
     private final DrawingRepository drawingRepository;
 
     @Transactional(readOnly = true)
-    public Drawing getDrawingByOrderAndId(Order order, Long drawingId) {
-        return drawingRepository.findFirstByOrderAndId(order, drawingId).orElseThrow(() -> new CustomCommonException(OrderErrorCode.NOT_FOUND_DRAWING));
+    public Drawing getDrawingById(Long drawingId) {
+        return drawingRepository.findFirstById(drawingId).orElseThrow(() -> new CustomCommonException(OrderErrorCode.NOT_FOUND_DRAWING));
     }
 
     @Transactional(readOnly = true)
@@ -41,7 +41,7 @@ public class DrawingService {
         return drawingRepository.countByOrder(order);
     }
 
-    public String extractThumbnail(MultipartFile multipartFile, DrawingFileType fileType) {
+    public File extractThumbnail(MultipartFile multipartFile, DrawingFileType fileType) {
         return switch (fileType) {
             case DWG, DXF -> CADUtil.extractThumbnail(multipartFile, tempFolderPath);
             case PDF -> PDFUtil.extractThumbnail(multipartFile, tempFolderPath);
@@ -50,11 +50,8 @@ public class DrawingService {
         };
     }
 
-    public String uploadThumbnailFile(String tempThumbnailFilePath) {
-        File file = new File(tempThumbnailFilePath);
-        String thumbnailFileUrl = s3Service.upload("drawing-thumbnail", file, "drawing-thumbnail.png");
-        file.delete();
-        return thumbnailFileUrl;
+    public String uploadThumbnailFile(File thumbnailFile) {
+        return s3Service.upload("drawing-thumbnail", thumbnailFile, "drawing-thumbnail.png");
     }
 
     public UploadDrawingFileResponse uploadDrawingFile(MultipartFile file) {
@@ -65,10 +62,13 @@ public class DrawingService {
         String fileUrl = s3Service.upload("drawing", file, "drawing." + fileType.getExtension());
 
         // 썸네일 추출
-        String tempThumbnailFilePath = this.extractThumbnail(file, fileType);
+        File thumbnailFile = this.extractThumbnail(file, fileType);
 
         // 썸네일 파일 업로드
-        String thumbnailFileUrl = this.uploadThumbnailFile(tempThumbnailFilePath);
+        String thumbnailFileUrl = this.uploadThumbnailFile(thumbnailFile);
+
+        // 썸네일 파일 삭제
+        thumbnailFile.delete();
 
         UploadDrawingFileResponse uploadDrawingFileResponse = UploadDrawingFileResponse.builder()
                 .thumbnailUrl(thumbnailFileUrl)

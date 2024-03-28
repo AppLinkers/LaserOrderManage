@@ -7,7 +7,7 @@ import org.springframework.data.repository.CrudRepository;
 import java.util.Optional;
 
 public interface DrawingRepository extends CrudRepository<Drawing, Long>, DrawingRepositoryCustom {
-    Optional<Drawing> findFirstByOrderAndId(Order order, Long id);
+    Optional<Drawing> findFirstById(Long id);
 
     Integer countByOrder(Order order);
 }

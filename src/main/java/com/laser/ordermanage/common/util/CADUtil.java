@@ -3,10 +3,11 @@ package com.laser.ordermanage.common.util;
 import com.aspose.cad.Image;
 import com.aspose.cad.imageoptions.CadRasterizationOptions;
 import com.aspose.cad.imageoptions.PngOptions;
-import com.laser.ordermanage.common.exception.CustomCommonException;
 import com.laser.ordermanage.common.exception.CommonErrorCode;
+import com.laser.ordermanage.common.exception.CustomCommonException;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.io.IOException;
 
 public class CADUtil {
@@ -14,7 +15,7 @@ public class CADUtil {
     private CADUtil() {
     }
 
-    public static String extractThumbnail(MultipartFile multipartFile, String tempFolderPath) {
+    public static File extractThumbnail(MultipartFile multipartFile, String tempFolderPath) {
         try {
             Image image = Image.load(multipartFile.getInputStream());
 
@@ -31,7 +32,7 @@ public class CADUtil {
 
             image.save(filePath, pngOptions);
 
-            return filePath;
+            return new File(filePath);
         } catch (IOException e) {
             throw new CustomCommonException(CommonErrorCode.UNABLE_TO_EXTRACT_THUMBNAIL);
         }

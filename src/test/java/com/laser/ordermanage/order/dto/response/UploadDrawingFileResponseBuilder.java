@@ -13,6 +13,16 @@ public class UploadDrawingFileResponseBuilder {
                 .build();
     }
 
+    public static UploadDrawingFileResponse buildOfDXFDrawing() {
+        return UploadDrawingFileResponse.builder()
+                .thumbnailUrl("thumbnail-url.dxf")
+                .fileName("drawing.dxf")
+                .fileSize(1827628L)
+                .fileType(DrawingFileType.DXF.getExtension())
+                .fileUrl("drawing-file-url.dxf")
+                .build();
+    }
+
     public static UploadDrawingFileResponse buildOfPDFDrawing() {
         return UploadDrawingFileResponse.builder()
                 .thumbnailUrl("thumbnail-url.pdf")

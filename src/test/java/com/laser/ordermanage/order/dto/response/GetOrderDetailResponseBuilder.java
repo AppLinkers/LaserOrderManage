@@ -29,7 +29,7 @@ public class GetOrderDetailResponseBuilder {
         OrderManufacturing orderManufacturing = OrderManufacturing.ofRequest(List.of("bending"));
         OrderPostProcessing orderPostProcessing = OrderPostProcessing.ofRequest(new ArrayList<>());
 
-        GetDrawingResponse drawing = new GetDrawingResponse(1L, "drawing.dwg", 140801L, DrawingFileType.DWG, "https://ordermanage.s3.ap-northeast-2.amazonaws.com/test.dwg", "https://ordermanage.s3.ap-northeast-2.amazonaws.com/output.png", 1, Ingredient.SS400, 10);
+        GetDrawingResponse drawing = new GetDrawingResponse(1L, "test.dwg", 140801L, DrawingFileType.DWG, "https://ordermanage.s3.ap-northeast-2.amazonaws.com/test.dwg", "https://ordermanage.s3.ap-northeast-2.amazonaws.com/output.png", 1, Ingredient.SS400, 10);
         GetOrderDeliveryAddressResponse orderDeliveryAddress = new GetOrderDeliveryAddressResponse(1L, "고객 1 배송지 1", "11111", "배송지 1 기본 주소", "배송지 1 상세 주소", "배송지 1 수신자", "01011111111", "01011112222");
         LocalDateTime createdAtOfOrder = LocalDateTime.parse("2023-10-12 10:20:30", formatter);
 

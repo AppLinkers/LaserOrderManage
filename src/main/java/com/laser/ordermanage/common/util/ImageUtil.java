@@ -16,7 +16,7 @@ public class ImageUtil {
 
     }
 
-    public static String extractThumbnail(MultipartFile multipartFile, String tempFolderPath) {
+    public static File extractThumbnail(MultipartFile multipartFile, String tempFolderPath) {
         try {
             // MultipartFile to BufferedImage
             BufferedImage bufferedImage = ImageIO.read(multipartFile.getInputStream());
@@ -28,7 +28,7 @@ public class ImageUtil {
 
             ImageIO.write(resizedImage, "png", new File(filePath));
 
-            return filePath;
+            return new File(filePath);
         } catch (IOException e) {
             throw new CustomCommonException(CommonErrorCode.UNABLE_TO_EXTRACT_THUMBNAIL);
         }

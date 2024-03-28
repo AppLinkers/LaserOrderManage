@@ -22,7 +22,7 @@ public class PDFUtil {
 
     }
 
-    public static String extractThumbnail(MultipartFile multipartFile, String tempFolderPath) {
+    public static File extractThumbnail(MultipartFile multipartFile, String tempFolderPath) {
         try {
             // 일시적인 파일 생성
             Path tempFile = Files.createTempFile("uploadedDrawing-", ".pdf");
@@ -41,7 +41,7 @@ public class PDFUtil {
                 // 임시 파일 삭제
                 Files.deleteIfExists(tempFile);
 
-                return filePath;
+                return new File(filePath);
             }
         } catch (IOException e) {
             throw new CustomCommonException(CommonErrorCode.UNABLE_TO_EXTRACT_THUMBNAIL);

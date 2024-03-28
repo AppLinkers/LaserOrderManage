@@ -145,7 +145,7 @@ public class CustomerOrderService {
 
         Drawing drawing = drawingService.getDrawingById(drawingId);
 
-        drawing.updateDrawingProperties(request);
+        drawing.updateProperties(request);
     }
 
     @Transactional

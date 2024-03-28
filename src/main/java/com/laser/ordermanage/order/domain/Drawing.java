@@ -51,7 +51,7 @@ public class Drawing {
         this.thickness = thickness;
     }
 
-    public void updateDrawingProperties(CustomerUpdateDrawingRequest request) {
+    public void updateProperties(CustomerUpdateDrawingRequest request) {
         this.count = request.count();
         this.ingredient = Ingredient.ofValue(request.ingredient());
         this.thickness = request.thickness();

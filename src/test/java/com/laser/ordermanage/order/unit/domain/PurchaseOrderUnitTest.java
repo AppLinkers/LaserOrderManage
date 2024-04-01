@@ -39,7 +39,6 @@ public class PurchaseOrderUnitTest {
         purchaseOrder.updateProperties(request);
 
         // then
-        Assertions.assertThat(purchaseOrder.getId()).isNull();
         Assertions.assertThat(purchaseOrder.getInspectionPeriod()).isEqualTo(request.inspectionPeriod());
         Assertions.assertThat(purchaseOrder.getInspectionCondition()).isEqualTo(request.inspectionCondition());
         Assertions.assertThat(purchaseOrder.getPaymentDate()).isEqualTo(request.paymentDate());

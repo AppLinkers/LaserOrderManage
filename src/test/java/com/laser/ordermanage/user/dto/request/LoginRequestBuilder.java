@@ -42,6 +42,20 @@ public class LoginRequestBuilder {
                 .build();
     }
 
+    public static LoginRequest unknownUserBuild() {
+        return LoginRequest.builder()
+                .email("unknown-user@gmail.com")
+                .password("unknown-user1-password")
+                .build();
+    }
+
+    public static LoginRequest invalidCredentialBuild() {
+        return LoginRequest.builder()
+                .email("user1@gmail.com")
+                .password("invalid-credential-user1-password")
+                .build();
+    }
+
     public static LoginRequest newPasswordBuild() {
         return LoginRequest.builder()
                 .email("user1@gmail.com")

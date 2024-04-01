@@ -54,7 +54,7 @@ public class UserAuthIntegrationTest extends IntegrationTest {
     @Test
     public void 로그인_실패_이메일() throws Exception {
         // given
-        final LoginRequest request = LoginRequestBuilder.invalidEmailBuild();
+        final LoginRequest request = LoginRequestBuilder.unknownUserBuild();
 
         // when
         final ResultActions resultActions = requestLogin(request);
@@ -70,7 +70,7 @@ public class UserAuthIntegrationTest extends IntegrationTest {
     @Test
     public void 로그인_실패_비밀번호() throws Exception {
         // given
-        final LoginRequest request = LoginRequestBuilder.invalidPasswordBuild();
+        final LoginRequest request = LoginRequestBuilder.invalidCredentialBuild();
 
         // when
         final ResultActions resultActions = requestLogin(request);

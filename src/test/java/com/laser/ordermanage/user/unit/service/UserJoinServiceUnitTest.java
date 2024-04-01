@@ -99,8 +99,7 @@ public class UserJoinServiceUnitTest extends ServiceUnitTest {
                 .email(request.email())
                 .code(request.code())
                 .build();
-        final UserEntity user = UserEntityBuilder.build();
-        final UserJoinStatusResponse expectedResponse = UserJoinStatusResponseBuilder.buildImpossibleWithUserEntity(user);
+        final UserJoinStatusResponse expectedResponse = UserJoinStatusResponseBuilder.buildPossibleWithOutUserEntity();
 
         // stub
         when(userRepository.findFirstByEmail(request.email())).thenReturn(Optional.empty());

@@ -1,14 +1,12 @@
 package com.laser.ordermanage.user.integration;
 
 import com.laser.ordermanage.common.IntegrationTest;
-import com.laser.ordermanage.common.constants.ExpireTime;
 import com.laser.ordermanage.common.exception.CommonErrorCode;
 import com.laser.ordermanage.common.security.jwt.setup.JwtBuilder;
-import com.laser.ordermanage.user.domain.type.Authority;
-import com.laser.ordermanage.user.domain.type.Role;
 import com.laser.ordermanage.user.dto.request.LoginRequest;
 import com.laser.ordermanage.user.dto.request.LoginRequestBuilder;
 import com.laser.ordermanage.user.dto.response.TokenInfoResponse;
+import com.laser.ordermanage.user.dto.response.TokenInfoResponseBuilder;
 import com.laser.ordermanage.user.exception.UserErrorCode;
 import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.Test;
@@ -16,10 +14,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 
-import static org.hamcrest.Matchers.hasItem;
+import java.nio.charset.StandardCharsets;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class UserAuthIntegrationTest extends IntegrationTest {
@@ -35,20 +33,18 @@ public class UserAuthIntegrationTest extends IntegrationTest {
     public void 로그인_성공() throws Exception {
         // given
         final LoginRequest request = LoginRequestBuilder.build();
+        final TokenInfoResponse expectedResponse = TokenInfoResponseBuilder.build();
 
         // when
         final ResultActions resultActions = requestLogin(request);
 
         // then
-        resultActions
+        final String responseString = resultActions
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("authorityList", hasItem(Role.ROLE_CUSTOMER.name())))
-                .andExpect(jsonPath("authorityList", hasItem(Authority.AUTHORITY_ADMIN.name())))
-                .andExpect(jsonPath("grantType").value("Bearer"))
-                .andExpect(jsonPath("accessToken").exists())
-                .andExpect(jsonPath("refreshToken").exists())
-                .andExpect(jsonPath("accessTokenExpirationTime").value(ExpireTime.ACCESS_TOKEN_EXPIRE_TIME))
-                .andExpect(jsonPath("refreshTokenExpirationTime").value(ExpireTime.REFRESH_TOKEN_EXPIRE_TIME));
+                .andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8);
+
+        final TokenInfoResponse actualResponse = objectMapper.readValue(responseString, TokenInfoResponse.class);
+        TokenInfoResponseBuilder.assertTokenInfoResponse(actualResponse, expectedResponse);
     }
 
     /**
@@ -58,10 +54,7 @@ public class UserAuthIntegrationTest extends IntegrationTest {
     @Test
     public void 로그인_실패_이메일() throws Exception {
         // given
-        final LoginRequest request = LoginRequest.builder()
-                .email("invalid-user@gmail.com")
-                .password("user1-password")
-                .build();
+        final LoginRequest request = LoginRequestBuilder.unknownUserBuild();
 
         // when
         final ResultActions resultActions = requestLogin(request);
@@ -77,10 +70,7 @@ public class UserAuthIntegrationTest extends IntegrationTest {
     @Test
     public void 로그인_실패_비밀번호() throws Exception {
         // given
-        final LoginRequest request = LoginRequest.builder()
-                .email("user1@gmail.com")
-                .password("invalid-user1-password")
-                .build();
+        final LoginRequest request = LoginRequestBuilder.invalidCredentialBuild();
 
         // when
         final ResultActions resultActions = requestLogin(request);
@@ -95,28 +85,23 @@ public class UserAuthIntegrationTest extends IntegrationTest {
     @Test
     public void Access_Token_재발급_성공() throws Exception {
         // given
-        final LoginRequest request = LoginRequest.builder()
-                .email("user1@gmail.com")
-                .password("user1-password")
-                .build();
+        final LoginRequest request = LoginRequestBuilder.build();
 
         final String response = requestLogin(request).andReturn().getResponse().getContentAsString();
-
         final String refreshToken = objectMapper.readValue(response, TokenInfoResponse.class).refreshToken();
+
+        final TokenInfoResponse expectedResponse = TokenInfoResponseBuilder.build();
 
         // when
         final ResultActions resultActions = requestReIssue(refreshToken);
 
         // then
-        resultActions
+        final String responseString = resultActions
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("authorityList", hasItem(Role.ROLE_CUSTOMER.name())))
-                .andExpect(jsonPath("authorityList", hasItem(Authority.AUTHORITY_ADMIN.name())))
-                .andExpect(jsonPath("grantType").value("Bearer"))
-                .andExpect(jsonPath("accessToken").exists())
-                .andExpect(jsonPath("refreshToken").exists())
-                .andExpect(jsonPath("accessTokenExpirationTime").value(ExpireTime.ACCESS_TOKEN_EXPIRE_TIME))
-                .andExpect(jsonPath("refreshTokenExpirationTime").value(ExpireTime.REFRESH_TOKEN_EXPIRE_TIME));
+                .andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8);
+
+        final TokenInfoResponse actualResponse = objectMapper.readValue(responseString, TokenInfoResponse.class);
+        TokenInfoResponseBuilder.assertTokenInfoResponse(actualResponse, expectedResponse);
     }
 
     /**
@@ -221,10 +206,7 @@ public class UserAuthIntegrationTest extends IntegrationTest {
     @Test
     public void Access_Token_재발급_실패_IP_Address() throws Exception {
         // given
-        final LoginRequest request = LoginRequest.builder()
-                .email("user1@gmail.com")
-                .password("user1-password")
-                .build();
+        final LoginRequest request = LoginRequestBuilder.build();
 
         final String response = requestLogin(request).andReturn().getResponse().getContentAsString();
 
@@ -243,10 +225,7 @@ public class UserAuthIntegrationTest extends IntegrationTest {
     @Test
     public void 로그아웃_성공() throws Exception {
         // given
-        final LoginRequest request = LoginRequest.builder()
-                .email("user1@gmail.com")
-                .password("user1-password")
-                .build();
+        final LoginRequest request = LoginRequestBuilder.build();
 
         final String response = requestLogin(request).andReturn().getResponse().getContentAsString();
 

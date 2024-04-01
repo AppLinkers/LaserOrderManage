@@ -24,6 +24,6 @@ public enum SignatureFileType {
                     .collect(Collectors.toMap(SignatureFileType::getExtension, Function.identity())));
 
     public static SignatureFileType ofExtension(String request) {
-        return Optional.ofNullable(extensionMap.get(request)).orElseThrow(() -> new CustomCommonException(OrderErrorCode.UNSUPPORTED_QUOTATION_FILE_EXTENSION));
+        return Optional.ofNullable(extensionMap.get(request)).orElseThrow(() -> new CustomCommonException(OrderErrorCode.UNSUPPORTED_SIGNATURE_FILE_EXTENSION));
     }
 }

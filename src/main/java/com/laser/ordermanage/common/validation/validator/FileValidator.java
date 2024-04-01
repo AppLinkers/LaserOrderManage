@@ -9,7 +9,7 @@ public class FileValidator implements ConstraintValidator<ValidFile, MultipartFi
 
     @Override
     public boolean isValid(MultipartFile file, ConstraintValidatorContext context) {
-        return file != null && !file.isEmpty();
+        return !file.isEmpty();
     }
 
 }

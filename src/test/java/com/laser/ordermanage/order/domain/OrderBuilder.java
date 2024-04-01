@@ -3,6 +3,7 @@ package com.laser.ordermanage.order.domain;
 import com.laser.ordermanage.customer.domain.Customer;
 import com.laser.ordermanage.user.domain.UserEntity;
 import com.laser.ordermanage.user.domain.UserEntityBuilder;
+import org.assertj.core.api.Assertions;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,5 +36,20 @@ public class OrderBuilder {
                 .build();
 
         return order;
+    }
+
+    public static void assertOrder(Order actualOrder, Order expectedOrder) {
+        UserEntityBuilder.assertUserEntity(actualOrder.getCustomer().getUser(), expectedOrder.getCustomer().getUser());
+        Assertions.assertThat(actualOrder.getCustomer().getCompanyName()).isEqualTo(expectedOrder.getCustomer().getCompanyName());
+        Assertions.assertThat(actualOrder.getCustomer().getIsNew()).isEqualTo(expectedOrder.getCustomer().getIsNew());
+        OrderDeliveryAddressBuilder.assertOrderDeliveryAddress(actualOrder.getDeliveryAddress(), expectedOrder.getDeliveryAddress());
+        Assertions.assertThat(actualOrder.getName()).isEqualTo(expectedOrder.getName());
+        Assertions.assertThat(actualOrder.getImgUrl()).isEqualTo(expectedOrder.getImgUrl());
+        Assertions.assertThat(actualOrder.getStage()).isEqualTo(expectedOrder.getStage());
+        OrderManufacturingBuilder.assertOrderManufacturing(actualOrder.getManufacturing(), expectedOrder.getManufacturing());
+        OrderPostProcessingBuilder.assertOrderPostProcessing(actualOrder.getPostProcessing(), expectedOrder.getPostProcessing());
+        Assertions.assertThat(actualOrder.getRequest()).isEqualTo(expectedOrder.getRequest());
+        Assertions.assertThat(actualOrder.getIsNewIssue()).isEqualTo(expectedOrder.getIsNewIssue());
+        Assertions.assertThat(actualOrder.getIsDeleted()).isEqualTo(expectedOrder.getIsDeleted());
     }
 }

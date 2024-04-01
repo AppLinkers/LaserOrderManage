@@ -51,10 +51,8 @@ public class OrderIntegrationTest extends IntegrationTest {
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8);
 
-        // 응답 본문을 객체로 변환
         final GetOrderDetailResponse actualResponse = objectMapper.readValue(responseString, GetOrderDetailResponse.class);
 
-        // 응답 객체와 예상 객체 비교
         Assertions.assertThat(actualResponse).isEqualTo(expectedResponse);
     }
 
@@ -177,10 +175,8 @@ public class OrderIntegrationTest extends IntegrationTest {
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8);
 
-        // 응답 본문을 객체로 변환
         final ListResponse<GetCommentResponse> actualResponse = objectMapper.readValue(responseString, new TypeReference<ListResponse<GetCommentResponse>>() {});
 
-        // 응답 객체와 예상 객체 비교
         Assertions.assertThat(actualResponse).isEqualTo(expectedResponse);
     }
 
@@ -286,12 +282,40 @@ public class OrderIntegrationTest extends IntegrationTest {
     }
 
     /**
-     * 거래에 댓글 작성 성공
+     * 거래에 댓글 작성 성공 (고객)
      */
     @Test
-    public void 거래_댓글_작성_성공() throws Exception {
+    public void 거래_댓글_작성_성공_By_Customer() throws Exception {
         // given
         final String accessToken = jwtBuilder.accessJwtBuild();
+        final String orderId = "1";
+        final CreateCommentRequest request = CreateCommentRequestBuilder.build();
+
+        // stub
+        doNothing().when(emailService).sendEmail(any());
+
+        // when
+        final ResultActions resultActions = requestCreateComment(accessToken, orderId, request);
+
+        // then
+        resultActions.andExpect(status().isOk());
+
+        // when after create comment
+        final ResultActions resultActionsAfterCreateComment = requestGetOrderComment(accessToken, orderId);
+
+        // then after create comment
+        resultActionsAfterCreateComment
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("totalElements").value(3));
+    }
+
+    /**
+     * 거래에 댓글 작성 성공 (공장)
+     */
+    @Test
+    public void 거래_댓글_작성_성공_By_Factory() throws Exception {
+        // given
+        final String accessToken = jwtBuilder.accessJwtBuildOfFactory();
         final String orderId = "1";
         final CreateCommentRequest request = CreateCommentRequestBuilder.build();
 
@@ -421,12 +445,34 @@ public class OrderIntegrationTest extends IntegrationTest {
     }
 
     /**
-     * 거래 삭제 성공
+     * 거래 삭제 성공 (고객)
      */
     @Test
-    public void 거래_삭제_성공() throws Exception {
+    public void 거래_삭제_성공_By_Customer() throws Exception {
         // given
         final String accessToken = jwtBuilder.accessJwtBuild();
+        final String orderId = "5";
+
+        // when
+        final ResultActions resultActions = requestDeleteOrder(accessToken, orderId);
+
+        // then
+        resultActions.andExpect(status().isOk());
+
+        // when after delete order
+        final ResultActions resultActionsAfterDeleteOrder = requestGetOrderDetail(accessToken, orderId);
+
+        // then
+        assertError(OrderErrorCode.NOT_FOUND_ORDER, resultActionsAfterDeleteOrder);
+    }
+
+    /**
+     * 거래 삭제 성공 (공장)
+     */
+    @Test
+    public void 거래_삭제_성공_By_Factory() throws Exception {
+        // given
+        final String accessToken = jwtBuilder.accessJwtBuildOfFactory();
         final String orderId = "5";
 
         // when

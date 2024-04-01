@@ -11,7 +11,9 @@ import com.laser.ordermanage.user.domain.UserEntityBuilder;
 import com.laser.ordermanage.user.domain.type.Role;
 import com.laser.ordermanage.user.dto.request.*;
 import com.laser.ordermanage.user.dto.response.GetUserAccountResponse;
+import com.laser.ordermanage.user.dto.response.GetUserAccountResponseBuilder;
 import com.laser.ordermanage.user.dto.response.GetUserEmailResponse;
+import com.laser.ordermanage.user.dto.response.GetUserEmailResponseBuilder;
 import com.laser.ordermanage.user.exception.UserErrorCode;
 import com.laser.ordermanage.user.repository.UserEntityRepository;
 import com.laser.ordermanage.user.service.UserAccountService;
@@ -69,22 +71,19 @@ public class UserAccountServiceUnitTest extends ServiceUnitTest {
     @Test
     public void getUserEmail_성공() {
         // given
-        final GetUserEmailResponse expectedResponse = GetUserEmailResponse.builder()
-                .email("user@gmail.com")
-                .name("사용자 이름")
-                .build();
-        final String phone = "01011111111";
+        final String customerName = "고객 이름 1";
+        final String customerPhone = "01022221111";
+        final List<GetUserEmailResponse> expectedResponse = GetUserEmailResponseBuilder.buildListForCustomer();
 
         // stub
-        when(userRepository.findEmailByNameAndPhone(expectedResponse.name(), phone)).thenReturn(List.of(expectedResponse));
+        when(userRepository.findEmailByNameAndPhone(customerName, customerPhone)).thenReturn(expectedResponse);
 
         // when
-        final ListResponse<GetUserEmailResponse> actualResponse = userAccountService.getUserEmail(expectedResponse.name(), phone);
+        final ListResponse<GetUserEmailResponse> actualResponse = userAccountService.getUserEmail(customerName, customerPhone);
 
         // then
-        Assertions.assertThat(actualResponse.totalElements()).isEqualTo(1);
-        Assertions.assertThat(actualResponse.contents().size()).isEqualTo(1);
-        Assertions.assertThat(actualResponse.contents().get(0)).isSameAs(expectedResponse);
+        Assertions.assertThat(actualResponse.totalElements()).isEqualTo(2);
+        Assertions.assertThat(actualResponse.contents()).hasSameElementsAs(expectedResponse);
     }
 
     /**
@@ -163,22 +162,13 @@ public class UserAccountServiceUnitTest extends ServiceUnitTest {
     @Test
     public void getUserAccount_성공() {
         // given
-        final UserEntity expectedUser = UserEntityBuilder.build();
-        final GetUserAccountResponse expectedResponse = GetUserAccountResponse.builder()
-                .email(expectedUser.getEmail())
-                .name(expectedUser.getName())
-                .phone(expectedUser.getPhone())
-                .zipCode(expectedUser.getAddress().getZipCode())
-                .address(expectedUser.getAddress().getAddress())
-                .detailAddress(expectedUser.getAddress().getDetailAddress())
-                .emailNotification(expectedUser.getEmailNotification())
-                .build();
+        final GetUserAccountResponse expectedResponse = GetUserAccountResponseBuilder.build();
 
         // stub
-        when(userRepository.findUserAccountByEmail(expectedUser.getEmail())).thenReturn(expectedResponse);
+        when(userRepository.findUserAccountByEmail(expectedResponse.email())).thenReturn(expectedResponse);
 
         // when
-        final GetUserAccountResponse actualResponse = userAccountService.getUserAccount(expectedUser.getEmail());
+        final GetUserAccountResponse actualResponse = userAccountService.getUserAccount(expectedResponse.email());
 
         // then
         Assertions.assertThat(actualResponse).isEqualTo(expectedResponse);

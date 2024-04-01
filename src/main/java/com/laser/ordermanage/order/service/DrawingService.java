@@ -7,7 +7,6 @@ import com.laser.ordermanage.common.util.FileUtil;
 import com.laser.ordermanage.common.util.ImageUtil;
 import com.laser.ordermanage.common.util.PDFUtil;
 import com.laser.ordermanage.order.domain.Drawing;
-import com.laser.ordermanage.order.domain.Order;
 import com.laser.ordermanage.order.domain.type.DrawingFileType;
 import com.laser.ordermanage.order.dto.response.UploadDrawingFileResponse;
 import com.laser.ordermanage.order.exception.OrderErrorCode;
@@ -17,6 +16,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.io.File;
 
 @RequiredArgsConstructor
 @Service
@@ -30,16 +31,16 @@ public class DrawingService {
     private final DrawingRepository drawingRepository;
 
     @Transactional(readOnly = true)
-    public Drawing getDrawingByOrderAndId(Order order, Long drawingId) {
-        return drawingRepository.findFirstByOrderAndId(order, drawingId).orElseThrow(() -> new CustomCommonException(OrderErrorCode.NOT_FOUND_DRAWING));
+    public Drawing getDrawingById(Long drawingId) {
+        return drawingRepository.findFirstById(drawingId).orElseThrow(() -> new CustomCommonException(OrderErrorCode.NOT_FOUND_DRAWING));
     }
 
     @Transactional(readOnly = true)
-    public Integer countDrawingByOrder(Order order) {
-        return drawingRepository.countByOrder(order);
+    public Integer countDrawingByOrderId(Long orderId) {
+        return drawingRepository.countByOrderId(orderId);
     }
 
-    public String extractThumbnail(MultipartFile multipartFile, DrawingFileType fileType) {
+    public File extractThumbnail(MultipartFile multipartFile, DrawingFileType fileType) {
         return switch (fileType) {
             case DWG, DXF -> CADUtil.extractThumbnail(multipartFile, tempFolderPath);
             case PDF -> PDFUtil.extractThumbnail(multipartFile, tempFolderPath);
@@ -48,8 +49,8 @@ public class DrawingService {
         };
     }
 
-    public String uploadThumbnailFile(String tempThumbnailFilePath) {
-        return s3Service.upload("drawing-thumbnail", tempThumbnailFilePath, "drawing-thumbnail.png");
+    public String uploadThumbnailFile(File thumbnailFile) {
+        return s3Service.upload("drawing-thumbnail", thumbnailFile, "drawing-thumbnail.png");
     }
 
     public UploadDrawingFileResponse uploadDrawingFile(MultipartFile file) {
@@ -60,10 +61,13 @@ public class DrawingService {
         String fileUrl = s3Service.upload("drawing", file, "drawing." + fileType.getExtension());
 
         // 썸네일 추출
-        String tempThumbnailFilePath = this.extractThumbnail(file, fileType);
+        File thumbnailFile = this.extractThumbnail(file, fileType);
 
         // 썸네일 파일 업로드
-        String thumbnailFileUrl = this.uploadThumbnailFile(tempThumbnailFilePath);
+        String thumbnailFileUrl = this.uploadThumbnailFile(thumbnailFile);
+
+        // 썸네일 파일 삭제
+        thumbnailFile.delete();
 
         UploadDrawingFileResponse uploadDrawingFileResponse = UploadDrawingFileResponse.builder()
                 .thumbnailUrl(thumbnailFileUrl)

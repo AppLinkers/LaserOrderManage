@@ -13,7 +13,7 @@ import com.laser.ordermanage.user.dto.request.JoinCustomerRequestBuilder;
 import com.laser.ordermanage.user.dto.request.VerifyEmailRequest;
 import com.laser.ordermanage.user.dto.request.VerifyEmailRequestBuilder;
 import com.laser.ordermanage.user.dto.response.UserJoinStatusResponse;
-import com.laser.ordermanage.user.dto.type.JoinStatus;
+import com.laser.ordermanage.user.dto.response.UserJoinStatusResponseBuilder;
 import com.laser.ordermanage.user.exception.UserErrorCode;
 import com.laser.ordermanage.user.repository.UserEntityRepository;
 import com.laser.ordermanage.user.service.UserJoinService;
@@ -54,9 +54,7 @@ public class UserJoinServiceUnitTest extends ServiceUnitTest {
     @Test
     public void requestEmailVerify_성공_신규회원() {
         // given
-        final UserJoinStatusResponse expectedResponse = UserJoinStatusResponse.builderWithOutUserEntity()
-                .status(JoinStatus.POSSIBLE)
-                .buildWithOutUserEntity();
+        final UserJoinStatusResponse expectedResponse = UserJoinStatusResponseBuilder.buildPossibleWithOutUserEntity();
         final String email = "new-user@gmail.com";
 
         // stub
@@ -77,10 +75,7 @@ public class UserJoinServiceUnitTest extends ServiceUnitTest {
     public void requestEmailVerify_성공_이메일_중복() {
         // given
         final UserEntity user = UserEntityBuilder.build();
-        final UserJoinStatusResponse expectedResponse = UserJoinStatusResponse.builderWithUserEntity()
-                .userEntity(user)
-                .status(JoinStatus.IMPOSSIBLE)
-                .buildWithUserEntity();
+        final UserJoinStatusResponse expectedResponse = UserJoinStatusResponseBuilder.buildImpossibleWithUserEntity(user);
 
         // stub
         when(userRepository.findFirstByEmail(user.getEmail())).thenReturn(Optional.of(user));
@@ -104,9 +99,7 @@ public class UserJoinServiceUnitTest extends ServiceUnitTest {
                 .email(request.email())
                 .code(request.code())
                 .build();
-        final UserJoinStatusResponse expectedResponse = UserJoinStatusResponse.builderWithOutUserEntity()
-                .status(JoinStatus.POSSIBLE)
-                .buildWithOutUserEntity();
+        final UserJoinStatusResponse expectedResponse = UserJoinStatusResponseBuilder.buildPossibleWithOutUserEntity();
 
         // stub
         when(userRepository.findFirstByEmail(request.email())).thenReturn(Optional.empty());
@@ -127,14 +120,11 @@ public class UserJoinServiceUnitTest extends ServiceUnitTest {
     public void verifyEmail_성공_이메일_중복() {
         // given
         final UserEntity user = UserEntityBuilder.build();
+        final UserJoinStatusResponse expectedResponse = UserJoinStatusResponseBuilder.buildImpossibleWithUserEntity(user);
         final VerifyEmailRequest request = VerifyEmailRequest.builder()
                 .email(user.getEmail())
                 .code("123456")
                 .build();
-        final UserJoinStatusResponse expectedResponse = UserJoinStatusResponse.builderWithUserEntity()
-                .userEntity(user)
-                .status(JoinStatus.IMPOSSIBLE)
-                .buildWithUserEntity();
 
         // stub
         when(userRepository.findFirstByEmail(request.email())).thenReturn(Optional.of(user));
@@ -197,10 +187,7 @@ public class UserJoinServiceUnitTest extends ServiceUnitTest {
         // given
         final JoinCustomerRequest request = JoinCustomerRequestBuilder.build();
         final UserEntity user = UserEntityBuilder.newUserBuild();
-        final UserJoinStatusResponse expectedResponse = UserJoinStatusResponse.builderWithUserEntity()
-                .userEntity(user)
-                .status(JoinStatus.COMPLETED)
-                .buildWithUserEntity();
+        final UserJoinStatusResponse expectedResponse = UserJoinStatusResponseBuilder.buildCompletedWithUserEntity(user);
 
         // stub
         when(userRepository.findFirstByEmail(request.email())).thenReturn(Optional.empty());
@@ -221,10 +208,7 @@ public class UserJoinServiceUnitTest extends ServiceUnitTest {
         // given
         final JoinCustomerRequest request = JoinCustomerRequestBuilder.duplicateEmailBuild();
         final UserEntity user = UserEntityBuilder.build();
-        final UserJoinStatusResponse expectedResponse = UserJoinStatusResponse.builderWithUserEntity()
-                .userEntity(user)
-                .status(JoinStatus.IMPOSSIBLE)
-                .buildWithUserEntity();
+        final UserJoinStatusResponse expectedResponse = UserJoinStatusResponseBuilder.buildImpossibleWithUserEntity(user);
 
         // stub
         when(userRepository.findFirstByEmail(request.email())).thenReturn(Optional.of(user));

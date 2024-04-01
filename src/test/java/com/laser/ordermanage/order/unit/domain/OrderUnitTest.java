@@ -71,7 +71,7 @@ public class OrderUnitTest {
         order.updateDeliveryAddress(deliveryAddress);
 
         // then
-        OrderDeliveryAddressUnitTest.assertOrderDeliveryAddress(order.getDeliveryAddress(), expectedDeliveryAddress);
+        OrderDeliveryAddressBuilder.assertOrderDeliveryAddress(order.getDeliveryAddress(), expectedDeliveryAddress);
     }
 
     @Test

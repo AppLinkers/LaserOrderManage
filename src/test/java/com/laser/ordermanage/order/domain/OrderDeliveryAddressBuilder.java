@@ -1,8 +1,10 @@
 package com.laser.ordermanage.order.domain;
 
 import com.laser.ordermanage.common.entity.embedded.Address;
+import org.assertj.core.api.Assertions;
 
-public class OrderDeliveryAddressBuilder {
+public class
+OrderDeliveryAddressBuilder {
     public static OrderDeliveryAddress build() {
         Address address = Address.builder()
                 .zipCode("11111")
@@ -33,5 +35,15 @@ public class OrderDeliveryAddressBuilder {
                 .phone1("01022221111")
                 .phone2("01022222222")
                 .build();
+    }
+
+    public static void assertOrderDeliveryAddress(OrderDeliveryAddress actualOrderDeliveryAddress, OrderDeliveryAddress expectedOrderDeliveryAddress) {
+        Assertions.assertThat(actualOrderDeliveryAddress.getName()).isEqualTo(expectedOrderDeliveryAddress.getName());
+        Assertions.assertThat(actualOrderDeliveryAddress.getAddress().getZipCode()).isEqualTo(expectedOrderDeliveryAddress.getAddress().getZipCode());
+        Assertions.assertThat(actualOrderDeliveryAddress.getAddress().getAddress()).isEqualTo(expectedOrderDeliveryAddress.getAddress().getAddress());
+        Assertions.assertThat(actualOrderDeliveryAddress.getAddress().getDetailAddress()).isEqualTo(expectedOrderDeliveryAddress.getAddress().getDetailAddress());
+        Assertions.assertThat(actualOrderDeliveryAddress.getReceiver()).isEqualTo(expectedOrderDeliveryAddress.getReceiver());
+        Assertions.assertThat(actualOrderDeliveryAddress.getPhone1()).isEqualTo(expectedOrderDeliveryAddress.getPhone1());
+        Assertions.assertThat(actualOrderDeliveryAddress.getPhone2()).isEqualTo(expectedOrderDeliveryAddress.getPhone2());
     }
 }

@@ -20,7 +20,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 /**
  * API Unit Test
  * 1. 테스트 성공
- * 2. Authority 검증
+ * 2. Role, Authority 검증
  * 3. 요청 데이터(필드 및 파라미터) 검증
  * 4. 해당 API 의 서비스 코드에서 발생하는 예외 검증
  */

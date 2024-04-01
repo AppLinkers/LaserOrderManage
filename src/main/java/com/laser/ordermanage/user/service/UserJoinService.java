@@ -5,7 +5,6 @@ import com.laser.ordermanage.common.cache.redis.repository.VerifyCodeRedisReposi
 import com.laser.ordermanage.common.email.EmailService;
 import com.laser.ordermanage.common.email.dto.EmailWithCodeRequest;
 import com.laser.ordermanage.common.entity.embedded.Address;
-import com.laser.ordermanage.common.exception.CommonErrorCode;
 import com.laser.ordermanage.common.exception.CustomCommonException;
 import com.laser.ordermanage.customer.domain.Customer;
 import com.laser.ordermanage.customer.domain.DeliveryAddress;
@@ -24,13 +23,13 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
-import java.util.Random;
 
 @Service
 @RequiredArgsConstructor
 public class UserJoinService {
+
+    private static final SecureRandom RANDOM = new SecureRandom();
 
     private final PasswordEncoder passwordEncoder;
 
@@ -154,15 +153,10 @@ public class UserJoinService {
 
     private String createVerifyCode() {
         int length = 6;
-        try {
-            Random random = SecureRandom.getInstanceStrong();
-            StringBuilder builder = new StringBuilder();
-            for (int i = 0; i < length; i++) {
-                builder.append(random.nextInt(10));
-            }
-            return builder.toString();
-        } catch (NoSuchAlgorithmException e) {
-            throw new CustomCommonException(CommonErrorCode.INTERNAL_SERVER_ERROR);
+        StringBuilder builder = new StringBuilder();
+        for (int i = 0; i < length; i++) {
+            builder.append(RANDOM.nextInt(10));
         }
+        return builder.toString();
     }
 }

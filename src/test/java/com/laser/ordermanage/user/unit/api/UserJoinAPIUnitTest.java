@@ -11,10 +11,10 @@ import com.laser.ordermanage.user.dto.request.JoinCustomerRequestBuilder;
 import com.laser.ordermanage.user.dto.request.VerifyEmailRequest;
 import com.laser.ordermanage.user.dto.request.VerifyEmailRequestBuilder;
 import com.laser.ordermanage.user.dto.response.UserJoinStatusResponse;
-import com.laser.ordermanage.user.dto.type.JoinStatus;
+import com.laser.ordermanage.user.dto.response.UserJoinStatusResponseBuilder;
 import com.laser.ordermanage.user.exception.UserErrorCode;
 import com.laser.ordermanage.user.service.UserJoinService;
-import org.hamcrest.core.IsNull;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,12 +24,13 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.web.context.WebApplicationContext;
 
+import java.nio.charset.StandardCharsets;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(UserJoinAPI.class)
@@ -54,24 +55,21 @@ public class UserJoinAPIUnitTest extends APIUnitTest {
     public void 이메일_인증코드_생성_및_이메일_전송_성공_신규회원() throws Exception {
         // given
         final String email = "new-user@gmail.com";
+        final UserJoinStatusResponse expectedResponse = UserJoinStatusResponseBuilder.buildPossibleWithOutUserEntity();
 
         // stub
-        when(userJoinService.requestEmailVerify(any())).thenReturn(
-                UserJoinStatusResponse
-                        .builderWithOutUserEntity()
-                        .status(JoinStatus.POSSIBLE)
-                        .buildWithOutUserEntity()
-        );
+        when(userJoinService.requestEmailVerify(any())).thenReturn(expectedResponse);
 
         // when
         final ResultActions resultActions = requestForRequestEmailVerify(email);
 
         // then
-        resultActions
+        final String responseString = resultActions
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("email").value(IsNull.nullValue()))
-                .andExpect(jsonPath("createdAt").value(IsNull.nullValue()))
-                .andExpect(jsonPath("status").value(JoinStatus.POSSIBLE.getCode()));
+                .andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8);
+
+        final UserJoinStatusResponse actualResponse = objectMapper.readValue(responseString, UserJoinStatusResponse.class);
+        Assertions.assertThat(actualResponse).isEqualTo(expectedResponse);
     }
 
     /**
@@ -82,24 +80,21 @@ public class UserJoinAPIUnitTest extends APIUnitTest {
     public void 이메일_인증코드_생성_및_이메일_전송_성공_이메일_중복() throws Exception {
         // given
         final UserEntity user = UserEntityBuilder.build();
+        final UserJoinStatusResponse expectedResponse = UserJoinStatusResponseBuilder.buildImpossibleWithUserEntity(user);
 
         // stub
-        when(userJoinService.requestEmailVerify(any())).thenReturn(
-                UserJoinStatusResponse
-                        .builderWithUserEntity()
-                        .userEntity(user)
-                        .status(JoinStatus.IMPOSSIBLE)
-                        .buildWithUserEntity()
-        );
+        when(userJoinService.requestEmailVerify(any())).thenReturn(expectedResponse);
 
         // when
         final ResultActions resultActions = requestForRequestEmailVerify(user.getEmail());
 
         // then
-        resultActions
+        final String responseString = resultActions
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("email").value(user.getEmail()))
-                .andExpect(jsonPath("status").value(JoinStatus.IMPOSSIBLE.getCode()));
+                .andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8);
+
+        final UserJoinStatusResponse actualResponse = objectMapper.readValue(responseString, UserJoinStatusResponse.class);
+        UserJoinStatusResponseBuilder.assertUserJoinStatusResponseWithOutCreatedAt(actualResponse, expectedResponse);
     }
 
     /**
@@ -141,23 +136,21 @@ public class UserJoinAPIUnitTest extends APIUnitTest {
     public void 이메일_인증코드_검증_성공_신규회원_및_인증코드_검증_성공() throws Exception {
         // final
         final VerifyEmailRequest request = VerifyEmailRequestBuilder.build();
+        final UserJoinStatusResponse expectedResponse = UserJoinStatusResponseBuilder.buildPossibleWithOutUserEntity();
 
         // stub
-        when(userJoinService.verifyEmail(any())).thenReturn(
-                UserJoinStatusResponse.builderWithOutUserEntity()
-                        .status(JoinStatus.POSSIBLE)
-                        .buildWithOutUserEntity()
-        );
+        when(userJoinService.verifyEmail(any())).thenReturn(expectedResponse);
 
         // when
         final ResultActions resultActions = requestVerifyEmail(request);
 
         // then
-        resultActions
+        final String responseString = resultActions
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("email").value(IsNull.nullValue()))
-                .andExpect(jsonPath("createdAt").value(IsNull.nullValue()))
-                .andExpect(jsonPath("status").value(JoinStatus.POSSIBLE.getCode()));
+                .andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8);
+
+        final UserJoinStatusResponse actualResponse = objectMapper.readValue(responseString, UserJoinStatusResponse.class);
+        Assertions.assertThat(actualResponse).isEqualTo(expectedResponse);
     }
 
     /**
@@ -167,28 +160,23 @@ public class UserJoinAPIUnitTest extends APIUnitTest {
     @Test
     public void 이메일_인증코드_검증_성공_이메일_중복() throws Exception {
         // given
+        final VerifyEmailRequest request = VerifyEmailRequestBuilder.duplicatedUserBuild();
         final UserEntity user = UserEntityBuilder.build();
-        final VerifyEmailRequest request = VerifyEmailRequest.builder()
-                .email(user.getEmail())
-                .code("123456")
-                .build();
+        final UserJoinStatusResponse expectedResponse = UserJoinStatusResponseBuilder.buildImpossibleWithUserEntity(user);
 
         // stub
-        when(userJoinService.verifyEmail(any())).thenReturn(
-                UserJoinStatusResponse.builderWithUserEntity()
-                        .userEntity(user)
-                        .status(JoinStatus.IMPOSSIBLE)
-                        .buildWithUserEntity()
-        );
+        when(userJoinService.verifyEmail(any())).thenReturn(expectedResponse);
 
         // when
         final ResultActions resultActions = requestVerifyEmail(request);
 
         // then
-        resultActions
+        final String responseString = resultActions
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("email").value(request.email()))
-                .andExpect(jsonPath("status").value(JoinStatus.IMPOSSIBLE.getCode()));
+                .andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8);
+
+        final UserJoinStatusResponse actualResponse = objectMapper.readValue(responseString, UserJoinStatusResponse.class);
+        UserJoinStatusResponseBuilder.assertUserJoinStatusResponseWithOutCreatedAt(actualResponse, expectedResponse);
     }
 
     /**
@@ -301,25 +289,23 @@ public class UserJoinAPIUnitTest extends APIUnitTest {
     @Test
     public void 고객_회원가입_성공_신규회원() throws Exception {
         // given
-        final UserEntity user = UserEntityBuilder.newUserBuild();
         final JoinCustomerRequest request = JoinCustomerRequestBuilder.build();
+        final UserEntity user = UserEntityBuilder.newUserBuild();
+        final UserJoinStatusResponse expectedResponse = UserJoinStatusResponseBuilder.buildCompletedWithUserEntity(user);
 
         // stub
-        when(userJoinService.joinCustomer(any())).thenReturn(
-                UserJoinStatusResponse.builderWithUserEntity()
-                        .userEntity(user)
-                        .status(JoinStatus.COMPLETED)
-                        .buildWithUserEntity()
-        );
+        when(userJoinService.joinCustomer(any())).thenReturn(expectedResponse);
 
         // when
         final ResultActions resultActions = requestJoinCustomer(request);
 
         // then
-        resultActions
+        final String responseString = resultActions
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("email").value(request.email()))
-                .andExpect(jsonPath("status").value(JoinStatus.COMPLETED.getCode()));
+                .andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8);
+
+        final UserJoinStatusResponse actualResponse = objectMapper.readValue(responseString, UserJoinStatusResponse.class);
+        UserJoinStatusResponseBuilder.assertUserJoinStatusResponseWithOutCreatedAt(actualResponse, expectedResponse);
     }
 
     /**
@@ -329,25 +315,23 @@ public class UserJoinAPIUnitTest extends APIUnitTest {
     @Test
     public void 고객_회원가입_성공_이메일_중복() throws Exception {
         // given
-        final UserEntity user = UserEntityBuilder.build();
         final JoinCustomerRequest request = JoinCustomerRequestBuilder.duplicateEmailBuild();
+        final UserEntity user = UserEntityBuilder.build();
+        final UserJoinStatusResponse expectedResponse = UserJoinStatusResponseBuilder.buildImpossibleWithUserEntity(user);
 
         // stub
-        when(userJoinService.joinCustomer(any())).thenReturn(
-                UserJoinStatusResponse.builderWithUserEntity()
-                        .userEntity(user)
-                        .status(JoinStatus.IMPOSSIBLE)
-                        .buildWithUserEntity()
-        );
+        when(userJoinService.joinCustomer(any())).thenReturn(expectedResponse);
 
         // when
         final ResultActions resultActions = requestJoinCustomer(request);
 
         // then
-        resultActions
+        final String responseString = resultActions
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("email").value(request.email()))
-                .andExpect(jsonPath("status").value(JoinStatus.IMPOSSIBLE.getCode()));
+                .andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8);
+
+        final UserJoinStatusResponse actualResponse = objectMapper.readValue(responseString, UserJoinStatusResponse.class);
+        UserJoinStatusResponseBuilder.assertUserJoinStatusResponseWithOutCreatedAt(actualResponse, expectedResponse);
     }
 
     /**

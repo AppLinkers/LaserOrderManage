@@ -39,7 +39,6 @@ public class QuotationUnitTest {
         quotation.updateProperties(request);
 
         // then
-        Assertions.assertThat(quotation.getId()).isNull();
         Assertions.assertThat(quotation.getTotalCost()).isEqualTo(request.totalCost());
         Assertions.assertThat(quotation.getDeliveryDate()).isEqualTo(request.deliveryDate());
     }

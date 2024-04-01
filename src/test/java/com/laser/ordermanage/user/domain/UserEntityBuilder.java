@@ -3,6 +3,7 @@ package com.laser.ordermanage.user.domain;
 import com.laser.ordermanage.common.entity.embedded.Address;
 import com.laser.ordermanage.user.domain.type.Authority;
 import com.laser.ordermanage.user.domain.type.Role;
+import org.assertj.core.api.Assertions;
 
 public class UserEntityBuilder {
 
@@ -58,5 +59,16 @@ public class UserEntityBuilder {
                 .phone("01011111111")
                 .address(address)
                 .build();
+    }
+
+    public static void assertUserEntity(UserEntity actualUserEntity, UserEntity expectedUserEntity) {
+        Assertions.assertThat(actualUserEntity.getEmail()).isEqualTo(expectedUserEntity.getEmail());
+        Assertions.assertThat(actualUserEntity.getName()).isEqualTo(expectedUserEntity.getName());
+        Assertions.assertThat(actualUserEntity.getRole()).isEqualTo(expectedUserEntity.getRole());
+        Assertions.assertThat(actualUserEntity.getAuthority()).isEqualTo(expectedUserEntity.getAuthority());
+        Assertions.assertThat(actualUserEntity.getPhone()).isEqualTo(expectedUserEntity.getPhone());
+        Assertions.assertThat(actualUserEntity.getAddress().getZipCode()).isEqualTo(expectedUserEntity.getAddress().getZipCode());
+        Assertions.assertThat(actualUserEntity.getAddress().getAddress()).isEqualTo(expectedUserEntity.getAddress().getAddress());
+        Assertions.assertThat(actualUserEntity.getAddress().getDetailAddress()).isEqualTo(expectedUserEntity.getAddress().getDetailAddress());
     }
 }

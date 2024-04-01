@@ -1,14 +1,12 @@
 package com.laser.ordermanage.user.unit.api;
 
 import com.laser.ordermanage.common.APIUnitTest;
-import com.laser.ordermanage.common.constants.ExpireTime;
 import com.laser.ordermanage.common.exception.CommonErrorCode;
 import com.laser.ordermanage.common.exception.CustomCommonException;
 import com.laser.ordermanage.user.api.UserAuthAPI;
-import com.laser.ordermanage.user.domain.type.Authority;
-import com.laser.ordermanage.user.domain.type.Role;
 import com.laser.ordermanage.user.dto.request.LoginRequest;
 import com.laser.ordermanage.user.dto.request.LoginRequestBuilder;
+import com.laser.ordermanage.user.dto.response.TokenInfoResponse;
 import com.laser.ordermanage.user.dto.response.TokenInfoResponseBuilder;
 import com.laser.ordermanage.user.exception.UserErrorCode;
 import com.laser.ordermanage.user.service.UserAuthService;
@@ -23,12 +21,12 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.web.context.WebApplicationContext;
 
-import static org.hamcrest.Matchers.hasItem;
+import java.nio.charset.StandardCharsets;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(UserAuthAPI.class)
@@ -52,23 +50,21 @@ public class UserAuthAPIUnitTest extends APIUnitTest {
     public void 로그인_성공() throws Exception {
         // given
         final LoginRequest request = LoginRequestBuilder.build();
+        final TokenInfoResponse expectedResponse = TokenInfoResponseBuilder.build();
 
         // stub
-        when(userAuthService.login(any(), any())).thenReturn(TokenInfoResponseBuilder.build());
+        when(userAuthService.login(any(), any())).thenReturn(expectedResponse);
 
         // when
         final ResultActions resultActions = requestLogin(request);
 
         // then
-        resultActions
+        final String responseString = resultActions
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("authorityList", hasItem(Role.ROLE_CUSTOMER.name())))
-                .andExpect(jsonPath("authorityList", hasItem(Authority.AUTHORITY_ADMIN.name())))
-                .andExpect(jsonPath("grantType").value("Bearer"))
-                .andExpect(jsonPath("accessToken").exists())
-                .andExpect(jsonPath("refreshToken").exists())
-                .andExpect(jsonPath("accessTokenExpirationTime").value(ExpireTime.ACCESS_TOKEN_EXPIRE_TIME))
-                .andExpect(jsonPath("refreshTokenExpirationTime").value(ExpireTime.REFRESH_TOKEN_EXPIRE_TIME));
+                .andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8);
+
+        final TokenInfoResponse actualResponse = objectMapper.readValue(responseString, TokenInfoResponse.class);
+        TokenInfoResponseBuilder.assertTokenInfoResponse(actualResponse, expectedResponse);
     }
 
     /**
@@ -163,6 +159,7 @@ public class UserAuthAPIUnitTest extends APIUnitTest {
     public void Access_Token_재발급_성공() throws Exception {
         // given
         final String refreshToken = "refreshToken";
+        final TokenInfoResponse expectedResponse = TokenInfoResponseBuilder.build();
 
         // stub
         when(userAuthService.reissue(any(), any())).thenReturn(TokenInfoResponseBuilder.build());
@@ -171,15 +168,12 @@ public class UserAuthAPIUnitTest extends APIUnitTest {
         final ResultActions resultActions = requestReIssue(refreshToken);
 
         // then
-        resultActions
+        final String responseString = resultActions
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("authorityList", hasItem(Role.ROLE_CUSTOMER.name())))
-                .andExpect(jsonPath("authorityList", hasItem(Authority.AUTHORITY_ADMIN.name())))
-                .andExpect(jsonPath("grantType").value("Bearer"))
-                .andExpect(jsonPath("accessToken").exists())
-                .andExpect(jsonPath("refreshToken").exists())
-                .andExpect(jsonPath("accessTokenExpirationTime").value(ExpireTime.ACCESS_TOKEN_EXPIRE_TIME))
-                .andExpect(jsonPath("refreshTokenExpirationTime").value(ExpireTime.REFRESH_TOKEN_EXPIRE_TIME));
+                .andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8);
+
+        final TokenInfoResponse actualResponse = objectMapper.readValue(responseString, TokenInfoResponse.class);
+        TokenInfoResponseBuilder.assertTokenInfoResponse(actualResponse, expectedResponse);
     }
 
     /**

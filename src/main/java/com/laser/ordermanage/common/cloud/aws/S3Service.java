@@ -37,13 +37,11 @@ public class S3Service {
         }
     }
 
-    public String upload(String folder, String filePath, String fileName) {
-        File file = new File(filePath);
+    public String upload(String folder, File file, String fileName) {
         String key = folder + "/" + UUID.randomUUID() + "-" + fileName;
         try {
             RequestBody requestBody = RequestBody.fromFile(file);
             String fileUrl = putObject(requestBody, key);
-            file.delete();
             return fileUrl;
         } catch (IOException e) {
             throw new CustomCommonException(CommonErrorCode.UNABLE_TO_AWS_S3_UPLOAD);

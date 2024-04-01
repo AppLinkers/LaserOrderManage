@@ -1,5 +1,6 @@
 package com.laser.ordermanage.user.unit.api;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.laser.ordermanage.common.APIUnitTest;
 import com.laser.ordermanage.common.exception.CommonErrorCode;
 import com.laser.ordermanage.common.exception.CustomCommonException;
@@ -10,9 +11,12 @@ import com.laser.ordermanage.user.domain.UserEntity;
 import com.laser.ordermanage.user.domain.UserEntityBuilder;
 import com.laser.ordermanage.user.dto.request.*;
 import com.laser.ordermanage.user.dto.response.GetUserAccountResponse;
+import com.laser.ordermanage.user.dto.response.GetUserAccountResponseBuilder;
 import com.laser.ordermanage.user.dto.response.GetUserEmailResponse;
+import com.laser.ordermanage.user.dto.response.GetUserEmailResponseBuilder;
 import com.laser.ordermanage.user.exception.UserErrorCode;
 import com.laser.ordermanage.user.service.UserAccountService;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +27,7 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.web.context.WebApplicationContext;
 
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -55,31 +60,25 @@ public class UserAccountAPIUnitTest extends APIUnitTest {
     @Test
     public void 이메일_찾기_성공() throws Exception {
         // given
-        final String name = "사용자 이름 1";
-        final String phone = "01011111111";
-        final String email = "user1@gmail.com";
+        final String customerName = "고객 이름 1";
+        final String customerPhone = "01022221111";
+        final List<GetUserEmailResponse> expectedResponse = GetUserEmailResponseBuilder.buildListForCustomer();
 
         // stub
-        when(userAccountService.getUserEmail(any(), any())).thenReturn(
-                new ListResponse<>(List.of(
-                        GetUserEmailResponse.builder()
-                                .name(name)
-                                .email(email)
-                                .build())
-                )
-        );
+        when(userAccountService.getUserEmail(any(), any())).thenReturn(new ListResponse<>(expectedResponse));
 
         // when
-        final ResultActions resultActions = requestGetUserEmail(name, phone);
+        final ResultActions resultActions = requestGetUserEmail(customerName, customerPhone);
 
         // then
-        resultActions
+        final String repsonseString = resultActions
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("contents").isArray())
-                .andExpect(jsonPath("contents.size()").value(1))
-                .andExpect(jsonPath("totalElements").value(1))
-                .andExpect(jsonPath("contents[0].name").value(name))
-                .andExpect(jsonPath("contents[0].email").value(email));
+                .andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8);
+
+        final ListResponse<GetUserEmailResponse> actualResponse = objectMapper.readValue(repsonseString, new TypeReference<ListResponse<GetUserEmailResponse>>() {});
+
+        Assertions.assertThat(actualResponse.totalElements()).isEqualTo(2);
+        Assertions.assertThat(actualResponse.contents()).hasSameElementsAs(expectedResponse);
     }
 
     /**
@@ -387,16 +386,7 @@ public class UserAccountAPIUnitTest extends APIUnitTest {
     public void 마이페이지_계정_기본_정보_조회_성공() throws Exception {
         // when
         final String accessToken = "access-token";
-        final UserEntity expectedUser = UserEntityBuilder.build();
-        final GetUserAccountResponse expectedResponse = GetUserAccountResponse.builder()
-                .email(expectedUser.getEmail())
-                .name(expectedUser.getName())
-                .phone(expectedUser.getPhone())
-                .zipCode(expectedUser.getAddress().getZipCode())
-                .address(expectedUser.getAddress().getAddress())
-                .detailAddress(expectedUser.getAddress().getDetailAddress())
-                .emailNotification(expectedUser.getEmailNotification())
-                .build();
+        final GetUserAccountResponse expectedResponse = GetUserAccountResponseBuilder.build();
 
         // stub
         when(userAccountService.getUserAccount(any())).thenReturn(expectedResponse);
@@ -405,14 +395,12 @@ public class UserAccountAPIUnitTest extends APIUnitTest {
         final ResultActions resultActions = requestGetUserAccount(accessToken);
 
         // then
-        resultActions
+        final String responseString = resultActions
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("email").value(expectedUser.getEmail()))
-                .andExpect(jsonPath("name").value(expectedUser.getName()))
-                .andExpect(jsonPath("phone").value(expectedUser.getPhone()))
-                .andExpect(jsonPath("zipCode").value(expectedUser.getAddress().getZipCode()))
-                .andExpect(jsonPath("address").value(expectedUser.getAddress().getAddress()))
-                .andExpect(jsonPath("detailAddress").value(expectedUser.getAddress().getDetailAddress()));
+                .andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8);
+
+        final GetUserAccountResponse actualResponse = objectMapper.readValue(responseString, GetUserAccountResponse.class);
+        Assertions.assertThat(actualResponse).isEqualTo(expectedResponse);
     }
 
     /**

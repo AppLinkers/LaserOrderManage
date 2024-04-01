@@ -9,6 +9,13 @@ public class VerifyEmailRequestBuilder {
                 .build();
     }
 
+    public static VerifyEmailRequest duplicatedUserBuild() {
+        return VerifyEmailRequest.builder()
+                .email("user1@gmail.com")
+                .code("123456")
+                .build();
+    }
+
     public static VerifyEmailRequest nullEmailBuild() {
         return VerifyEmailRequest.builder()
                 .email(null)

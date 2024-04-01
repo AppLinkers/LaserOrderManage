@@ -4,7 +4,7 @@ import com.laser.ordermanage.customer.domain.DeliveryAddress;
 import com.laser.ordermanage.customer.domain.DeliveryAddressBuilder;
 import com.laser.ordermanage.order.domain.*;
 import com.laser.ordermanage.order.domain.type.Stage;
-import com.laser.ordermanage.user.unit.domain.UserEntityUnitTest;
+import com.laser.ordermanage.user.domain.UserEntityBuilder;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -421,7 +421,7 @@ public class OrderUnitTest {
     }
 
     public static void assertOrder(Order actualOrder, Order expectedOrder) {
-        UserEntityUnitTest.assertUserEntity(actualOrder.getCustomer().getUser(), expectedOrder.getCustomer().getUser());
+        UserEntityBuilder.assertUserEntity(actualOrder.getCustomer().getUser(), expectedOrder.getCustomer().getUser());
         Assertions.assertThat(actualOrder.getCustomer().getCompanyName()).isEqualTo(expectedOrder.getCustomer().getCompanyName());
         Assertions.assertThat(actualOrder.getCustomer().getIsNew()).isEqualTo(expectedOrder.getCustomer().getIsNew());
         OrderDeliveryAddressUnitTest.assertOrderDeliveryAddress(actualOrder.getDeliveryAddress(), expectedOrder.getDeliveryAddress());

@@ -4,7 +4,9 @@ import com.laser.ordermanage.common.RepositoryUnitTest;
 import com.laser.ordermanage.user.domain.UserEntity;
 import com.laser.ordermanage.user.domain.UserEntityBuilder;
 import com.laser.ordermanage.user.dto.response.GetUserAccountResponse;
+import com.laser.ordermanage.user.dto.response.GetUserAccountResponseBuilder;
 import com.laser.ordermanage.user.dto.response.GetUserEmailResponse;
+import com.laser.ordermanage.user.dto.response.GetUserEmailResponseBuilder;
 import com.laser.ordermanage.user.repository.UserEntityRepository;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -33,13 +35,7 @@ public class UserEntityRepositoryUnitTest extends RepositoryUnitTest {
         optionalUser.ifPresent(
                 actualUser -> {
                     Assertions.assertThat(actualUser.getId()).isEqualTo(2L);
-                    Assertions.assertThat(actualUser.getEmail()).isEqualTo(expectedUser.getEmail());
-                    Assertions.assertThat(actualUser.getRole()).isEqualTo(expectedUser.getRole());
-                    Assertions.assertThat(actualUser.getAuthority()).isEqualTo(expectedUser.getAuthority());
-                    Assertions.assertThat(actualUser.getPhone()).isEqualTo(expectedUser.getPhone());
-                    Assertions.assertThat(actualUser.getAddress().getZipCode()).isEqualTo(expectedUser.getAddress().getZipCode());
-                    Assertions.assertThat(actualUser.getAddress().getAddress()).isEqualTo(expectedUser.getAddress().getAddress());
-                    Assertions.assertThat(actualUser.getAddress().getDetailAddress()).isEqualTo(expectedUser.getAddress().getDetailAddress());
+                    UserEntityBuilder.assertUserEntity(actualUser, expectedUser);
                 }
         );
     }
@@ -59,20 +55,15 @@ public class UserEntityRepositoryUnitTest extends RepositoryUnitTest {
     @Test
     public void findEmailByNameAndPhone_존재_O() {
         // given
-        final String expectedName = "고객 이름 1";
-        final String expectedPhone = "01022221111";
+        final String customerName = "고객 이름 1";
+        final String customerPhone = "01022221111";
+        final List<GetUserEmailResponse> expectedResponse = GetUserEmailResponseBuilder.buildListForCustomer();
 
         // when
-        final List<GetUserEmailResponse> actualResponseList = userEntityRepository.findEmailByNameAndPhone(expectedName, expectedPhone);
+        final List<GetUserEmailResponse> actualResponse = userEntityRepository.findEmailByNameAndPhone(customerName, customerPhone);
 
         // then
-        Assertions.assertThat(actualResponseList.size()).isEqualTo(2);
-
-        Assertions.assertThat(actualResponseList.get(0).name()).isEqualTo(expectedName);
-        Assertions.assertThat(actualResponseList.get(0).email()).isEqualTo("user1-copy@gmail.com");
-
-        Assertions.assertThat(actualResponseList.get(1).name()).isEqualTo(expectedName);
-        Assertions.assertThat(actualResponseList.get(1).email()).isEqualTo("user1@gmail.com");
+        Assertions.assertThat(actualResponse).hasSameElementsAs(expectedResponse);
     }
 
     @Test
@@ -117,19 +108,10 @@ public class UserEntityRepositoryUnitTest extends RepositoryUnitTest {
     @Test
     public void findUserAccountByEmail_존재_O() {
         // given
-        final UserEntity expectedUser = UserEntityBuilder.build();
-        final GetUserAccountResponse expectedResponse = GetUserAccountResponse.builder()
-                .email(expectedUser.getEmail())
-                .name(expectedUser.getName())
-                .phone(expectedUser.getPhone())
-                .zipCode(expectedUser.getAddress().getZipCode())
-                .address(expectedUser.getAddress().getAddress())
-                .detailAddress(expectedUser.getAddress().getDetailAddress())
-                .emailNotification(expectedUser.getEmailNotification())
-                .build();
+        final GetUserAccountResponse expectedResponse = GetUserAccountResponseBuilder.build();
 
         // when
-        final GetUserAccountResponse actualResponse = userEntityRepository.findUserAccountByEmail(expectedUser.getEmail());
+        final GetUserAccountResponse actualResponse = userEntityRepository.findUserAccountByEmail(expectedResponse.email());
 
         // then
         Assertions.assertThat(actualResponse).isEqualTo(expectedResponse);

@@ -1,29 +1,34 @@
 package com.laser.ordermanage.user.integration;
 
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.laser.ordermanage.common.IntegrationTest;
 import com.laser.ordermanage.common.cache.redis.dao.VerifyCode;
 import com.laser.ordermanage.common.cache.redis.repository.VerifyCodeRedisRepository;
 import com.laser.ordermanage.customer.dto.request.JoinCustomerRequest;
+import com.laser.ordermanage.user.domain.UserEntity;
+import com.laser.ordermanage.user.domain.UserEntityBuilder;
 import com.laser.ordermanage.user.dto.request.JoinCustomerRequestBuilder;
 import com.laser.ordermanage.user.dto.request.VerifyEmailRequest;
 import com.laser.ordermanage.user.dto.request.VerifyEmailRequestBuilder;
-import com.laser.ordermanage.user.dto.type.JoinStatus;
+import com.laser.ordermanage.user.dto.response.UserJoinStatusResponse;
+import com.laser.ordermanage.user.dto.response.UserJoinStatusResponseBuilder;
 import com.laser.ordermanage.user.exception.UserErrorCode;
 import org.assertj.core.api.Assertions;
-import org.hamcrest.core.IsNull;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 import org.testcontainers.shaded.org.apache.commons.lang3.StringUtils;
 
+import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class UserJoinIntegrationTest extends IntegrationTest {
@@ -39,6 +44,7 @@ public class UserJoinIntegrationTest extends IntegrationTest {
     public void 이메일_인증코드_생성_및_이메일_전송_성공_신규회원() throws Exception {
         // given
         final String email = "new-user@gmail.com";
+        final UserJoinStatusResponse expectedResponse = UserJoinStatusResponseBuilder.buildPossibleWithOutUserEntity();
 
         // stub
         doNothing().when(emailService).sendEmail(any());
@@ -47,11 +53,12 @@ public class UserJoinIntegrationTest extends IntegrationTest {
         final ResultActions resultActions = requestForRequestEmailVerify(email);
 
         // then
-        resultActions
+        final String responseString = resultActions
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("email").value(IsNull.nullValue()))
-                .andExpect(jsonPath("createdAt").value(IsNull.nullValue()))
-                .andExpect(jsonPath("status").value(JoinStatus.POSSIBLE.getCode()));
+                .andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8);
+
+        final UserJoinStatusResponse actualResponse = objectMapper.readValue(responseString, UserJoinStatusResponse.class);
+        Assertions.assertThat(actualResponse).isEqualTo(expectedResponse);
     }
 
     /**
@@ -61,18 +68,21 @@ public class UserJoinIntegrationTest extends IntegrationTest {
     @Test
     public void 이메일_인증코드_생성_및_이메일_전송_성공_이메일_중복() throws Exception {
         // given
-        final String email = "user1@gmail.com";
-        final String createdAt = "2023-10-02T10:20:30";
+        final UserEntity user = UserEntityBuilder.build();
+        final UserJoinStatusResponse expectedResponse = UserJoinStatusResponseBuilder.buildImpossibleWithUserEntity(user);
+        final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        final LocalDateTime expectedCreatedAt = LocalDateTime.parse("2023-10-02 10:20:30", formatter);
 
         // when
-        final ResultActions resultActions = requestForRequestEmailVerify(email);
+        final ResultActions resultActions = requestForRequestEmailVerify(user.getEmail());
 
         // then
-        resultActions
+        final String responseString = resultActions
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("email").value(email))
-                .andExpect(jsonPath("createdAt").value(createdAt))
-                .andExpect(jsonPath("status").value(JoinStatus.IMPOSSIBLE.getCode()));
+                .andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8);
+
+        final UserJoinStatusResponse actualResponse = objectMapper.registerModule(new JavaTimeModule()).readValue(responseString, UserJoinStatusResponse.class);
+        UserJoinStatusResponseBuilder.assertUserJoinStatusResponseWithCreatedAt(actualResponse, expectedResponse, expectedCreatedAt);
     }
 
     /**
@@ -94,6 +104,8 @@ public class UserJoinIntegrationTest extends IntegrationTest {
                 .code(verifyCode)
                 .build();
 
+        final UserJoinStatusResponse expectedResponse = UserJoinStatusResponseBuilder.buildPossibleWithOutUserEntity();
+
         // stub
         doNothing().when(emailService).sendEmail(any());
 
@@ -101,11 +113,12 @@ public class UserJoinIntegrationTest extends IntegrationTest {
         final ResultActions resultActions = requestVerifyEmail(request);
 
         // then
-        resultActions
+        final String responseString = resultActions
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("email").value(IsNull.nullValue()))
-                .andExpect(jsonPath("createdAt").value(IsNull.nullValue()))
-                .andExpect(jsonPath("status").value(JoinStatus.POSSIBLE.getCode()));
+                .andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8);
+
+        final UserJoinStatusResponse actualResponse = objectMapper.readValue(responseString, UserJoinStatusResponse.class);
+        Assertions.assertThat(actualResponse).isEqualTo(expectedResponse);
     }
 
     /**
@@ -115,21 +128,22 @@ public class UserJoinIntegrationTest extends IntegrationTest {
     @Test
     public void 이메일_인증코드_검증_성공_이메일_중복() throws Exception {
         // given
-        final VerifyEmailRequest request = VerifyEmailRequest.builder()
-                .email("user1@gmail.com")
-                .code("123456")
-                .build();
-        final String createdAt = "2023-10-02T10:20:30";
+        final VerifyEmailRequest request = VerifyEmailRequestBuilder.duplicatedUserBuild();
+        final UserEntity user = UserEntityBuilder.build();
+        final UserJoinStatusResponse expectedResponse = UserJoinStatusResponseBuilder.buildImpossibleWithUserEntity(user);
+        final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        final LocalDateTime expectedCreatedAt = LocalDateTime.parse("2023-10-02 10:20:30", formatter);
 
         // when
         final ResultActions resultActions = requestVerifyEmail(request);
 
         // then
-        resultActions
+        final String responseString = resultActions
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("email").value(request.email()))
-                .andExpect(jsonPath("createdAt").value(createdAt))
-                .andExpect(jsonPath("status").value(JoinStatus.IMPOSSIBLE.getCode()));
+                .andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8);
+
+        final UserJoinStatusResponse actualResponse = objectMapper.registerModule(new JavaTimeModule()).readValue(responseString, UserJoinStatusResponse.class);
+        UserJoinStatusResponseBuilder.assertUserJoinStatusResponseWithCreatedAt(actualResponse, expectedResponse, expectedCreatedAt);
     }
 
     /**
@@ -148,6 +162,7 @@ public class UserJoinIntegrationTest extends IntegrationTest {
         assertError(UserErrorCode.NOT_FOUND_VERIFY_CODE, resultActions);
     }
 
+    // TODO: 2024/04/01 invalidVerifyCode 생성 로직 변경
     /**
      * 이메일 인증 코드 검증 실패
      * - 실패 사유 : 인증 코드 검증 실패
@@ -189,17 +204,21 @@ public class UserJoinIntegrationTest extends IntegrationTest {
     @Test
     public void 고객_회원가입_성공_신규회원() throws Exception {
         // given
-        JoinCustomerRequest request = JoinCustomerRequestBuilder.build();
+        final JoinCustomerRequest request = JoinCustomerRequestBuilder.build();
+        final UserEntity user = UserEntityBuilder.newUserBuild();
+        final UserJoinStatusResponse expectedResponse = UserJoinStatusResponseBuilder.buildCompletedWithUserEntity(user);
 
         // when
         final ResultActions resultActions = requestJoinCustomer(request);
 
         // then
-        resultActions
+        final String responseString = resultActions
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("email").value(request.email()))
-                .andExpect(jsonPath("createdAt").isNotEmpty())
-                .andExpect(jsonPath("status").value(JoinStatus.COMPLETED.getCode()));
+                .andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8);
+
+        final UserJoinStatusResponse actualResponse = objectMapper.readValue(responseString, UserJoinStatusResponse.class);
+        UserJoinStatusResponseBuilder.assertUserJoinStatusResponseWithOutCreatedAt(actualResponse, expectedResponse);
+        Assertions.assertThat(actualResponse.createdAt()).isNotNull();
     }
 
     /**
@@ -209,17 +228,22 @@ public class UserJoinIntegrationTest extends IntegrationTest {
     @Test
     public void 고객_회원가입_성공_이메일_중복() throws Exception {
         // given
-        JoinCustomerRequest request = JoinCustomerRequestBuilder.duplicateEmailBuild();
+        final JoinCustomerRequest request = JoinCustomerRequestBuilder.duplicateEmailBuild();
+        final UserEntity user = UserEntityBuilder.build();
+        final UserJoinStatusResponse expectedResponse = UserJoinStatusResponseBuilder.buildImpossibleWithUserEntity(user);
+        final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        final LocalDateTime expectedCreatedAt = LocalDateTime.parse("2023-10-02 10:20:30", formatter);
 
         // when
         final ResultActions resultActions = requestJoinCustomer(request);
 
         // then
-        resultActions
+        final String responseString = resultActions
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("email").value(request.email()))
-                .andExpect(jsonPath("createdAt").isNotEmpty())
-                .andExpect(jsonPath("status").value(JoinStatus.IMPOSSIBLE.getCode()));
+                .andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8);
+
+        final UserJoinStatusResponse actualResponse = objectMapper.registerModule(new JavaTimeModule()).readValue(responseString, UserJoinStatusResponse.class);
+        UserJoinStatusResponseBuilder.assertUserJoinStatusResponseWithCreatedAt(actualResponse, expectedResponse, expectedCreatedAt);
     }
 
     private ResultActions requestForRequestEmailVerify(String email) throws Exception {

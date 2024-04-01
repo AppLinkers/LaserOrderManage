@@ -1,21 +1,28 @@
 package com.laser.ordermanage.user.integration;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.laser.ordermanage.common.IntegrationTest;
+import com.laser.ordermanage.common.paging.ListResponse;
 import com.laser.ordermanage.common.security.jwt.setup.JwtBuilder;
-import com.laser.ordermanage.user.domain.UserEntity;
-import com.laser.ordermanage.user.domain.UserEntityBuilder;
 import com.laser.ordermanage.user.dto.request.*;
+import com.laser.ordermanage.user.dto.response.GetUserAccountResponse;
+import com.laser.ordermanage.user.dto.response.GetUserAccountResponseBuilder;
+import com.laser.ordermanage.user.dto.response.GetUserEmailResponse;
+import com.laser.ordermanage.user.dto.response.GetUserEmailResponseBuilder;
 import com.laser.ordermanage.user.exception.UserErrorCode;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 
+import java.nio.charset.StandardCharsets;
+import java.util.List;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class UserAccountIntegrationTest extends IntegrationTest {
@@ -31,18 +38,20 @@ public class UserAccountIntegrationTest extends IntegrationTest {
         // given
         final String customerName = "고객 이름 1";
         final String customerPhone = "01022221111";
+        final List<GetUserEmailResponse> expectedResponse = GetUserEmailResponseBuilder.buildListForCustomer();
 
         // when
         final ResultActions resultActions = requestGetUserEmail(customerName, customerPhone);
 
         // then
-        resultActions
+        final String repsonseString = resultActions
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("contents").isArray())
-                .andExpect(jsonPath("contents.size()").value(2))
-                .andExpect(jsonPath("totalElements").value(2))
-                .andExpect(jsonPath("contents[0].name").value(customerName))
-                .andExpect(jsonPath("contents[1].name").value(customerName));
+                .andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8);
+
+        final ListResponse<GetUserEmailResponse> actualResponse = objectMapper.readValue(repsonseString, new TypeReference<ListResponse<GetUserEmailResponse>>() {});
+
+        Assertions.assertThat(actualResponse.totalElements()).isEqualTo(2);
+        Assertions.assertThat(actualResponse.contents()).hasSameElementsAs(expectedResponse);
     }
 
     /**
@@ -53,17 +62,20 @@ public class UserAccountIntegrationTest extends IntegrationTest {
         // given
         final String factoryManagerName = "관리자";
         final String factoryManagerPhone = "01011111111";
+        final List<GetUserEmailResponse> expectedResponse = GetUserEmailResponseBuilder.buildListForFactory();
 
         // when
         final ResultActions resultActions = requestGetUserEmail(factoryManagerName, factoryManagerPhone);
 
         // then
-        resultActions
+        final String repsonseString = resultActions
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("contents").isArray())
-                .andExpect(jsonPath("contents.size()").value(1))
-                .andExpect(jsonPath("totalElements").value(1))
-                .andExpect(jsonPath("contents[0].name").value(factoryManagerName));
+                .andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8);
+
+        final ListResponse<GetUserEmailResponse> actualResponse = objectMapper.readValue(repsonseString, new TypeReference<ListResponse<GetUserEmailResponse>>() {});
+
+        Assertions.assertThat(actualResponse.totalElements()).isEqualTo(1);
+        Assertions.assertThat(actualResponse.contents()).hasSameElementsAs(expectedResponse);
     }
 
     /**
@@ -79,11 +91,14 @@ public class UserAccountIntegrationTest extends IntegrationTest {
         final ResultActions resultActions = requestGetUserEmail(name, phone);
 
         // then
-        resultActions
+        final String repsonseString = resultActions
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("contents").isArray())
-                .andExpect(jsonPath("contents.size()").value(0))
-                .andExpect(jsonPath("totalElements").value(0));
+                .andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8);
+
+        final ListResponse<GetUserEmailResponse> actualResponse = objectMapper.readValue(repsonseString, new TypeReference<ListResponse<GetUserEmailResponse>>() {});
+
+        Assertions.assertThat(actualResponse.totalElements()).isEqualTo(0);
+        Assertions.assertThat(actualResponse.contents().size()).isEqualTo(0);
     }
 
     /**
@@ -371,20 +386,18 @@ public class UserAccountIntegrationTest extends IntegrationTest {
     public void 마이페이지_계정_기본_정보_조회_성공() throws Exception {
         // given
         final String accessToken = jwtBuilder.accessJwtBuild();
-        final UserEntity expectedUser = UserEntityBuilder.build();
+        final GetUserAccountResponse expectedResponse = GetUserAccountResponseBuilder.build();
 
         // when
         final ResultActions resultActions = requestGetUserAccount(accessToken);
 
         // then
-        resultActions
+        final String responseString = resultActions
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("email").value(expectedUser.getEmail()))
-                .andExpect(jsonPath("name").value(expectedUser.getName()))
-                .andExpect(jsonPath("phone").value(expectedUser.getPhone()))
-                .andExpect(jsonPath("zipCode").value(expectedUser.getAddress().getZipCode()))
-                .andExpect(jsonPath("address").value(expectedUser.getAddress().getAddress()))
-                .andExpect(jsonPath("detailAddress").value(expectedUser.getAddress().getDetailAddress()));
+                .andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8);
+
+        final GetUserAccountResponse actualResponse = objectMapper.readValue(responseString, GetUserAccountResponse.class);
+        Assertions.assertThat(actualResponse).isEqualTo(expectedResponse);
     }
 
     /**
@@ -479,8 +492,7 @@ public class UserAccountIntegrationTest extends IntegrationTest {
         final ResultActions resultActions = requestUpdateUserAccount(accessToken, request);
 
         // then
-        resultActions
-                .andExpect(status().isOk());
+        resultActions.andExpect(status().isOk());
     }
 
     /**

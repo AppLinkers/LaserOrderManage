@@ -45,9 +45,4 @@ public class OrderPostProcessingUnitTest {
                 .isInstanceOf(CustomCommonException.class)
                 .hasMessage("postProcessing 의 타입이 옳바르지 않습니다.");
     }
-
-    public static void assertOrderPostProcessing(OrderPostProcessing actualOrderPostProcessing, OrderPostProcessing expectedOrderPostProcessing) {
-        Assertions.assertThat(actualOrderPostProcessing.getIsPainting()).isEqualTo(expectedOrderPostProcessing.getIsPainting());
-        Assertions.assertThat(actualOrderPostProcessing.getIsPlating()).isEqualTo(expectedOrderPostProcessing.getIsPlating());
-    }
 }

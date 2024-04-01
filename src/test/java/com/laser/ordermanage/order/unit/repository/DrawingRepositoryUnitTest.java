@@ -4,7 +4,6 @@ import com.laser.ordermanage.common.RepositoryUnitTest;
 import com.laser.ordermanage.order.domain.Drawing;
 import com.laser.ordermanage.order.domain.DrawingBuilder;
 import com.laser.ordermanage.order.repository.DrawingRepository;
-import com.laser.ordermanage.order.unit.domain.DrawingUnitTest;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -37,7 +36,7 @@ public class DrawingRepositoryUnitTest extends RepositoryUnitTest {
         optionalDrawing.ifPresent(
                 actualDrawing -> {
                     Assertions.assertThat(actualDrawing.getId()).isEqualTo(expectedDrawingId);
-                    DrawingUnitTest.assertDrawing(actualDrawing, expectedDrawing);
+                    DrawingBuilder.assertDrawing(actualDrawing, expectedDrawing);
                 }
         );
     }

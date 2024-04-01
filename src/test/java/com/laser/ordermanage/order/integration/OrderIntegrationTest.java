@@ -51,10 +51,8 @@ public class OrderIntegrationTest extends IntegrationTest {
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8);
 
-        // 응답 본문을 객체로 변환
         final GetOrderDetailResponse actualResponse = objectMapper.readValue(responseString, GetOrderDetailResponse.class);
 
-        // 응답 객체와 예상 객체 비교
         Assertions.assertThat(actualResponse).isEqualTo(expectedResponse);
     }
 
@@ -177,10 +175,8 @@ public class OrderIntegrationTest extends IntegrationTest {
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8);
 
-        // 응답 본문을 객체로 변환
         final ListResponse<GetCommentResponse> actualResponse = objectMapper.readValue(responseString, new TypeReference<ListResponse<GetCommentResponse>>() {});
 
-        // 응답 객체와 예상 객체 비교
         Assertions.assertThat(actualResponse).isEqualTo(expectedResponse);
     }
 

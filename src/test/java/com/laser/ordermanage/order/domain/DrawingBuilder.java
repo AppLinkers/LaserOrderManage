@@ -3,6 +3,7 @@ package com.laser.ordermanage.order.domain;
 import com.laser.ordermanage.common.entity.embedded.File;
 import com.laser.ordermanage.order.domain.type.DrawingFileType;
 import com.laser.ordermanage.order.domain.type.Ingredient;
+import org.assertj.core.api.Assertions;
 
 public class DrawingBuilder {
     public static Drawing build() {
@@ -24,5 +25,17 @@ public class DrawingBuilder {
                 .ingredient(Ingredient.SS400.getValue())
                 .thickness(10)
                 .build();
+    }
+
+    public static void assertDrawing(Drawing actualDrawing, Drawing expectedDrawing) {
+        OrderBuilder.assertOrder(actualDrawing.getOrder(), expectedDrawing.getOrder());
+        Assertions.assertThat(actualDrawing.getFile().getName()).isEqualTo(expectedDrawing.getFile().getName());
+        Assertions.assertThat(actualDrawing.getFile().getSize()).isEqualTo(expectedDrawing.getFile().getSize());
+        Assertions.assertThat(actualDrawing.getFile().getType()).isEqualTo(expectedDrawing.getFile().getType());
+        Assertions.assertThat(actualDrawing.getFile().getUrl()).isEqualTo(expectedDrawing.getFile().getUrl());
+        Assertions.assertThat(actualDrawing.getThumbnailUrl()).isEqualTo(expectedDrawing.getThumbnailUrl());
+        Assertions.assertThat(actualDrawing.getCount()).isEqualTo(expectedDrawing.getCount());
+        Assertions.assertThat(actualDrawing.getIngredient()).isEqualTo(expectedDrawing.getIngredient());
+        Assertions.assertThat(actualDrawing.getThickness()).isEqualTo(expectedDrawing.getThickness());
     }
 }

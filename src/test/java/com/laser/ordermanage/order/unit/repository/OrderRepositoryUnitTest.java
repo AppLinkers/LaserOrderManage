@@ -10,7 +10,6 @@ import com.laser.ordermanage.order.domain.type.Stage;
 import com.laser.ordermanage.order.dto.response.GetOrderDetailResponse;
 import com.laser.ordermanage.order.dto.response.GetOrderDetailResponseBuilder;
 import com.laser.ordermanage.order.repository.OrderRepository;
-import com.laser.ordermanage.order.unit.domain.OrderUnitTest;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -50,7 +49,7 @@ public class OrderRepositoryUnitTest extends RepositoryUnitTest {
         optionalOrder.ifPresent(
                 actualOrder -> {
                     Assertions.assertThat(actualOrder.getId()).isEqualTo(expectedOrderId);
-                    OrderUnitTest.assertOrder(actualOrder, expectedOrder);
+                    OrderBuilder.assertOrder(actualOrder, expectedOrder);
                 }
         );
     }
@@ -534,7 +533,7 @@ public class OrderRepositoryUnitTest extends RepositoryUnitTest {
         Assertions.assertThat(actualResponse.size()).isEqualTo(1);
         final Order actualOrder = actualResponse.get(0);
         Assertions.assertThat(actualOrder.getId()).isEqualTo(expectedOrderId);
-        OrderUnitTest.assertOrder(actualOrder, expectedOrder);
+        OrderBuilder.assertOrder(actualOrder, expectedOrder);
     }
 
     @Test

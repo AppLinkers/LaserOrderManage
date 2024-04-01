@@ -46,10 +46,4 @@ public class OrderManufacturingUnitTest {
                 .isInstanceOf(CustomCommonException.class)
                 .hasMessage("manufacturing 의 타입이 옳바르지 않습니다.");
     }
-
-    public static void assertOrderManufacturing(OrderManufacturing actualOrderManufacturing, OrderManufacturing expectedOrderManufacturing) {
-        Assertions.assertThat(actualOrderManufacturing.getIsLaserCutting()).isEqualTo(expectedOrderManufacturing.getIsLaserCutting());
-        Assertions.assertThat(actualOrderManufacturing.getIsBending()).isEqualTo(expectedOrderManufacturing.getIsBending());
-        Assertions.assertThat(actualOrderManufacturing.getIsWelding()).isEqualTo(expectedOrderManufacturing.getIsWelding());
-    }
 }

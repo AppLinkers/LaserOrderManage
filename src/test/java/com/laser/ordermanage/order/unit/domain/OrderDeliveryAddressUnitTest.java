@@ -21,7 +21,7 @@ public class OrderDeliveryAddressUnitTest {
 
         // then
         Assertions.assertThat(actualOrderDeliveryAddress.getId()).isEqualTo(expectedOrderDeliveryAddress.getId());
-        assertOrderDeliveryAddress(actualOrderDeliveryAddress, expectedOrderDeliveryAddress);
+        OrderDeliveryAddressBuilder.assertOrderDeliveryAddress(actualOrderDeliveryAddress, expectedOrderDeliveryAddress);
     }
 
     @Test
@@ -36,16 +36,6 @@ public class OrderDeliveryAddressUnitTest {
 
         // then
         Assertions.assertThat(orderDeliveryAddress.getId()).isEqualTo(expectedOrderDeliveryAddress.getId());
-        assertOrderDeliveryAddress(orderDeliveryAddress, expectedOrderDeliveryAddress);
-    }
-
-    public static void assertOrderDeliveryAddress(OrderDeliveryAddress actualOrderDeliveryAddress, OrderDeliveryAddress expectedOrderDeliveryAddress) {
-        Assertions.assertThat(actualOrderDeliveryAddress.getName()).isEqualTo(expectedOrderDeliveryAddress.getName());
-        Assertions.assertThat(actualOrderDeliveryAddress.getAddress().getZipCode()).isEqualTo(expectedOrderDeliveryAddress.getAddress().getZipCode());
-        Assertions.assertThat(actualOrderDeliveryAddress.getAddress().getAddress()).isEqualTo(expectedOrderDeliveryAddress.getAddress().getAddress());
-        Assertions.assertThat(actualOrderDeliveryAddress.getAddress().getDetailAddress()).isEqualTo(expectedOrderDeliveryAddress.getAddress().getDetailAddress());
-        Assertions.assertThat(actualOrderDeliveryAddress.getReceiver()).isEqualTo(expectedOrderDeliveryAddress.getReceiver());
-        Assertions.assertThat(actualOrderDeliveryAddress.getPhone1()).isEqualTo(expectedOrderDeliveryAddress.getPhone1());
-        Assertions.assertThat(actualOrderDeliveryAddress.getPhone2()).isEqualTo(expectedOrderDeliveryAddress.getPhone2());
+        OrderDeliveryAddressBuilder.assertOrderDeliveryAddress(orderDeliveryAddress, expectedOrderDeliveryAddress);
     }
 }

@@ -54,12 +54,14 @@ jobs:
             cp -r $dir report_files/$module_path/$(basename $(dirname $dir))
           done
           tar czvf report_files_$TIMESTAMP.tar.gz report_files
-      # build 실패 시, report 파일 업로드
+        if: always()
+      # report 파일 업로드
       - name: Upload Error Report Files To Artifacts
         uses: actions/upload-artifact@v2
         with:
           name: report_files
           path: report_files_*.tar.gz
+        if: always()
       # 배포에 필요한 여러 설정 파일과 프로젝트 빌드파일을 zip 파일로 모아줍니다.
       - name: Make Directory
         run: mkdir -p deploy

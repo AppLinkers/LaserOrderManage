@@ -17,19 +17,19 @@ jobs:
 
     steps:
       # github submodule을 사용합니다.
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           token: ${{secrets.ACTION_TOKEN}}
           submodules: true
       # JDK를 17 버전으로 셋팅합니다.
       - name: Set up JDK 17
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'temurin'
       # Gradle을 캐싱해둡니다 -> 빌드 속도가 증가하는 효과가 있습니다.
       - name: Gradle Caching
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: |
             ~/.gradle/caches
@@ -39,7 +39,7 @@ jobs:
             ${{ runner.os }}-gradle-
       # Build 수행
       - name: Build with Gradle
-        uses: gradle/gradle-build-action@bd5760595778326ba7f1441bcf7e88b49de61a25 # v2.6.0
+        uses: gradle/gradle-build-action@v3
         with:
           arguments: build
       # build report 파일 압축
@@ -57,7 +57,7 @@ jobs:
         if: always()
       # report 파일 업로드
       - name: Upload Error Report Files To Artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: report_files
           path: report_files_*.tar.gz
@@ -78,7 +78,7 @@ jobs:
         shell: bash
       # AWS에 연결해줍니다.
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
+        uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}

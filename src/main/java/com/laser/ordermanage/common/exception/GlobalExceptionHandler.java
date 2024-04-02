@@ -26,6 +26,7 @@ import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.multipart.support.MissingServletRequestPartException;
 
 import java.io.IOException;
@@ -48,8 +49,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<?> handleUnknownException(Exception e, HttpServletRequest request) {
-        e.printStackTrace();
-//        sendSlackAlertErrorLog(e, request); // 슬랙 알림 보내는 메서드
+        sendSlackAlertErrorLog(e, request); // 슬랙 알림 보내는 메서드
         CustomCommonException exception = new CustomCommonException(CommonErrorCode.UNKNOWN_ERROR);
         return exception.toErrorResponse();
     }
@@ -130,6 +130,12 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MissingRequestCookieException.class)
     public ResponseEntity<?> handleMissingRequestCookieException(MissingRequestCookieException e) {
         CustomCommonException exception = new CustomCommonException(CommonErrorCode.REQUIRED_COOKIE, e.getCookieName());
+        return exception.toErrorResponse();
+    }
+
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    public ResponseEntity<?> handleMaxUploadSizeExceededException(MaxUploadSizeExceededException e) {
+        CustomCommonException exception = new CustomCommonException(CommonErrorCode.REQUEST_SIZE_EXCEEDED);
         return exception.toErrorResponse();
     }
 

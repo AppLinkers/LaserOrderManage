@@ -9,13 +9,13 @@ import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
-import static jakarta.mail.Message.RecipientType.TO;
+import java.util.concurrent.CompletableFuture;
 
+import static jakarta.mail.Message.RecipientType.TO;
 
 @Service
 @RequiredArgsConstructor
@@ -27,7 +27,7 @@ public class EmailService {
     public void sendEmail(EmailRequest emailRequest) {
         try {
             MimeMessage emailForm = createEmailForm(emailRequest);
-            emailSender.send(emailForm);
+            CompletableFuture.runAsync(() -> emailSender.send(emailForm)).join();
         } catch (Exception e) {
             throw new CustomCommonException(CommonErrorCode.UNABLE_TO_SEND_EMAIL);
         }
@@ -43,7 +43,6 @@ public class EmailService {
         return message;
     }
 
-    @Async("mailExecutor")
     public void sendEmailWithButton(EmailWithButtonRequest request) {
         Context context = new Context();
         context.setVariable("title", request.title());
@@ -61,7 +60,6 @@ public class EmailService {
         sendEmail(emailRequest);
     }
 
-    @Async("mailExecutor")
     public void sendEmailWithCode(EmailWithCodeRequest request) {
         Context context = new Context();
         context.setVariable("title", request.title());

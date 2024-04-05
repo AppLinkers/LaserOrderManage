@@ -1,10 +1,10 @@
 package com.laser.ordermanage.user.api;
 
+import com.laser.ordermanage.common.timer.Timer;
 import com.laser.ordermanage.customer.dto.request.JoinCustomerRequest;
 import com.laser.ordermanage.user.dto.request.VerifyEmailRequest;
 import com.laser.ordermanage.user.service.UserJoinService;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

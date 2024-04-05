@@ -8,26 +8,36 @@ import com.laser.ordermanage.common.exception.CustomCommonException;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 
 import static jakarta.mail.Message.RecipientType.TO;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class EmailService {
 
     private final JavaMailSender emailSender;
     private final TemplateEngine templateEngine;
+    private final Executor asyncExecutor;
 
     public void sendEmail(EmailRequest emailRequest) {
         try {
             MimeMessage emailForm = createEmailForm(emailRequest);
-            CompletableFuture.runAsync(() -> emailSender.send(emailForm)).join();
+            CompletableFuture<Void> cf = CompletableFuture.runAsync(() -> emailSender.send(emailForm), asyncExecutor);
+
+            cf.exceptionally(e -> {
+                log.error(e.getMessage());
+                return null;
+            });
+
         } catch (Exception e) {
             throw new CustomCommonException(CommonErrorCode.UNABLE_TO_SEND_EMAIL);
         }

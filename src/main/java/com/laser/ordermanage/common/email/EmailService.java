@@ -31,9 +31,9 @@ public class EmailService {
     public void sendEmail(EmailRequest emailRequest) {
         try {
             MimeMessage emailForm = createEmailForm(emailRequest);
-            CompletableFuture<Void> cf = CompletableFuture.runAsync(() -> emailSender.send(emailForm), asyncExecutor);
+            CompletableFuture<Void> completableFuture = CompletableFuture.runAsync(() -> emailSender.send(emailForm), asyncExecutor);
 
-            cf.exceptionally(e -> {
+            completableFuture.exceptionally(e -> {
                 log.error(e.getMessage());
                 return null;
             });

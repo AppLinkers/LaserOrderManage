@@ -12,19 +12,25 @@ import com.laser.ordermanage.order.dto.response.UploadDrawingFileResponse;
 import com.laser.ordermanage.order.exception.OrderErrorCode;
 import com.laser.ordermanage.order.repository.DrawingRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class DrawingService {
 
     @Value("${path.temp-folder}")
     private String tempFolderPath;
+
+    private final Executor asyncExecutor;
 
     private final S3Service s3Service;
 
@@ -58,24 +64,27 @@ public class DrawingService {
         Long fileSize = file.getSize();
         DrawingFileType fileType = DrawingFileType.ofExtension(FileUtil.getExtension(file));
 
-        String fileUrl = s3Service.upload("drawing", file, "drawing." + fileType.getExtension());
+        CompletableFuture<String> completableFutureForDrawing = CompletableFuture
+                .supplyAsync(() -> s3Service.upload("drawing", file, "drawing." + fileType.getExtension()), asyncExecutor); // 도면 파일 업로드
 
-        // 썸네일 추출
-        File thumbnailFile = this.extractThumbnail(file, fileType);
+        CompletableFuture<String> completableFutureForThumbnail = CompletableFuture
+                .supplyAsync(() -> extractThumbnail(file, fileType), asyncExecutor) // 썸네일 추출
+                .thenApplyAsync(thumbnailFile -> {
+                    String thumbnailFileUrl  = uploadThumbnailFile(thumbnailFile); // 썸네일 파일 업로드
+                    thumbnailFile.delete();
+                    return thumbnailFileUrl;
+                }, asyncExecutor);
 
-        // 썸네일 파일 업로드
-        String thumbnailFileUrl = this.uploadThumbnailFile(thumbnailFile);
+        CompletableFuture<UploadDrawingFileResponse> completableFuture = completableFutureForDrawing.thenCombine(completableFutureForThumbnail,
+                (fileUrl, thumbnailFileUrl) -> UploadDrawingFileResponse.builder()
+                        .thumbnailUrl(thumbnailFileUrl)
+                        .fileName(fileName)
+                        .fileType(fileType.getExtension())
+                        .fileUrl(fileUrl)
+                        .fileSize(fileSize)
+                        .build());
 
-        // 썸네일 파일 삭제
-        thumbnailFile.delete();
-
-        UploadDrawingFileResponse uploadDrawingFileResponse = UploadDrawingFileResponse.builder()
-                .thumbnailUrl(thumbnailFileUrl)
-                .fileName(fileName)
-                .fileType(fileType.getExtension())
-                .fileUrl(fileUrl)
-                .fileSize(fileSize)
-                .build();
+        UploadDrawingFileResponse uploadDrawingFileResponse = completableFuture.join();
 
         return uploadDrawingFileResponse;
     }

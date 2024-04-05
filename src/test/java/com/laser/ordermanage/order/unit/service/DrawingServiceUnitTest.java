@@ -23,15 +23,18 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.Optional;
+import java.util.concurrent.Executor;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 public class DrawingServiceUnitTest extends ServiceUnitTest {
 
     @InjectMocks
     private DrawingService drawingService;
+
+    @Mock
+    private Executor asyncExecutor;
 
     @Mock
     private S3Service s3Service;
@@ -237,6 +240,7 @@ public class DrawingServiceUnitTest extends ServiceUnitTest {
     public void uploadDrawingFile_성공() throws Exception {
         // before
         setUp();
+        setUpForAsync(asyncExecutor);
 
         // given
         final String filePath = "src/test/resources/drawing/drawing.dwg";
@@ -249,8 +253,9 @@ public class DrawingServiceUnitTest extends ServiceUnitTest {
         final UploadDrawingFileResponse expectedResponse = UploadDrawingFileResponseBuilder.buildOfDWGDrawing();
 
         // stub
-        when(s3Service.upload(any(), (MultipartFile) any(), any())).thenReturn("drawing-file-url.dwg");
-        when(s3Service.upload(any(), (File) any(), any())).thenReturn("thumbnail-url.dwg");
+        // Executor를 DirectExecutor로 설정하여 비동기 작업 -> 동기 작업
+        when(s3Service.upload(any(), any(MultipartFile.class), any())).thenReturn("drawing-file-url.dwg");
+        when(s3Service.upload(any(), any(File.class), any())).thenReturn("thumbnail-url.dwg");
 
         // when
         UploadDrawingFileResponse actualResponse = drawingService.uploadDrawingFile(file);

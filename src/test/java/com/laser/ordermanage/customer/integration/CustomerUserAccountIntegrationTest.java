@@ -6,6 +6,7 @@ import com.laser.ordermanage.customer.dto.request.CustomerUpdateCustomerAccountR
 import com.laser.ordermanage.customer.dto.request.CustomerUpdateCustomerAccountRequestBuilder;
 import com.laser.ordermanage.customer.dto.response.CustomerGetCustomerAccountResponse;
 import com.laser.ordermanage.customer.dto.response.CustomerGetCustomerAccountResponseBuilder;
+import com.laser.ordermanage.customer.exception.CustomerErrorCode;
 import com.laser.ordermanage.user.exception.UserErrorCode;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -126,10 +127,10 @@ public class CustomerUserAccountIntegrationTest extends IntegrationTest {
 
     /**
      * 고객 정보 조회 실패
-     * - 실패 사유 : 요청 시, Header 에 있는 Authorization(Access Token) 에 해당하는 사용자가 존재하지 않음
+     * - 실패 사유 : 요청 시, Header 에 있는 Authorization(Access Token) 에 해당하는 고객 정보가 존재하지 않음
      */
     @Test
-    public void 고객_정보_조회_실패_사용자_존재() throws Exception {
+    public void 고객_정보_조회_실패_고객_정보_존재() throws Exception {
         // given
         final String accessTokenOfUnknownUser = jwtBuilder.accessJwtOfUnknownUserBuild();
 
@@ -137,7 +138,7 @@ public class CustomerUserAccountIntegrationTest extends IntegrationTest {
         final ResultActions resultActions = requestGetCustomerAccount(accessTokenOfUnknownUser);
 
         // then
-        assertError(UserErrorCode.NOT_FOUND_USER, resultActions);
+        assertError(CustomerErrorCode.NOT_FOUND_CUSTOMER, resultActions);
     }
 
     /**
@@ -242,10 +243,10 @@ public class CustomerUserAccountIntegrationTest extends IntegrationTest {
 
     /**
      * 고객 정보 변경 실패
-     * - 실패 사유 : 요청 시, Header 에 있는 Authorization(Access Token) 에 해당하는 사용자가 존재하지 않음
+     * - 실패 사유 : 요청 시, Header 에 있는 Authorization(Access Token) 에 해당하는 고객 정보가 존재하지 않음
      */
     @Test
-    public void 고객_정보_변경_실패_사용자_존재() throws Exception {
+    public void 고객_정보_변경_실패_고객_정보_존재() throws Exception {
         // given
         final String accessTokenOfUnknownUser = jwtBuilder.accessJwtOfUnknownUserBuild();
         final CustomerUpdateCustomerAccountRequest request = CustomerUpdateCustomerAccountRequestBuilder.build();
@@ -254,7 +255,7 @@ public class CustomerUserAccountIntegrationTest extends IntegrationTest {
         final ResultActions resultActions = requestUpdateCustomerAccount(accessTokenOfUnknownUser, request);
 
         // then
-        assertError(UserErrorCode.NOT_FOUND_USER, resultActions);
+        assertError(CustomerErrorCode.NOT_FOUND_CUSTOMER, resultActions);
     }
 
     /**
@@ -353,10 +354,10 @@ public class CustomerUserAccountIntegrationTest extends IntegrationTest {
 
     /**
      * 고객 회원의 회원 탈퇴 실패
-     * - 실패 사유 : 요청 시, Header 에 있는 Authorization(Access Token) 에 해당하는 사용자가 존재하지 않음
+     * - 실패 사유 : 요청 시, Header 에 있는 Authorization(Access Token) 에 해당하는 고객 정보가 존재하지 않음
      */
     @Test
-    public void 고객_회원의_회원_탈퇴_실패_사용자_존재() throws Exception {
+    public void 고객_회원의_회원_탈퇴_실패_고객_정보_존재() throws Exception {
         // given
         final String accessTokenOfUnknownUser = jwtBuilder.accessJwtOfUnknownUserBuild();
 
@@ -364,7 +365,7 @@ public class CustomerUserAccountIntegrationTest extends IntegrationTest {
         final ResultActions resultActions = requestDeleteUserAccount(accessTokenOfUnknownUser);
 
         // then
-        assertError(UserErrorCode.NOT_FOUND_USER, resultActions);
+        assertError(CustomerErrorCode.NOT_FOUND_CUSTOMER, resultActions);
     }
 
     private ResultActions requestGetCustomerAccount(String accessToken) throws Exception {

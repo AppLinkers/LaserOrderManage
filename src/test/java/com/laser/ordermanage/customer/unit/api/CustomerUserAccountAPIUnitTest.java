@@ -8,6 +8,7 @@ import com.laser.ordermanage.customer.dto.request.CustomerUpdateCustomerAccountR
 import com.laser.ordermanage.customer.dto.request.CustomerUpdateCustomerAccountRequestBuilder;
 import com.laser.ordermanage.customer.dto.response.CustomerGetCustomerAccountResponse;
 import com.laser.ordermanage.customer.dto.response.CustomerGetCustomerAccountResponseBuilder;
+import com.laser.ordermanage.customer.exception.CustomerErrorCode;
 import com.laser.ordermanage.customer.service.CustomerOrderService;
 import com.laser.ordermanage.customer.service.CustomerUserAccountService;
 import com.laser.ordermanage.user.exception.UserErrorCode;
@@ -104,13 +105,13 @@ public class CustomerUserAccountAPIUnitTest extends APIUnitTest {
         final String accessToken = "access-token";
 
         // stub
-        when(customerUserAccountService.getCustomerAccount(any())).thenThrow(new CustomCommonException(UserErrorCode.NOT_FOUND_USER));
+        when(customerUserAccountService.getCustomerAccount(any())).thenThrow(new CustomCommonException(CustomerErrorCode.NOT_FOUND_CUSTOMER));
 
         // when
         final ResultActions resultActions = requestGetCustomerAccount(accessToken);
 
         // then
-        assertError(UserErrorCode.NOT_FOUND_USER, resultActions);
+        assertError(CustomerErrorCode.NOT_FOUND_CUSTOMER, resultActions);
     }
 
     /**
@@ -181,13 +182,13 @@ public class CustomerUserAccountAPIUnitTest extends APIUnitTest {
         final CustomerUpdateCustomerAccountRequest request = CustomerUpdateCustomerAccountRequestBuilder.build();
 
         // stub
-        doThrow(new CustomCommonException(UserErrorCode.NOT_FOUND_USER)).when(customerUserAccountService).updateCustomerAccount(any(), any());
+        doThrow(new CustomCommonException(CustomerErrorCode.NOT_FOUND_CUSTOMER)).when(customerUserAccountService).updateCustomerAccount(any(), any());
 
         // when
         final ResultActions resultActions = requestUpdateCustomerAccount(accessToken, request);
 
         // then
-        assertError(UserErrorCode.NOT_FOUND_USER, resultActions);
+        assertError(CustomerErrorCode.NOT_FOUND_CUSTOMER, resultActions);
     }
 
     /**
@@ -240,13 +241,13 @@ public class CustomerUserAccountAPIUnitTest extends APIUnitTest {
         final String accessToken = "access-token";
 
         // stub
-        doThrow(new CustomCommonException(UserErrorCode.NOT_FOUND_USER)).when(customerUserAccountService).deleteUser(any());
+        doThrow(new CustomCommonException(CustomerErrorCode.NOT_FOUND_CUSTOMER)).when(customerUserAccountService).deleteUser(any());
 
         // when
         final ResultActions resultActions = requestDeleteUserAccount(accessToken);
 
         // then
-        assertError(UserErrorCode.NOT_FOUND_USER, resultActions);
+        assertError(CustomerErrorCode.NOT_FOUND_CUSTOMER, resultActions);
     }
 
     private ResultActions requestGetCustomerAccount(String accessToken) throws Exception {

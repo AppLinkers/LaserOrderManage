@@ -17,6 +17,7 @@ public enum CustomerErrorCode implements ErrorCode {
     DENIED_ACCESS_TO_DELIVERY_ADDRESS("CUSTOMER_403_01", HttpStatus.FORBIDDEN, "배송지에 대한 접근 권한이 없습니다."),
 
     // 404 NOT_FOUND 리소스가 존재하지 않음
+    NOT_FOUND_CUSTOMER("CUSTOMER_404_02", HttpStatus.NOT_FOUND, "존재하지 않는 고객 입니다."),
     NOT_FOUND_DELIVERY_ADDRESS("CUSTOMER_404_01", HttpStatus.NOT_FOUND, "존재하지 않는 배송지 입니다.");
 
     private final String code;

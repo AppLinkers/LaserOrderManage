@@ -10,5 +10,5 @@ public interface DeliveryAddressRepositoryCustom {
 
     Optional<String> findUserEmailById(Long deliveryAddressId);
 
-    void deleteByCustomer(Long customerId);
+    void deleteByCustomerId(Long customerId);
 }

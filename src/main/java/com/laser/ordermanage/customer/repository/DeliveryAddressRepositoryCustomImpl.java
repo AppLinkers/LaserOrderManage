@@ -55,7 +55,7 @@ public class DeliveryAddressRepositoryCustomImpl implements DeliveryAddressRepos
     }
 
     @Override
-    public void deleteByCustomer(Long customerId) {
+    public void deleteByCustomerId(Long customerId) {
         queryFactory
                 .delete(deliveryAddress)
                 .where(deliveryAddress.customer.id.eq(customerId))

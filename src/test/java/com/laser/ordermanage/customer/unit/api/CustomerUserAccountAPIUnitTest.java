@@ -27,8 +27,7 @@ import java.nio.charset.StandardCharsets;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -191,6 +190,65 @@ public class CustomerUserAccountAPIUnitTest extends APIUnitTest {
         assertError(UserErrorCode.NOT_FOUND_USER, resultActions);
     }
 
+    /**
+     * 고객 회원의 회원 탈퇴 성공
+     */
+    @Test
+    @WithMockUser(roles = {"CUSTOMER"})
+    public void 고객_회원의_회원_탈퇴_성공() throws Exception {
+        // given
+        final String accessToken = "access-token";
+
+        // stub
+        doNothing().when(customerOrderService).deleteOrderByStageNotCompleted(any());
+        doNothing().when(customerOrderService).deleteOrderByStageCompleted(any());
+        doNothing().when(customerUserAccountService).deleteUser(any());
+        doNothing().when(userAuthService).logout(any());
+
+        // when
+        final ResultActions resultActions = requestDeleteUserAccount(accessToken);
+
+        // then
+        resultActions.andExpect(status().isOk());
+    }
+
+    /**
+     * 고객 회원의 회원 탈퇴 성공
+     * - 실패 사유 : 공장 역할 (FACTORY)에 의한 요청
+     */
+    @Test
+    @WithMockUser(roles = {"FACTORY"})
+    public void 고객_회원의_회원_탈퇴_실패_역할() throws Exception {
+        // given
+        final String accessToken = "access-token";
+
+        // when
+        final ResultActions resultActions = requestDeleteUserAccount(accessToken);
+
+        // then
+        assertError(UserErrorCode.DENIED_ACCESS, resultActions);
+    }
+
+    /**
+     * 고객 회원의 회원 탈퇴 성공
+     * - 실패 사유 : 이메일에 해당하는 고객 정보가 존재하지 않음
+     */
+    @Test
+    @WithMockUser(roles = {"CUSTOMER"})
+    public void 고객_회원의_회원_탈퇴_실패_고객_정보_존재() throws Exception {
+        // given
+        final String accessToken = "access-token";
+
+        // stub
+        doThrow(new CustomCommonException(UserErrorCode.NOT_FOUND_USER)).when(customerUserAccountService).deleteUser(any());
+
+        // when
+        final ResultActions resultActions = requestDeleteUserAccount(accessToken);
+
+        // then
+        assertError(UserErrorCode.NOT_FOUND_USER, resultActions);
+    }
+
     private ResultActions requestGetCustomerAccount(String accessToken) throws Exception {
         return mvc.perform(get("/customer/user")
                         .header("Authorization", "Bearer " + accessToken))
@@ -202,6 +260,12 @@ public class CustomerUserAccountAPIUnitTest extends APIUnitTest {
                         .header("Authorization", "Bearer " + accessToken)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
+                .andDo(print());
+    }
+
+    private ResultActions requestDeleteUserAccount(String accessToken) throws Exception {
+        return mvc.perform(delete("/customer/user")
+                        .header("Authorization", "Bearer " + accessToken))
                 .andDo(print());
     }
 }

@@ -149,7 +149,7 @@ public class CustomerUserAccountServiceUnitTest extends ServiceUnitTest {
     }
 
     /**
-     * 고객 회원의 회원 탈퇴 성공
+     * (고객, 사용자) 제거 기능
      */
     @Test
     public void deleteUser_성공() {
@@ -167,7 +167,7 @@ public class CustomerUserAccountServiceUnitTest extends ServiceUnitTest {
     }
 
     /**
-     * 고객 회원의 회원 탈퇴 실패
+     * (고객, 사용자) 제거 기능
      * - 실패 사유 : 존재하지 않는 고객
      */
     @Test

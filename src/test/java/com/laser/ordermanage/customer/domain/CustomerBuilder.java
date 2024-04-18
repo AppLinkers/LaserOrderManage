@@ -14,6 +14,15 @@ public class CustomerBuilder {
                 .build();
     }
 
+    public static Customer nullCompanyNameBuild() {
+        UserEntity user = UserEntityBuilder.build();
+
+        return Customer.builder()
+                .user(user)
+                .companyName(null)
+                .build();
+    }
+
     public static void assertCustomer(Customer actualCustomer, Customer expectedCustomer) {
         UserEntityBuilder.assertUserEntity(actualCustomer.getUser(), expectedCustomer.getUser());
         Assertions.assertThat(actualCustomer.getCompanyName()).isEqualTo(expectedCustomer.getCompanyName());

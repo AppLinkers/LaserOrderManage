@@ -8,7 +8,6 @@ import com.laser.ordermanage.customer.domain.Customer;
 import com.laser.ordermanage.customer.domain.DeliveryAddress;
 import com.laser.ordermanage.customer.dto.request.*;
 import com.laser.ordermanage.customer.dto.response.CustomerCreateOrUpdateOrderPurchaseOrderResponse;
-import com.laser.ordermanage.customer.repository.CustomerRepository;
 import com.laser.ordermanage.order.domain.*;
 import com.laser.ordermanage.order.domain.type.DrawingFileType;
 import com.laser.ordermanage.order.domain.type.PurchaseOrderFileType;
@@ -35,17 +34,17 @@ public class CustomerOrderService {
     private final CommentRepository commentRepository;
     private final DrawingRepository drawingRepository;
     private final OrderRepository orderRepository;
-    private final CustomerRepository customerRepository;
     private final PurchaseOrderRepository purchaseOrderRepository;
 
     private final OrderService orderService;
+    private final CustomerUserAccountService customerUserAccountService;
     private final CustomerDeliveryAddressService customerDeliveryAddressService;
     private final DrawingService drawingService;
     private final S3Service s3Service;
 
     @Transactional
-    public Long createOrder(User user, CustomerCreateOrderRequest request) {
-        Customer customer = customerRepository.findFirstByUserEmail(user.getUsername());
+    public Long createOrder(String email, CustomerCreateOrderRequest request) {
+        Customer customer = customerUserAccountService.getCustomerByUserEmail(email);
 
         OrderDeliveryAddress deliveryAddress = OrderDeliveryAddress.ofRequest(request.deliveryAddress());
 

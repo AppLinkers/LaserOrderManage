@@ -8,7 +8,6 @@ import com.laser.ordermanage.customer.domain.DeliveryAddress;
 import com.laser.ordermanage.customer.dto.request.CustomerCreateOrUpdateDeliveryAddressRequest;
 import com.laser.ordermanage.customer.dto.response.CustomerGetDeliveryAddressResponse;
 import com.laser.ordermanage.customer.exception.CustomerErrorCode;
-import com.laser.ordermanage.customer.repository.CustomerRepository;
 import com.laser.ordermanage.customer.repository.DeliveryAddressRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.User;
@@ -19,7 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class CustomerDeliveryAddressService {
 
-    private final CustomerRepository customerRepository;
+    private final CustomerUserAccountService customerUserAccountService;
     private final DeliveryAddressRepository deliveryAddressRepository;
 
     private String getUserEmailByDeliveryAddress(Long deliveryAddressId) {
@@ -28,7 +27,7 @@ public class CustomerDeliveryAddressService {
 
     @Transactional
     public void createDeliveryAddress(String email, CustomerCreateOrUpdateDeliveryAddressRequest request) {
-        Customer customer = customerRepository.findFirstByUserEmail(email);
+        Customer customer = customerUserAccountService.getCustomerByUserEmail(email);
 
         if (request.isDefault()) {
             DeliveryAddress defaultDeliveryAddress = deliveryAddressRepository.findFirstByCustomerAndIsDefaultTrue(customer);

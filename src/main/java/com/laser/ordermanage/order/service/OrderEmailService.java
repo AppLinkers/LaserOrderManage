@@ -3,7 +3,7 @@ package com.laser.ordermanage.order.service;
 import com.laser.ordermanage.common.email.EmailService;
 import com.laser.ordermanage.common.email.dto.EmailWithButtonRequest;
 import com.laser.ordermanage.customer.domain.Customer;
-import com.laser.ordermanage.customer.repository.CustomerRepository;
+import com.laser.ordermanage.customer.service.CustomerUserAccountService;
 import com.laser.ordermanage.order.domain.Comment;
 import com.laser.ordermanage.order.domain.Order;
 import com.laser.ordermanage.order.dto.response.DeleteOrderResponse;
@@ -20,8 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class OrderEmailService {
 
-    private final CustomerRepository customerRepository;
-
+    private final CustomerUserAccountService customerUserAccountService;
     private final UserAuthService userAuthService;
     private final OrderService orderService;
     private final EmailService emailService;
@@ -110,7 +109,7 @@ public class OrderEmailService {
     @Transactional(readOnly = true)
     public void sendEmailForDeleteOrder(User user, DeleteOrderResponse deletedOrder) {
         UserEntity userEntity = userAuthService.getUserByEmail(user.getUsername());
-        Customer customer = customerRepository.findFirstByUserEmail(deletedOrder.customerUserEmail());
+        Customer customer = customerUserAccountService.getCustomerByUserEmail(deletedOrder.customerUserEmail());
 
         if (userEntity.getRole().equals(Role.ROLE_FACTORY)) {
             UserEntity emailRecipient = customer.getUser();

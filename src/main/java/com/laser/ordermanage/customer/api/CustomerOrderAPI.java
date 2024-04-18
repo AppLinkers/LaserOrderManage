@@ -43,7 +43,7 @@ public class CustomerOrderAPI {
 
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        Long orderId = customerOrderService.createOrder(user, request);
+        Long orderId = customerOrderService.createOrder(user.getUsername(), request);
 
         customerOrderEmailService.sendEmailForCreateOrder(orderId);
 

@@ -126,7 +126,7 @@ public class OrderAPIUnitTest extends APIUnitTest {
     @WithMockUser
     public void 거래_댓글_목록_조회_성공() throws Exception {
         // given
-        final String accessToken = "accessToken";
+        final String accessToken = "access-token";
         final String orderId = "1";
         final ListResponse<GetCommentResponse> expectedResponse = new ListResponse<>(GetCommentResponseBuilder.buildListForOrder1());
 
@@ -192,7 +192,7 @@ public class OrderAPIUnitTest extends APIUnitTest {
     @WithMockUser(authorities = {"AUTHORITY_ADMIN"})
     public void 거래_댓글_작성_성공() throws Exception {
         // given
-        final String accessToken = "accessToken";
+        final String accessToken = "access-token";
         final String orderId = "1";
         final CreateCommentRequest request = CreateCommentRequestBuilder.build();
 
@@ -216,7 +216,7 @@ public class OrderAPIUnitTest extends APIUnitTest {
     @WithMockUser
     public void 거래_댓글_작성_실패_사용자_권한() throws Exception {
         // given
-        final String accessToken = "accessToken";
+        final String accessToken = "access-token";
         final String orderId = "1";
         final CreateCommentRequest request = CreateCommentRequestBuilder.build();
 
@@ -379,7 +379,7 @@ public class OrderAPIUnitTest extends APIUnitTest {
     @WithMockUser
     public void 거래_삭제_실패_사용자_권한() throws Exception {
         // given
-        final String accessToken = "accessToken";
+        final String accessToken = "access-token";
         final String orderId = "1";
 
         // when

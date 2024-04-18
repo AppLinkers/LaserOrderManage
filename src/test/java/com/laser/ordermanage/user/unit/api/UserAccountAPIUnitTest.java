@@ -5,10 +5,7 @@ import com.laser.ordermanage.common.APIUnitTest;
 import com.laser.ordermanage.common.exception.CommonErrorCode;
 import com.laser.ordermanage.common.exception.CustomCommonException;
 import com.laser.ordermanage.common.paging.ListResponse;
-import com.laser.ordermanage.common.security.jwt.component.JwtProvider;
 import com.laser.ordermanage.user.api.UserAccountAPI;
-import com.laser.ordermanage.user.domain.UserEntity;
-import com.laser.ordermanage.user.domain.UserEntityBuilder;
 import com.laser.ordermanage.user.dto.request.*;
 import com.laser.ordermanage.user.dto.response.GetUserAccountResponse;
 import com.laser.ordermanage.user.dto.response.GetUserAccountResponseBuilder;
@@ -34,7 +31,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(UserAccountAPI.class)
@@ -42,9 +38,6 @@ public class UserAccountAPIUnitTest extends APIUnitTest {
 
     @Autowired
     private WebApplicationContext context;
-
-    @MockBean
-    private JwtProvider jwtProvider;
 
     @MockBean
     private UserAccountService userAccountService;

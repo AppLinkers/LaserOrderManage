@@ -59,13 +59,13 @@ public class CustomerUserAccountAPI {
     public ResponseEntity<?> deleteUserAccount(HttpServletRequest httpServletRequest) {
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        userAuthService.logout(httpServletRequest);
-
         customerOrderService.deleteOrderByStageNotCompleted(user.getUsername());
 
         customerOrderService.deleteOrderByStageCompleted(user.getUsername());
 
         customerUserAccountService.deleteUser(user.getUsername());
+
+        userAuthService.logout(httpServletRequest);
 
         return ResponseEntity.ok().build();
     }

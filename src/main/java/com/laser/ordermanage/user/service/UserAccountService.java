@@ -45,7 +45,6 @@ public class UserAccountService {
         return new ListResponse<>(userRepository.findEmailByNameAndPhone(name, phone));
     }
 
-    @Transactional
     public void requestChangePassword(RequestChangePasswordRequest request) {
         UserEntity user = userAuthService.getUserByEmail(request.email());
 

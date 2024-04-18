@@ -40,7 +40,6 @@ public class UserJoinService {
     private final EmailService emailService;
 
 
-    @Transactional
     public UserJoinStatusResponse requestEmailVerify(String email) {
         UserJoinStatusResponse response = checkDuplicatedEmail(email);
 
@@ -73,7 +72,6 @@ public class UserJoinService {
 
     }
 
-    @Transactional
     public UserJoinStatusResponse verifyEmail(VerifyEmailRequest request) {
         UserJoinStatusResponse response = checkDuplicatedEmail(request.email());
 
@@ -140,7 +138,8 @@ public class UserJoinService {
     }
 
 
-    private UserJoinStatusResponse checkDuplicatedEmail(String email) {
+    @Transactional(readOnly = true)
+    public UserJoinStatusResponse checkDuplicatedEmail(String email) {
         return userRepository.findFirstByEmail(email)
                 .map(userEntity -> UserJoinStatusResponse.builderWithUserEntity()
                         .userEntity(userEntity)

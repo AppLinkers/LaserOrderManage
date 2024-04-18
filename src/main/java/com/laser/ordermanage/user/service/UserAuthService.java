@@ -45,7 +45,6 @@ public class UserAuthService {
         return userRepository.findFirstByEmail(email).orElseThrow(() -> new CustomCommonException(UserErrorCode.NOT_FOUND_USER));
     }
 
-    @Transactional
     public TokenInfoResponse login(HttpServletRequest httpServletRequest, LoginRequest request) {
 
         // 1. Login ID/PW 를 기반으로 Authentication 객체 생성

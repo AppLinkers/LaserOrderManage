@@ -209,6 +209,88 @@ public class CustomerDeliveryAddressAPIUnitTest extends APIUnitTest {
         assertError(CustomerErrorCode.DEFAULT_DELIVERY_ADDRESS_DELETE, resultActions);
     }
 
+    /**
+     * 고객 배송지 삭제 성공
+     */
+    @Test
+    @WithMockUser(roles = {"CUSTOMER"})
+    public void 고객_배송지_삭제_성공() throws Exception {
+        // given
+        final String accessToken = "access-token";
+        final String deliveryAddressId = "1";
+
+        // stub
+        doNothing().when(customerDeliveryAddressService).checkAuthorityCustomerOfDeliveryAddress(any(), any());
+        doNothing().when(customerDeliveryAddressService).deleteDeliveryAddress(any());
+
+        // when
+        final ResultActions resultActions = requestDeleteDeliveryAddress(accessToken, deliveryAddressId);
+
+        // then
+        resultActions.andExpect(status().isOk());
+    }
+
+    /**
+     * 고객 배송지 삭제 실패
+     * - 실패 사유 : 공장 역할 (FACTORY)에 의한 요청
+     */
+    @Test
+    @WithMockUser(roles = {"FACTORY"})
+    public void 고객_배송지_삭제_실패_역할() throws Exception {
+        // given
+        final String accessToken = "access-token";
+        final String deliveryAddressId = "1";
+
+        // when
+        final ResultActions resultActions = requestDeleteDeliveryAddress(accessToken, deliveryAddressId);
+
+        // then
+        assertError(UserErrorCode.DENIED_ACCESS, resultActions);
+    }
+
+    /**
+     * 고객 배송지 삭제 실패
+     * - 실패 사유 : 배송지에 대한 접근 권한이 없음
+     */
+    @Test
+    @WithMockUser(roles = {"CUSTOMER"})
+    public void 고객_배송지_삭제_실패_배송지_접근_권한() throws Exception {
+        // given
+        final String accessToken = "access-token";
+        final String deliveryAddressId = "1";
+
+        // stub
+        doThrow(new CustomCommonException(CustomerErrorCode.DENIED_ACCESS_TO_DELIVERY_ADDRESS)).when(customerDeliveryAddressService).checkAuthorityCustomerOfDeliveryAddress(any(), any());
+
+        // when
+        final ResultActions resultActions = requestDeleteDeliveryAddress(accessToken, deliveryAddressId);
+
+        // then
+        assertError(CustomerErrorCode.DENIED_ACCESS_TO_DELIVERY_ADDRESS, resultActions);
+    }
+
+    /**
+     * 고객 배송지 삭제 실패
+     * - 실패 사유 : 기본 배송지 삭제
+     */
+    @Test
+    @WithMockUser(roles = {"CUSTOMER"})
+    public void 고객_배송지_삭제_실패_기본_배송지_삭제() throws Exception {
+        // given
+        final String accessToken = "access-token";
+        final String deliveryAddressId = "1";
+
+        // stub
+        doNothing().when(customerDeliveryAddressService).checkAuthorityCustomerOfDeliveryAddress(any(), any());
+        doThrow(new CustomCommonException(CustomerErrorCode.DEFAULT_DELIVERY_ADDRESS_DELETE)).when(customerDeliveryAddressService).deleteDeliveryAddress(any());
+
+        // when
+        final ResultActions resultActions = requestDeleteDeliveryAddress(accessToken, deliveryAddressId);
+
+        // then
+        assertError(CustomerErrorCode.DEFAULT_DELIVERY_ADDRESS_DELETE, resultActions);
+    }
+
     private ResultActions requestCreateDeliveryAddress(String accessToken, CustomerCreateOrUpdateDeliveryAddressRequest request) throws Exception {
         return mvc.perform(post("/customer/delivery-address")
                         .header("Authorization", "Bearer " + accessToken)

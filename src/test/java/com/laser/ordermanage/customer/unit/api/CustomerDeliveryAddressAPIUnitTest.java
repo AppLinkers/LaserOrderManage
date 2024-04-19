@@ -2,6 +2,7 @@ package com.laser.ordermanage.customer.unit.api;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.laser.ordermanage.common.APIUnitTest;
+import com.laser.ordermanage.common.exception.CommonErrorCode;
 import com.laser.ordermanage.common.exception.CustomCommonException;
 import com.laser.ordermanage.common.paging.ListResponse;
 import com.laser.ordermanage.customer.api.CustomerDeliveryAddressAPI;
@@ -78,6 +79,276 @@ public class CustomerDeliveryAddressAPIUnitTest extends APIUnitTest {
 
         // then
         assertError(UserErrorCode.DENIED_ACCESS, resultActions);
+    }
+
+    /**
+     * 고객 배송지 생성 실패
+     * - 실패 사유 : 이름 필드 null
+     */
+    @Test
+    @WithMockUser(roles = {"CUSTOMER"})
+    public void 고객_배송지_생성_실패_이름_필드_null() throws Exception {
+        // given
+        final String accessToken = "access-token";
+        final CustomerCreateOrUpdateDeliveryAddressRequest request = CustomerCreateOrUpdateDeliveryAddressRequestBuilder.nullNameBuild();
+
+        // when
+        final ResultActions resultActions = requestCreateDeliveryAddress(accessToken, request);
+
+        // then
+        assertErrorWithMessage(CommonErrorCode.INVALID_REQUEST_BODY_FIELDS, resultActions, "배송지 이름은 필수 입력값입니다.");
+    }
+
+    /**
+     * 고객 배송지 생성 실패
+     * - 실패 사유 : 이름 필드 empty
+     */
+    @Test
+    @WithMockUser(roles = {"CUSTOMER"})
+    public void 고객_배송지_생성_실패_이름_필드_empty() throws Exception {
+        // given
+        final String accessToken = "access-token";
+        final CustomerCreateOrUpdateDeliveryAddressRequest request = CustomerCreateOrUpdateDeliveryAddressRequestBuilder.emptyNameBuild();
+
+        // when
+        final ResultActions resultActions = requestCreateDeliveryAddress(accessToken, request);
+
+        // then
+        assertErrorWithMessage(CommonErrorCode.INVALID_REQUEST_BODY_FIELDS, resultActions, "배송지 이름은 필수 입력값입니다.");
+    }
+
+    /**
+     * 고객 배송지 생성 실패
+     * - 실패 사유 : 이름 필드 유효성
+     */
+    @Test
+    @WithMockUser(roles = {"CUSTOMER"})
+    public void 고객_배송지_생성_실패_이름_필드_유효성() throws Exception {
+        // given
+        final String accessToken = "access-token";
+        final CustomerCreateOrUpdateDeliveryAddressRequest request = CustomerCreateOrUpdateDeliveryAddressRequestBuilder.invalidNameBuild();
+
+        // when
+        final ResultActions resultActions = requestCreateDeliveryAddress(accessToken, request);
+
+        // then
+        assertErrorWithMessage(CommonErrorCode.INVALID_REQUEST_BODY_FIELDS, resultActions, "배송지 이름의 최대 글자수는 20자입니다.");
+    }
+
+    /**
+     * 고객 배송지 생성 실패
+     * - 실패 사유 : 우편번호 필드 null
+     */
+    @Test
+    @WithMockUser(roles = {"CUSTOMER"})
+    public void 고객_배송지_생성_실패_우편번호_필드_null() throws Exception {
+        // given
+        final String accessToken = "access-token";
+        final CustomerCreateOrUpdateDeliveryAddressRequest request = CustomerCreateOrUpdateDeliveryAddressRequestBuilder.nullZipCodeBuild();
+
+        // when
+        final ResultActions resultActions = requestCreateDeliveryAddress(accessToken, request);
+
+        // then
+        assertErrorWithMessage(CommonErrorCode.INVALID_REQUEST_BODY_FIELDS, resultActions, "우편번호는 필수 입력값입니다.");
+    }
+
+    /**
+     * 고객 배송지 생성 실패
+     * - 실패 사유 : 우편번호 필드 유효성
+     */
+    @Test
+    @WithMockUser(roles = {"CUSTOMER"})
+    public void 고객_배송지_생성_실패_우편번호_필드_유효성() throws Exception {
+        // given
+        final String accessToken = "access-token";
+        final CustomerCreateOrUpdateDeliveryAddressRequest request = CustomerCreateOrUpdateDeliveryAddressRequestBuilder.invalidZipCodeBuild();
+
+        // when
+        final ResultActions resultActions = requestCreateDeliveryAddress(accessToken, request);
+
+        // then
+        assertErrorWithMessage(CommonErrorCode.INVALID_REQUEST_BODY_FIELDS, resultActions, "우편번호는 5자리 정수입니다.");
+    }
+
+    /**
+     * 고객 배송지 생성 실패
+     * - 실패 사유 : 기본 주소 필드 null
+     */
+    @Test
+    @WithMockUser(roles = {"CUSTOMER"})
+    public void 고객_배송지_생성_실패_기본주소_필드_null() throws Exception {
+        // given
+        final String accessToken = "access-token";
+        final CustomerCreateOrUpdateDeliveryAddressRequest request = CustomerCreateOrUpdateDeliveryAddressRequestBuilder.nullAddressBuild();
+
+        // when
+        final ResultActions resultActions = requestCreateDeliveryAddress(accessToken, request);
+
+        // then
+        assertErrorWithMessage(CommonErrorCode.INVALID_REQUEST_BODY_FIELDS, resultActions, "기본 주소는 필수 입력값입니다.");
+    }
+
+    /**
+     * 고객 배송지 생성 실패
+     * - 실패 사유 : 기본 주소 필드 empty
+     */
+    @Test
+    @WithMockUser(roles = {"CUSTOMER"})
+    public void 고객_배송지_생성_실패_기본주소_필드_empty() throws Exception {
+        // given
+        final String accessToken = "access-token";
+        final CustomerCreateOrUpdateDeliveryAddressRequest request = CustomerCreateOrUpdateDeliveryAddressRequestBuilder.emptyAddressBuild();
+
+        // when
+        final ResultActions resultActions = requestCreateDeliveryAddress(accessToken, request);
+
+        // then
+        assertErrorWithMessage(CommonErrorCode.INVALID_REQUEST_BODY_FIELDS, resultActions, "기본 주소는 필수 입력값입니다.");
+    }
+
+    /**
+     * 고객 배송지 생성 실패
+     * - 실패 사유 : 상세 주소 필드 유효성
+     */
+    @Test
+    @WithMockUser(roles = {"CUSTOMER"})
+    public void 고객_배송지_생성_실패_상세주소_필드_empty() throws Exception {
+        // given
+        final String accessToken = "access-token";
+        final CustomerCreateOrUpdateDeliveryAddressRequest request = CustomerCreateOrUpdateDeliveryAddressRequestBuilder.invalidDetailAddress();
+
+        // when
+        final ResultActions resultActions = requestCreateDeliveryAddress(accessToken, request);
+
+        // then
+        assertErrorWithMessage(CommonErrorCode.INVALID_REQUEST_BODY_FIELDS, resultActions, "상세 주소의 최대 글자수는 30자입니다.");
+    }
+
+    /**
+     * 고객 배송지 생성 실패
+     * - 실패 사유 : 수신자 필드 null
+     */
+    @Test
+    @WithMockUser(roles = {"CUSTOMER"})
+    public void 고객_배송지_생성_실패_수신자_필드_null() throws Exception {
+        // given
+        final String accessToken = "access-token";
+        final CustomerCreateOrUpdateDeliveryAddressRequest request = CustomerCreateOrUpdateDeliveryAddressRequestBuilder.nullReceiverBuild();
+
+        // when
+        final ResultActions resultActions = requestCreateDeliveryAddress(accessToken, request);
+
+        // then
+        assertErrorWithMessage(CommonErrorCode.INVALID_REQUEST_BODY_FIELDS, resultActions, "수신자는 필수 입력값입니다.");
+    }
+
+    /**
+     * 고객 배송지 생성 실패
+     * - 실패 사유 : 수신자 필드 empty
+     */
+    @Test
+    @WithMockUser(roles = {"CUSTOMER"})
+    public void 고객_배송지_생성_실패_수신자_필드_empty() throws Exception {
+        // given
+        final String accessToken = "access-token";
+        final CustomerCreateOrUpdateDeliveryAddressRequest request = CustomerCreateOrUpdateDeliveryAddressRequestBuilder.emptyReceiverBuild();
+
+        // when
+        final ResultActions resultActions = requestCreateDeliveryAddress(accessToken, request);
+
+        // then
+        assertErrorWithMessage(CommonErrorCode.INVALID_REQUEST_BODY_FIELDS, resultActions, "수신자는 필수 입력값입니다.");
+    }
+
+    /**
+     * 고객 배송지 생성 실패
+     * - 실패 사유 : 수신자 필드 유효성
+     */
+    @Test
+    @WithMockUser(roles = {"CUSTOMER"})
+    public void 고객_배송지_생성_실패_수신자_필드_유효성() throws Exception {
+        // given
+        final String accessToken = "access-token";
+        final CustomerCreateOrUpdateDeliveryAddressRequest request = CustomerCreateOrUpdateDeliveryAddressRequestBuilder.invalidReceiverBuild();
+
+        // when
+        final ResultActions resultActions = requestCreateDeliveryAddress(accessToken, request);
+
+        // then
+        assertErrorWithMessage(CommonErrorCode.INVALID_REQUEST_BODY_FIELDS, resultActions, "수신자의 최대 글자수는 10자입니다.");
+    }
+
+    /**
+     * 고객 배송지 생성 실패
+     * - 실패 사유 : 연락처 1 필드 null
+     */
+    @Test
+    @WithMockUser(roles = {"CUSTOMER"})
+    public void 고객_배송지_생성_실패_연락처1_필드_null() throws Exception {
+        // given
+        final String accessToken = "access-token";
+        final CustomerCreateOrUpdateDeliveryAddressRequest request = CustomerCreateOrUpdateDeliveryAddressRequestBuilder.nullPhone1Build();
+
+        // when
+        final ResultActions resultActions = requestCreateDeliveryAddress(accessToken, request);
+
+        // then
+        assertErrorWithMessage(CommonErrorCode.INVALID_REQUEST_BODY_FIELDS, resultActions, "연락처는 필수 입력값입니다.");
+    }
+
+    /**
+     * 고객 배송지 생성 실패
+     * - 실패 사유 : 연락처 1 필드 유효성
+     */
+    @Test
+    @WithMockUser(roles = {"CUSTOMER"})
+    public void 고객_배송지_생성_실패_연락처1_필드_유효성() throws Exception {
+        // given
+        final String accessToken = "access-token";
+        final CustomerCreateOrUpdateDeliveryAddressRequest request = CustomerCreateOrUpdateDeliveryAddressRequestBuilder.invalidPhone1Build();
+
+        // when
+        final ResultActions resultActions = requestCreateDeliveryAddress(accessToken, request);
+
+        // then
+        assertErrorWithMessage(CommonErrorCode.INVALID_REQUEST_BODY_FIELDS, resultActions, "연락처 형식에 맞지 않습니다.");
+    }
+
+    /**
+     * 고객 배송지 생성 실패
+     * - 실패 사유 : 연락처 2 필드 유효성
+     */
+    @Test
+    @WithMockUser(roles = {"CUSTOMER"})
+    public void 고객_배송지_생성_실패_연락처2_필드_유효성() throws Exception {
+        // given
+        final String accessToken = "access-token";
+        final CustomerCreateOrUpdateDeliveryAddressRequest request = CustomerCreateOrUpdateDeliveryAddressRequestBuilder.invalidPhone2Build();
+
+        // when
+        final ResultActions resultActions = requestCreateDeliveryAddress(accessToken, request);
+
+        // then
+        assertErrorWithMessage(CommonErrorCode.INVALID_REQUEST_BODY_FIELDS, resultActions, "연락처 형식에 맞지 않습니다.");
+    }
+
+    /**
+     * 고객 배송지 생성 실패
+     * - 실패 사유 : 배송지 기본 여부 필드 null
+     */
+    @Test
+    @WithMockUser(roles = {"CUSTOMER"})
+    public void 고객_배송지_생성_실패_배송지_기본여부_필드_null() throws Exception {
+        // given
+        final String accessToken = "access-token";
+        final CustomerCreateOrUpdateDeliveryAddressRequest request = CustomerCreateOrUpdateDeliveryAddressRequestBuilder.nullIsDefaultBuild();
+
+        // when
+        final ResultActions resultActions = requestCreateDeliveryAddress(accessToken, request);
+
+        // then
+        assertErrorWithMessage(CommonErrorCode.INVALID_REQUEST_BODY_FIELDS, resultActions, "배송지 기본 여부는 필수 사항입니다.");
     }
 
     /**

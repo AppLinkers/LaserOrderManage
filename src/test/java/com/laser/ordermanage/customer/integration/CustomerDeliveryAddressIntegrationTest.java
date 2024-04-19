@@ -6,9 +6,9 @@ import com.laser.ordermanage.common.paging.ListResponse;
 import com.laser.ordermanage.common.security.jwt.setup.JwtBuilder;
 import com.laser.ordermanage.customer.dto.request.CustomerCreateOrUpdateDeliveryAddressRequest;
 import com.laser.ordermanage.customer.dto.request.CustomerCreateOrUpdateDeliveryAddressRequestBuilder;
-import com.laser.ordermanage.customer.dto.request.CustomerUpdateCustomerAccountRequest;
 import com.laser.ordermanage.customer.dto.response.CustomerGetDeliveryAddressResponse;
 import com.laser.ordermanage.customer.dto.response.CustomerGetDeliveryAddressResponseBuilder;
+import com.laser.ordermanage.customer.exception.CustomerErrorCode;
 import com.laser.ordermanage.user.exception.UserErrorCode;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -229,6 +229,148 @@ public class CustomerDeliveryAddressIntegrationTest extends IntegrationTest {
         assertError(UserErrorCode.INVALID_JWT, resultActions);
     }
 
+    /**
+     * 고객 배송지 항목 수정 성공
+     */
+    @Test
+    public void 고객_배송지_항목_수정_성공() throws Exception {
+        // given
+        final String accessToken = jwtBuilder.accessJwtBuild();
+        final String deliveryAddressId = "1";
+        final CustomerCreateOrUpdateDeliveryAddressRequest request = CustomerCreateOrUpdateDeliveryAddressRequestBuilder.updateBuild();
+
+        // when
+        final ResultActions resultActions = requestUpdateDeliveryAddress(accessToken, deliveryAddressId, request);
+
+        // then
+        resultActions.andExpect(status().isOk());
+    }
+
+    /**
+     * 고객 배송지 항목 수정 실패
+     * - 실패 사유 : 요청 시, Header 에 Authorization 정보 (Access Token) 를 추가하지 않음
+     */
+    @Test
+    public void 고객_배송지_항목_수정_실패_Header_Authorization_존재() throws Exception {
+        // given
+        final String deliveryAddressId = "1";
+        final CustomerCreateOrUpdateDeliveryAddressRequest request = CustomerCreateOrUpdateDeliveryAddressRequestBuilder.updateBuild();
+
+        // when
+        final ResultActions resultActions = requestUpdateDeliveryAddressWithOutAccessToken(deliveryAddressId, request);
+
+        // then
+        assertError(UserErrorCode.MISSING_JWT, resultActions);
+    }
+
+    /**
+     * 고객 배송지 항목 수정 실패
+     * - 실패 사유 : 요청 시, Header 에 있는 Authorization 정보 (Access Token) 에 권한 정보가 없음
+     */
+    @Test
+    public void 고객_배송지_항목_수정_실패_Unauthorized_Access_Token() throws Exception {
+        // given
+        final String unauthorizedAccessToken = jwtBuilder.unauthorizedAccessJwtBuild();
+        final String deliveryAddressId = "1";
+        final CustomerCreateOrUpdateDeliveryAddressRequest request = CustomerCreateOrUpdateDeliveryAddressRequestBuilder.updateBuild();
+
+        // when
+        final ResultActions resultActions = requestUpdateDeliveryAddress(unauthorizedAccessToken, deliveryAddressId, request);
+
+        // then
+        assertError(UserErrorCode.UNAUTHORIZED_JWT, resultActions);
+    }
+
+    /**
+     * 고객 배송지 항목 수정 실패
+     * - 실패 사유 : 요청 시, Header 에 다른 타입의 Authorization 정보 (Refresh Token) 를 추가함
+     */
+    @Test
+    public void 고객_배송지_항목_수정_실패_Token_Type() throws Exception {
+        // given
+        final String refreshToken = jwtBuilder.refreshJwtBuild();
+        final String deliveryAddressId = "1";
+        final CustomerCreateOrUpdateDeliveryAddressRequest request = CustomerCreateOrUpdateDeliveryAddressRequestBuilder.updateBuild();
+
+        // when
+        final ResultActions resultActions = requestUpdateDeliveryAddress(refreshToken, deliveryAddressId, request);
+
+        // then
+        assertError(UserErrorCode.INVALID_TOKEN_TYPE, resultActions);
+    }
+
+    /**
+     * 고객 배송지 항목 수정 실패
+     * - 실패 사유 : 요청 시, Header 에 있는 Authorization(Access Token) 의 유효기간 만료
+     */
+    @Test
+    public void 고객_배송지_항목_수정_실패_Expired_Access_Token() throws Exception {
+        // given
+        final String expiredAccessToken = jwtBuilder.expiredAccessJwtBuild();
+        final String deliveryAddressId = "1";
+        final CustomerCreateOrUpdateDeliveryAddressRequest request = CustomerCreateOrUpdateDeliveryAddressRequestBuilder.updateBuild();
+
+        // when
+        final ResultActions resultActions = requestUpdateDeliveryAddress(expiredAccessToken, deliveryAddressId, request);
+
+        // then
+        assertError(UserErrorCode.EXPIRED_JWT, resultActions);
+    }
+
+    /**
+     * 고객 배송지 항목 수정 실패
+     * - 실패 사유 : 요청 시, Header 에 있는 Authorization(JWT) 가 유효하지 않음
+     */
+    @Test
+    public void 고객_배송지_항목_수정_실패_Invalid_Token() throws Exception {
+        // given
+        final String invalidToken = jwtBuilder.invalidJwtBuild();
+        final String deliveryAddressId = "1";
+        final CustomerCreateOrUpdateDeliveryAddressRequest request = CustomerCreateOrUpdateDeliveryAddressRequestBuilder.updateBuild();
+
+        // when
+        final ResultActions resultActions = requestUpdateDeliveryAddress(invalidToken, deliveryAddressId, request);
+
+        // then
+        assertError(UserErrorCode.INVALID_JWT, resultActions);
+    }
+
+    /**
+     * 고객 배송지 항목 수정 실패
+     * - 실패 사유 : 배송지에 대한 접근 권한이 없음
+     */
+    @Test
+    public void 고객_배송지_항목_수정_실패_배송지접근권한() throws Exception {
+        // given
+        final String accessTokenOfUser2 = jwtBuilder.accessJwtBuildOfUser2();
+        final String deliveryAddressId = "1";
+        final CustomerCreateOrUpdateDeliveryAddressRequest request = CustomerCreateOrUpdateDeliveryAddressRequestBuilder.updateBuild();
+
+        // when
+        final ResultActions resultActions = requestUpdateDeliveryAddress(accessTokenOfUser2, deliveryAddressId, request);
+
+        // then
+        assertError(CustomerErrorCode.DENIED_ACCESS_TO_DELIVERY_ADDRESS, resultActions);
+    }
+
+    /**
+     * 고객 배송지 항목 수정 실패
+     * - 실패 사유 : 기본 배송지 해제
+     */
+    @Test
+    public void 고객_배송지_항목_수정_실패_기본배송지해제() throws Exception {
+        // given
+        final String accessToken = jwtBuilder.accessJwtBuild();
+        final String deliveryAddressId = "1";
+        final CustomerCreateOrUpdateDeliveryAddressRequest request = CustomerCreateOrUpdateDeliveryAddressRequestBuilder.DefaultDeliveryAddressDisableUpdateBuild();
+
+        // when
+        final ResultActions resultActions = requestUpdateDeliveryAddress(accessToken, deliveryAddressId, request);
+
+        // then
+        assertError(CustomerErrorCode.UNABLE_DEFAULT_DELIVERY_ADDRESS_DISABLE, resultActions);
+    }
+
     private ResultActions requestCreateDeliveryAddress(String accessToken, CustomerCreateOrUpdateDeliveryAddressRequest request) throws Exception {
         return mvc.perform(post("/customer/delivery-address")
                         .header("Authorization", "Bearer " + accessToken)
@@ -255,16 +397,16 @@ public class CustomerDeliveryAddressIntegrationTest extends IntegrationTest {
                 .andDo(print());
     }
 
-    private ResultActions requestUpdateDeliveryAddress(String accessToken, CustomerUpdateCustomerAccountRequest request) throws Exception {
-        return mvc.perform(put("/customer/delivery-address")
+    private ResultActions requestUpdateDeliveryAddress(String accessToken, String deliveryAddressId, CustomerCreateOrUpdateDeliveryAddressRequest request) throws Exception {
+        return mvc.perform(put("/customer/delivery-address/{delivery-address-id}", deliveryAddressId)
                         .header("Authorization", "Bearer " + accessToken)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andDo(print());
     }
 
-    private ResultActions requestUpdateDeliveryAddressWithOutAccessToken(CustomerUpdateCustomerAccountRequest request) throws Exception {
-        return mvc.perform(put("/customer/delivery-address")
+    private ResultActions requestUpdateDeliveryAddressWithOutAccessToken(String deliveryAddressId, CustomerCreateOrUpdateDeliveryAddressRequest request) throws Exception {
+        return mvc.perform(put("/customer/delivery-address/{delivery-address-id}", deliveryAddressId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andDo(print());

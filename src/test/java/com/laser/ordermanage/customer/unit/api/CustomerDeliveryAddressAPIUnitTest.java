@@ -2,12 +2,14 @@ package com.laser.ordermanage.customer.unit.api;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.laser.ordermanage.common.APIUnitTest;
+import com.laser.ordermanage.common.exception.CustomCommonException;
 import com.laser.ordermanage.common.paging.ListResponse;
 import com.laser.ordermanage.customer.api.CustomerDeliveryAddressAPI;
 import com.laser.ordermanage.customer.dto.request.CustomerCreateOrUpdateDeliveryAddressRequest;
 import com.laser.ordermanage.customer.dto.request.CustomerCreateOrUpdateDeliveryAddressRequestBuilder;
 import com.laser.ordermanage.customer.dto.response.CustomerGetDeliveryAddressResponse;
 import com.laser.ordermanage.customer.dto.response.CustomerGetDeliveryAddressResponseBuilder;
+import com.laser.ordermanage.customer.exception.CustomerErrorCode;
 import com.laser.ordermanage.customer.service.CustomerDeliveryAddressService;
 import com.laser.ordermanage.user.exception.UserErrorCode;
 import org.assertj.core.api.Assertions;
@@ -24,7 +26,7 @@ import org.springframework.web.context.WebApplicationContext;
 import java.nio.charset.StandardCharsets;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -119,6 +121,92 @@ public class CustomerDeliveryAddressAPIUnitTest extends APIUnitTest {
 
         // then
         assertError(UserErrorCode.DENIED_ACCESS, resultActions);
+    }
+
+    /**
+     * 고객 배송지 항목 수정 성공
+     */
+    @Test
+    @WithMockUser(roles = {"CUSTOMER"})
+    public void 고객_배송지_항목_수정_성공() throws Exception {
+        // given
+        final String accessToken = "access-token";
+        final String deliveryAddressId = "1";
+        final CustomerCreateOrUpdateDeliveryAddressRequest request = CustomerCreateOrUpdateDeliveryAddressRequestBuilder.updateBuild();
+
+        // stub
+        doNothing().when(customerDeliveryAddressService).checkAuthorityCustomerOfDeliveryAddress(any(), any());
+        doNothing().when(customerDeliveryAddressService).updateDeliveryAddress(any(), any(), any());
+
+        // when
+        final ResultActions resultActions = requestUpdateDeliveryAddress(accessToken, deliveryAddressId, request);
+
+        // then
+        resultActions.andExpect(status().isOk());
+    }
+
+    /**
+     * 고객 배송지 항목 수정 실패
+     * - 실패 사유 : 공장 역할 (FACTORY)에 의한 요청
+     */
+    @Test
+    @WithMockUser(roles = {"FACTORY"})
+    public void 고객_배송지_항목_수정_실패_역할() throws Exception {
+        // given
+        final String accessToken = "access-token";
+        final String deliveryAddressId = "1";
+        final CustomerCreateOrUpdateDeliveryAddressRequest request = CustomerCreateOrUpdateDeliveryAddressRequestBuilder.build();
+
+        // when
+        final ResultActions resultActions = requestUpdateDeliveryAddress(accessToken, deliveryAddressId, request);
+
+        // then
+        assertError(UserErrorCode.DENIED_ACCESS, resultActions);
+    }
+
+    /**
+     * 고객 배송지 항목 수정 실패
+     * - 실패 사유 : 배송지에 대한 접근 권한이 없음
+     */
+    @Test
+    @WithMockUser(roles = {"CUSTOMER"})
+    public void 고객_배송지_항목_수정_실패_배송지_접근_권한() throws Exception {
+        // given
+        final String accessToken = "access-token";
+        final String deliveryAddressId = "1";
+        final CustomerCreateOrUpdateDeliveryAddressRequest request = CustomerCreateOrUpdateDeliveryAddressRequestBuilder.updateBuild();
+
+        // stub
+        doThrow(new CustomCommonException(CustomerErrorCode.DENIED_ACCESS_TO_DELIVERY_ADDRESS)).when(customerDeliveryAddressService).checkAuthorityCustomerOfDeliveryAddress(any(), any());
+
+        // when
+        final ResultActions resultActions = requestUpdateDeliveryAddress(accessToken, deliveryAddressId, request);
+
+        // then
+        assertError(CustomerErrorCode.DENIED_ACCESS_TO_DELIVERY_ADDRESS, resultActions);
+    }
+
+    /**
+     * 고객 배송지 항목 수정 실패
+     * - 실패 사유 : 기본 배송지 해제
+     */
+    @Test
+    @WithMockUser(roles = {"CUSTOMER"})
+    public void 고객_배송지_항목_수정_실패_기본_배송지_해제() throws Exception {
+        // given
+        final String accessToken = "access-token";
+        final String deliveryAddressId = "1";
+        final CustomerCreateOrUpdateDeliveryAddressRequest request = CustomerCreateOrUpdateDeliveryAddressRequestBuilder.build();
+
+        // stub
+        doNothing().when(customerDeliveryAddressService).checkAuthorityCustomerOfDeliveryAddress(any(), any());
+        doThrow(new CustomCommonException(CustomerErrorCode.DEFAULT_DELIVERY_ADDRESS_DELETE)).when(customerDeliveryAddressService).updateDeliveryAddress(any(), any(), any());
+
+        // when
+        final ResultActions resultActions = requestUpdateDeliveryAddress(accessToken, deliveryAddressId, request);
+
+        // then
+        assertError(CustomerErrorCode.DEFAULT_DELIVERY_ADDRESS_DELETE, resultActions);
     }
 
     private ResultActions requestCreateDeliveryAddress(String accessToken, CustomerCreateOrUpdateDeliveryAddressRequest request) throws Exception {

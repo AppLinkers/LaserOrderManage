@@ -340,7 +340,7 @@ public class CustomerDeliveryAddressIntegrationTest extends IntegrationTest {
      * - 실패 사유 : 배송지에 대한 접근 권한이 없음
      */
     @Test
-    public void 고객_배송지_항목_수정_실패_배송지접근권한() throws Exception {
+    public void 고객_배송지_항목_수정_실패_배송지_접근_권한() throws Exception {
         // given
         final String accessTokenOfUser2 = jwtBuilder.accessJwtBuildOfUser2();
         final String deliveryAddressId = "1";
@@ -358,7 +358,7 @@ public class CustomerDeliveryAddressIntegrationTest extends IntegrationTest {
      * - 실패 사유 : 기본 배송지 해제
      */
     @Test
-    public void 고객_배송지_항목_수정_실패_기본배송지해제() throws Exception {
+    public void 고객_배송지_항목_수정_실패_기본_배송지_해제() throws Exception {
         // given
         final String accessToken = jwtBuilder.accessJwtBuild();
         final String deliveryAddressId = "1";
@@ -369,6 +369,140 @@ public class CustomerDeliveryAddressIntegrationTest extends IntegrationTest {
 
         // then
         assertError(CustomerErrorCode.UNABLE_DEFAULT_DELIVERY_ADDRESS_DISABLE, resultActions);
+    }
+
+    /**
+     * 고객 배송지 삭제 성공
+     */
+    @Test
+    public void 고객_배송지_삭제_성공() throws Exception {
+        // given
+        final String accessToken = jwtBuilder.accessJwtBuild();
+        final String deliveryAddressId = "2";
+
+        // when
+        final ResultActions resultActions = requestDeleteDeliveryAddress(accessToken, deliveryAddressId);
+
+        // then
+        resultActions.andExpect(status().isOk());
+    }
+
+    /**
+     * 고객 배송지 삭제 실패
+     * - 실패 사유 : 요청 시, Header 에 Authorization 정보 (Access Token) 를 추가하지 않음
+     */
+    @Test
+    public void 고객_배송지_삭제_실패_Header_Authorization_존재() throws Exception {
+        // given
+        final String deliveryAddressId = "2";
+
+        // when
+        final ResultActions resultActions = requestDeleteDeliveryAddressWithOutAccessToken(deliveryAddressId);
+
+        // then
+        assertError(UserErrorCode.MISSING_JWT, resultActions);
+    }
+
+    /**
+     * 고객 배송지 삭제 실패
+     * - 실패 사유 : 요청 시, Header 에 있는 Authorization 정보 (Access Token) 에 권한 정보가 없음
+     */
+    @Test
+    public void 고객_배송지_삭제_실패_Unauthorized_Access_Token() throws Exception {
+        // given
+        final String unauthorizedAccessToken = jwtBuilder.unauthorizedAccessJwtBuild();
+        final String deliveryAddressId = "2";
+
+        // when
+        final ResultActions resultActions = requestDeleteDeliveryAddress(unauthorizedAccessToken, deliveryAddressId);
+
+        // then
+        assertError(UserErrorCode.UNAUTHORIZED_JWT, resultActions);
+    }
+
+    /**
+     * 고객 배송지 삭제 실패
+     * - 실패 사유 : 요청 시, Header 에 다른 타입의 Authorization 정보 (Refresh Token) 를 추가함
+     */
+    @Test
+    public void 고객_배송지_삭제_실패_Token_Type() throws Exception {
+        // given
+        final String refreshToken = jwtBuilder.refreshJwtBuild();
+        final String deliveryAddressId = "2";
+
+        // when
+        final ResultActions resultActions = requestDeleteDeliveryAddress(refreshToken, deliveryAddressId);
+
+        // then
+        assertError(UserErrorCode.INVALID_TOKEN_TYPE, resultActions);
+    }
+
+    /**
+     * 고객 배송지 삭제 실패
+     * - 실패 사유 : 요청 시, Header 에 있는 Authorization(Access Token) 의 유효기간 만료
+     */
+    @Test
+    public void 고객_배송지_삭제_실패_Expired_Access_Token() throws Exception {
+        // given
+        final String expiredAccessToken = jwtBuilder.expiredAccessJwtBuild();
+        final String deliveryAddressId = "2";
+
+        // when
+        final ResultActions resultActions = requestDeleteDeliveryAddress(expiredAccessToken, deliveryAddressId);
+
+        // then
+        assertError(UserErrorCode.EXPIRED_JWT, resultActions);
+    }
+
+    /**
+     * 고객 배송지 삭제 실패
+     * - 실패 사유 : 요청 시, Header 에 있는 Authorization(JWT) 가 유효하지 않음
+     */
+    @Test
+    public void 고객_배송지_삭제_실패_Invalid_Token() throws Exception {
+        // given
+        final String invalidToken = jwtBuilder.invalidJwtBuild();
+        final String deliveryAddressId = "2";
+
+        // when
+        final ResultActions resultActions = requestDeleteDeliveryAddress(invalidToken, deliveryAddressId);
+
+        // then
+        assertError(UserErrorCode.INVALID_JWT, resultActions);
+    }
+
+    /**
+     * 고객 배송지 삭제 실패
+     * - 실패 사유 : 배송지에 대한 접근 권한이 없음
+     */
+    @Test
+    public void 고객_배송지_삭제_실패_배송지_접근_권한() throws Exception {
+        // given
+        final String accessTokenOfUser2 = jwtBuilder.accessJwtBuildOfUser2();
+        final String deliveryAddressId = "2";
+
+        // when
+        final ResultActions resultActions = requestDeleteDeliveryAddress(accessTokenOfUser2, deliveryAddressId);
+
+        // then
+        assertError(CustomerErrorCode.DENIED_ACCESS_TO_DELIVERY_ADDRESS, resultActions);
+    }
+
+    /**
+     * 고객 배송지 삭제 실패
+     * - 실패 사유 : 기본 배송지 삭제
+     */
+    @Test
+    public void 고객_배송지_삭제_실패_기본_배송지_삭제() throws Exception {
+        // given
+        final String accessToken = jwtBuilder.accessJwtBuild();
+        final String defaultDeliveryAddressId = "1";
+
+        // when
+        final ResultActions resultActions = requestDeleteDeliveryAddress(accessToken, defaultDeliveryAddressId);
+
+        // then
+        assertError(CustomerErrorCode.DEFAULT_DELIVERY_ADDRESS_DELETE, resultActions);
     }
 
     private ResultActions requestCreateDeliveryAddress(String accessToken, CustomerCreateOrUpdateDeliveryAddressRequest request) throws Exception {

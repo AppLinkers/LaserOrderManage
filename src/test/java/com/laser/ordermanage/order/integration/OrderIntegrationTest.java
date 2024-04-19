@@ -66,7 +66,7 @@ public class OrderIntegrationTest extends IntegrationTest {
         final String orderId = "1";
 
         // when
-        ResultActions resultActions = requestGetOrderDetailWithOutAccessToken(orderId);
+        final ResultActions resultActions = requestGetOrderDetailWithOutAccessToken(orderId);
 
         // then
         assertError(UserErrorCode.MISSING_JWT, resultActions);
@@ -83,7 +83,7 @@ public class OrderIntegrationTest extends IntegrationTest {
         final String orderId = "1";
 
         // when
-        ResultActions resultActions = requestGetOrderDetail(unauthorizedAccessToken, orderId);
+        final ResultActions resultActions = requestGetOrderDetail(unauthorizedAccessToken, orderId);
 
         // then
         assertError(UserErrorCode.UNAUTHORIZED_JWT, resultActions);
@@ -100,7 +100,7 @@ public class OrderIntegrationTest extends IntegrationTest {
         final String orderId = "1";
 
         // when
-        ResultActions resultActions = requestGetOrderDetail(refreshToken, orderId);
+        final ResultActions resultActions = requestGetOrderDetail(refreshToken, orderId);
 
         // then
         assertError(UserErrorCode.INVALID_TOKEN_TYPE, resultActions);
@@ -117,7 +117,7 @@ public class OrderIntegrationTest extends IntegrationTest {
         final String orderId = "1";
 
         // when
-        ResultActions resultActions = requestGetOrderDetail(expiredAccessToken, orderId);
+        final ResultActions resultActions = requestGetOrderDetail(expiredAccessToken, orderId);
 
         // then
         assertError(UserErrorCode.EXPIRED_JWT, resultActions);
@@ -134,7 +134,7 @@ public class OrderIntegrationTest extends IntegrationTest {
         final String orderId = "1";
 
         // when
-        ResultActions resultActions = requestGetOrderDetail(invalidToken, orderId);
+        final ResultActions resultActions = requestGetOrderDetail(invalidToken, orderId);
 
         // then
         assertError(UserErrorCode.INVALID_JWT, resultActions);
@@ -145,7 +145,7 @@ public class OrderIntegrationTest extends IntegrationTest {
      * - 실패 사유 : 거래에 대한 접근 권한이 없음
      */
     @Test
-    public void 거래_상세_정보_조회_실패_거래접근권한() throws Exception {
+    public void 거래_상세_정보_조회_실패_거래_접근_권한() throws Exception {
         // given
         final String accessTokenOfUser2 = jwtBuilder.accessJwtBuildOfUser2();
         final String orderId = "1";
@@ -190,7 +190,7 @@ public class OrderIntegrationTest extends IntegrationTest {
         final String orderId = "1";
 
         // when
-        ResultActions resultActions = requestGetOrderCommentWithOutAccessToken(orderId);
+        final ResultActions resultActions = requestGetOrderCommentWithOutAccessToken(orderId);
 
         // then
         assertError(UserErrorCode.MISSING_JWT, resultActions);
@@ -207,7 +207,7 @@ public class OrderIntegrationTest extends IntegrationTest {
         final String orderId = "1";
 
         // when
-        ResultActions resultActions = requestGetOrderComment(unauthorizedAccessToken, orderId);
+        final ResultActions resultActions = requestGetOrderComment(unauthorizedAccessToken, orderId);
 
         // then
         assertError(UserErrorCode.UNAUTHORIZED_JWT, resultActions);
@@ -224,7 +224,7 @@ public class OrderIntegrationTest extends IntegrationTest {
         final String orderId = "1";
 
         // when
-        ResultActions resultActions = requestGetOrderComment(refreshToken, orderId);
+        final ResultActions resultActions = requestGetOrderComment(refreshToken, orderId);
 
         // then
         assertError(UserErrorCode.INVALID_TOKEN_TYPE, resultActions);
@@ -241,7 +241,7 @@ public class OrderIntegrationTest extends IntegrationTest {
         final String orderId = "1";
 
         // when
-        ResultActions resultActions = requestGetOrderComment(expiredAccessToken, orderId);
+        final ResultActions resultActions = requestGetOrderComment(expiredAccessToken, orderId);
 
         // then
         assertError(UserErrorCode.EXPIRED_JWT, resultActions);
@@ -258,7 +258,7 @@ public class OrderIntegrationTest extends IntegrationTest {
         final String orderId = "1";
 
         // when
-        ResultActions resultActions = requestGetOrderComment(invalidToken, orderId);
+        final ResultActions resultActions = requestGetOrderComment(invalidToken, orderId);
 
         // then
         assertError(UserErrorCode.INVALID_JWT, resultActions);
@@ -269,7 +269,7 @@ public class OrderIntegrationTest extends IntegrationTest {
      * - 실패 사유 : 거래에 대한 접근 권한이 없음
      */
     @Test
-    public void 거래_댓글_목록_조회_실패_거래접근권한() throws Exception {
+    public void 거래_댓글_목록_조회_실패_거래_접근_권한() throws Exception {
         // given
         final String accessTokenOfUser2 = jwtBuilder.accessJwtBuildOfUser2();
         final String orderId = "1";
@@ -348,7 +348,7 @@ public class OrderIntegrationTest extends IntegrationTest {
         final CreateCommentRequest request = CreateCommentRequestBuilder.build();
 
         // when
-        ResultActions resultActions = requestCreateCommentWithOutAccessToken(orderId, request);
+        final ResultActions resultActions = requestCreateCommentWithOutAccessToken(orderId, request);
 
         // then
         assertError(UserErrorCode.MISSING_JWT, resultActions);
@@ -366,7 +366,7 @@ public class OrderIntegrationTest extends IntegrationTest {
         final CreateCommentRequest request = CreateCommentRequestBuilder.build();
 
         // when
-        ResultActions resultActions = requestCreateComment(unauthorizedAccessToken, orderId, request);
+        final ResultActions resultActions = requestCreateComment(unauthorizedAccessToken, orderId, request);
 
         // then
         assertError(UserErrorCode.UNAUTHORIZED_JWT, resultActions);
@@ -384,7 +384,7 @@ public class OrderIntegrationTest extends IntegrationTest {
         final CreateCommentRequest request = CreateCommentRequestBuilder.build();
 
         // when
-        ResultActions resultActions = requestCreateComment(refreshToken, orderId, request);
+        final ResultActions resultActions = requestCreateComment(refreshToken, orderId, request);
 
         // then
         assertError(UserErrorCode.INVALID_TOKEN_TYPE, resultActions);
@@ -402,7 +402,7 @@ public class OrderIntegrationTest extends IntegrationTest {
         final CreateCommentRequest request = CreateCommentRequestBuilder.build();
 
         // when
-        ResultActions resultActions = requestCreateComment(expiredAccessToken, orderId, request);
+        final ResultActions resultActions = requestCreateComment(expiredAccessToken, orderId, request);
 
         // then
         assertError(UserErrorCode.EXPIRED_JWT, resultActions);
@@ -420,7 +420,7 @@ public class OrderIntegrationTest extends IntegrationTest {
         final CreateCommentRequest request = CreateCommentRequestBuilder.build();
 
         // when
-        ResultActions resultActions = requestCreateComment(invalidToken, orderId, request);
+        final ResultActions resultActions = requestCreateComment(invalidToken, orderId, request);
 
         // then
         assertError(UserErrorCode.INVALID_JWT, resultActions);
@@ -431,7 +431,7 @@ public class OrderIntegrationTest extends IntegrationTest {
      * - 실패 사유 : 거래에 대한 접근 권한이 없음
      */
     @Test
-    public void 거래_댓글_작성_실패_거래접근권한() throws Exception {
+    public void 거래_댓글_작성_실패_거래_접근_권한() throws Exception {
         // given
         final String accessTokenOfUser2 = jwtBuilder.accessJwtBuildOfUser2();
         final String orderId = "1";
@@ -498,7 +498,7 @@ public class OrderIntegrationTest extends IntegrationTest {
         final String orderId = "5";
 
         // when
-        ResultActions resultActions = requestDeleteOrderWithOutAccessToken(orderId);
+        final ResultActions resultActions = requestDeleteOrderWithOutAccessToken(orderId);
 
         // then
         assertError(UserErrorCode.MISSING_JWT, resultActions);
@@ -515,7 +515,7 @@ public class OrderIntegrationTest extends IntegrationTest {
         final String orderId = "1";
 
         // when
-        ResultActions resultActions = requestDeleteOrder(unauthorizedAccessToken, orderId);
+        final ResultActions resultActions = requestDeleteOrder(unauthorizedAccessToken, orderId);
 
         // then
         assertError(UserErrorCode.UNAUTHORIZED_JWT, resultActions);
@@ -532,7 +532,7 @@ public class OrderIntegrationTest extends IntegrationTest {
         final String orderId = "1";
 
         // when
-        ResultActions resultActions = requestDeleteOrder(refreshToken, orderId);
+        final ResultActions resultActions = requestDeleteOrder(refreshToken, orderId);
 
         // then
         assertError(UserErrorCode.INVALID_TOKEN_TYPE, resultActions);
@@ -549,7 +549,7 @@ public class OrderIntegrationTest extends IntegrationTest {
         final String orderId = "1";
 
         // when
-        ResultActions resultActions = requestDeleteOrder(expiredAccessToken, orderId);
+        final ResultActions resultActions = requestDeleteOrder(expiredAccessToken, orderId);
 
         // then
         assertError(UserErrorCode.EXPIRED_JWT, resultActions);
@@ -566,7 +566,7 @@ public class OrderIntegrationTest extends IntegrationTest {
         final String orderId = "1";
 
         // when
-        ResultActions resultActions = requestDeleteOrder(invalidToken, orderId);
+        final ResultActions resultActions = requestDeleteOrder(invalidToken, orderId);
 
         // then
         assertError(UserErrorCode.INVALID_JWT, resultActions);
@@ -577,7 +577,7 @@ public class OrderIntegrationTest extends IntegrationTest {
      * - 실패 사유 : 거래에 대한 접근 권한이 없음
      */
     @Test
-    public void 거래_삭제_실패_거래접근권한() throws Exception {
+    public void 거래_삭제_실패_거래_접근_권한() throws Exception {
         // given
         final String accessTokenOfUser2 = jwtBuilder.accessJwtBuildOfUser2();
         final String orderId = "5";

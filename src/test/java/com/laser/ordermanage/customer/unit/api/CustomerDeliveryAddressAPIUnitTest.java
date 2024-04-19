@@ -825,6 +825,24 @@ public class CustomerDeliveryAddressAPIUnitTest extends APIUnitTest {
 
     /**
      * 고객 배송지 삭제 실패
+     * - 실패 사유 : delivery-address-id 파라미터 타입
+     */
+    @Test
+    @WithMockUser(roles = {"CUSTOMER"})
+    public void 고객_배송지_삭제_실패_delivery_address_id_파라미터_타입() throws Exception {
+        // given
+        final String accessToken = "access-token";
+        final String invalidDeliveryAddressId = "invalid-address-id";
+
+        // when
+        final ResultActions resultActions = requestDeleteDeliveryAddress(accessToken, invalidDeliveryAddressId);
+
+        // then
+        assertErrorWithMessage(CommonErrorCode.MISMATCH_PARAMETER_TYPE, resultActions, "delivery-address-id");
+    }
+
+    /**
+     * 고객 배송지 삭제 실패
      * - 실패 사유 : 배송지에 대한 접근 권한이 없음
      */
     @Test

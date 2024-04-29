@@ -29,7 +29,7 @@ public class CustomerDeliveryAddressService {
         Customer customer = customerUserAccountService.getCustomerByUserEmail(email);
 
         if (request.isDefault()) {
-            DeliveryAddress defaultDeliveryAddress = deliveryAddressRepository.findFirstByCustomerAndIsDefaultTrue(customer);
+            DeliveryAddress defaultDeliveryAddress = deliveryAddressRepository.findFirstByCustomerIdAndIsDefaultTrue(customer.getId());
             defaultDeliveryAddress.disableDefault();
         }
 

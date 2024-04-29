@@ -48,14 +48,14 @@ public class CustomerDeliveryAddressServiceUnitTest extends ServiceUnitTest {
 
         // stub
         when(customerUserAccountService.getCustomerByUserEmail(email)).thenReturn(customer);
-        when(deliveryAddressRepository.findFirstByCustomerAndIsDefaultTrue(customer)).thenReturn(defaultDeliveryAddress);
+        when(deliveryAddressRepository.findFirstByCustomerIdAndIsDefaultTrue(customer.getId())).thenReturn(defaultDeliveryAddress);
 
         // when
         customerDeliveryAddressService.createDeliveryAddress(email, request);
 
         // then
         Assertions.assertThat(defaultDeliveryAddress.getIsDefault()).isFalse();
-        verify(deliveryAddressRepository, times(1)).findFirstByCustomerAndIsDefaultTrue(any());
+        verify(deliveryAddressRepository, times(1)).findFirstByCustomerIdAndIsDefaultTrue(any());
         verify(deliveryAddressRepository, times(1)).save(any());
     }
 

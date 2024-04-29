@@ -10,7 +10,6 @@ import com.laser.ordermanage.customer.dto.response.CustomerGetDeliveryAddressRes
 import com.laser.ordermanage.customer.exception.CustomerErrorCode;
 import com.laser.ordermanage.customer.repository.DeliveryAddressRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -71,7 +70,7 @@ public class CustomerDeliveryAddressService {
             throw new CustomCommonException(CustomerErrorCode.UNABLE_DEFAULT_DELIVERY_ADDRESS_DISABLE);
         }
 
-        if (request.isDefault()) {
+        if (!deliveryAddress.isDefault() && request.isDefault()) {
             DeliveryAddress defaultDeliveryAddress = deliveryAddressRepository.findFirstByCustomer_User_EmailAndIsDefaultTrue(email);
             defaultDeliveryAddress.disableDefault();
             deliveryAddress.asDefault();
@@ -93,8 +92,8 @@ public class CustomerDeliveryAddressService {
     }
 
     @Transactional(readOnly = true)
-    public void checkAuthorityCustomerOfDeliveryAddress(User user, Long deliveryAddressId) {
-        if (!this.getUserEmailByDeliveryAddress(deliveryAddressId).equals(user.getUsername())) {
+    public void checkAuthorityCustomerOfDeliveryAddress(String email, Long deliveryAddressId) {
+        if (!this.getUserEmailByDeliveryAddress(deliveryAddressId).equals(email)) {
             throw new CustomCommonException(CustomerErrorCode.DENIED_ACCESS_TO_DELIVERY_ADDRESS);
         }
     }

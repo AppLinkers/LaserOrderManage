@@ -23,7 +23,6 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.springframework.security.core.userdetails.User;
 
 import java.util.Optional;
 
@@ -290,7 +289,7 @@ public class OrderServiceUnitTest extends ServiceUnitTest {
     @Test
     public void deleteOrder_실패_NOT_FOUND_ORDER() {
         // given
-        final Long unknownOrderId = 1L;
+        final Long unknownOrderId = 0L;
 
         // stub
         when(orderRepository.findFirstById(unknownOrderId)).thenReturn(Optional.empty());
@@ -328,14 +327,13 @@ public class OrderServiceUnitTest extends ServiceUnitTest {
     public void checkAuthorityCustomerOfOrderOrFactory_성공_Factory() {
         // given
         final UserEntity userEntity = UserEntityBuilder.factoryAdminUserBuild();
-        final User user = new User(userEntity.getUsername(), "", userEntity.getAuthorities());
         final Long orderId = 1L;
 
         // stub
-        when(userAuthService.getUserByEmail(user.getUsername())).thenReturn(userEntity);
+        when(userAuthService.getUserByEmail(userEntity.getEmail())).thenReturn(userEntity);
 
         // when
-        orderService.checkAuthorityCustomerOfOrderOrFactory(user, orderId);
+        orderService.checkAuthorityCustomerOfOrderOrFactory(userEntity.getEmail(), orderId);
     }
 
     /**
@@ -345,15 +343,14 @@ public class OrderServiceUnitTest extends ServiceUnitTest {
     public void checkAuthorityCustomerOfOrderOrFactory_성공_Customer() {
         // given
         final UserEntity userEntity = UserEntityBuilder.build();
-        final User user = new User(userEntity.getUsername(), "", userEntity.getAuthorities());
         final Long orderId = 1L;
 
         // stub
-        when(userAuthService.getUserByEmail(user.getUsername())).thenReturn(userEntity);
+        when(userAuthService.getUserByEmail(userEntity.getEmail())).thenReturn(userEntity);
         when(orderRepository.findUserEmailById(orderId)).thenReturn(Optional.of(userEntity.getEmail()));
 
         // when
-        orderService.checkAuthorityCustomerOfOrderOrFactory(user, orderId);
+        orderService.checkAuthorityCustomerOfOrderOrFactory(userEntity.getEmail(), orderId);
     }
 
     /**
@@ -364,37 +361,35 @@ public class OrderServiceUnitTest extends ServiceUnitTest {
     public void checkAuthorityCustomerOfOrderOrFactory_실패_NOT_FOUND_ORDER() {
         // given
         final UserEntity userEntity = UserEntityBuilder.build();
-        final User user = new User(userEntity.getUsername(), "", userEntity.getAuthorities());
         final Long unknownOrderId = 0L;
 
         // stub
-        when(userAuthService.getUserByEmail(user.getUsername())).thenReturn(userEntity);
+        when(userAuthService.getUserByEmail(userEntity.getEmail())).thenReturn(userEntity);
         when(orderRepository.findUserEmailById(unknownOrderId)).thenReturn(Optional.empty());
 
         // when & then
-        Assertions.assertThatThrownBy(() -> orderService.checkAuthorityCustomerOfOrderOrFactory(user, unknownOrderId))
+        Assertions.assertThatThrownBy(() -> orderService.checkAuthorityCustomerOfOrderOrFactory(userEntity.getEmail(), unknownOrderId))
                 .isInstanceOf(CustomCommonException.class)
                 .hasMessage(OrderErrorCode.NOT_FOUND_ORDER.getMessage());
     }
 
     /**
      * 거래 DB id 에 해당하는 거래의 접근 권한 확인 실패
-     * - 실패 사유 :
+     * - 실패 사유 : 접근 권한 없음
      */
     @Test
     public void checkAuthorityCustomerOfOrderOrFactory_실패_DENIED_ACCESS_TO_ORDER() {
         // given
         final UserEntity userEntity = UserEntityBuilder.build();
-        final User user = new User(userEntity.getUsername(), "", userEntity.getAuthorities());
-        final Long unknownOrderId = 0L;
+        final Long orderId = 0L;
         final String userEmailOfOrder = "user-order@gmail.com";
 
         // stub
-        when(userAuthService.getUserByEmail(user.getUsername())).thenReturn(userEntity);
-        when(orderRepository.findUserEmailById(unknownOrderId)).thenReturn(Optional.of(userEmailOfOrder));
+        when(userAuthService.getUserByEmail(userEntity.getEmail())).thenReturn(userEntity);
+        when(orderRepository.findUserEmailById(orderId)).thenReturn(Optional.of(userEmailOfOrder));
 
         // when & then
-        Assertions.assertThatThrownBy(() -> orderService.checkAuthorityCustomerOfOrderOrFactory(user, unknownOrderId))
+        Assertions.assertThatThrownBy(() -> orderService.checkAuthorityCustomerOfOrderOrFactory(userEntity.getEmail(), orderId))
                 .isInstanceOf(CustomCommonException.class)
                 .hasMessage(OrderErrorCode.DENIED_ACCESS_TO_ORDER.getMessage());
     }

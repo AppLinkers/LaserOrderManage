@@ -58,7 +58,7 @@ public class CustomerDeliveryAddressAPI {
     ) {
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        customerDeliveryAddressService.checkAuthorityCustomerOfDeliveryAddress(user, deliveryAddressId);
+        customerDeliveryAddressService.checkAuthorityCustomerOfDeliveryAddress(user.getUsername(), deliveryAddressId);
 
         customerDeliveryAddressService.updateDeliveryAddress(user.getUsername(), deliveryAddressId, request);
 
@@ -77,7 +77,7 @@ public class CustomerDeliveryAddressAPI {
 
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        customerDeliveryAddressService.checkAuthorityCustomerOfDeliveryAddress(user, deliveryAddressId);
+        customerDeliveryAddressService.checkAuthorityCustomerOfDeliveryAddress(user.getUsername(), deliveryAddressId);
 
         customerDeliveryAddressService.deleteDeliveryAddress(deliveryAddressId);
 

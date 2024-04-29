@@ -34,7 +34,7 @@ public class CustomerDeliveryAddressIntegrationTest extends IntegrationTest {
     public void 고객_배송지_생성_성공() throws Exception {
         // given
         final String accessToken = jwtBuilder.accessJwtBuild();
-        final CustomerCreateOrUpdateDeliveryAddressRequest request = CustomerCreateOrUpdateDeliveryAddressRequestBuilder.build();
+        final CustomerCreateOrUpdateDeliveryAddressRequest request = CustomerCreateOrUpdateDeliveryAddressRequestBuilder.createBuild();
 
         // when
         final ResultActions resultActions = requestCreateDeliveryAddress(accessToken, request);
@@ -50,7 +50,7 @@ public class CustomerDeliveryAddressIntegrationTest extends IntegrationTest {
     @Test
     public void 고객_배송지_생성_실패_Header_Authorization_존재() throws Exception {
         // given
-        final CustomerCreateOrUpdateDeliveryAddressRequest request = CustomerCreateOrUpdateDeliveryAddressRequestBuilder.build();
+        final CustomerCreateOrUpdateDeliveryAddressRequest request = CustomerCreateOrUpdateDeliveryAddressRequestBuilder.createBuild();
 
         // when
         final ResultActions resultActions = requestCreateDeliveryAddressWithOutAccessToken(request);
@@ -67,7 +67,7 @@ public class CustomerDeliveryAddressIntegrationTest extends IntegrationTest {
     public void 고객_배송지_생성_실패_Unauthorized_Access_Token() throws Exception {
         // given
         final String unauthorizedAccessToken = jwtBuilder.unauthorizedAccessJwtBuild();
-        final CustomerCreateOrUpdateDeliveryAddressRequest request = CustomerCreateOrUpdateDeliveryAddressRequestBuilder.build();
+        final CustomerCreateOrUpdateDeliveryAddressRequest request = CustomerCreateOrUpdateDeliveryAddressRequestBuilder.createBuild();
 
         // when
         final ResultActions resultActions = requestCreateDeliveryAddress(unauthorizedAccessToken, request);
@@ -84,7 +84,7 @@ public class CustomerDeliveryAddressIntegrationTest extends IntegrationTest {
     public void 고객_배송지_생성_실패_Token_Type() throws Exception {
         // given
         final String refreshToken = jwtBuilder.refreshJwtBuild();
-        final CustomerCreateOrUpdateDeliveryAddressRequest request = CustomerCreateOrUpdateDeliveryAddressRequestBuilder.build();
+        final CustomerCreateOrUpdateDeliveryAddressRequest request = CustomerCreateOrUpdateDeliveryAddressRequestBuilder.createBuild();
 
         // when
         final ResultActions resultActions = requestCreateDeliveryAddress(refreshToken, request);
@@ -101,7 +101,7 @@ public class CustomerDeliveryAddressIntegrationTest extends IntegrationTest {
     public void 고객_배송지_생성_실패_Expired_Access_Token() throws Exception {
         // given
         final String expiredAccessToken = jwtBuilder.expiredAccessJwtBuild();
-        final CustomerCreateOrUpdateDeliveryAddressRequest request = CustomerCreateOrUpdateDeliveryAddressRequestBuilder.build();
+        final CustomerCreateOrUpdateDeliveryAddressRequest request = CustomerCreateOrUpdateDeliveryAddressRequestBuilder.createBuild();
 
         // when
         final ResultActions resultActions = requestCreateDeliveryAddress(expiredAccessToken, request);
@@ -118,7 +118,7 @@ public class CustomerDeliveryAddressIntegrationTest extends IntegrationTest {
     public void 고객_배송지_생성_실패_Invalid_Token() throws Exception {
         // given
         final String invalidToken = jwtBuilder.invalidJwtBuild();
-        final CustomerCreateOrUpdateDeliveryAddressRequest request = CustomerCreateOrUpdateDeliveryAddressRequestBuilder.build();
+        final CustomerCreateOrUpdateDeliveryAddressRequest request = CustomerCreateOrUpdateDeliveryAddressRequestBuilder.createBuild();
 
         // when
         final ResultActions resultActions = requestCreateDeliveryAddress(invalidToken, request);
@@ -362,7 +362,7 @@ public class CustomerDeliveryAddressIntegrationTest extends IntegrationTest {
         // given
         final String accessToken = jwtBuilder.accessJwtBuild();
         final String deliveryAddressId = "1";
-        final CustomerCreateOrUpdateDeliveryAddressRequest request = CustomerCreateOrUpdateDeliveryAddressRequestBuilder.DefaultDeliveryAddressDisableUpdateBuild();
+        final CustomerCreateOrUpdateDeliveryAddressRequest request = CustomerCreateOrUpdateDeliveryAddressRequestBuilder.defaultDeliveryAddressDisableUpdateBuild();
 
         // when
         final ResultActions resultActions = requestUpdateDeliveryAddress(accessToken, deliveryAddressId, request);

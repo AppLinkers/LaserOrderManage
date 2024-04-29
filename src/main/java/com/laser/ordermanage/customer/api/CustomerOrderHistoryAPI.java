@@ -81,7 +81,7 @@ public class CustomerOrderHistoryAPI {
     public ResponseEntity<?> getOrderCreateInformation(@PathVariable Long orderId) {
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        customerOrderService.checkAuthorityOfOrder(user, orderId);
+        customerOrderService.checkAuthorityOfOrder(user.getUsername(), orderId);
 
         return ResponseEntity.ok(customerOrderHistoryService.getOrderCreateInformation(orderId));
     }

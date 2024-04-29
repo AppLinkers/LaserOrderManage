@@ -65,9 +65,9 @@ public class CustomerOrderAPI {
 
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        customerOrderService.checkAuthorityOfOrder(user, orderId);
+        customerOrderService.checkAuthorityOfOrder(user.getUsername(), orderId);
 
-        customerDeliveryAddressService.checkAuthorityCustomerOfDeliveryAddress(user, request.deliveryAddressId());
+        customerDeliveryAddressService.checkAuthorityCustomerOfDeliveryAddress(user.getUsername(), request.deliveryAddressId());
 
         customerOrderService.updateOrderDeliveryAddress(orderId, request);
 
@@ -91,7 +91,7 @@ public class CustomerOrderAPI {
 
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        customerOrderService.checkAuthorityOfOrder(user, orderId);
+        customerOrderService.checkAuthorityOfOrder(user.getUsername(), orderId);
 
         Long drawingId = customerOrderService.createOrderDrawing(orderId, request);
 
@@ -121,7 +121,7 @@ public class CustomerOrderAPI {
 
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        customerOrderService.checkAuthorityOfOrder(user, orderId);
+        customerOrderService.checkAuthorityOfOrder(user.getUsername(), orderId);
 
         customerOrderService.updateOrderDrawing(orderId, drawingId, request);
 
@@ -146,7 +146,7 @@ public class CustomerOrderAPI {
 
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        customerOrderService.checkAuthorityOfOrder(user, orderId);
+        customerOrderService.checkAuthorityOfOrder(user.getUsername(), orderId);
 
         customerOrderService.deleteOrderDrawing(orderId, drawingId);
 
@@ -169,7 +169,7 @@ public class CustomerOrderAPI {
 
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        customerOrderService.checkAuthorityOfOrder(user, orderId);
+        customerOrderService.checkAuthorityOfOrder(user.getUsername(), orderId);
 
         customerOrderService.approveQuotation(orderId);
 
@@ -194,7 +194,7 @@ public class CustomerOrderAPI {
 
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        customerOrderService.checkAuthorityOfOrder(user, orderId);
+        customerOrderService.checkAuthorityOfOrder(user.getUsername(), orderId);
 
         Order order = orderService.getOrderById(orderId);
 

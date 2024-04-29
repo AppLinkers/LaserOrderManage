@@ -16,7 +16,6 @@ import com.laser.ordermanage.user.domain.UserEntity;
 import com.laser.ordermanage.user.domain.type.Role;
 import com.laser.ordermanage.user.service.UserAuthService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -97,13 +96,13 @@ public class OrderService {
     }
 
     @Transactional(readOnly = true)
-    public void checkAuthorityCustomerOfOrderOrFactory(User user, Long orderId) {
-        UserEntity userEntity = userAuthService.getUserByEmail(user.getUsername());
+    public void checkAuthorityCustomerOfOrderOrFactory(String email, Long orderId) {
+        UserEntity userEntity = userAuthService.getUserByEmail(email);
         if (userEntity.getRole().equals(Role.ROLE_FACTORY)) {
             return;
         }
 
-        if (!getUserEmailByOrder(orderId).equals(user.getUsername())) {
+        if (!getUserEmailByOrder(orderId).equals(email)) {
             throw new CustomCommonException(OrderErrorCode.DENIED_ACCESS_TO_ORDER);
         }
     }

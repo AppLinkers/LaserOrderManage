@@ -31,7 +31,7 @@ public class OrderAPI {
 
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        orderService.checkAuthorityCustomerOfOrderOrFactory(user, orderId);
+        orderService.checkAuthorityCustomerOfOrderOrFactory(user.getUsername(), orderId);
 
         return ResponseEntity.ok(orderService.getOrderDetail(orderId));
     }
@@ -46,7 +46,7 @@ public class OrderAPI {
 
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        orderService.checkAuthorityCustomerOfOrderOrFactory(user, orderId);
+        orderService.checkAuthorityCustomerOfOrderOrFactory(user.getUsername(), orderId);
 
         return ResponseEntity.ok(orderService.getCommentByOrder(orderId));
     }
@@ -66,7 +66,7 @@ public class OrderAPI {
 
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        orderService.checkAuthorityCustomerOfOrderOrFactory(user, orderId);
+        orderService.checkAuthorityCustomerOfOrderOrFactory(user.getUsername(), orderId);
 
         Long commentId = orderService.createOrderComment(user.getUsername(), orderId, request);
 
@@ -88,7 +88,7 @@ public class OrderAPI {
 
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        orderService.checkAuthorityCustomerOfOrderOrFactory(user, orderId);
+        orderService.checkAuthorityCustomerOfOrderOrFactory(user.getUsername(), orderId);
 
         DeleteOrderResponse deletedOrder = orderService.deleteOrder(orderId);
 

@@ -1,7 +1,7 @@
 package com.laser.ordermanage.customer.dto.request;
 
 public class CustomerCreateOrUpdateDeliveryAddressRequestBuilder {
-    public static CustomerCreateOrUpdateDeliveryAddressRequest build() {
+    public static CustomerCreateOrUpdateDeliveryAddressRequest createBuild() {
         return CustomerCreateOrUpdateDeliveryAddressRequest.builder()
                 .name("배송지 이름")
                 .zipCode("11111")
@@ -10,7 +10,7 @@ public class CustomerCreateOrUpdateDeliveryAddressRequestBuilder {
                 .receiver("수신자")
                 .phone1("01011111111")
                 .phone2("01011112222")
-                .isDefault(Boolean.FALSE)
+                .isDefault(Boolean.TRUE)
                 .build();
     }
 
@@ -27,7 +27,7 @@ public class CustomerCreateOrUpdateDeliveryAddressRequestBuilder {
                 .build();
     }
 
-    public static CustomerCreateOrUpdateDeliveryAddressRequest DefaultDeliveryAddressDisableUpdateBuild() {
+    public static CustomerCreateOrUpdateDeliveryAddressRequest defaultDeliveryAddressDisableUpdateBuild() {
         return CustomerCreateOrUpdateDeliveryAddressRequest.builder()
                 .name("고객 1 배송지")
                 .zipCode("11111")

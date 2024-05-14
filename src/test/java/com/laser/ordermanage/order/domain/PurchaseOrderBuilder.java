@@ -8,7 +8,7 @@ import java.time.LocalDate;
 public class PurchaseOrderBuilder {
     public static PurchaseOrder build() {
         File<PurchaseOrderFileType> file = File.<PurchaseOrderFileType>builder()
-                .name("purchase_order.png")
+                .name("purchase-order.png")
                 .size(3608L)
                 .type(PurchaseOrderFileType.PNG)
                 .url("https://ordermanage.s3.ap-northeast-2.amazonaws.com/purchase-order/purchase_order.png")

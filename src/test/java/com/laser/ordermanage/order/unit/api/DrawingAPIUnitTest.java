@@ -138,7 +138,7 @@ public class DrawingAPIUnitTest extends APIUnitTest {
         return mvc.perform(
                         multipart("/drawing")
                                 .file(file)
-                                .accept(MediaType.APPLICATION_JSON)
+                                .contentType(MediaType.APPLICATION_JSON)
                                 .header("Authorization", "Bearer " + accessToken))
                 .andDo(print());
     }

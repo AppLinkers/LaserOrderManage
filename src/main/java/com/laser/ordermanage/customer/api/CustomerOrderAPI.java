@@ -189,7 +189,7 @@ public class CustomerOrderAPI {
     @PutMapping("/{order-id}/purchase-order")
     public ResponseEntity<?> createOrUpdateOrderPurchaseOrder(
         @PathVariable("order-id") Long orderId,
-        @RequestParam(required = false) MultipartFile file,
+        @RequestPart(required = false) MultipartFile file,
         @RequestPart(value = "purchaseOrder") @Valid CustomerCreateOrUpdateOrderPurchaseOrderRequest request) {
 
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();

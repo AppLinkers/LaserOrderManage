@@ -6,10 +6,7 @@ import com.laser.ordermanage.order.service.DrawingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 @Validated
@@ -28,7 +25,7 @@ public class DrawingAPI {
      * - 썸네일 이미지 파일 AWS S3 에 업로드
      */
     @PostMapping("")
-    public ResponseEntity<?> uploadDrawingFile(@RequestParam @ValidFile(message = "도면 파일은 필수 입력값입니다.") MultipartFile file) {
+    public ResponseEntity<?> uploadDrawingFile(@RequestPart @ValidFile(message = "도면 파일은 필수 입력값입니다.") MultipartFile file) {
         UploadDrawingFileResponse uploadDrawingFileResponse = drawingService.uploadDrawingFile(file);
 
         return ResponseEntity.ok(uploadDrawingFileResponse);

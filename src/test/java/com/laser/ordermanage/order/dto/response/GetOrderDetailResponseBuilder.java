@@ -42,7 +42,7 @@ public class GetOrderDetailResponseBuilder {
         LocalDate inspectionPeriod = LocalDate.parse("2023-10-20", DateTimeFormatter.ISO_LOCAL_DATE);
         LocalDate paymentDate = LocalDate.parse("2023-10-20", DateTimeFormatter.ISO_LOCAL_DATE);
         LocalDateTime createdAtOfPurchaseOrder = LocalDateTime.parse("2023-10-17 00:00:00", formatter);
-        GetPurchaseOrderResponse purchaseOrder = new GetPurchaseOrderResponse(1L, "purchase_order.png", "https://ordermanage.s3.ap-northeast-2.amazonaws.com/purchase-order/purchase_order.png", inspectionPeriod, "검수 조건 1", paymentDate, createdAtOfPurchaseOrder);
+        GetPurchaseOrderResponse purchaseOrder = new GetPurchaseOrderResponse(1L, "purchase-order.png", "https://ordermanage.s3.ap-northeast-2.amazonaws.com/purchase-order/purchase-order.png", inspectionPeriod, "검수 조건 1", paymentDate, createdAtOfPurchaseOrder);
 
         GetAcquirerResponse acquirer = new GetAcquirerResponse(1L, "인수자 1 이름", "01012121212", "signature.png", "https://ordermanage.s3.ap-northeast-2.amazonaws.com/acquirer-signature/signature.png");
         return new GetOrderDetailResponse(customer, order, quotation, purchaseOrder, acquirer);

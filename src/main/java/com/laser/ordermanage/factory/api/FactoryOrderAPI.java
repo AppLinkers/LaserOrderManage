@@ -64,7 +64,7 @@ public class FactoryOrderAPI {
     @PutMapping("/{order-id}/quotation")
     public ResponseEntity<?> createOrUpdateOrderQuotation(
             @PathVariable("order-id") Long orderId,
-            @RequestParam(required = false) MultipartFile file,
+            @RequestPart(required = false) MultipartFile file,
             @RequestPart(value = "quotation") @Valid FactoryCreateOrUpdateOrderQuotationRequest request) {
 
         Order order = orderService.getOrderById(orderId);
@@ -161,7 +161,7 @@ public class FactoryOrderAPI {
     @PostMapping("/{order-id}/stage/completed")
     public ResponseEntity<?> changeStageToCompleted(
             @PathVariable("order-id") Long orderId,
-            @RequestParam @ValidFile(message = "인수자 서명 파일은 필수 입력값입니다.") MultipartFile file,
+            @RequestPart @ValidFile(message = "인수자 서명 파일은 필수 입력값입니다.") MultipartFile file,
             @RequestPart("acquirer") @Valid FactoryCreateOrderAcquirerRequest request
     ) {
 

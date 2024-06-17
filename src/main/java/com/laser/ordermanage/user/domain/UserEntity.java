@@ -5,6 +5,7 @@ import com.laser.ordermanage.common.entity.CreatedAtEntity;
 import com.laser.ordermanage.common.entity.embedded.Address;
 import com.laser.ordermanage.user.domain.type.Authority;
 import com.laser.ordermanage.user.domain.type.Role;
+import com.laser.ordermanage.user.domain.type.SignupMethod;
 import com.laser.ordermanage.user.dto.request.UpdateUserAccountRequest;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -32,7 +33,7 @@ public class UserEntity extends CreatedAtEntity implements UserDetails {
     @Column(name = "email", nullable = false, unique = true)
     private String email;
 
-    @Column(name = "password", nullable = false)
+    @Column(name = "password")
     private String password;
 
     @Column(name = "name", nullable = false, length = 10)
@@ -56,8 +57,12 @@ public class UserEntity extends CreatedAtEntity implements UserDetails {
     @Column(name = "email_notification", nullable = false, length = 1)
     private Boolean emailNotification = Boolean.TRUE;
 
+    @Enumerated(value = EnumType.STRING)
+    @Column(name = "signup_method", nullable = false, updatable = false)
+    private SignupMethod signupMethod;
+
     @Builder
-    public UserEntity(String email, String password, String name, Role role, Authority authority, String phone, Address address) {
+    public UserEntity(String email, String password, String name, Role role, Authority authority, String phone, Address address, SignupMethod signupMethod) {
         this.email = email;
         this.password = password;
         this.name = name;
@@ -65,6 +70,7 @@ public class UserEntity extends CreatedAtEntity implements UserDetails {
         this.role = role;
         this.phone = phone;
         this.address = address;
+        this.signupMethod = signupMethod;
     }
 
     @Override
@@ -109,6 +115,10 @@ public class UserEntity extends CreatedAtEntity implements UserDetails {
 
     public void changeEmailNotification(Boolean emailNotification) {
         this.emailNotification = emailNotification;
+    }
+
+    public boolean enableChangePassword() {
+        return this.signupMethod.equals(SignupMethod.BASIC);
     }
 
     public void updateProperties(UpdateUserAccountRequest request) {

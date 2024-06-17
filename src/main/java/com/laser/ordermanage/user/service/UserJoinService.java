@@ -13,6 +13,7 @@ import com.laser.ordermanage.customer.repository.DeliveryAddressRepository;
 import com.laser.ordermanage.user.domain.UserEntity;
 import com.laser.ordermanage.user.domain.type.Authority;
 import com.laser.ordermanage.user.domain.type.Role;
+import com.laser.ordermanage.user.domain.type.SignupMethod;
 import com.laser.ordermanage.user.dto.request.VerifyEmailRequest;
 import com.laser.ordermanage.user.dto.response.UserJoinStatusResponse;
 import com.laser.ordermanage.user.dto.type.JoinStatus;
@@ -91,7 +92,7 @@ public class UserJoinService {
     }
 
     @Transactional
-    public UserJoinStatusResponse joinCustomer(JoinCustomerRequest request) {
+    public UserJoinStatusResponse joinCustomer(JoinCustomerRequest request, SignupMethod signupMethod) {
         UserJoinStatusResponse response = checkDuplicatedEmail(request.email());
 
         if (JoinStatus.isPossible(response.status())) {
@@ -109,6 +110,7 @@ public class UserJoinService {
                     .authority(Authority.AUTHORITY_ADMIN)
                     .phone(request.phone())
                     .address(address)
+                    .signupMethod(signupMethod)
                     .build();
 
             Customer customer = Customer.builder()

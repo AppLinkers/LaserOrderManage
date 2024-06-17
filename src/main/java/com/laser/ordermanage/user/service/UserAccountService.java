@@ -48,6 +48,10 @@ public class UserAccountService {
     public void requestChangePassword(RequestChangePasswordRequest request) {
         UserEntity user = userAuthService.getUserByEmail(request.email());
 
+        if (!user.enableChangePassword()) {
+            throw new CustomCommonException(UserErrorCode.SOCIAL_USER_UNABLE_TO_CHANGE_PASSWORD);
+        }
+
         String changePasswordToken = jwtProvider.generateChangePasswordToken(user);
 
         changePasswordTokenRedisRepository.save(
@@ -89,6 +93,10 @@ public class UserAccountService {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         UserEntity user = userAuthService.getUserByEmail(authentication.getName());
+
+        if (!user.enableChangePassword()) {
+            throw new CustomCommonException(UserErrorCode.SOCIAL_USER_UNABLE_TO_CHANGE_PASSWORD);
+        }
 
         user.changePassword(passwordEncoder.encode(request.password()));
     }

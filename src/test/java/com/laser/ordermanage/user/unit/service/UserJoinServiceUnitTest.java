@@ -9,6 +9,7 @@ import com.laser.ordermanage.customer.dto.request.JoinCustomerRequest;
 import com.laser.ordermanage.customer.repository.DeliveryAddressRepository;
 import com.laser.ordermanage.user.domain.UserEntity;
 import com.laser.ordermanage.user.domain.UserEntityBuilder;
+import com.laser.ordermanage.user.domain.type.SignupMethod;
 import com.laser.ordermanage.user.dto.request.JoinCustomerRequestBuilder;
 import com.laser.ordermanage.user.dto.request.VerifyEmailRequest;
 import com.laser.ordermanage.user.dto.request.VerifyEmailRequestBuilder;
@@ -193,7 +194,7 @@ public class UserJoinServiceUnitTest extends ServiceUnitTest {
         when(userRepository.findFirstByEmail(request.email())).thenReturn(Optional.empty());
 
         // when
-        UserJoinStatusResponse actualResponse = userJoinService.joinCustomer(request);
+        UserJoinStatusResponse actualResponse = userJoinService.joinCustomer(request, SignupMethod.BASIC);
 
         // then
         Assertions.assertThat(actualResponse).isEqualTo(expectedResponse);
@@ -214,7 +215,7 @@ public class UserJoinServiceUnitTest extends ServiceUnitTest {
         when(userRepository.findFirstByEmail(request.email())).thenReturn(Optional.of(user));
 
         // when
-        UserJoinStatusResponse actualResponse = userJoinService.joinCustomer(request);
+        UserJoinStatusResponse actualResponse = userJoinService.joinCustomer(request, SignupMethod.BASIC);
 
         // then
         Assertions.assertThat(actualResponse).isEqualTo(expectedResponse);

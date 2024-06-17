@@ -294,7 +294,7 @@ public class UserJoinAPIUnitTest extends APIUnitTest {
         final UserJoinStatusResponse expectedResponse = UserJoinStatusResponseBuilder.buildCompletedWithUserEntity(user);
 
         // stub
-        when(userJoinService.joinCustomer(any())).thenReturn(expectedResponse);
+        when(userJoinService.joinCustomer(any(), any())).thenReturn(expectedResponse);
 
         // when
         final ResultActions resultActions = requestJoinCustomer(request);
@@ -320,7 +320,7 @@ public class UserJoinAPIUnitTest extends APIUnitTest {
         final UserJoinStatusResponse expectedResponse = UserJoinStatusResponseBuilder.buildImpossibleWithUserEntity(user);
 
         // stub
-        when(userJoinService.joinCustomer(any())).thenReturn(expectedResponse);
+        when(userJoinService.joinCustomer(any(), any())).thenReturn(expectedResponse);
 
         // when
         final ResultActions resultActions = requestJoinCustomer(request);

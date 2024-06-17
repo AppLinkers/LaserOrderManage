@@ -21,6 +21,7 @@ public class UserEntityRepositoryCustomImpl implements UserEntityRepositoryCusto
         List<GetUserEmailResponse> getUserEmailResponseList = queryFactory
                 .select(new QGetUserEmailResponse(
                         userEntity.name,
+                        userEntity.signupMethod,
                         userEntity.email
                 ))
                 .from(userEntity)
@@ -44,7 +45,8 @@ public class UserEntityRepositoryCustomImpl implements UserEntityRepositoryCusto
                         userEntity.address.zipCode,
                         userEntity.address.address,
                         userEntity.address.detailAddress,
-                        userEntity.emailNotification
+                        userEntity.emailNotification,
+                        userEntity.signupMethod
                 ))
                 .from(userEntity)
                 .where(userEntity.email.eq(email))

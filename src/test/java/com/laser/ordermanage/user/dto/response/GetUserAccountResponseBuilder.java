@@ -15,6 +15,7 @@ public class GetUserAccountResponseBuilder {
                 .address(user.getAddress().getAddress())
                 .detailAddress(user.getAddress().getDetailAddress())
                 .emailNotification(user.getEmailNotification())
+                .signupMethod(user.getSignupMethod())
                 .build();
     }
 }

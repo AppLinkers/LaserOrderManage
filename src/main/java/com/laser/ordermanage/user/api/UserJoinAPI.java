@@ -1,6 +1,7 @@
 package com.laser.ordermanage.user.api;
 
 import com.laser.ordermanage.customer.dto.request.JoinCustomerRequest;
+import com.laser.ordermanage.user.domain.type.SignupMethod;
 import com.laser.ordermanage.user.dto.request.VerifyEmailRequest;
 import com.laser.ordermanage.user.service.UserJoinService;
 import jakarta.validation.Valid;
@@ -52,6 +53,6 @@ public class UserJoinAPI {
      */
     @PostMapping("/customer")
     public ResponseEntity<?> joinCustomer(@RequestBody @Valid JoinCustomerRequest request) {
-        return ResponseEntity.ok(userJoinService.joinCustomer(request));
+        return ResponseEntity.ok(userJoinService.joinCustomer(request, SignupMethod.BASIC));
     }
 }

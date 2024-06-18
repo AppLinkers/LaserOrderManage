@@ -4,10 +4,10 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.laser.ordermanage.common.IntegrationTest;
 import com.laser.ordermanage.common.cache.redis.dao.VerifyCode;
 import com.laser.ordermanage.common.cache.redis.repository.VerifyCodeRedisRepository;
-import com.laser.ordermanage.customer.dto.request.JoinCustomerRequest;
+import com.laser.ordermanage.customer.dto.request.JoinBasicCustomerRequest;
 import com.laser.ordermanage.user.domain.UserEntity;
 import com.laser.ordermanage.user.domain.UserEntityBuilder;
-import com.laser.ordermanage.user.dto.request.JoinCustomerRequestBuilder;
+import com.laser.ordermanage.user.dto.request.JoinBasicCustomerRequestBuilder;
 import com.laser.ordermanage.user.dto.request.VerifyEmailRequest;
 import com.laser.ordermanage.user.dto.request.VerifyEmailRequestBuilder;
 import com.laser.ordermanage.user.dto.response.UserJoinStatusResponse;
@@ -198,18 +198,18 @@ public class UserJoinIntegrationTest extends IntegrationTest {
     }
 
     /**
-     * 고객 회원가입 성공
+     * 고객 기본 회원가입 성공
      * - 신규 회원
      */
     @Test
-    public void 고객_회원가입_성공_신규회원() throws Exception {
+    public void 고객_기본_회원가입_성공_신규회원() throws Exception {
         // given
-        final JoinCustomerRequest request = JoinCustomerRequestBuilder.build();
+        final JoinBasicCustomerRequest request = JoinBasicCustomerRequestBuilder.build();
         final UserEntity user = UserEntityBuilder.newUserBuild();
         final UserJoinStatusResponse expectedResponse = UserJoinStatusResponseBuilder.buildCompletedWithUserEntity(user);
 
         // when
-        final ResultActions resultActions = requestJoinCustomer(request);
+        final ResultActions resultActions = requestJoinBasicCustomer(request);
 
         // then
         final String responseString = resultActions
@@ -222,20 +222,20 @@ public class UserJoinIntegrationTest extends IntegrationTest {
     }
 
     /**
-     * 고객 회원가입 성공
+     * 고객 기본 회원가입 성공
      * - 이메일 중복
      */
     @Test
-    public void 고객_회원가입_성공_이메일_중복() throws Exception {
+    public void 고객_기본_회원가입_성공_이메일_중복() throws Exception {
         // given
-        final JoinCustomerRequest request = JoinCustomerRequestBuilder.duplicateEmailBuild();
+        final JoinBasicCustomerRequest request = JoinBasicCustomerRequestBuilder.duplicateEmailBuild();
         final UserEntity user = UserEntityBuilder.build();
         final UserJoinStatusResponse expectedResponse = UserJoinStatusResponseBuilder.buildImpossibleWithUserEntity(user);
         final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         final LocalDateTime expectedCreatedAt = LocalDateTime.parse("2023-10-02 10:20:30", formatter);
 
         // when
-        final ResultActions resultActions = requestJoinCustomer(request);
+        final ResultActions resultActions = requestJoinBasicCustomer(request);
 
         // then
         final String responseString = resultActions
@@ -259,7 +259,7 @@ public class UserJoinIntegrationTest extends IntegrationTest {
                 .andDo(print());
     }
 
-    private ResultActions requestJoinCustomer(JoinCustomerRequest request) throws Exception {
+    private ResultActions requestJoinBasicCustomer(JoinBasicCustomerRequest request) throws Exception {
         return mvc.perform(post("/user/customer")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))

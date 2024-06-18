@@ -1,11 +1,11 @@
 package com.laser.ordermanage.user.dto.request;
 
-import com.laser.ordermanage.customer.dto.request.JoinCustomerRequest;
+import com.laser.ordermanage.customer.dto.request.JoinBasicCustomerRequest;
 
-public class JoinCustomerRequestBuilder {
+public class JoinBasicCustomerRequestBuilder {
 
-    public static JoinCustomerRequest build() {
-        return JoinCustomerRequest.builder()
+    public static JoinBasicCustomerRequest build() {
+        return JoinBasicCustomerRequest.builder()
                 .email("new-user1@gmail.com")
                 .password("new-user1-password")
                 .name("new-user")
@@ -16,8 +16,8 @@ public class JoinCustomerRequestBuilder {
                 .build();
     }
 
-    public static JoinCustomerRequest duplicateEmailBuild() {
-        return JoinCustomerRequest.builder()
+    public static JoinBasicCustomerRequest duplicateEmailBuild() {
+        return JoinBasicCustomerRequest.builder()
                 .email("user1@gmail.com")
                 .password("user1-password")
                 .name("new-user")
@@ -28,8 +28,8 @@ public class JoinCustomerRequestBuilder {
                 .build();
     }
 
-    public static JoinCustomerRequest nullEmailBuild() {
-        return JoinCustomerRequest.builder()
+    public static JoinBasicCustomerRequest nullEmailBuild() {
+        return JoinBasicCustomerRequest.builder()
                 .email(null)
                 .password("new-user1-password")
                 .name("new-user")
@@ -40,8 +40,8 @@ public class JoinCustomerRequestBuilder {
                 .build();
     }
 
-    public static JoinCustomerRequest invalidEmailBuild() {
-        return JoinCustomerRequest.builder()
+    public static JoinBasicCustomerRequest invalidEmailBuild() {
+        return JoinBasicCustomerRequest.builder()
                 .email(".user.name@domain.com")
                 .password("new-user1-password")
                 .name("new-user")
@@ -52,8 +52,8 @@ public class JoinCustomerRequestBuilder {
                 .build();
     }
 
-    public static JoinCustomerRequest nullPasswordBuild() {
-        return JoinCustomerRequest.builder()
+    public static JoinBasicCustomerRequest nullPasswordBuild() {
+        return JoinBasicCustomerRequest.builder()
                 .email("new-user1@gmail.com")
                 .password(null)
                 .name("new-user")
@@ -64,8 +64,8 @@ public class JoinCustomerRequestBuilder {
                 .build();
     }
 
-    public static JoinCustomerRequest invalidPasswordBuild() {
-        return JoinCustomerRequest.builder()
+    public static JoinBasicCustomerRequest invalidPasswordBuild() {
+        return JoinBasicCustomerRequest.builder()
                 .email("new-user1@gmail.com")
                 .password("invalid-password")
                 .name("new-user")
@@ -76,8 +76,8 @@ public class JoinCustomerRequestBuilder {
                 .build();
     }
 
-    public static JoinCustomerRequest nullNameBuild() {
-        return JoinCustomerRequest.builder()
+    public static JoinBasicCustomerRequest nullNameBuild() {
+        return JoinBasicCustomerRequest.builder()
                 .email("new-user1@gmail.com")
                 .password("new-user1-password")
                 .name(null)
@@ -88,8 +88,8 @@ public class JoinCustomerRequestBuilder {
                 .build();
     }
 
-    public static JoinCustomerRequest emptyNameBuild() {
-        return JoinCustomerRequest.builder()
+    public static JoinBasicCustomerRequest emptyNameBuild() {
+        return JoinBasicCustomerRequest.builder()
                 .email("new-user1@gmail.com")
                 .password("new-user1-password")
                 .name("")
@@ -100,8 +100,8 @@ public class JoinCustomerRequestBuilder {
                 .build();
     }
 
-    public static JoinCustomerRequest invalidNameBuild() {
-        return JoinCustomerRequest.builder()
+    public static JoinBasicCustomerRequest invalidNameBuild() {
+        return JoinBasicCustomerRequest.builder()
                 .email("new-user1@gmail.com")
                 .password("new-user1-password")
                 .name("너어어어무우우우긴이름")
@@ -112,8 +112,8 @@ public class JoinCustomerRequestBuilder {
                 .build();
     }
 
-    public static JoinCustomerRequest invalidCompanyNameBuild() {
-        return JoinCustomerRequest.builder()
+    public static JoinBasicCustomerRequest invalidCompanyNameBuild() {
+        return JoinBasicCustomerRequest.builder()
                 .email("new-user1@gmail.com")
                 .password("new-user1-password")
                 .name("new-user")
@@ -124,8 +124,8 @@ public class JoinCustomerRequestBuilder {
                 .build();
     }
 
-    public static JoinCustomerRequest nullPhoneBuild() {
-        return JoinCustomerRequest.builder()
+    public static JoinBasicCustomerRequest nullPhoneBuild() {
+        return JoinBasicCustomerRequest.builder()
                 .email("new-user1@gmail.com")
                 .password("new-user1-password")
                 .name("new-user")
@@ -136,8 +136,8 @@ public class JoinCustomerRequestBuilder {
                 .build();
     }
 
-    public static JoinCustomerRequest invalidPhoneBuild() {
-        return JoinCustomerRequest.builder()
+    public static JoinBasicCustomerRequest invalidPhoneBuild() {
+        return JoinBasicCustomerRequest.builder()
                 .email("new-user1@gmail.com")
                 .password("new-user1-password")
                 .name("new-user")
@@ -148,8 +148,8 @@ public class JoinCustomerRequestBuilder {
                 .build();
     }
 
-    public static JoinCustomerRequest nullZipCodeBuild() {
-        return JoinCustomerRequest.builder()
+    public static JoinBasicCustomerRequest nullZipCodeBuild() {
+        return JoinBasicCustomerRequest.builder()
                 .email("new-user1@gmail.com")
                 .password("new-user1-password")
                 .name("new-user")
@@ -160,8 +160,8 @@ public class JoinCustomerRequestBuilder {
                 .build();
     }
 
-    public static JoinCustomerRequest invalidZipCodeBuild() {
-        return JoinCustomerRequest.builder()
+    public static JoinBasicCustomerRequest invalidZipCodeBuild() {
+        return JoinBasicCustomerRequest.builder()
                 .email("new-user1@gmail.com")
                 .password("new-user1-password")
                 .name("new-user")
@@ -172,8 +172,8 @@ public class JoinCustomerRequestBuilder {
                 .build();
     }
 
-    public static JoinCustomerRequest nullAddressBuild() {
-        return JoinCustomerRequest.builder()
+    public static JoinBasicCustomerRequest nullAddressBuild() {
+        return JoinBasicCustomerRequest.builder()
                 .email("new-user1@gmail.com")
                 .password("new-user1-password")
                 .name("new-user")
@@ -184,8 +184,8 @@ public class JoinCustomerRequestBuilder {
                 .build();
     }
 
-    public static JoinCustomerRequest emptyAddressBuild() {
-        return JoinCustomerRequest.builder()
+    public static JoinBasicCustomerRequest emptyAddressBuild() {
+        return JoinBasicCustomerRequest.builder()
                 .email("new-user1@gmail.com")
                 .password("new-user1-password")
                 .name("new-user")
@@ -196,8 +196,8 @@ public class JoinCustomerRequestBuilder {
                 .build();
     }
 
-    public static JoinCustomerRequest invalidDetailAddressBuild() {
-        return JoinCustomerRequest.builder()
+    public static JoinBasicCustomerRequest invalidDetailAddressBuild() {
+        return JoinBasicCustomerRequest.builder()
                 .email("new-user1@gmail.com")
                 .password("new-user1-password")
                 .name("new-user")

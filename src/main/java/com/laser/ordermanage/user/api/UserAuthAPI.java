@@ -1,11 +1,13 @@
 package com.laser.ordermanage.user.api;
 
+import com.laser.ordermanage.user.dto.request.LoginKakaoRequest;
 import com.laser.ordermanage.user.dto.request.LoginRequest;
 import com.laser.ordermanage.user.service.UserAuthService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
@@ -24,8 +26,23 @@ public class UserAuthAPI {
      * - Token 정보 반환
      */
     @PostMapping("/login")
-    public ResponseEntity<?> login(HttpServletRequest httpServletRequest, @RequestBody @Valid LoginRequest request) {
-        return ResponseEntity.ok(userAuthService.login(httpServletRequest, request));
+    public ResponseEntity<?> loginBasic(HttpServletRequest httpServletRequest, @RequestBody @Valid LoginRequest request) {
+        Authentication authentication = userAuthService.authenticateBasic(request);
+        return ResponseEntity.ok(userAuthService.login(httpServletRequest, authentication));
+    }
+
+    /**
+     * kakao 로그인
+     * - kakao 토큰을 활용한 kakao 사용자 정보 획득
+     * - kakao 사용자 이메일 기준으로 회원 조회
+     * - Access Token, Refresh Token 생성
+     * - Redis 에 Refresh Token 데이터 저장
+     * - Token 정보 반환
+     */
+    @PostMapping("/login/kakao")
+    public ResponseEntity<?> loginKakao(HttpServletRequest httpServletRequest, @RequestBody @Valid LoginKakaoRequest request) {
+        Authentication authentication = userAuthService.authenticateKakao(request);
+        return ResponseEntity.ok(userAuthService.login(httpServletRequest, authentication));
     }
 
     /**

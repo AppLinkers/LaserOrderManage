@@ -27,10 +27,10 @@ public class UserAuthIntegrationTest extends IntegrationTest {
 
 
     /**
-     * 사용자 로그인 성공
+     * 사용자 기본 로그인 성공
      */
     @Test
-    public void 로그인_성공() throws Exception {
+    public void 기본_로그인_성공() throws Exception {
         // given
         final LoginRequest request = LoginRequestBuilder.build();
         final TokenInfoResponse expectedResponse = TokenInfoResponseBuilder.build();
@@ -48,11 +48,11 @@ public class UserAuthIntegrationTest extends IntegrationTest {
     }
 
     /**
-     * 사용자 로그인 실패
+     * 사용자 기본 로그인 실패
      * - 실패 사유 : 존재하지 않는 이메일
      */
     @Test
-    public void 로그인_실패_이메일() throws Exception {
+    public void 기본_로그인_실패_이메일() throws Exception {
         // given
         final LoginRequest request = LoginRequestBuilder.unknownUserBuild();
 
@@ -64,11 +64,11 @@ public class UserAuthIntegrationTest extends IntegrationTest {
     }
 
     /**
-     * 사용자 로그인 실패
+     * 사용자 기본 로그인 실패
      * - 실패 사유 : 회원 정보와 일치하지 않는 비밀번호
      */
     @Test
-    public void 로그인_실패_비밀번호() throws Exception {
+    public void 기본_로그인_실패_비밀번호() throws Exception {
         // given
         final LoginRequest request = LoginRequestBuilder.invalidCredentialBuild();
 

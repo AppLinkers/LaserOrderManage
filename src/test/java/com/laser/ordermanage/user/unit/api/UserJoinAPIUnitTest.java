@@ -3,11 +3,11 @@ package com.laser.ordermanage.user.unit.api;
 import com.laser.ordermanage.common.APIUnitTest;
 import com.laser.ordermanage.common.exception.CommonErrorCode;
 import com.laser.ordermanage.common.exception.CustomCommonException;
-import com.laser.ordermanage.customer.dto.request.JoinCustomerRequest;
+import com.laser.ordermanage.customer.dto.request.JoinBasicCustomerRequest;
 import com.laser.ordermanage.user.api.UserJoinAPI;
 import com.laser.ordermanage.user.domain.UserEntity;
 import com.laser.ordermanage.user.domain.UserEntityBuilder;
-import com.laser.ordermanage.user.dto.request.JoinCustomerRequestBuilder;
+import com.laser.ordermanage.user.dto.request.JoinBasicCustomerRequestBuilder;
 import com.laser.ordermanage.user.dto.request.VerifyEmailRequest;
 import com.laser.ordermanage.user.dto.request.VerifyEmailRequestBuilder;
 import com.laser.ordermanage.user.dto.response.UserJoinStatusResponse;
@@ -289,7 +289,7 @@ public class UserJoinAPIUnitTest extends APIUnitTest {
     @Test
     public void 고객_회원가입_성공_신규회원() throws Exception {
         // given
-        final JoinCustomerRequest request = JoinCustomerRequestBuilder.build();
+        final JoinBasicCustomerRequest request = JoinBasicCustomerRequestBuilder.build();
         final UserEntity user = UserEntityBuilder.newUserBuild();
         final UserJoinStatusResponse expectedResponse = UserJoinStatusResponseBuilder.buildCompletedWithUserEntity(user);
 
@@ -315,7 +315,7 @@ public class UserJoinAPIUnitTest extends APIUnitTest {
     @Test
     public void 고객_회원가입_성공_이메일_중복() throws Exception {
         // given
-        final JoinCustomerRequest request = JoinCustomerRequestBuilder.duplicateEmailBuild();
+        final JoinBasicCustomerRequest request = JoinBasicCustomerRequestBuilder.duplicateEmailBuild();
         final UserEntity user = UserEntityBuilder.build();
         final UserJoinStatusResponse expectedResponse = UserJoinStatusResponseBuilder.buildImpossibleWithUserEntity(user);
 
@@ -341,7 +341,7 @@ public class UserJoinAPIUnitTest extends APIUnitTest {
     @Test
     public void 고객_회원가입_실패_이메일_필드_null() throws Exception {
         // given
-        final JoinCustomerRequest request = JoinCustomerRequestBuilder.nullEmailBuild();
+        final JoinBasicCustomerRequest request = JoinBasicCustomerRequestBuilder.nullEmailBuild();
 
         // when
         final ResultActions resultActions = requestJoinCustomer(request);
@@ -357,7 +357,7 @@ public class UserJoinAPIUnitTest extends APIUnitTest {
     @Test
     public void 고객_회원가입_실패_이메일_필드_유효성() throws Exception {
         // given
-        final JoinCustomerRequest request = JoinCustomerRequestBuilder.invalidEmailBuild();
+        final JoinBasicCustomerRequest request = JoinBasicCustomerRequestBuilder.invalidEmailBuild();
 
         // when
         final ResultActions resultActions = requestJoinCustomer(request);
@@ -373,7 +373,7 @@ public class UserJoinAPIUnitTest extends APIUnitTest {
     @Test
     public void 고객_회원가입_실패_비밀번호_필드_null() throws Exception {
         // given
-        final JoinCustomerRequest request = JoinCustomerRequestBuilder.nullPasswordBuild();
+        final JoinBasicCustomerRequest request = JoinBasicCustomerRequestBuilder.nullPasswordBuild();
 
         // when
         final ResultActions resultActions = requestJoinCustomer(request);
@@ -389,7 +389,7 @@ public class UserJoinAPIUnitTest extends APIUnitTest {
     @Test
     public void 고객_회원가입_실패_비밀번호_필드_유효성() throws Exception {
         // given
-        final JoinCustomerRequest request = JoinCustomerRequestBuilder.invalidPasswordBuild();
+        final JoinBasicCustomerRequest request = JoinBasicCustomerRequestBuilder.invalidPasswordBuild();
 
         // when
         final ResultActions resultActions = requestJoinCustomer(request);
@@ -405,7 +405,7 @@ public class UserJoinAPIUnitTest extends APIUnitTest {
     @Test
     public void 고객_회원가입_실패_이름_필드_null() throws Exception {
         // given
-        final JoinCustomerRequest request = JoinCustomerRequestBuilder.nullNameBuild();
+        final JoinBasicCustomerRequest request = JoinBasicCustomerRequestBuilder.nullNameBuild();
 
         // when
         final ResultActions resultActions = requestJoinCustomer(request);
@@ -421,7 +421,7 @@ public class UserJoinAPIUnitTest extends APIUnitTest {
     @Test
     public void 고객_회원가입_실패_이름_필드_empty() throws Exception {
         // given
-        final JoinCustomerRequest request = JoinCustomerRequestBuilder.emptyNameBuild();
+        final JoinBasicCustomerRequest request = JoinBasicCustomerRequestBuilder.emptyNameBuild();
 
         // when
         final ResultActions resultActions = requestJoinCustomer(request);
@@ -437,7 +437,7 @@ public class UserJoinAPIUnitTest extends APIUnitTest {
     @Test
     public void 고객_회원가입_실패_이름_필드_유효성() throws Exception {
         // given
-        final JoinCustomerRequest request = JoinCustomerRequestBuilder.invalidNameBuild();
+        final JoinBasicCustomerRequest request = JoinBasicCustomerRequestBuilder.invalidNameBuild();
 
         // when
         final ResultActions resultActions = requestJoinCustomer(request);
@@ -453,7 +453,7 @@ public class UserJoinAPIUnitTest extends APIUnitTest {
     @Test
     public void 고객_회원가입_실패_회사이름_필드_유효성() throws Exception {
         // given
-        final JoinCustomerRequest request = JoinCustomerRequestBuilder.invalidCompanyNameBuild();
+        final JoinBasicCustomerRequest request = JoinBasicCustomerRequestBuilder.invalidCompanyNameBuild();
 
         // when
         final ResultActions resultActions = requestJoinCustomer(request);
@@ -469,7 +469,7 @@ public class UserJoinAPIUnitTest extends APIUnitTest {
     @Test
     public void 고객_회원가입_실패_연락처_필드_null() throws Exception {
         // given
-        final JoinCustomerRequest request = JoinCustomerRequestBuilder.nullPhoneBuild();
+        final JoinBasicCustomerRequest request = JoinBasicCustomerRequestBuilder.nullPhoneBuild();
 
         // when
         final ResultActions resultActions = requestJoinCustomer(request);
@@ -485,7 +485,7 @@ public class UserJoinAPIUnitTest extends APIUnitTest {
     @Test
     public void 고객_회원가입_실패_연락처_필드_유효성() throws Exception {
         // given
-        final JoinCustomerRequest request = JoinCustomerRequestBuilder.invalidPhoneBuild();
+        final JoinBasicCustomerRequest request = JoinBasicCustomerRequestBuilder.invalidPhoneBuild();
 
         // when
         final ResultActions resultActions = requestJoinCustomer(request);
@@ -501,7 +501,7 @@ public class UserJoinAPIUnitTest extends APIUnitTest {
     @Test
     public void 고객_회원가입_실패_우편번호_필드_null() throws Exception {
         // given
-        final JoinCustomerRequest request = JoinCustomerRequestBuilder.nullZipCodeBuild();
+        final JoinBasicCustomerRequest request = JoinBasicCustomerRequestBuilder.nullZipCodeBuild();
 
         // when
         final ResultActions resultActions = requestJoinCustomer(request);
@@ -517,7 +517,7 @@ public class UserJoinAPIUnitTest extends APIUnitTest {
     @Test
     public void 고객_회원가입_실패_우편번호_필드_유효성() throws Exception {
         // given
-        final JoinCustomerRequest request = JoinCustomerRequestBuilder.invalidZipCodeBuild();
+        final JoinBasicCustomerRequest request = JoinBasicCustomerRequestBuilder.invalidZipCodeBuild();
 
         // when
         final ResultActions resultActions = requestJoinCustomer(request);
@@ -533,7 +533,7 @@ public class UserJoinAPIUnitTest extends APIUnitTest {
     @Test
     public void 고객_회원가입_실패_기본주소_필드_null() throws Exception {
         // given
-        final JoinCustomerRequest request = JoinCustomerRequestBuilder.nullAddressBuild();
+        final JoinBasicCustomerRequest request = JoinBasicCustomerRequestBuilder.nullAddressBuild();
 
         // when
         final ResultActions resultActions = requestJoinCustomer(request);
@@ -549,7 +549,7 @@ public class UserJoinAPIUnitTest extends APIUnitTest {
     @Test
     public void 고객_회원가입_실패_기본주소_필드_empty() throws Exception {
         // given
-        final JoinCustomerRequest request = JoinCustomerRequestBuilder.emptyAddressBuild();
+        final JoinBasicCustomerRequest request = JoinBasicCustomerRequestBuilder.emptyAddressBuild();
 
         // when
         final ResultActions resultActions = requestJoinCustomer(request);
@@ -565,7 +565,7 @@ public class UserJoinAPIUnitTest extends APIUnitTest {
     @Test
     public void 고객_회원가입_실패_상세주소_필드_유효성() throws Exception {
         // given
-        final JoinCustomerRequest request = JoinCustomerRequestBuilder.invalidDetailAddressBuild();
+        final JoinBasicCustomerRequest request = JoinBasicCustomerRequestBuilder.invalidDetailAddressBuild();
 
         // when
         final ResultActions resultActions = requestJoinCustomer(request);
@@ -587,7 +587,7 @@ public class UserJoinAPIUnitTest extends APIUnitTest {
                 .andDo(print());
     }
 
-    private ResultActions requestJoinCustomer(JoinCustomerRequest request) throws Exception {
+    private ResultActions requestJoinCustomer(JoinBasicCustomerRequest request) throws Exception {
         return mvc.perform(post("/user/customer")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))

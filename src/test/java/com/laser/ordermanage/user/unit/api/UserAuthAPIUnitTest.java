@@ -4,6 +4,7 @@ import com.laser.ordermanage.common.APIUnitTest;
 import com.laser.ordermanage.common.exception.CommonErrorCode;
 import com.laser.ordermanage.common.exception.CustomCommonException;
 import com.laser.ordermanage.user.api.UserAuthAPI;
+import com.laser.ordermanage.user.domain.type.Role;
 import com.laser.ordermanage.user.dto.request.LoginRequest;
 import com.laser.ordermanage.user.dto.request.LoginRequestBuilder;
 import com.laser.ordermanage.user.dto.response.TokenInfoResponse;
@@ -17,11 +18,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Collections;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -44,15 +49,17 @@ public class UserAuthAPIUnitTest extends APIUnitTest {
     }
 
     /**
-     * 사용자 로그인 성공
+     * 사용자 기본 로그인 성공
      */
     @Test
-    public void 로그인_성공() throws Exception {
+    public void 기본_로그인_성공() throws Exception {
         // given
         final LoginRequest request = LoginRequestBuilder.build();
+        final Authentication expectedAuthentication = new UsernamePasswordAuthenticationToken(request.email(), null, Collections.singleton(new SimpleGrantedAuthority(Role.ROLE_CUSTOMER.name())));
         final TokenInfoResponse expectedResponse = TokenInfoResponseBuilder.build();
 
         // stub
+        when(userAuthService.authenticateBasic(any())).thenReturn(expectedAuthentication);
         when(userAuthService.login(any(), any())).thenReturn(expectedResponse);
 
         // when
@@ -68,11 +75,11 @@ public class UserAuthAPIUnitTest extends APIUnitTest {
     }
 
     /**
-     * 사용자 로그인 실패
+     * 사용자 기본 로그인 실패
      * - 실패 사유 : 이메일 필드 null
      */
     @Test
-    public void 로그인_실패_이메일_필드_null() throws Exception {
+    public void 기본_로그인_실패_이메일_필드_null() throws Exception {
         // given
         final LoginRequest request = LoginRequestBuilder.nullEmailBuild();
 
@@ -84,11 +91,11 @@ public class UserAuthAPIUnitTest extends APIUnitTest {
     }
 
     /**
-     * 사용자 로그인 실패
+     * 사용자 기본 로그인 실패
      * - 실패 사유 : 이메일 필드 유효성
      */
     @Test
-    public void 로그인_실패_이메일_필드_유효성() throws Exception {
+    public void 기본_로그인_실패_이메일_필드_유효성() throws Exception {
         // given
         final LoginRequest request = LoginRequestBuilder.invalidEmailBuild();
 
@@ -100,11 +107,11 @@ public class UserAuthAPIUnitTest extends APIUnitTest {
     }
 
     /**
-     * 사용자 로그인 실패
+     * 사용자 기본 로그인 실패
      * - 실패 사유 : 비밀번호 필드 null
      */
     @Test
-    public void 로그인_실패_비밀번호_필드_null() throws Exception {
+    public void 기본_로그인_실패_비밀번호_필드_null() throws Exception {
         // given
         final LoginRequest request = LoginRequestBuilder.nullPasswordBuild();
 
@@ -116,11 +123,11 @@ public class UserAuthAPIUnitTest extends APIUnitTest {
     }
 
     /**
-     * 사용자 로그인 실패
+     * 사용자 기본 로그인 실패
      * - 실패 사유 : 비밀번호 필드 유효성
      */
     @Test
-    public void 로그인_실패_비밀번호_필드_유효성() throws Exception {
+    public void 기본_로그인_실패_비밀번호_필드_유효성() throws Exception {
         // given
         final LoginRequest request = LoginRequestBuilder.invalidPasswordBuild();
 
@@ -132,18 +139,18 @@ public class UserAuthAPIUnitTest extends APIUnitTest {
     }
 
     /**
-     * 사용자 로그인 실패
+     * 사용자 기본 로그인 실패
      * - 실패 사유 : 요청 데이터 인증 실패
      * - 존재하지 않는 이메일
      * - 회원 정보와 일치하지 않는 비밀번호
      */
     @Test
-    public void 로그인_실패_인증정보() throws Exception {
+    public void 기본_로그인_실패_인증정보() throws Exception {
         // given
         final LoginRequest invalidRequest = LoginRequestBuilder.invalidBuild();
 
         // stub
-        when(userAuthService.login(any(), any())).thenThrow(new CustomCommonException(UserErrorCode.INVALID_CREDENTIALS));
+        when(userAuthService.authenticateBasic(any())).thenThrow(new CustomCommonException(UserErrorCode.INVALID_CREDENTIALS));
 
         // when
         final ResultActions resultActions = requestLogin(invalidRequest);

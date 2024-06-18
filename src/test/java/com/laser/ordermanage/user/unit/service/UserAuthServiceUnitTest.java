@@ -99,41 +99,32 @@ public class UserAuthServiceUnitTest extends ServiceUnitTest {
     }
 
     /**
-     * 사용자 로그인 성공
+     * 사용자 기본 인증 성공
      */
     @Test
-    public void login_성공() {
+    public void authenticateBasic_성공() {
         // given
         final LoginRequest loginRequest = LoginRequestBuilder.build();
-        final Authentication authentication = new UsernamePasswordAuthenticationToken(loginRequest.email(), null, Collections.singleton(new SimpleGrantedAuthority(Role.ROLE_CUSTOMER.name())));
-        final TokenInfoResponse expectedResponse = TokenInfoResponseBuilder.build();
+        final Authentication expectedAuthentication = new UsernamePasswordAuthenticationToken(loginRequest.email(), null, Collections.singleton(new SimpleGrantedAuthority(Role.ROLE_CUSTOMER.name())));
 
         // stub
-        when(authenticationManager.authenticate(loginRequest.toAuthentication())).thenReturn(authentication);
-        final Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
-        final List<String> authorityList = new ArrayList<>();
-        for (GrantedAuthority authority : authorities) {
-            String grantedAuthorityAuthority = authority.getAuthority();
-            authorityList.add(grantedAuthorityAuthority);
-        }
-
-        when(jwtProvider.generateToken(authentication.getName(), authorityList)).thenReturn(expectedResponse);
+        when(authenticationManager.authenticate(loginRequest.toAuthentication())).thenReturn(expectedAuthentication);;
 
         // when
-        final TokenInfoResponse actualResponse = userAuthService.login(httpServletRequest, loginRequest);
+        final Authentication actualAuthentication = userAuthService.authenticateBasic(loginRequest);
 
         // then
-        Assertions.assertThat(actualResponse).isEqualTo(expectedResponse);
+        Assertions.assertThat(actualAuthentication).isEqualTo(expectedAuthentication);
     }
 
     /**
-     * 사용자 로그인 실패
+     * 사용자 기본 인증 실패
      * - 실패 사유 : 요청 데이터 인증 실패
      * - 이메일에 해당하는 사용자가 존재하지 않음
      * - 회원 정보와 일치하지 않는 비밀번호
      */
     @Test
-    public void login_실패_INVALID_CREDENTIALS() {
+    public void authenticateBasic_실패_INVALID_CREDENTIALS() {
         // given
         final LoginRequest invalidLoginRequest = LoginRequestBuilder.invalidBuild();
 
@@ -141,7 +132,7 @@ public class UserAuthServiceUnitTest extends ServiceUnitTest {
         when(authenticationManager.authenticate(invalidLoginRequest.toAuthentication())).thenThrow(new CustomCommonException(UserErrorCode.INVALID_CREDENTIALS));
 
         // when & then
-        Assertions.assertThatThrownBy(() -> userAuthService.login(httpServletRequest, invalidLoginRequest))
+        Assertions.assertThatThrownBy(() -> userAuthService.authenticateBasic(invalidLoginRequest))
                 .isInstanceOf(CustomCommonException.class)
                 .hasMessage(UserErrorCode.INVALID_CREDENTIALS.getMessage());
 

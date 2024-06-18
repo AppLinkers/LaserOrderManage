@@ -1,27 +1,43 @@
 package com.laser.ordermanage.user.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.laser.ordermanage.common.cache.redis.dao.BlackList;
 import com.laser.ordermanage.common.cache.redis.dao.RefreshToken;
 import com.laser.ordermanage.common.cache.redis.repository.BlackListRedisRepository;
 import com.laser.ordermanage.common.cache.redis.repository.RefreshTokenRedisRepository;
+import com.laser.ordermanage.common.exception.CommonErrorCode;
 import com.laser.ordermanage.common.exception.CustomCommonException;
 import com.laser.ordermanage.common.security.jwt.component.JwtProvider;
 import com.laser.ordermanage.common.util.NetworkUtil;
 import com.laser.ordermanage.user.domain.UserEntity;
+import com.laser.ordermanage.user.domain.type.SignupMethod;
+import com.laser.ordermanage.user.dto.request.LoginKakaoRequest;
 import com.laser.ordermanage.user.dto.request.LoginRequest;
+import com.laser.ordermanage.user.dto.response.KakaoAccountResponse;
 import com.laser.ordermanage.user.dto.response.TokenInfoResponse;
 import com.laser.ordermanage.user.exception.UserErrorCode;
 import com.laser.ordermanage.user.repository.UserEntityRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.Collection;
 import java.util.List;
@@ -39,23 +55,36 @@ public class UserAuthService {
 
     private final UserEntityRepository userRepository;
 
+    @Value("${kakao.account-uri}")
+    private String KAKAO_ACCOUNT_URI;
 
     @Transactional(readOnly = true)
     public UserEntity getUserByEmail(String email) {
         return userRepository.findFirstByEmail(email).orElseThrow(() -> new CustomCommonException(UserErrorCode.NOT_FOUND_USER));
     }
 
-    public TokenInfoResponse login(HttpServletRequest httpServletRequest, LoginRequest request) {
-
-        // 1. Login ID/PW 를 기반으로 Authentication 객체 생성
-        // 이때 authentication 는 인증 여부를 확인하는 authenticated 값이 false
+    public Authentication authenticateBasic(LoginRequest request) {
         UsernamePasswordAuthenticationToken authenticationToken = request.toAuthentication();
 
-        // 2. 실제 검증 (사용자 비밀번호 체크)이 이루어지는 부분
-        // authenticate 메서드가 실행될 때 CustomUserDetailService 에서 만든 loadUserByUsername 메서드가 실행
         Authentication authentication = authenticationManager.authenticate(authenticationToken);
 
-        // 3. 인증 정보를 기반으로 JWT 토큰 생성
+        return authentication;
+    }
+
+    public Authentication authenticateKakao(LoginKakaoRequest request) {
+        KakaoAccountResponse kakaoAccountResponse = getKakaoAccount(request.kakaoAccessToken());
+
+        UserEntity userEntity = getUserByEmail(kakaoAccountResponse.kakao_account().email());
+
+        if (userEntity.getSignupMethod().equals(SignupMethod.BASIC)) {
+            throw new CustomCommonException(UserErrorCode.EXIST_BASIC_DUPLICATED_EMAIL_USER);
+        }
+
+        return new PreAuthenticatedAuthenticationToken(userEntity.getEmail(), null, userEntity.getAuthorities());
+    }
+
+    public TokenInfoResponse login(HttpServletRequest httpServletRequest, Authentication authentication) {
+        // 1. 인증 정보를 기반으로 JWT 토큰 생성
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
         List<String> authorityList = authorities.stream()
                 .map(GrantedAuthority::getAuthority)
@@ -63,7 +92,7 @@ public class UserAuthService {
 
         TokenInfoResponse response = jwtProvider.generateToken(authentication.getName(), authorityList);
 
-        // 4. RefreshToken 을 Redis 에 저장
+        // 2. RefreshToken 을 Redis 에 저장
         refreshTokenRedisRepository.save(RefreshToken.builder()
                 .id(authentication.getName())
                 .ip(NetworkUtil.getClientIp(httpServletRequest))
@@ -71,10 +100,38 @@ public class UserAuthService {
                 .refreshToken(response.refreshToken())
                 .build());
 
-        // 5. BlackList 에 저장되어 있는 항목 제거
+        // 3. BlackList 에 저장되어 있는 항목 제거
         blackListRedisRepository.findByAccessToken(response.accessToken()).ifPresent(blackListRedisRepository::delete);
 
         return response;
+    }
+
+    public KakaoAccountResponse getKakaoAccount(String kakaoAccessToken) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Authorization", "Bearer " + kakaoAccessToken);
+        headers.add("Content-type", "application/x-www-form-urlencoded;charset=utf-8");
+
+        HttpEntity<MultiValueMap<String, String>> accountInfoRequest = new HttpEntity<>(headers);
+
+        RestTemplate rt = new RestTemplate();
+        ResponseEntity<String> response = rt.exchange(
+                KAKAO_ACCOUNT_URI,
+                HttpMethod.POST,
+                accountInfoRequest,
+                String.class
+        );
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
+        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        KakaoAccountResponse kakaoAccountResponse = null;
+        try {
+            kakaoAccountResponse = objectMapper.readValue(response.getBody(), KakaoAccountResponse.class);
+        } catch (JsonProcessingException e) {
+            throw new CustomCommonException(CommonErrorCode.INTERNAL_SERVER_ERROR);
+        }
+
+        return kakaoAccountResponse;
     }
 
     public TokenInfoResponse reissue(HttpServletRequest httpServletRequest, String refreshTokenReq) {

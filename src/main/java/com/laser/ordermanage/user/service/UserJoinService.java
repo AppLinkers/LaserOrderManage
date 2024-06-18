@@ -8,6 +8,7 @@ import com.laser.ordermanage.common.entity.embedded.Address;
 import com.laser.ordermanage.common.exception.CustomCommonException;
 import com.laser.ordermanage.customer.domain.Customer;
 import com.laser.ordermanage.customer.domain.DeliveryAddress;
+import com.laser.ordermanage.customer.dto.request.JoinBasicCustomerRequest;
 import com.laser.ordermanage.customer.dto.request.JoinCustomerRequest;
 import com.laser.ordermanage.customer.repository.DeliveryAddressRepository;
 import com.laser.ordermanage.user.domain.UserEntity;
@@ -93,29 +94,29 @@ public class UserJoinService {
 
     @Transactional
     public UserJoinStatusResponse joinCustomer(JoinCustomerRequest request, SignupMethod signupMethod) {
-        UserJoinStatusResponse response = checkDuplicatedEmail(request.email());
+        UserJoinStatusResponse response = checkDuplicatedEmail(request.getEmail());
 
         if (JoinStatus.isPossible(response.status())) {
             Address address = Address.builder()
-                    .zipCode(request.zipCode())
-                    .address(request.address())
-                    .detailAddress(request.detailAddress())
+                    .zipCode(request.getZipCode())
+                    .address(request.getAddress())
+                    .detailAddress(request.getDetailAddress())
                     .build();
 
             UserEntity user = UserEntity.builder()
-                    .email(request.email())
-                    .password(passwordEncoder.encode(request.password()))
-                    .name(request.name())
+                    .email(request.getEmail())
+                    .password(signupMethod.equals(SignupMethod.BASIC) ? passwordEncoder.encode(((JoinBasicCustomerRequest) request).getPassword()) : null)
+                    .name(request.getName())
                     .role(Role.ROLE_CUSTOMER)
                     .authority(Authority.AUTHORITY_ADMIN)
-                    .phone(request.phone())
+                    .phone(request.getPhone())
                     .address(address)
                     .signupMethod(signupMethod)
                     .build();
 
             Customer customer = Customer.builder()
                     .user(user)
-                    .companyName(request.companyName())
+                    .companyName(request.getCompanyName())
                     .build();
 
             DeliveryAddress deliveryAddress = DeliveryAddress.builder()

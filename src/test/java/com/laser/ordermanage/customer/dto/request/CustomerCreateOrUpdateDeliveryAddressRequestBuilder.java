@@ -131,7 +131,7 @@ public class CustomerCreateOrUpdateDeliveryAddressRequestBuilder {
                 .build();
     }
 
-    public static CustomerCreateOrUpdateDeliveryAddressRequest invalidDetailAddress() {
+    public static CustomerCreateOrUpdateDeliveryAddressRequest invalidDetailAddressBuild() {
         return CustomerCreateOrUpdateDeliveryAddressRequest.builder()
                 .name("배송지 이름")
                 .zipCode("11111")

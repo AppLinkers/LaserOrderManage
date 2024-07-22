@@ -19,8 +19,6 @@ import org.springframework.test.web.servlet.ResultActions;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doNothing;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -109,9 +107,6 @@ public class UserAccountIntegrationTest extends IntegrationTest {
         // given
         final RequestChangePasswordRequest request = RequestChangePasswordRequestBuilder.build();
 
-        // stub
-        doNothing().when(emailService).sendEmail(any());
-
         // when
         final ResultActions resultActions = requestForRequestChangePasswordWithOutAuthentication(request);
 
@@ -143,9 +138,6 @@ public class UserAccountIntegrationTest extends IntegrationTest {
         // given
         final String accessToken = jwtBuilder.accessJwtBuild();
         final String baseUrl = "https://www.kumoh.org/edit-password";
-
-        // stub
-        doNothing().when(emailService).sendEmail(any());
 
         // when
         final ResultActions resultActions = requestForRequestChangePassword(accessToken, baseUrl);

@@ -36,7 +36,7 @@ public class IngredientAPI {
      */
     @GetMapping("/status")
     public ResponseEntity<?> getIngredientStatus(
-            @RequestParam(value = "date") @DateTimeFormat(pattern = "yyyy-mm-dd") LocalDate date
+            @RequestParam(value = "date") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date
     ) {
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
@@ -151,8 +151,8 @@ public class IngredientAPI {
             @RequestParam(value = "data") String data,
             @RequestParam(value = "ingredient-id", required = false) Long ingredientId,
             @RequestParam(value = "time-unit") String timeUnit,
-            @RequestParam(value = "start-date") @DateTimeFormat(pattern = "yyyy-mm-dd") LocalDate startDate,
-            @RequestParam(value = "end-date") @DateTimeFormat(pattern = "yyyy-mm-dd") LocalDate endDate,
+            @RequestParam(value = "start-date") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDate,
+            @RequestParam(value = "end-date") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate,
             @RequestParam(value = "item-unit") String itemUnit,
             @RequestParam(value = "stock-item", required = false, defaultValue = "all") List<String> stockItem,
             @RequestParam(value = "stock-unit", required = false) String stockUnit,

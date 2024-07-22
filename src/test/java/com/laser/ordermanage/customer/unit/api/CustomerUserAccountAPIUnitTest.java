@@ -124,9 +124,6 @@ public class CustomerUserAccountAPIUnitTest extends APIUnitTest {
         final String accessToken = "access-token";
         final CustomerUpdateCustomerAccountRequest request = CustomerUpdateCustomerAccountRequestBuilder.build();
 
-        // stub
-        doNothing().when(customerUserAccountService).updateCustomerAccount(any(), any());
-
         // when
         final ResultActions resultActions = requestUpdateCustomerAccount(accessToken, request);
 
@@ -199,12 +196,6 @@ public class CustomerUserAccountAPIUnitTest extends APIUnitTest {
     public void 고객_회원의_회원_탈퇴_성공() throws Exception {
         // given
         final String accessToken = "access-token";
-
-        // stub
-        doNothing().when(customerOrderService).deleteOrderByStageNotCompleted(any());
-        doNothing().when(customerOrderService).deleteOrderByStageCompleted(any());
-        doNothing().when(customerUserAccountService).deleteUser(any());
-        doNothing().when(userAuthService).logout(any());
 
         // when
         final ResultActions resultActions = requestDeleteUserAccount(accessToken);

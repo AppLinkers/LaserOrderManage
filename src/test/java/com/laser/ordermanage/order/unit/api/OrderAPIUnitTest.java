@@ -64,7 +64,6 @@ public class OrderAPIUnitTest extends APIUnitTest {
         final GetOrderDetailResponse expectedResponse = GetOrderDetailResponseBuilder.build();
 
         // stub
-        doNothing().when(orderService).checkAuthorityCustomerOfOrderOrFactory(any(), any());
         when(orderService.getOrderDetail(any())).thenReturn(expectedResponse);
 
         // when
@@ -131,7 +130,6 @@ public class OrderAPIUnitTest extends APIUnitTest {
         final ListResponse<GetCommentResponse> expectedResponse = new ListResponse<>(GetCommentResponseBuilder.buildListForOrder1());
 
         // stub
-        doNothing().when(orderService).checkAuthorityCustomerOfOrderOrFactory(any(), any());
         when(orderService.getCommentByOrder(any())).thenReturn(expectedResponse);
         // when
         final ResultActions resultActions = requestGetOrderComment(accessToken, orderId);
@@ -197,9 +195,7 @@ public class OrderAPIUnitTest extends APIUnitTest {
         final CreateCommentRequest request = CreateCommentRequestBuilder.build();
 
         // stub
-        doNothing().when(orderService).checkAuthorityCustomerOfOrderOrFactory(any(), any());
         when(orderService.createOrderComment(any(), any(), any())).thenReturn(Long.valueOf(orderId));
-        doNothing().when(orderEmailService).sendEmailForCreateOrderComment(any());
 
         // when
         final ResultActions resultActions = requestCreateComment(accessToken, orderId, request);
@@ -338,7 +334,6 @@ public class OrderAPIUnitTest extends APIUnitTest {
         final CreateCommentRequest request = CreateCommentRequestBuilder.build();
 
         // stub
-        doNothing().when(orderService).checkAuthorityCustomerOfOrderOrFactory(any(), any());
         when(orderService.createOrderComment(any(), any(), any())).thenThrow(new CustomCommonException(OrderErrorCode.NOT_FOUND_ORDER));
 
         // when
@@ -360,9 +355,7 @@ public class OrderAPIUnitTest extends APIUnitTest {
         final DeleteOrderResponse deleteOrderResponse = DeleteOrderResponseBuilder.build();
 
         // stub
-        doNothing().when(orderService).checkAuthorityCustomerOfOrderOrFactory(any(), any());
         when(orderService.deleteOrder(any())).thenReturn(deleteOrderResponse);
-        doNothing().when(orderEmailService).sendEmailForDeleteOrder(any(), any());
 
         // when
         final ResultActions resultActions = requestDeleteOrder(accessToken, orderId);
@@ -440,7 +433,7 @@ public class OrderAPIUnitTest extends APIUnitTest {
         final String orderId = "1";
 
         // stub
-        when(orderService.deleteOrder(any())).thenThrow(new CustomCommonException(OrderErrorCode.INVALID_ORDER_STAGE, Stage.COMPLETED.getValue()));
+        doThrow(new CustomCommonException(OrderErrorCode.INVALID_ORDER_STAGE, Stage.COMPLETED.getValue())).when(orderService).deleteOrder(any());
 
         // when
         final ResultActions resultActions = requestDeleteOrder(accessToken, orderId);

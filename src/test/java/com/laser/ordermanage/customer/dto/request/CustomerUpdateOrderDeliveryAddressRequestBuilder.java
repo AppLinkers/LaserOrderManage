@@ -8,4 +8,8 @@ public class CustomerUpdateOrderDeliveryAddressRequestBuilder {
     public static CustomerUpdateOrderDeliveryAddressRequest buildOfDeliveryAddress8() {
         return new CustomerUpdateOrderDeliveryAddressRequest(8L);
     }
+
+    public static CustomerUpdateOrderDeliveryAddressRequest nullDeliveryAddressIdBuild() {
+        return new CustomerUpdateOrderDeliveryAddressRequest(null);
+    }
 }

@@ -86,8 +86,8 @@ public class FactoryOrderHistoryAPI {
             @RequestParam(value = "is-completed", required = false, defaultValue = "false") Boolean isCompleted,
             @RequestParam(value = "is-urgent", required = false) Boolean isUrgent,
             @RequestParam(value = "date-criterion", required = false) String dateCriterion,
-            @RequestParam(value = "start-date", required = false) @DateTimeFormat(pattern = "yyyy-mm-dd") LocalDate startDate,
-            @RequestParam(value = "end-date", required = false) @DateTimeFormat(pattern = "yyyy-mm-dd") LocalDate endDate,
+            @RequestParam(value = "start-date", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDate,
+            @RequestParam(value = "end-date", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate,
             @RequestParam(value = "query", required = false) @Pattern(regexp = "^.{0,20}$", message = "검색 단어수의 최대 글자수는 20자입니다.") String query) {
 
         Pageable pageable = PageRequest.of(page - 1, size);

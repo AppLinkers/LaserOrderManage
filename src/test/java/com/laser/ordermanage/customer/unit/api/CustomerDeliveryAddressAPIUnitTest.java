@@ -213,10 +213,10 @@ public class CustomerDeliveryAddressAPIUnitTest extends APIUnitTest {
      */
     @Test
     @WithMockUser(roles = {"CUSTOMER"})
-    public void 고객_배송지_생성_실패_상세주소_필드_empty() throws Exception {
+    public void 고객_배송지_생성_실패_상세주소_필드_유효성() throws Exception {
         // given
         final String accessToken = "access-token";
-        final CustomerCreateOrUpdateDeliveryAddressRequest request = CustomerCreateOrUpdateDeliveryAddressRequestBuilder.invalidDetailAddress();
+        final CustomerCreateOrUpdateDeliveryAddressRequest request = CustomerCreateOrUpdateDeliveryAddressRequestBuilder.invalidDetailAddressBuild();
 
         // when
         final ResultActions resultActions = requestCreateDeliveryAddress(accessToken, request);
@@ -404,10 +404,6 @@ public class CustomerDeliveryAddressAPIUnitTest extends APIUnitTest {
         final String accessToken = "access-token";
         final String deliveryAddressId = "1";
         final CustomerCreateOrUpdateDeliveryAddressRequest request = CustomerCreateOrUpdateDeliveryAddressRequestBuilder.updateBuild();
-
-        // stub
-        doNothing().when(customerDeliveryAddressService).checkAuthorityCustomerOfDeliveryAddress(any(), any());
-        doNothing().when(customerDeliveryAddressService).updateDeliveryAddress(any(), any(), any());
 
         // when
         final ResultActions resultActions = requestUpdateDeliveryAddress(accessToken, deliveryAddressId, request);
@@ -597,7 +593,7 @@ public class CustomerDeliveryAddressAPIUnitTest extends APIUnitTest {
         // given
         final String accessToken = "access-token";
         final String deliveryAddressId = "1";
-        final CustomerCreateOrUpdateDeliveryAddressRequest request = CustomerCreateOrUpdateDeliveryAddressRequestBuilder.invalidDetailAddress();
+        final CustomerCreateOrUpdateDeliveryAddressRequest request = CustomerCreateOrUpdateDeliveryAddressRequestBuilder.invalidDetailAddressBuild();
 
         // when
         final ResultActions resultActions = requestUpdateDeliveryAddress(accessToken, deliveryAddressId, request);
@@ -774,7 +770,6 @@ public class CustomerDeliveryAddressAPIUnitTest extends APIUnitTest {
         final CustomerCreateOrUpdateDeliveryAddressRequest request = CustomerCreateOrUpdateDeliveryAddressRequestBuilder.createBuild();
 
         // stub
-        doNothing().when(customerDeliveryAddressService).checkAuthorityCustomerOfDeliveryAddress(any(), any());
         doThrow(new CustomCommonException(CustomerErrorCode.DEFAULT_DELIVERY_ADDRESS_DELETE)).when(customerDeliveryAddressService).updateDeliveryAddress(any(), any(), any());
 
         // when
@@ -793,10 +788,6 @@ public class CustomerDeliveryAddressAPIUnitTest extends APIUnitTest {
         // given
         final String accessToken = "access-token";
         final String deliveryAddressId = "1";
-
-        // stub
-        doNothing().when(customerDeliveryAddressService).checkAuthorityCustomerOfDeliveryAddress(any(), any());
-        doNothing().when(customerDeliveryAddressService).deleteDeliveryAddress(any());
 
         // when
         final ResultActions resultActions = requestDeleteDeliveryAddress(accessToken, deliveryAddressId);
@@ -874,7 +865,6 @@ public class CustomerDeliveryAddressAPIUnitTest extends APIUnitTest {
         final String deliveryAddressId = "1";
 
         // stub
-        doNothing().when(customerDeliveryAddressService).checkAuthorityCustomerOfDeliveryAddress(any(), any());
         doThrow(new CustomCommonException(CustomerErrorCode.DEFAULT_DELIVERY_ADDRESS_DELETE)).when(customerDeliveryAddressService).deleteDeliveryAddress(any());
 
         // when

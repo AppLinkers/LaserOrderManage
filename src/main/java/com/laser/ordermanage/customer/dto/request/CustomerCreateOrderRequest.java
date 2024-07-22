@@ -1,10 +1,10 @@
 package com.laser.ordermanage.customer.dto.request;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
 
 import java.util.List;
 
@@ -19,8 +19,7 @@ public record CustomerCreateOrderRequest (
     List<String> postProcessing,
 
     @Valid
-    @Size(min = 1, message = "도면은 최소한 한개 이상이어야 합니다.")
-    @NotNull
+    @NotEmpty(message = "도면은 최소한 한개 이상이어야 합니다.")
     List<CustomerCreateDrawingRequest> drawingList,
 
     String request,
@@ -32,6 +31,7 @@ public record CustomerCreateOrderRequest (
     Boolean isNewIssue
 
 ) {
+    @JsonIgnore
     public String getOrderImgUrl() {
         return this.drawingList.get(0).thumbnailUrl();
     }

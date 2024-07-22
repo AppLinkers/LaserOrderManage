@@ -1,7 +1,7 @@
 package com.laser.ordermanage.order.domain;
 
 import com.laser.ordermanage.customer.domain.Customer;
-import com.laser.ordermanage.user.domain.UserEntity;
+import com.laser.ordermanage.customer.domain.CustomerBuilder;
 import com.laser.ordermanage.user.domain.UserEntityBuilder;
 import org.assertj.core.api.Assertions;
 
@@ -11,12 +11,7 @@ import java.util.List;
 public class OrderBuilder {
 
     public static Order build() {
-        UserEntity user = UserEntityBuilder.build();
-
-        Customer customer = Customer.builder()
-                .user(user)
-                .companyName("고객 회사 이름 1")
-                .build();
+        Customer customer = CustomerBuilder.build();
         customer.disableNewCustomer();
 
         OrderDeliveryAddress deliveryAddress = OrderDeliveryAddressBuilder.build();

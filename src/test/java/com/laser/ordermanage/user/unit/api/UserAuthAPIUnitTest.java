@@ -211,9 +211,6 @@ public class UserAuthAPIUnitTest extends APIUnitTest {
         // given
         String accessToken = "access-token";
 
-        // stub
-        doNothing().when(userAuthService).logout(any());
-
         // when
         final ResultActions resultActions = requestLogout(accessToken);
 

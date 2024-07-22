@@ -25,8 +25,6 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doNothing;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -45,9 +43,6 @@ public class UserJoinIntegrationTest extends IntegrationTest {
         // given
         final String email = "new-user@gmail.com";
         final UserJoinStatusResponse expectedResponse = UserJoinStatusResponseBuilder.buildPossibleWithOutUserEntity();
-
-        // stub
-        doNothing().when(emailService).sendEmail(any());
 
         // when
         final ResultActions resultActions = requestForRequestEmailVerify(email);
@@ -105,9 +100,6 @@ public class UserJoinIntegrationTest extends IntegrationTest {
                 .build();
 
         final UserJoinStatusResponse expectedResponse = UserJoinStatusResponseBuilder.buildPossibleWithOutUserEntity();
-
-        // stub
-        doNothing().when(emailService).sendEmail(any());
 
         // when
         final ResultActions resultActions = requestVerifyEmail(request);
@@ -186,9 +178,6 @@ public class UserJoinIntegrationTest extends IntegrationTest {
                 .email(email)
                 .code(invalidVerifyCode)
                 .build();
-
-        // stub
-        doNothing().when(emailService).sendEmail(any());
 
         // when
         final ResultActions resultActions = requestVerifyEmail(request);

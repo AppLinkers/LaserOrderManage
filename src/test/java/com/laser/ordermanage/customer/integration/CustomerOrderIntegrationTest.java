@@ -3,6 +3,8 @@ package com.laser.ordermanage.customer.integration;
 import com.laser.ordermanage.common.IntegrationTest;
 import com.laser.ordermanage.common.security.jwt.setup.JwtBuilder;
 import com.laser.ordermanage.customer.dto.request.*;
+import com.laser.ordermanage.customer.dto.response.CustomerCreateDrawingResponse;
+import com.laser.ordermanage.customer.dto.response.CustomerCreateDrawingResponseBuilder;
 import com.laser.ordermanage.customer.dto.response.CustomerCreateOrUpdateOrderPurchaseOrderResponse;
 import com.laser.ordermanage.customer.dto.response.CustomerCreateOrUpdateOrderPurchaseOrderResponseBuilder;
 import com.laser.ordermanage.customer.exception.CustomerErrorCode;
@@ -26,7 +28,6 @@ import java.nio.charset.StandardCharsets;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -138,10 +139,10 @@ public class CustomerOrderIntegrationTest extends IntegrationTest {
     }
 
     /**
-     * 거래의 배송지 수정 성공
+     * 거래 배송지 수정 성공
      */
     @Test
-    public void 거래의_배송지_수정_성공() throws Exception {
+    public void 거래_배송지_수정_성공() throws Exception {
         // given
         final String accessToken = jwtBuilder.accessJwtBuild();
         final String orderId = "3";
@@ -155,11 +156,11 @@ public class CustomerOrderIntegrationTest extends IntegrationTest {
     }
 
     /**
-     * 거래의 배송지 수정 실패
+     * 거래 배송지 수정 실패
      * - 실패 사유 : 요청 시, Header 에 Authorization 정보 (Access Token) 를 추가하지 않음
      */
     @Test
-    public void 거래의_배송지_수정_실패_Header_Authorization_존재() throws Exception {
+    public void 거래_배송지_수정_실패_Header_Authorization_존재() throws Exception {
         // given
         final String orderId = "3";
         final CustomerUpdateOrderDeliveryAddressRequest request = CustomerUpdateOrderDeliveryAddressRequestBuilder.buildOfDeliveryAddress2();
@@ -172,11 +173,11 @@ public class CustomerOrderIntegrationTest extends IntegrationTest {
     }
 
     /**
-     * 거래의 배송지 수정 실패
+     * 거래 배송지 수정 실패
      * - 실패 사유 : 요청 시, Header 에 있는 Authorization 정보 (Access Token) 에 권한 정보가 없음
      */
     @Test
-    public void 거래의_배송지_수정_실패_Unauthorized_Access_Token() throws Exception {
+    public void 거래_배송지_수정_실패_Unauthorized_Access_Token() throws Exception {
         // given
         final String unauthorizedAccessToken = jwtBuilder.unauthorizedAccessJwtBuild();
         final String orderId = "3";
@@ -190,11 +191,11 @@ public class CustomerOrderIntegrationTest extends IntegrationTest {
     }
 
     /**
-     * 거래의 배송지 수정 실패
+     * 거래 배송지 수정 실패
      * - 실패 사유 : 요청 시, Header 에 다른 타입의 Authorization 정보 (Refresh Token) 를 추가함
      */
     @Test
-    public void 거래의_배송지_수정_실패_Token_Type() throws Exception {
+    public void 거래_배송지_수정_실패_Token_Type() throws Exception {
         // given
         final String refreshToken = jwtBuilder.refreshJwtBuild();
         final String orderId = "3";
@@ -208,11 +209,11 @@ public class CustomerOrderIntegrationTest extends IntegrationTest {
     }
 
     /**
-     * 거래의 배송지 수정 실패
+     * 거래 배송지 수정 실패
      * - 실패 사유 : 요청 시, Header 에 있는 Authorization(Access Token) 의 유효기간 만료
      */
     @Test
-    public void 거래의_배송지_수정_실패_Expired_Access_Token() throws Exception {
+    public void 거래_배송지_수정_실패_Expired_Access_Token() throws Exception {
         // given
         final String expiredAccessToken = jwtBuilder.expiredAccessJwtBuild();
         final String orderId = "3";
@@ -226,11 +227,11 @@ public class CustomerOrderIntegrationTest extends IntegrationTest {
     }
 
     /**
-     * 거래의 배송지 수정 실패
+     * 거래 배송지 수정 실패
      * - 실패 사유 : 요청 시, Header 에 있는 Authorization(JWT) 가 유효하지 않음
      */
     @Test
-    public void 거래의_배송지_수정_실패_Invalid_Token() throws Exception {
+    public void 거래_배송지_수정_실패_Invalid_Token() throws Exception {
         // given
         final String invalidToken = jwtBuilder.invalidJwtBuild();
         final String orderId = "3";
@@ -244,11 +245,11 @@ public class CustomerOrderIntegrationTest extends IntegrationTest {
     }
 
     /**
-     * 거래의 배송지 수정 실패
+     * 거래 배송지 수정 실패
      * - 실패 사유 : 거래에 대한 접근 권한이 없음
      */
     @Test
-    public void 거래의_배송지_수정_실패_거래_접근_권한() throws Exception {
+    public void 거래_배송지_수정_실패_거래_접근_권한() throws Exception {
         // given
         final String accessTokenOfUser2 = jwtBuilder.accessJwtBuildOfUser2();
         final String orderId = "3";
@@ -262,11 +263,11 @@ public class CustomerOrderIntegrationTest extends IntegrationTest {
     }
 
     /**
-     * 거래의 배송지 수정 실패
+     * 거래 배송지 수정 실패
      * - 실패 사유 : 배송지에 대한 접근 권한이 없음
      */
     @Test
-    public void 거래의_배송지_수정_실패_배송지_접근_권한() throws Exception {
+    public void 거래_배송지_수정_실패_배송지_접근_권한() throws Exception {
         // given
         final String accessTokenOfUser2 = jwtBuilder.accessJwtBuildOfUser2();
         final String orderId = "8";
@@ -280,11 +281,11 @@ public class CustomerOrderIntegrationTest extends IntegrationTest {
     }
 
     /**
-     * 거래의 배송지 수정 실패
-     * - 실패 사유 : 거래의 단계가 배송지 수정 가능 단계(견적 대기, 견적 승인, 제작 중)가 아님
+     * 거래 배송지 수정 실패
+     * - 실패 사유 : 거래 단계가 배송지 수정 가능 단계(견적 대기, 견적 승인, 제작 중)가 아님
      */
     @Test
-    public void 거래의_배송지_수정_실패_거래배송지수정_가능단계() throws Exception {
+    public void 거래_배송지_수정_실패_거래배송지수정_가능단계() throws Exception {
         // given
         final String accessToken = jwtBuilder.accessJwtBuild();
         final String orderId = "1";
@@ -298,29 +299,36 @@ public class CustomerOrderIntegrationTest extends IntegrationTest {
     }
 
     /**
-     * 거래의 도면 항목 추가 성공
+     * 거래 도면 항목 추가 성공
      */
     @Test
-    public void 거래의_도면_항목_추가_성공() throws Exception {
+    public void 거래_도면_항목_추가_성공() throws Exception {
         // given
         final String accessToken = jwtBuilder.accessJwtBuild();
         final String orderId = "3";
         final CustomerCreateDrawingRequest request = CustomerCreateDrawingRequestBuilder.build();
+        final CustomerCreateDrawingResponse expectedResponse = CustomerCreateDrawingResponseBuilder.build();
 
         // when
         final ResultActions resultActions = requestCreateOrderDrawing(accessToken, orderId, request);
 
         // then
-        resultActions.andExpect(status().isOk());
+        final String responseString = resultActions
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8);
+
+        final CustomerCreateDrawingResponse actualResponse = objectMapper.readValue(responseString, CustomerCreateDrawingResponse.class);
+
+        Assertions.assertThat(actualResponse).isEqualTo(expectedResponse);
     }
 
 
     /**
-     * 거래의 도면 항목 추가 실패
+     * 거래 도면 항목 추가 실패
      * - 실패 사유 : 요청 시, Header 에 Authorization 정보 (Access Token) 를 추가하지 않음
      */
     @Test
-    public void 거래의_도면_항목_추가_실패_Header_Authorization_존재() throws Exception {
+    public void 거래_도면_항목_추가_실패_Header_Authorization_존재() throws Exception {
         // given
         final String orderId = "3";
         final CustomerCreateDrawingRequest request = CustomerCreateDrawingRequestBuilder.build();
@@ -333,11 +341,11 @@ public class CustomerOrderIntegrationTest extends IntegrationTest {
     }
 
     /**
-     * 거래의 도면 항목 추가 실패
+     * 거래 도면 항목 추가 실패
      * - 실패 사유 : 요청 시, Header 에 있는 Authorization 정보 (Access Token) 에 권한 정보가 없음
      */
     @Test
-    public void 거래의_도면_항목_추가_실패_Unauthorized_Access_Token() throws Exception {
+    public void 거래_도면_항목_추가_실패_Unauthorized_Access_Token() throws Exception {
         // given
         final String unauthorizedAccessToken = jwtBuilder.unauthorizedAccessJwtBuild();
         final String orderId = "3";
@@ -351,11 +359,11 @@ public class CustomerOrderIntegrationTest extends IntegrationTest {
     }
 
     /**
-     * 거래의 도면 항목 추가 실패
+     * 거래 도면 항목 추가 실패
      * - 실패 사유 : 요청 시, Header 에 다른 타입의 Authorization 정보 (Refresh Token) 를 추가함
      */
     @Test
-    public void 거래의_도면_항목_추가_실패_Token_Type() throws Exception {
+    public void 거래_도면_항목_추가_실패_Token_Type() throws Exception {
         // given
         final String refreshToken = jwtBuilder.refreshJwtBuild();
         final String orderId = "3";
@@ -369,11 +377,11 @@ public class CustomerOrderIntegrationTest extends IntegrationTest {
     }
 
     /**
-     * 거래의 도면 항목 추가 실패
+     * 거래 도면 항목 추가 실패
      * - 실패 사유 : 요청 시, Header 에 있는 Authorization(Access Token) 의 유효기간 만료
      */
     @Test
-    public void 거래의_도면_항목_추가_실패_Expired_Access_Token() throws Exception {
+    public void 거래_도면_항목_추가_실패_Expired_Access_Token() throws Exception {
         // given
         final String expiredAccessToken = jwtBuilder.expiredAccessJwtBuild();
         final String orderId = "3";
@@ -387,11 +395,11 @@ public class CustomerOrderIntegrationTest extends IntegrationTest {
     }
 
     /**
-     * 거래의 도면 항목 추가 실패
+     * 거래 도면 항목 추가 실패
      * - 실패 사유 : 요청 시, Header 에 있는 Authorization(JWT) 가 유효하지 않음
      */
     @Test
-    public void 거래의_도면_항목_추가_실패_Invalid_Token() throws Exception {
+    public void 거래_도면_항목_추가_실패_Invalid_Token() throws Exception {
         // given
         final String invalidToken = jwtBuilder.invalidJwtBuild();
         final String orderId = "3";
@@ -405,11 +413,11 @@ public class CustomerOrderIntegrationTest extends IntegrationTest {
     }
 
     /**
-     * 거래의 도면 항목 추가 실패
+     * 거래 도면 항목 추가 실패
      * - 실패 사유 : 거래에 대한 접근 권한이 없음
      */
     @Test
-    public void 거래의_도면_항목_추가_실패_거래_접근_권한() throws Exception {
+    public void 거래_도면_항목_추가_실패_거래_접근_권한() throws Exception {
         // given
         final String accessTokenOfUser2 = jwtBuilder.accessJwtBuildOfUser2();
         final String orderId = "3";
@@ -423,11 +431,11 @@ public class CustomerOrderIntegrationTest extends IntegrationTest {
     }
 
     /**
-     * 거래의 도면 항목 추가 실패
-     * - 실패 사유 : 거래의 단계가 도면 항목 추가 가능 단계(견적 대기, 견적 승인, 제작 중)가 아님
+     * 거래 도면 항목 추가 실패
+     * - 실패 사유 : 거래 단계가 도면 항목 추가 가능 단계(견적 대기, 견적 승인, 제작 중)가 아님
      */
     @Test
-    public void 거래의_도면_항목_추가_실패_거래도면추가_가능단계() throws Exception {
+    public void 거래_도면_항목_추가_실패_거래도면추가_가능단계() throws Exception {
         // given
         final String accessToken = jwtBuilder.accessJwtBuild();
         final String orderId = "1";
@@ -441,10 +449,10 @@ public class CustomerOrderIntegrationTest extends IntegrationTest {
     }
 
     /**
-     * 거래의 도면 항목 수정 성공
+     * 거래 도면 항목 수정 성공
      */
     @Test
-    public void 거래의_도면_항목_수정_성공() throws Exception {
+    public void 거래_도면_항목_수정_성공() throws Exception {
         // given
         final String accessToken = jwtBuilder.accessJwtBuild();
         final String orderId = "3";
@@ -459,11 +467,11 @@ public class CustomerOrderIntegrationTest extends IntegrationTest {
     }
 
     /**
-     * 거래의 도면 항목 수정 실패
+     * 거래 도면 항목 수정 실패
      * - 실패 사유 : 요청 시, Header 에 Authorization 정보 (Access Token) 를 추가하지 않음
      */
     @Test
-    public void 거래의_도면_항목_수정_실패_Header_Authorization_존재() throws Exception {
+    public void 거래_도면_항목_수정_실패_Header_Authorization_존재() throws Exception {
         // given
         final String orderId = "3";
         final String drawingId = "3";
@@ -477,11 +485,11 @@ public class CustomerOrderIntegrationTest extends IntegrationTest {
     }
 
     /**
-     * 거래의 도면 항목 수정 실패
+     * 거래 도면 항목 수정 실패
      * - 실패 사유 : 요청 시, Header 에 있는 Authorization 정보 (Access Token) 에 권한 정보가 없음
      */
     @Test
-    public void 거래의_도면_항목_수정_실패_Unauthorized_Access_Token() throws Exception {
+    public void 거래_도면_항목_수정_실패_Unauthorized_Access_Token() throws Exception {
         // given
         final String unauthorizedAccessToken = jwtBuilder.unauthorizedAccessJwtBuild();
         final String orderId = "3";
@@ -496,11 +504,11 @@ public class CustomerOrderIntegrationTest extends IntegrationTest {
     }
 
     /**
-     * 거래의 도면 항목 수정 실패
+     * 거래 도면 항목 수정 실패
      * - 실패 사유 : 요청 시, Header 에 다른 타입의 Authorization 정보 (Refresh Token) 를 추가함
      */
     @Test
-    public void 거래의_도면_항목_수정_실패_Token_Type() throws Exception {
+    public void 거래_도면_항목_수정_실패_Token_Type() throws Exception {
         // given
         final String refreshToken = jwtBuilder.refreshJwtBuild();
         final String orderId = "3";
@@ -515,11 +523,11 @@ public class CustomerOrderIntegrationTest extends IntegrationTest {
     }
 
     /**
-     * 거래의 도면 항목 수정 실패
+     * 거래 도면 항목 수정 실패
      * - 실패 사유 : 요청 시, Header 에 있는 Authorization(Access Token) 의 유효기간 만료
      */
     @Test
-    public void 거래의_도면_항목_수정_실패_Expired_Access_Token() throws Exception {
+    public void 거래_도면_항목_수정_실패_Expired_Access_Token() throws Exception {
         // given
         final String expiredAccessToken = jwtBuilder.expiredAccessJwtBuild();
         final String orderId = "3";
@@ -534,11 +542,11 @@ public class CustomerOrderIntegrationTest extends IntegrationTest {
     }
 
     /**
-     * 거래의 도면 항목 수정 실패
+     * 거래 도면 항목 수정 실패
      * - 실패 사유 : 요청 시, Header 에 있는 Authorization(JWT) 가 유효하지 않음
      */
     @Test
-    public void 거래의_도면_항목_수정_실패_Invalid_Token() throws Exception {
+    public void 거래_도면_항목_수정_실패_Invalid_Token() throws Exception {
         // given
         final String invalidToken = jwtBuilder.invalidJwtBuild();
         final String orderId = "3";
@@ -553,11 +561,11 @@ public class CustomerOrderIntegrationTest extends IntegrationTest {
     }
 
     /**
-     * 거래의 도면 항목 수정 실패
+     * 거래 도면 항목 수정 실패
      * - 실패 사유 : 거래에 대한 접근 권한이 없음
      */
     @Test
-    public void 거래의_도면_항목_수정_실패_거래_접근_권한() throws Exception {
+    public void 거래_도면_항목_수정_실패_거래_접근_권한() throws Exception {
         // given
         final String accessTokenOfUser2 = jwtBuilder.accessJwtBuildOfUser2();
         final String orderId = "3";
@@ -572,11 +580,11 @@ public class CustomerOrderIntegrationTest extends IntegrationTest {
     }
 
     /**
-     * 거래의 도면 항목 수정 실패
-     * - 실패 사유 : 거래의 단계가 도면 항목 추가 가능 단계(견적 대기, 견적 승인, 제작 중)가 아님
+     * 거래 도면 항목 수정 실패
+     * - 실패 사유 : 거래 단계가 도면 항목 수정 가능 단계(견적 대기, 견적 승인, 제작 중)가 아님
      */
     @Test
-    public void 거래의_도면_항목_수정_실패_거래도면항목수정_가능단계() throws Exception {
+    public void 거래_도면_항목_수정_실패_거래도면항목수정_가능단계() throws Exception {
         // given
         final String accessToken = jwtBuilder.accessJwtBuild();
         final String orderId = "1";
@@ -591,10 +599,10 @@ public class CustomerOrderIntegrationTest extends IntegrationTest {
     }
 
     /**
-     * 거래의 도면 삭제 성공
+     * 거래 도면 삭제 성공
      */
     @Test
-    public void 거래의_도면_삭제_성공() throws Exception {
+    public void 거래_도면_삭제_성공() throws Exception {
         // given
         final String accessToken = jwtBuilder.accessJwtBuild();
         final String orderId = "5";
@@ -608,11 +616,11 @@ public class CustomerOrderIntegrationTest extends IntegrationTest {
     }
 
     /**
-     * 거래의 도면 삭제 실패
+     * 거래 도면 삭제 실패
      * - 실패 사유 : 요청 시, Header 에 Authorization 정보 (Access Token) 를 추가하지 않음
      */
     @Test
-    public void 거래의_도면_삭제_실패_Header_Authorization_존재() throws Exception {
+    public void 거래_도면_삭제_실패_Header_Authorization_존재() throws Exception {
         // given
         final String orderId = "5";
         final String drawingId = "16";
@@ -625,11 +633,11 @@ public class CustomerOrderIntegrationTest extends IntegrationTest {
     }
 
     /**
-     * 거래의 도면 삭제 실패
+     * 거래 도면 삭제 실패
      * - 실패 사유 : 요청 시, Header 에 있는 Authorization 정보 (Access Token) 에 권한 정보가 없음
      */
     @Test
-    public void 거래의_도면_삭제_실패_Unauthorized_Access_Token() throws Exception {
+    public void 거래_도면_삭제_실패_Unauthorized_Access_Token() throws Exception {
         // given
         final String unauthorizedAccessToken = jwtBuilder.unauthorizedAccessJwtBuild();
         final String orderId = "5";
@@ -643,11 +651,11 @@ public class CustomerOrderIntegrationTest extends IntegrationTest {
     }
 
     /**
-     * 거래의 도면 삭제 실패
+     * 거래 도면 삭제 실패
      * - 실패 사유 : 요청 시, Header 에 다른 타입의 Authorization 정보 (Refresh Token) 를 추가함
      */
     @Test
-    public void 거래의_도면_삭제_실패_Token_Type() throws Exception {
+    public void 거래_도면_삭제_실패_Token_Type() throws Exception {
         // given
         final String refreshToken = jwtBuilder.refreshJwtBuild();
         final String orderId = "5";
@@ -661,11 +669,11 @@ public class CustomerOrderIntegrationTest extends IntegrationTest {
     }
 
     /**
-     * 거래의 도면 삭제 실패
+     * 거래 도면 삭제 실패
      * - 실패 사유 : 요청 시, Header 에 있는 Authorization(Access Token) 의 유효기간 만료
      */
     @Test
-    public void 거래의_도면_삭제_실패_Expired_Access_Token() throws Exception {
+    public void 거래_도면_삭제_실패_Expired_Access_Token() throws Exception {
         // given
         final String expiredAccessToken = jwtBuilder.expiredAccessJwtBuild();
         final String orderId = "5";
@@ -679,11 +687,11 @@ public class CustomerOrderIntegrationTest extends IntegrationTest {
     }
 
     /**
-     * 거래의 도면 삭제 실패
+     * 거래 도면 삭제 실패
      * - 실패 사유 : 요청 시, Header 에 있는 Authorization(JWT) 가 유효하지 않음
      */
     @Test
-    public void 거래의_도면_삭제_실패_Invalid_Token() throws Exception {
+    public void 거래_도면_삭제_실패_Invalid_Token() throws Exception {
         // given
         final String invalidToken = jwtBuilder.invalidJwtBuild();
         final String orderId = "5";
@@ -697,11 +705,11 @@ public class CustomerOrderIntegrationTest extends IntegrationTest {
     }
 
     /**
-     * 거래의 도면 삭제 실패
+     * 거래 도면 삭제 실패
      * - 실패 사유 : 거래에 대한 접근 권한이 없음
      */
     @Test
-    public void 거래의_도면_삭제_실패_거래_접근_권한() throws Exception {
+    public void 거래_도면_삭제_실패_거래_접근_권한() throws Exception {
         // given
         final String accessTokenOfUser2 = jwtBuilder.accessJwtBuildOfUser2();
         final String orderId = "5";
@@ -715,11 +723,11 @@ public class CustomerOrderIntegrationTest extends IntegrationTest {
     }
 
     /**
-     * 거래의 도면 삭제 실패
-     * - 실패 사유 : 거래의 단계가 도면 삭제 가능 단계(견적 대기, 견적 승인, 제작 중)가 아님
+     * 거래 도면 삭제 실패
+     * - 실패 사유 : 거래 단계가 도면 삭제 가능 단계(견적 대기, 견적 승인, 제작 중)가 아님
      */
     @Test
-    public void 거래의_도면_삭제_실패_도면삭제_가능단계() throws Exception {
+    public void 거래_도면_삭제_실패_도면삭제_가능단계() throws Exception {
         // given
         final String accessToken = jwtBuilder.accessJwtBuild();
         final String orderId = "1";
@@ -733,11 +741,11 @@ public class CustomerOrderIntegrationTest extends IntegrationTest {
     }
 
     /**
-     * 거래의 도면 삭제 실패
-     * - 실패 사유 : 거래의 마지막 도면을 삭제할 수 없음
+     * 거래 도면 삭제 실패
+     * - 실패 사유 : 거래 마지막 도면을 삭제할 수 없음
      */
     @Test
-    public void 거래의_도면_삭제_실패_마지막도면_삭제() throws Exception {
+    public void 거래_도면_삭제_실패_마지막도면_삭제() throws Exception {
         // given
         final String accessToken = jwtBuilder.accessJwtBuild();
         final String orderId = "3";
@@ -751,10 +759,10 @@ public class CustomerOrderIntegrationTest extends IntegrationTest {
     }
 
     /**
-     * 거래의 견적서 승인 성공
+     * 거래 견적서 승인 성공
      */
     @Test
-    public void 거래의_견적서_승인_성공() throws Exception {
+    public void 거래_견적서_승인_성공() throws Exception {
         // given
         final String accessToken = jwtBuilder.accessJwtBuildOfUser2();
         final String orderId = "10";
@@ -767,11 +775,11 @@ public class CustomerOrderIntegrationTest extends IntegrationTest {
     }
 
     /**
-     * 거래의 견적서 승인 실패
+     * 거래 견적서 승인 실패
      * - 실패 사유 : 요청 시, Header 에 Authorization 정보 (Access Token) 를 추가하지 않음
      */
     @Test
-    public void 거래의_견적서_승인_실패_Header_Authorization_존재() throws Exception {
+    public void 거래_견적서_승인_실패_Header_Authorization_존재() throws Exception {
         // given
         final String orderId = "10";
 
@@ -783,11 +791,11 @@ public class CustomerOrderIntegrationTest extends IntegrationTest {
     }
 
     /**
-     * 거래의 견적서 승인 실패
+     * 거래 견적서 승인 실패
      * - 실패 사유 : 요청 시, Header 에 있는 Authorization 정보 (Access Token) 에 권한 정보가 없음
      */
     @Test
-    public void 거래의_견적서_승인_실패_Unauthorized_Access_Token() throws Exception {
+    public void 거래_견적서_승인_실패_Unauthorized_Access_Token() throws Exception {
         // given
         final String unauthorizedAccessToken = jwtBuilder.unauthorizedAccessJwtBuild();
         final String orderId = "10";
@@ -800,11 +808,11 @@ public class CustomerOrderIntegrationTest extends IntegrationTest {
     }
 
     /**
-     * 거래의 견적서 승인 실패
+     * 거래 견적서 승인 실패
      * - 실패 사유 : 요청 시, Header 에 다른 타입의 Authorization 정보 (Refresh Token) 를 추가함
      */
     @Test
-    public void 거래의_견적서_승인_실패_Token_Type() throws Exception {
+    public void 거래_견적서_승인_실패_Token_Type() throws Exception {
         // given
         final String refreshToken = jwtBuilder.refreshJwtBuild();
         final String orderId = "10";
@@ -817,11 +825,11 @@ public class CustomerOrderIntegrationTest extends IntegrationTest {
     }
 
     /**
-     * 거래의 견적서 승인 실패
+     * 거래 견적서 승인 실패
      * - 실패 사유 : 요청 시, Header 에 있는 Authorization(Access Token) 의 유효기간 만료
      */
     @Test
-    public void 거래의_견적서_승인_실패_Expired_Access_Token() throws Exception {
+    public void 거래_견적서_승인_실패_Expired_Access_Token() throws Exception {
         // given
         final String expiredAccessToken = jwtBuilder.expiredAccessJwtBuild();
         final String orderId = "10";
@@ -834,11 +842,11 @@ public class CustomerOrderIntegrationTest extends IntegrationTest {
     }
 
     /**
-     * 거래의 견적서 승인 실패
+     * 거래 견적서 승인 실패
      * - 실패 사유 : 요청 시, Header 에 있는 Authorization(JWT) 가 유효하지 않음
      */
     @Test
-    public void 거래의_견적서_승인_실패_Invalid_Token() throws Exception {
+    public void 거래_견적서_승인_실패_Invalid_Token() throws Exception {
         // given
         final String invalidToken = jwtBuilder.invalidJwtBuild();
         final String orderId = "10";
@@ -851,11 +859,11 @@ public class CustomerOrderIntegrationTest extends IntegrationTest {
     }
 
     /**
-     * 거래의 견적서 승인 실패
+     * 거래 견적서 승인 실패
      * - 실패 사유 : 거래에 대한 접근 권한이 없음
      */
     @Test
-    public void 거래의_견적서_승인_실패_거래_접근_권한() throws Exception {
+    public void 거래_견적서_승인_실패_거래_접근_권한() throws Exception {
         // given
         final String accessTokenOfUser1 = jwtBuilder.accessJwtBuild();
         final String orderId = "10";
@@ -868,11 +876,11 @@ public class CustomerOrderIntegrationTest extends IntegrationTest {
     }
 
     /**
-     * 거래의 견적서 승인 실패
-     * - 실패 사유 : 거래의 단계가 견적서 승인 가능 단계(견적 대기)가 아님
+     * 거래 견적서 승인 실패
+     * - 실패 사유 : 거래 단계가 견적서 승인 가능 단계(견적 대기)가 아님
      */
     @Test
-    public void 거래의_견적서_승인_실패_견적서승인_가능단계() throws Exception {
+    public void 거래_견적서_승인_실패_견적서승인_가능단계() throws Exception {
         // given
         final String accessToken = jwtBuilder.accessJwtBuild();
         final String orderId = "4";
@@ -885,11 +893,11 @@ public class CustomerOrderIntegrationTest extends IntegrationTest {
     }
 
     /**
-     * 거래의 견적서 승인 실패
-     * - 실패 사유 : 거래의 견적서가 존재하지 않음
+     * 거래 견적서 승인 실패
+     * - 실패 사유 : 거래 견적서가 존재하지 않음
      */
     @Test
-    public void 거래의_견적서_승인_실패_견적서_존재() throws Exception {
+    public void 거래_견적서_승인_실패_견적서_존재() throws Exception {
         // given
         final String accessToken = jwtBuilder.accessJwtBuild();
         final String orderId = "5";
@@ -921,7 +929,6 @@ public class CustomerOrderIntegrationTest extends IntegrationTest {
 
         // stub
         when(s3Service.upload(any(), (MultipartFile) any(), eq("purchase-order.png"))).thenReturn("purchase-order-url.png");
-        doNothing().when(emailService).sendEmail(any());
 
         // when
         final ResultActions resultActions = requestCreateOrUpdateOrderPurchaseOrder(accessToken, orderId, file, request);
@@ -946,9 +953,6 @@ public class CustomerOrderIntegrationTest extends IntegrationTest {
         final String orderId = "9";
         final CustomerCreateOrUpdateOrderPurchaseOrderRequest request = CustomerCreateOrUpdateOrderPurchaseOrderRequestBuilder.updateBuild();
         final CustomerCreateOrUpdateOrderPurchaseOrderResponse expectedResponse = CustomerCreateOrUpdateOrderPurchaseOrderResponseBuilder.updateBuild();
-
-        // stub
-        doNothing().when(emailService).sendEmail(any());
 
         // when
         final ResultActions resultActions = requestCreateOrUpdateOrderPurchaseOrderWithOutFile(accessToken, orderId, request);
@@ -1140,7 +1144,7 @@ public class CustomerOrderIntegrationTest extends IntegrationTest {
 
     /**
      * 거래 발주서 작성 및 수정 실패
-     * - 실패 사유 : 거래의 단계가 발주서 작성 및 수정 가능 단계(견적 승인)가 아님
+     * - 실패 사유 : 거래 단계가 발주서 작성 및 수정 가능 단계(견적 승인)가 아님
      */
     @Test
     public void 거래_발주서_작성및수정_실패_발주서작성및수정_가능단계() throws Exception {

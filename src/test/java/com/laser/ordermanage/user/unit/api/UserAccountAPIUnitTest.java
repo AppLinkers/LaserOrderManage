@@ -165,9 +165,6 @@ public class UserAccountAPIUnitTest extends APIUnitTest {
         // given
         final RequestChangePasswordRequest request = RequestChangePasswordRequestBuilder.build();
 
-        // stub
-        doNothing().when(userAccountService).requestChangePassword(any());
-
         // when
         final ResultActions resultActions = requestForRequestChangePasswordWithOutAuthentication(request);
 
@@ -249,9 +246,6 @@ public class UserAccountAPIUnitTest extends APIUnitTest {
         final String accessToken = "access-token";
         final String baseUrl = "https://www.kumoh.org/edit-password";
 
-        // stub
-        doNothing().when(userAccountService).requestChangePassword(any());
-
         // when
         final ResultActions resultActions = requestForRequestChangePassword(accessToken, baseUrl);
 
@@ -303,9 +297,6 @@ public class UserAccountAPIUnitTest extends APIUnitTest {
         // given
         final String changePasswordToken = "change-password-token";
         final ChangePasswordRequest request = ChangePasswordRequestBuilder.build();
-
-        // stub
-        doNothing().when(userAccountService).changePassword(any(), any());
 
         // when
         final ResultActions resultActions = requestChangePassword(changePasswordToken, request);
@@ -405,9 +396,6 @@ public class UserAccountAPIUnitTest extends APIUnitTest {
         // when
         final String accessToken = "access-token";
         final UpdateUserAccountRequest request = UpdateUserAccountRequestBuilder.build();
-
-        // stub
-        doNothing().when(userAccountService).updateUserAccount(any(), any());
 
         // when
         final ResultActions resultActions = requestUpdateUserAccount(accessToken, request);
@@ -605,9 +593,6 @@ public class UserAccountAPIUnitTest extends APIUnitTest {
         // given
         final String accessToken = "access-token";
         final Boolean isActivate = Boolean.TRUE;
-
-        // stub
-        doNothing().when(userAccountService).changeEmailNotification(any(), any());
 
         // when
         final ResultActions resultActions = requestChangeEmailNotification(accessToken, String.valueOf(isActivate));

@@ -291,9 +291,6 @@ public class OrderIntegrationTest extends IntegrationTest {
         final String orderId = "1";
         final CreateCommentRequest request = CreateCommentRequestBuilder.build();
 
-        // stub
-        doNothing().when(emailService).sendEmail(any());
-
         // when
         final ResultActions resultActions = requestCreateComment(accessToken, orderId, request);
 
@@ -318,9 +315,6 @@ public class OrderIntegrationTest extends IntegrationTest {
         final String accessToken = jwtBuilder.accessJwtBuildOfFactory();
         final String orderId = "1";
         final CreateCommentRequest request = CreateCommentRequestBuilder.build();
-
-        // stub
-        doNothing().when(emailService).sendEmail(any());
 
         // when
         final ResultActions resultActions = requestCreateComment(accessToken, orderId, request);

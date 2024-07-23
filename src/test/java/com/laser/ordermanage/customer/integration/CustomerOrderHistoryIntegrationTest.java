@@ -35,7 +35,7 @@ public class CustomerOrderHistoryIntegrationTest extends IntegrationTest {
     @Test
     public void 고객_회원의_거래_목록_조회_성공() throws Exception {
         // given
-        String accessToken = jwtBuilder.accessJwtBuild();
+        final String accessToken = jwtBuilder.accessJwtBuild();
         final List<CustomerGetOrderHistoryResponse> expectedOrderList = CustomerGetOrderHistoryResponseBuilder.buildListOfCustomer1();
         final PageResponse<CustomerGetOrderHistoryResponse> expectedResponse = new PageResponse<>(new PageImpl<>(expectedOrderList, pageable, expectedOrderList.size()));
 
@@ -138,9 +138,9 @@ public class CustomerOrderHistoryIntegrationTest extends IntegrationTest {
     @Test
     public void 고객_회원의_거래_완료_목록_조회_성공() throws Exception {
         // given
-        String accessToken = jwtBuilder.accessJwtBuild();
+        final String accessToken = jwtBuilder.accessJwtBuild();
         final List<CustomerGetOrderIsCompletedHistoryResponse> expectedOrderList = CustomerGetOrderIsCompletedHistoryResponseBuilder.build();
-        final PageResponse<CustomerGetOrderIsCompletedHistoryResponse> expectedResponse = new PageResponse<>(new PageImpl<>(expectedOrderList, pageable, 1));
+        final PageResponse<CustomerGetOrderIsCompletedHistoryResponse> expectedResponse = new PageResponse<>(new PageImpl<>(expectedOrderList, pageable, expectedOrderList.size()));
 
         // when
         final ResultActions resultActions = requestGetOrderIsCompletedHistory(accessToken);

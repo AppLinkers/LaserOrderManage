@@ -1,6 +1,7 @@
 package com.laser.ordermanage.common;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.laser.ordermanage.common.exception.ErrorCode;
 import com.laser.ordermanage.common.security.config.TestWebSecurityConfig;
 import com.laser.ordermanage.common.security.jwt.component.JwtAccessDeniedHandler;
@@ -31,7 +32,7 @@ public class APIUnitTest {
 
     protected MockMvc mvc;
 
-    protected ObjectMapper objectMapper = new ObjectMapper();
+    protected ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
 
     public MockMvc buildMockMvc(WebApplicationContext context) {
         return MockMvcBuilders

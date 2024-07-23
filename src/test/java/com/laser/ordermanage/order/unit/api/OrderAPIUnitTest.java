@@ -1,7 +1,6 @@
 package com.laser.ordermanage.order.unit.api;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.laser.ordermanage.common.APIUnitTest;
 import com.laser.ordermanage.common.exception.CommonErrorCode;
 import com.laser.ordermanage.common.exception.CustomCommonException;
@@ -29,7 +28,8 @@ import org.springframework.web.context.WebApplicationContext;
 import java.nio.charset.StandardCharsets;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -74,7 +74,7 @@ public class OrderAPIUnitTest extends APIUnitTest {
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8);
 
-        final GetOrderDetailResponse actualResponse = objectMapper.registerModule(new JavaTimeModule()).readValue(responseString, GetOrderDetailResponse.class);
+        final GetOrderDetailResponse actualResponse = objectMapper.readValue(responseString, GetOrderDetailResponse.class);
 
         Assertions.assertThat(actualResponse).isEqualTo(expectedResponse);
     }
@@ -139,7 +139,7 @@ public class OrderAPIUnitTest extends APIUnitTest {
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8);
 
-        final ListResponse<GetCommentResponse> actualResponse = objectMapper.registerModule(new JavaTimeModule()).readValue(responseString, new TypeReference<ListResponse<GetCommentResponse>>() {});
+        final ListResponse<GetCommentResponse> actualResponse = objectMapper.readValue(responseString, new TypeReference<ListResponse<GetCommentResponse>>() {});
 
         Assertions.assertThat(actualResponse).isEqualTo(expectedResponse);
     }

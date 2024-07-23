@@ -1,6 +1,5 @@
 package com.laser.ordermanage.customer.unit.api;
 
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.laser.ordermanage.common.APIUnitTest;
 import com.laser.ordermanage.common.exception.CommonErrorCode;
 import com.laser.ordermanage.common.exception.CustomCommonException;
@@ -1928,7 +1927,7 @@ public class CustomerOrderAPIUnitTest extends APIUnitTest {
             }
         });
 
-        String requestJson = objectMapper.registerModule(new JavaTimeModule()).writeValueAsString(request);
+        String requestJson = objectMapper.writeValueAsString(request);
         MockMultipartFile purchaseOrder = new MockMultipartFile("purchaseOrder", "purchaseOrder", MediaType.APPLICATION_JSON_VALUE, requestJson.getBytes(StandardCharsets.UTF_8));
 
         return mvc.perform(builder
@@ -1949,7 +1948,7 @@ public class CustomerOrderAPIUnitTest extends APIUnitTest {
             }
         });
 
-        String requestJson = objectMapper.registerModule(new JavaTimeModule()).writeValueAsString(request);
+        String requestJson = objectMapper.writeValueAsString(request);
         MockMultipartFile purchaseOrder = new MockMultipartFile("purchaseOrder", "purchaseOrder", MediaType.APPLICATION_JSON_VALUE, requestJson.getBytes(StandardCharsets.UTF_8));
 
         return mvc.perform(builder

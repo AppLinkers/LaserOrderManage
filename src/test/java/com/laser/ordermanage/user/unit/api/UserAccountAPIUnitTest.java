@@ -114,7 +114,7 @@ public class UserAccountAPIUnitTest extends APIUnitTest {
     @Test
     public void 이메일_찾기_실패_이름_파라미터_유효성() throws Exception {
         // given
-        final String invalidName = "너어어어어어어어어무우우우우우우우우긴이름";
+        final String invalidName = "사용자 이름".repeat(4);
         final String phone = "01011111111";
 
         // when

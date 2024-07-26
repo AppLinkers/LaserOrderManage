@@ -1499,7 +1499,7 @@ public class CustomerOrderAPIUnitTest extends APIUnitTest {
                 MediaType.MULTIPART_FORM_DATA_VALUE,
                 new FileInputStream(filePath)
         );
-        final CustomerCreateOrUpdateOrderPurchaseOrderRequest request = CustomerCreateOrUpdateOrderPurchaseOrderRequestBuilder.createBuild();
+        final CustomerCreateOrUpdateOrderPurchaseOrderRequest request = CustomerCreateOrUpdateOrderPurchaseOrderRequestBuilder.updateBuild();
 
         final Order order = OrderBuilder.build();
         final Quotation quotation = QuotationBuilder.build();

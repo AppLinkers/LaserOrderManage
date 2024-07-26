@@ -98,12 +98,6 @@ public class CustomerCreateOrderRequestBuilder {
         return new CustomerCreateOrderRequest("거래 이름", List.of("laser-cutting", "bending"), List.of("painting", "plating"), List.of(drawing), "거래 요청 사항", nullZipCodeDeliveryAddress, Boolean.FALSE);
     }
 
-    public static CustomerCreateOrderRequest emptyZipCodeDeliveryAddressBuild() {
-        CustomerCreateDrawingRequest drawing = CustomerCreateDrawingRequestBuilder.build();
-        CustomerCreateOrderDeliveryAddressRequest nullZipCodeDeliveryAddress = CustomerCreateOrderDeliveryAddressRequestBuilder.emptyZipCodeBuild();
-        return new CustomerCreateOrderRequest("거래 이름", List.of("laser-cutting", "bending"), List.of("painting", "plating"), List.of(drawing), "거래 요청 사항", nullZipCodeDeliveryAddress, Boolean.FALSE);
-    }
-
     public static CustomerCreateOrderRequest invalidZipCodeDeliveryAddressBuild() {
         CustomerCreateDrawingRequest drawing = CustomerCreateDrawingRequestBuilder.build();
         CustomerCreateOrderDeliveryAddressRequest invalidZipCodeDeliveryAddress = CustomerCreateOrderDeliveryAddressRequestBuilder.invalidZipCodeBuild();
@@ -150,12 +144,6 @@ public class CustomerCreateOrderRequestBuilder {
         CustomerCreateDrawingRequest drawing = CustomerCreateDrawingRequestBuilder.build();
         CustomerCreateOrderDeliveryAddressRequest nullPhone1DeliveryAddress = CustomerCreateOrderDeliveryAddressRequestBuilder.nullPhone1Build();
         return new CustomerCreateOrderRequest("거래 이름", List.of("laser-cutting", "bending"), List.of("painting", "plating"), List.of(drawing), "거래 요청 사항", nullPhone1DeliveryAddress, Boolean.FALSE);
-    }
-
-    public static CustomerCreateOrderRequest emptyPhone1DeliveryAddressBuild() {
-        CustomerCreateDrawingRequest drawing = CustomerCreateDrawingRequestBuilder.build();
-        CustomerCreateOrderDeliveryAddressRequest emptyPhone1DeliveryAddress = CustomerCreateOrderDeliveryAddressRequestBuilder.emptyPhone1Build();
-        return new CustomerCreateOrderRequest("거래 이름", List.of("laser-cutting", "bending"), List.of("painting", "plating"), List.of(drawing), "거래 요청 사항", emptyPhone1DeliveryAddress, Boolean.FALSE);
     }
 
     public static CustomerCreateOrderRequest invalidPhone1DeliveryAddressBuild() {

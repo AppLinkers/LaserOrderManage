@@ -154,7 +154,7 @@ public class CustomerOrderService {
             throw new CustomCommonException(OrderErrorCode.INVALID_ORDER_STAGE, order.getStage().getValue());
         }
 
-        if (drawingService.countDrawingByOrderId(order.getId()).equals(1)) {
+        if (drawingService.countDrawingByOrderId(orderId).equals(1)) {
             throw new CustomCommonException(OrderErrorCode.LAST_DRAWING_DELETE);
         }
 

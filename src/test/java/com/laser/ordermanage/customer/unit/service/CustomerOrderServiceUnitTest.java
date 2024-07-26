@@ -467,7 +467,7 @@ public class CustomerOrderServiceUnitTest extends ServiceUnitTest {
         when(orderRepository.findIdByCustomerAndStageNotCompleted(email)).thenReturn(orderIdList);
 
         // when
-        customerOrderService.deleteOrderByStageCompleted(email);
+        customerOrderService.deleteOrderByStageNotCompleted(email);
 
         // then
         verify(drawingRepository, times(1)).deleteAllByOrderList(orderIdList);

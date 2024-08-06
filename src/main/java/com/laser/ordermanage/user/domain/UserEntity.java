@@ -117,8 +117,8 @@ public class UserEntity extends CreatedAtEntity implements UserDetails {
         this.emailNotification = emailNotification;
     }
 
-    public boolean enableChangePassword() {
-        return this.signupMethod.equals(SignupMethod.BASIC);
+    public boolean isSocialAccount() {
+        return !this.signupMethod.equals(SignupMethod.BASIC);
     }
 
     public void updateProperties(UpdateUserAccountRequest request) {

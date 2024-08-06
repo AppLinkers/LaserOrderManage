@@ -48,7 +48,7 @@ public class UserAccountService {
     public void requestChangePassword(RequestChangePasswordRequest request) {
         UserEntity user = userAuthService.getUserByEmail(request.email());
 
-        if (!user.enableChangePassword()) {
+        if (user.isSocialAccount()) {
             throw new CustomCommonException(UserErrorCode.SOCIAL_USER_UNABLE_TO_CHANGE_PASSWORD);
         }
 
@@ -94,7 +94,7 @@ public class UserAccountService {
 
         UserEntity user = userAuthService.getUserByEmail(authentication.getName());
 
-        if (!user.enableChangePassword()) {
+        if (user.isSocialAccount()) {
             throw new CustomCommonException(UserErrorCode.SOCIAL_USER_UNABLE_TO_CHANGE_PASSWORD);
         }
 

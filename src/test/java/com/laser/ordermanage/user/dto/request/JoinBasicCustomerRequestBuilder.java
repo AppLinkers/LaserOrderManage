@@ -21,7 +21,7 @@ public class JoinBasicCustomerRequestBuilder {
                 .email("user1@gmail.com")
                 .password("user1-password")
                 .name("new-user")
-                .companyName("company-name")
+                .companyName("new-company-name")
                 .phone("01011111111")
                 .zipCode("11111")
                 .address("address")

@@ -1,19 +1,31 @@
 package com.laser.ordermanage.user.integration;
 
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.laser.ordermanage.common.IntegrationTest;
 import com.laser.ordermanage.common.exception.CommonErrorCode;
 import com.laser.ordermanage.common.security.jwt.setup.JwtBuilder;
+import com.laser.ordermanage.user.dto.request.LoginKakaoRequest;
+import com.laser.ordermanage.user.dto.request.LoginKakaoRequestBuilder;
 import com.laser.ordermanage.user.dto.request.LoginRequest;
 import com.laser.ordermanage.user.dto.request.LoginRequestBuilder;
+import com.laser.ordermanage.user.dto.response.KakaoAccountResponse;
+import com.laser.ordermanage.user.dto.response.KakaoAccountResponseBuilder;
 import com.laser.ordermanage.user.dto.response.TokenInfoResponse;
 import com.laser.ordermanage.user.dto.response.TokenInfoResponseBuilder;
 import com.laser.ordermanage.user.exception.UserErrorCode;
 import jakarta.servlet.http.Cookie;
+import okhttp3.mockwebserver.MockResponse;
+import okhttp3.mockwebserver.MockWebServer;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.servlet.ResultActions;
 
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -25,6 +37,22 @@ public class UserAuthIntegrationTest extends IntegrationTest {
     @Autowired
     private JwtBuilder jwtBuilder;
 
+    public static MockWebServer mockWebServer = new MockWebServer();
+
+    @DynamicPropertySource
+    public static void addUrlProperties(DynamicPropertyRegistry registry) {
+        registry.add("kakao.account-uri", () -> "http://localhost:" + mockWebServer.getPort() + "/v2/user/me");
+    }
+
+    @BeforeAll
+    public static void setUp() throws IOException {
+        mockWebServer.start();
+    }
+
+    @AfterAll
+    public static void shutdown() throws IOException {
+        mockWebServer.shutdown();
+    }
 
     /**
      * 사용자 기본 로그인 성공
@@ -36,7 +64,7 @@ public class UserAuthIntegrationTest extends IntegrationTest {
         final TokenInfoResponse expectedResponse = TokenInfoResponseBuilder.build();
 
         // when
-        final ResultActions resultActions = requestLogin(request);
+        final ResultActions resultActions = requestLoginBasic(request);
 
         // then
         final String responseString = resultActions
@@ -57,7 +85,7 @@ public class UserAuthIntegrationTest extends IntegrationTest {
         final LoginRequest request = LoginRequestBuilder.unknownUserBuild();
 
         // when
-        final ResultActions resultActions = requestLogin(request);
+        final ResultActions resultActions = requestLoginBasic(request);
 
         // then
         assertError(UserErrorCode.INVALID_CREDENTIALS, resultActions);
@@ -73,10 +101,96 @@ public class UserAuthIntegrationTest extends IntegrationTest {
         final LoginRequest request = LoginRequestBuilder.invalidCredentialBuild();
 
         // when
-        final ResultActions resultActions = requestLogin(request);
+        final ResultActions resultActions = requestLoginBasic(request);
 
         // then
         assertError(UserErrorCode.INVALID_CREDENTIALS, resultActions);
+    }
+
+    /**
+     * 사용자 카카오 로그인 성공
+     */
+    @Test
+    public void 카카오_로그인_성공() throws Exception {
+        // before
+        objectMapper.registerModule(new JavaTimeModule());
+
+        // given
+        final LoginKakaoRequest request = LoginKakaoRequestBuilder.build();
+        final KakaoAccountResponse expectedKakaoAccountResponse = KakaoAccountResponseBuilder.existKakaoBuild();
+        final String mockResponse = objectMapper.writeValueAsString(expectedKakaoAccountResponse);
+        final TokenInfoResponse expectedResponse = TokenInfoResponseBuilder.build();
+
+        // stub
+        mockWebServer.enqueue(new MockResponse()
+                .setResponseCode(200)
+                .setBody(mockResponse)
+                .addHeader("Content-Type", "application/json"));
+
+        // when
+        final ResultActions resultActions = requestLoginKakao(request);
+
+        // then
+        final String responseString = resultActions
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8);
+
+        final TokenInfoResponse actualResponse = objectMapper.readValue(responseString, TokenInfoResponse.class);
+        TokenInfoResponseBuilder.assertTokenInfoResponse(actualResponse, expectedResponse);
+    }
+
+    /**
+     * 사용자 카카오 로그인 실패
+     * - 실패 사유 : 존재하지 않는 사용자
+     */
+    @Test
+    public void 카카오_로그인_실패_존재하지_않는_사용자() throws Exception {
+        // before
+        objectMapper.registerModule(new JavaTimeModule());
+
+        // given
+        final LoginKakaoRequest request = LoginKakaoRequestBuilder.build();
+        final KakaoAccountResponse expectedKakaoAccountResponse = KakaoAccountResponseBuilder.newKakaoBuild();
+        final String mockResponse = objectMapper.writeValueAsString(expectedKakaoAccountResponse);
+
+        // stub
+        mockWebServer.enqueue(new MockResponse()
+                .setResponseCode(200)
+                .setBody(mockResponse)
+                .addHeader("Content-Type", "application/json"));
+
+        // when
+        final ResultActions resultActions = requestLoginKakao(request);
+
+        // then
+        assertError(UserErrorCode.NOT_FOUND_USER, resultActions);
+    }
+
+    /**
+     * 사용자 카카오 로그인 실패
+     * - 실패 사유 : 이메일 중복
+     */
+    @Test
+    public void 카카오_로그인_실패_이메일_중복() throws Exception {
+        // before
+        objectMapper.registerModule(new JavaTimeModule());
+
+        // given
+        final LoginKakaoRequest request = LoginKakaoRequestBuilder.build();
+        final KakaoAccountResponse expectedKakaoAccountResponse = KakaoAccountResponseBuilder.existBasicBuild();
+        final String mockResponse = objectMapper.writeValueAsString(expectedKakaoAccountResponse);
+
+        // stub
+        mockWebServer.enqueue(new MockResponse()
+                .setResponseCode(200)
+                .setBody(mockResponse)
+                .addHeader("Content-Type", "application/json"));
+
+        // when
+        final ResultActions resultActions = requestLoginKakao(request);
+
+        // then
+        assertError(UserErrorCode.EXIST_BASIC_DUPLICATED_EMAIL_USER, resultActions);
     }
 
     /**
@@ -87,7 +201,7 @@ public class UserAuthIntegrationTest extends IntegrationTest {
         // given
         final LoginRequest request = LoginRequestBuilder.build();
 
-        final String response = requestLogin(request).andReturn().getResponse().getContentAsString();
+        final String response = requestLoginBasic(request).andReturn().getResponse().getContentAsString();
         final String refreshToken = objectMapper.readValue(response, TokenInfoResponse.class).refreshToken();
 
         final TokenInfoResponse expectedResponse = TokenInfoResponseBuilder.build();
@@ -208,7 +322,7 @@ public class UserAuthIntegrationTest extends IntegrationTest {
         // given
         final LoginRequest request = LoginRequestBuilder.build();
 
-        final String response = requestLogin(request).andReturn().getResponse().getContentAsString();
+        final String response = requestLoginBasic(request).andReturn().getResponse().getContentAsString();
 
         final String refreshToken = objectMapper.readValue(response, TokenInfoResponse.class).refreshToken();
 
@@ -227,7 +341,7 @@ public class UserAuthIntegrationTest extends IntegrationTest {
         // given
         final LoginRequest request = LoginRequestBuilder.build();
 
-        final String response = requestLogin(request).andReturn().getResponse().getContentAsString();
+        final String response = requestLoginBasic(request).andReturn().getResponse().getContentAsString();
 
         final String accessToken = objectMapper.readValue(response, TokenInfoResponse.class).accessToken();
 
@@ -324,8 +438,15 @@ public class UserAuthIntegrationTest extends IntegrationTest {
         assertError(UserErrorCode.INVALID_JWT, resultActions);
     }
 
-    private ResultActions requestLogin(LoginRequest request) throws Exception {
+    private ResultActions requestLoginBasic(LoginRequest request) throws Exception {
         return mvc.perform(post("/user/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andDo(print());
+    }
+
+    private ResultActions requestLoginKakao(LoginKakaoRequest request) throws Exception {
+        return mvc.perform(post("/user/login/kakao")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andDo(print());

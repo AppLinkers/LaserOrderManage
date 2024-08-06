@@ -16,6 +16,13 @@ public class RequestChangePasswordRequestBuilder {
                 .build();
     }
 
+    public static RequestChangePasswordRequest socialUserBuild() {
+        return RequestChangePasswordRequest.builder()
+                .email("user2@gmail.com")
+                .baseUrl("https://www.kumoh.org/edit-password")
+                .build();
+    }
+
     public static RequestChangePasswordRequest nullEmailBuild() {
         return RequestChangePasswordRequest.builder()
                 .email(null)

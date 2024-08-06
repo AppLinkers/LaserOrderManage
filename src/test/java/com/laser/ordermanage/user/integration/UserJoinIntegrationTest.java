@@ -5,9 +5,11 @@ import com.laser.ordermanage.common.IntegrationTest;
 import com.laser.ordermanage.common.cache.redis.dao.VerifyCode;
 import com.laser.ordermanage.common.cache.redis.repository.VerifyCodeRedisRepository;
 import com.laser.ordermanage.customer.dto.request.JoinBasicCustomerRequest;
+import com.laser.ordermanage.customer.dto.request.JoinKakaoCustomerRequest;
 import com.laser.ordermanage.user.domain.UserEntity;
 import com.laser.ordermanage.user.domain.UserEntityBuilder;
 import com.laser.ordermanage.user.dto.request.JoinBasicCustomerRequestBuilder;
+import com.laser.ordermanage.user.dto.request.JoinKakaoCustomerRequestBuilder;
 import com.laser.ordermanage.user.dto.request.VerifyEmailRequest;
 import com.laser.ordermanage.user.dto.request.VerifyEmailRequestBuilder;
 import com.laser.ordermanage.user.dto.response.UserJoinStatusResponse;
@@ -235,6 +237,55 @@ public class UserJoinIntegrationTest extends IntegrationTest {
         UserJoinStatusResponseBuilder.assertUserJoinStatusResponseWithCreatedAt(actualResponse, expectedResponse, expectedCreatedAt);
     }
 
+    /**
+     * 고객 카카오 회원가입 성공
+     * - 신규 회원
+     */
+    @Test
+    public void 고객_카카오_회원가입_성공_신규회원() throws Exception {
+        // given
+        final JoinKakaoCustomerRequest request = JoinKakaoCustomerRequestBuilder.build();
+        final UserEntity user = UserEntityBuilder.newUserBuild();
+        final UserJoinStatusResponse expectedResponse = UserJoinStatusResponseBuilder.buildCompletedWithUserEntity(user);
+
+        // when
+        final ResultActions resultActions = requestJoinKakaoCustomer(request);
+
+        // then
+        final String responseString = resultActions
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8);
+
+        final UserJoinStatusResponse actualResponse = objectMapper.readValue(responseString, UserJoinStatusResponse.class);
+        UserJoinStatusResponseBuilder.assertUserJoinStatusResponseWithOutCreatedAt(actualResponse, expectedResponse);
+        Assertions.assertThat(actualResponse.createdAt()).isNotNull();
+    }
+
+    /**
+     * 고객 카카오 회원가입 성공
+     * - 이메일 중복
+     */
+    @Test
+    public void 고객_카카오_회원가입_성공_이메일_중복() throws Exception {
+        // given
+        final JoinKakaoCustomerRequest request = JoinKakaoCustomerRequestBuilder.duplicateEmailBuild();
+        final UserEntity user = UserEntityBuilder.build();
+        final UserJoinStatusResponse expectedResponse = UserJoinStatusResponseBuilder.buildImpossibleWithUserEntity(user);
+        final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        final LocalDateTime expectedCreatedAt = LocalDateTime.parse("2023-10-02 10:20:30", formatter);
+
+        // when
+        final ResultActions resultActions = requestJoinKakaoCustomer(request);
+
+        // then
+        final String responseString = resultActions
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8);
+
+        final UserJoinStatusResponse actualResponse = objectMapper.registerModule(new JavaTimeModule()).readValue(responseString, UserJoinStatusResponse.class);
+        UserJoinStatusResponseBuilder.assertUserJoinStatusResponseWithCreatedAt(actualResponse, expectedResponse, expectedCreatedAt);
+    }
+
     private ResultActions requestForRequestEmailVerify(String email) throws Exception {
         return mvc.perform(post("/user/request-verify")
                         .param("email", email))
@@ -250,6 +301,13 @@ public class UserJoinIntegrationTest extends IntegrationTest {
 
     private ResultActions requestJoinBasicCustomer(JoinBasicCustomerRequest request) throws Exception {
         return mvc.perform(post("/user/customer")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andDo(print());
+    }
+
+    private ResultActions requestJoinKakaoCustomer(JoinKakaoCustomerRequest request) throws Exception {
+        return mvc.perform(post("/user/kakao/customer")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andDo(print());

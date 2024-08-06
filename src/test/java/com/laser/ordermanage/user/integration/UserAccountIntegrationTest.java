@@ -131,6 +131,22 @@ public class UserAccountIntegrationTest extends IntegrationTest {
     }
 
     /**
+     * 비밀번호 찾기 - 이메일로 비밀번호 변경 링크 전송 실패
+     * - 실패 사유 : 소셜 계정은 비밀번호 변경 불가
+     */
+    @Test
+    public void 비밀번호_찾기_이메일로_비밀번호_변경_링크_전송_실패_소셜_계정_비밀번호_변경_불가() throws Exception {
+        // given
+        final RequestChangePasswordRequest request = RequestChangePasswordRequestBuilder.socialUserBuild();
+
+        // when
+        final ResultActions resultActions = requestForRequestChangePasswordWithOutAuthentication(request);
+
+        // then
+        assertError(UserErrorCode.SOCIAL_USER_UNABLE_TO_CHANGE_PASSWORD, resultActions);
+    }
+
+    /**
      * 비밀번호 변경 - 이메일로 비밀번호 변경 링크 전송 성공
      */
     @Test
@@ -144,6 +160,23 @@ public class UserAccountIntegrationTest extends IntegrationTest {
 
         // then
         resultActions.andExpect(status().isOk());
+    }
+
+    /**
+     * 비밀번호 변경 - 이메일로 비밀번호 변경 링크 전송 실패
+     * - 실패 사유 : 소셜 계정은 비밀번호 변경 불가
+     */
+    @Test
+    public void 비밀번호_변경_이메일로_비밀번호_변경_링크_전송_실패_소셜_계정_비밀번호_변경_불가() throws Exception {
+        // given
+        final String accessToken = jwtBuilder.accessJwtBuildOfUser2();
+        final String baseUrl = "https://www.kumoh.org/edit-password";
+
+        // when
+        final ResultActions resultActions = requestForRequestChangePassword(accessToken, baseUrl);
+
+        // then
+        assertError(UserErrorCode.SOCIAL_USER_UNABLE_TO_CHANGE_PASSWORD, resultActions);
     }
 
     /**
@@ -268,6 +301,24 @@ public class UserAccountIntegrationTest extends IntegrationTest {
         // then - 새로운 비밀번호로 로그인
         final ResultActions resultActionsOfLogin = requestLogin(expectedLoginRequest);
         resultActionsOfLogin.andExpect(status().isOk());
+    }
+
+    /**
+     * 비밀번호 변경 실패
+     * - 실패 사유 : 소셜 계정은 비밀번호 변경 불가
+     */
+    @Test
+    public void 비밀번호_변경_실패_소셜_계정_비밀번호_변경_불가() throws Exception {
+        final String changePasswordToken = jwtBuilder.changePasswordJwtBuildOfUser2();
+        final ChangePasswordRequest request = ChangePasswordRequest.builder()
+                .password("new-user2-password")
+                .build();
+
+        // given
+        final ResultActions resultActions = requestChangePassword(changePasswordToken, request);
+
+        // then
+        assertError(UserErrorCode.SOCIAL_USER_UNABLE_TO_CHANGE_PASSWORD, resultActions);
     }
 
     /**

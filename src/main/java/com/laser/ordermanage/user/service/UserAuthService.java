@@ -1,9 +1,5 @@
 package com.laser.ordermanage.user.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.laser.ordermanage.common.cache.redis.dao.BlackList;
 import com.laser.ordermanage.common.cache.redis.dao.RefreshToken;
 import com.laser.ordermanage.common.cache.redis.repository.BlackListRedisRepository;
@@ -20,13 +16,13 @@ import com.laser.ordermanage.user.dto.response.KakaoAccountResponse;
 import com.laser.ordermanage.user.dto.response.TokenInfoResponse;
 import com.laser.ordermanage.user.exception.UserErrorCode;
 import com.laser.ordermanage.user.repository.UserEntityRepository;
+import io.netty.handler.codec.http.HttpHeaderValues;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -35,14 +31,15 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserAuthService {
@@ -107,31 +104,14 @@ public class UserAuthService {
     }
 
     public KakaoAccountResponse getKakaoAccount(String kakaoAccessToken) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Authorization", "Bearer " + kakaoAccessToken);
-        headers.add("Content-type", "application/x-www-form-urlencoded;charset=utf-8");
-
-        HttpEntity<MultiValueMap<String, String>> accountInfoRequest = new HttpEntity<>(headers);
-
-        RestTemplate rt = new RestTemplate();
-        ResponseEntity<String> response = rt.exchange(
-                KAKAO_ACCOUNT_URI,
-                HttpMethod.POST,
-                accountInfoRequest,
-                String.class
-        );
-
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.registerModule(new JavaTimeModule());
-        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        KakaoAccountResponse kakaoAccountResponse = null;
-        try {
-            kakaoAccountResponse = objectMapper.readValue(response.getBody(), KakaoAccountResponse.class);
-        } catch (JsonProcessingException e) {
-            throw new CustomCommonException(CommonErrorCode.INTERNAL_SERVER_ERROR);
-        }
-
-        return kakaoAccountResponse;
+        return WebClient.create(KAKAO_ACCOUNT_URI)
+                .get()
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + kakaoAccessToken) // access token 인가
+                .header(HttpHeaders.CONTENT_TYPE, HttpHeaderValues.APPLICATION_X_WWW_FORM_URLENCODED.toString())
+                .retrieve()
+                .onStatus(HttpStatusCode::isError, clientResponse -> Mono.error(new CustomCommonException(CommonErrorCode.INTERNAL_SERVER_ERROR)))
+                .bodyToMono(KakaoAccountResponse.class)
+                .block();
     }
 
     public TokenInfoResponse reissue(HttpServletRequest httpServletRequest, String refreshTokenReq) {

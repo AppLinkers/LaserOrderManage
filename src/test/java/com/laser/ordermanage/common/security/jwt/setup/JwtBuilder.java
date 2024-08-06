@@ -37,6 +37,10 @@ public class JwtBuilder {
         return jwtProvider.generateJWT("user1@gmail.com", List.of(Role.ROLE_CUSTOMER.name(), Authority.AUTHORITY_ADMIN.name()), JwtProvider.TYPE_CHANGE_PASSWORD, new Date(), ExpireTime.CHANGE_PASSWORD_TOKEN_EXPIRE_TIME);
     }
 
+    public String changePasswordJwtBuildOfUser2() {
+        return jwtProvider.generateJWT("user2@gmail.com", List.of(Role.ROLE_CUSTOMER.name(), Authority.AUTHORITY_ADMIN.name()), JwtProvider.TYPE_CHANGE_PASSWORD, new Date(), ExpireTime.CHANGE_PASSWORD_TOKEN_EXPIRE_TIME);
+    }
+
     public String invalidJwtBuild() {
         return "invalid.jwt.token";
     }

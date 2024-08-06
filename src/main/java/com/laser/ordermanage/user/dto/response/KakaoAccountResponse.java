@@ -1,12 +1,16 @@
 package com.laser.ordermanage.user.dto.response;
 
+import lombok.Builder;
+
 import java.time.LocalDateTime;
 
+@Builder
 public record KakaoAccountResponse(
         Long id,
         LocalDateTime connected_at,
         KakaoAccount kakao_account
 ) {
+    @Builder
     public record KakaoAccount(
         Boolean name_needs_agreement,
         String name,

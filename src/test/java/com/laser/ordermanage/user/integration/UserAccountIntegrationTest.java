@@ -310,9 +310,7 @@ public class UserAccountIntegrationTest extends IntegrationTest {
     @Test
     public void 비밀번호_변경_실패_소셜_계정_비밀번호_변경_불가() throws Exception {
         final String changePasswordToken = jwtBuilder.changePasswordJwtBuildOfUser2();
-        final ChangePasswordRequest request = ChangePasswordRequest.builder()
-                .password("new-user2-password")
-                .build();
+        final ChangePasswordRequest request = ChangePasswordRequestBuilder.build();
 
         // given
         final ResultActions resultActions = requestChangePassword(changePasswordToken, request);

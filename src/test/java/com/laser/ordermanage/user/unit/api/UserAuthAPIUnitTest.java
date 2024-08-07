@@ -5,6 +5,8 @@ import com.laser.ordermanage.common.exception.CommonErrorCode;
 import com.laser.ordermanage.common.exception.CustomCommonException;
 import com.laser.ordermanage.user.api.UserAuthAPI;
 import com.laser.ordermanage.user.domain.type.Role;
+import com.laser.ordermanage.user.dto.request.LoginKakaoRequest;
+import com.laser.ordermanage.user.dto.request.LoginKakaoRequestBuilder;
 import com.laser.ordermanage.user.dto.request.LoginRequest;
 import com.laser.ordermanage.user.dto.request.LoginRequestBuilder;
 import com.laser.ordermanage.user.dto.response.TokenInfoResponse;
@@ -63,7 +65,7 @@ public class UserAuthAPIUnitTest extends APIUnitTest {
         when(userAuthService.login(any(), any())).thenReturn(expectedResponse);
 
         // when
-        final ResultActions resultActions = requestLogin(request);
+        final ResultActions resultActions = requestLoginBasic(request);
 
         // then
         final String responseString = resultActions
@@ -84,7 +86,7 @@ public class UserAuthAPIUnitTest extends APIUnitTest {
         final LoginRequest request = LoginRequestBuilder.nullEmailBuild();
 
         // when
-        final ResultActions resultActions = requestLogin(request);
+        final ResultActions resultActions = requestLoginBasic(request);
 
         // then
         assertErrorWithMessage(CommonErrorCode.INVALID_REQUEST_BODY_FIELDS, resultActions, "이메일은 필수 입력값입니다.");
@@ -100,7 +102,7 @@ public class UserAuthAPIUnitTest extends APIUnitTest {
         final LoginRequest request = LoginRequestBuilder.invalidEmailBuild();
 
         // when
-        final ResultActions resultActions = requestLogin(request);
+        final ResultActions resultActions = requestLoginBasic(request);
 
         // then
         assertErrorWithMessage(CommonErrorCode.INVALID_REQUEST_BODY_FIELDS, resultActions, "이메일 형식에 맞지 않습니다.");
@@ -116,7 +118,7 @@ public class UserAuthAPIUnitTest extends APIUnitTest {
         final LoginRequest request = LoginRequestBuilder.nullPasswordBuild();
 
         // when
-        final ResultActions resultActions = requestLogin(request);
+        final ResultActions resultActions = requestLoginBasic(request);
 
         // then
         assertErrorWithMessage(CommonErrorCode.INVALID_REQUEST_BODY_FIELDS, resultActions, "비밀번호는 필수 입력값입니다.");
@@ -132,7 +134,7 @@ public class UserAuthAPIUnitTest extends APIUnitTest {
         final LoginRequest request = LoginRequestBuilder.invalidPasswordBuild();
 
         // when
-        final ResultActions resultActions = requestLogin(request);
+        final ResultActions resultActions = requestLoginBasic(request);
 
         // then
         assertErrorWithMessage(CommonErrorCode.INVALID_REQUEST_BODY_FIELDS, resultActions, "비밀번호는 8 자리 이상 영문, 숫자, 특수문자를 사용하세요.");
@@ -153,10 +155,71 @@ public class UserAuthAPIUnitTest extends APIUnitTest {
         when(userAuthService.authenticateBasic(any())).thenThrow(new CustomCommonException(UserErrorCode.INVALID_CREDENTIALS));
 
         // when
-        final ResultActions resultActions = requestLogin(invalidRequest);
+        final ResultActions resultActions = requestLoginBasic(invalidRequest);
 
         // then
         assertError(UserErrorCode.INVALID_CREDENTIALS, resultActions);
+    }
+
+    /**
+     * 사용자 카카오 로그인 성공
+     */
+    @Test
+    public void 카카오_로그인_성공() throws Exception {
+        // given
+        final LoginKakaoRequest request = LoginKakaoRequestBuilder.build();
+        final Authentication expectedAuthentication = new UsernamePasswordAuthenticationToken("user@gmail.com", null, Collections.singleton(new SimpleGrantedAuthority(Role.ROLE_CUSTOMER.name())));
+        final TokenInfoResponse expectedResponse = TokenInfoResponseBuilder.build();
+
+        // stub
+        when(userAuthService.authenticateKakao(any())).thenReturn(expectedAuthentication);
+        when(userAuthService.login(any(), any())).thenReturn(expectedResponse);
+
+        // when
+        final ResultActions resultActions = requestLoginKakao(request);
+
+        // then
+        final String responseString = resultActions
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8);
+
+        final TokenInfoResponse actualResponse = objectMapper.readValue(responseString, TokenInfoResponse.class);
+        TokenInfoResponseBuilder.assertTokenInfoResponse(actualResponse, expectedResponse);
+    }
+
+    /**
+     * 사용자 카카오 로그인 실패
+     * - 실패 사유 : 카카오 Access Token 필드 null
+     */
+    @Test
+    public void 카카오_로그인_실패_카카오_Access_Token_필드_null() throws Exception {
+        // given
+        final LoginKakaoRequest request = LoginKakaoRequestBuilder.nullKakaoAccessTokenBuild();
+
+        // when
+        final ResultActions resultActions = requestLoginKakao(request);
+
+        // then
+        assertErrorWithMessage(CommonErrorCode.INVALID_REQUEST_BODY_FIELDS, resultActions, "kakaoAccessToken 은 필수 입력값입니다.");
+    }
+
+    /**
+     * 사용자 카카오 로그인 실패
+     * - 실패 사유 : 동일한 이메일의 기본 계정이 존재
+     */
+    @Test
+    public void 카카오_로그인_실패_동일한_이메일의_기본_계정이_존재() throws Exception{
+        // given
+        final LoginKakaoRequest request = LoginKakaoRequestBuilder.build();
+
+        // stub
+        when(userAuthService.authenticateKakao(any())).thenThrow(new CustomCommonException(UserErrorCode.EXIST_BASIC_DUPLICATED_EMAIL_USER));
+
+        // when
+        final ResultActions resultActions = requestLoginKakao(request);
+
+        // then
+        assertError(UserErrorCode.EXIST_BASIC_DUPLICATED_EMAIL_USER, resultActions);
     }
 
     /**
@@ -239,8 +302,15 @@ public class UserAuthAPIUnitTest extends APIUnitTest {
         assertError(UserErrorCode.INVALID_ACCESS_TOKEN, resultActions);
     }
 
-    private ResultActions requestLogin(LoginRequest request) throws Exception {
+    private ResultActions requestLoginBasic(LoginRequest request) throws Exception {
         return mvc.perform(post("/user/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andDo(print());
+    }
+
+    private ResultActions requestLoginKakao(LoginKakaoRequest request) throws Exception {
+        return mvc.perform(post("/user/login/kakao")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andDo(print());

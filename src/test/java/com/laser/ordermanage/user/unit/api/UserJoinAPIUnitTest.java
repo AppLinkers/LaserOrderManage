@@ -4,10 +4,12 @@ import com.laser.ordermanage.common.APIUnitTest;
 import com.laser.ordermanage.common.exception.CommonErrorCode;
 import com.laser.ordermanage.common.exception.CustomCommonException;
 import com.laser.ordermanage.customer.dto.request.JoinBasicCustomerRequest;
+import com.laser.ordermanage.customer.dto.request.JoinKakaoCustomerRequest;
 import com.laser.ordermanage.user.api.UserJoinAPI;
 import com.laser.ordermanage.user.domain.UserEntity;
 import com.laser.ordermanage.user.domain.UserEntityBuilder;
 import com.laser.ordermanage.user.dto.request.JoinBasicCustomerRequestBuilder;
+import com.laser.ordermanage.user.dto.request.JoinKakaoCustomerRequestBuilder;
 import com.laser.ordermanage.user.dto.request.VerifyEmailRequest;
 import com.laser.ordermanage.user.dto.request.VerifyEmailRequestBuilder;
 import com.laser.ordermanage.user.dto.response.UserJoinStatusResponse;
@@ -574,6 +576,266 @@ public class UserJoinAPIUnitTest extends APIUnitTest {
         assertErrorWithMessage(CommonErrorCode.INVALID_REQUEST_BODY_FIELDS, resultActions, "상세 주소의 최대 글자수는 30자입니다.");
     }
 
+    /**
+     * 고객 카카오 회원가입 성공
+     * - 신규 회원
+     */
+    @Test
+    public void 고객_카카오_회원가입_성공_신규회원() throws Exception {
+        // given
+        final JoinKakaoCustomerRequest request = JoinKakaoCustomerRequestBuilder.build();
+        final UserEntity user = UserEntityBuilder.newUserBuild();
+        final UserJoinStatusResponse expectedResponse = UserJoinStatusResponseBuilder.buildCompletedWithUserEntity(user);
+
+        // stub
+        when(userJoinService.joinCustomer(any(), any())).thenReturn(expectedResponse);
+
+        // when
+        final ResultActions resultActions = requestJoinKakaoCustomer(request);
+
+        // then
+        final String responseString = resultActions
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8);
+
+        final UserJoinStatusResponse actualResponse = objectMapper.readValue(responseString, UserJoinStatusResponse.class);
+        UserJoinStatusResponseBuilder.assertUserJoinStatusResponseWithOutCreatedAt(actualResponse, expectedResponse);
+    }
+
+    /**
+     * 고객 카카오 회원가입 성공
+     * - 이메일 중복
+     */
+    @Test
+    public void 고객_카카오_회원가입_성공_이메일_중복() throws Exception {
+        // given
+        final JoinKakaoCustomerRequest request = JoinKakaoCustomerRequestBuilder.duplicateEmailBuild();
+        final UserEntity user = UserEntityBuilder.build();
+        final UserJoinStatusResponse expectedResponse = UserJoinStatusResponseBuilder.buildImpossibleWithUserEntity(user);
+
+        // stub
+        when(userJoinService.joinCustomer(any(), any())).thenReturn(expectedResponse);
+
+        // when
+        final ResultActions resultActions = requestJoinKakaoCustomer(request);
+
+        // then
+        final String responseString = resultActions
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8);
+
+        final UserJoinStatusResponse actualResponse = objectMapper.readValue(responseString, UserJoinStatusResponse.class);
+        UserJoinStatusResponseBuilder.assertUserJoinStatusResponseWithOutCreatedAt(actualResponse, expectedResponse);
+    }
+
+    /**
+     * 고객 카카오 회원가입 실패
+     * - 실패 사유 : 이메일 필드 null
+     */
+    @Test
+    public void 고객_카카오_회원가입_실패_이메일_필드_null() throws Exception {
+        // given
+        final JoinKakaoCustomerRequest request = JoinKakaoCustomerRequestBuilder.nullEmailBuild();
+
+        // when
+        final ResultActions resultActions = requestJoinKakaoCustomer(request);
+
+        // then
+        assertErrorWithMessage(CommonErrorCode.INVALID_REQUEST_BODY_FIELDS, resultActions, "이메일은 필수 입력값입니다.");
+    }
+
+    /**
+     * 고객 카카오 회원가입 실패
+     * - 실패 사유 : 이메일 필드 유효성
+     */
+    @Test
+    public void 고객_카카오_회원가입_실패_이메일_필드_유효성() throws Exception {
+        // given
+        final JoinKakaoCustomerRequest request = JoinKakaoCustomerRequestBuilder.invalidEmailBuild();
+
+        // when
+        final ResultActions resultActions = requestJoinKakaoCustomer(request);
+
+        // then
+        assertErrorWithMessage(CommonErrorCode.INVALID_REQUEST_BODY_FIELDS, resultActions, "이메일 형식에 맞지 않습니다.");
+    }
+
+    /**
+     * 고객 카카오 회원가입 실패
+     * - 실패 사유 : 이름 필드 null
+     */
+    @Test
+    public void 고객_카카오_회원가입_실패_이름_필드_null() throws Exception {
+        // given
+        final JoinKakaoCustomerRequest request = JoinKakaoCustomerRequestBuilder.nullNameBuild();
+
+        // when
+        final ResultActions resultActions = requestJoinKakaoCustomer(request);
+
+        // then
+        assertErrorWithMessage(CommonErrorCode.INVALID_REQUEST_BODY_FIELDS, resultActions, "이름은 필수 입력값입니다.");
+    }
+
+    /**
+     * 고객 카카오 회원가입 실패
+     * - 실패 사유 : 이름 필드 empty
+     */
+    @Test
+    public void 고객_카카오_회원가입_실패_이름_필드_empty() throws Exception {
+        // given
+        final JoinKakaoCustomerRequest request = JoinKakaoCustomerRequestBuilder.emptyNameBuild();
+
+        // when
+        final ResultActions resultActions = requestJoinKakaoCustomer(request);
+
+        // then
+        assertErrorWithMessage(CommonErrorCode.INVALID_REQUEST_BODY_FIELDS, resultActions, "이름은 필수 입력값입니다.");
+    }
+
+    /**
+     * 고객 카카오 회원가입 실패
+     * - 실패 사유 : 이름 필드 유효성
+     */
+    @Test
+    public void 고객_카카오_회원가입_실패_이름_필드_유효성() throws Exception {
+        // given
+        final JoinKakaoCustomerRequest request = JoinKakaoCustomerRequestBuilder.invalidNameBuild();
+
+        // when
+        final ResultActions resultActions = requestJoinKakaoCustomer(request);
+
+        // then
+        assertErrorWithMessage(CommonErrorCode.INVALID_REQUEST_BODY_FIELDS, resultActions, "이름의 최대 글자수는 10자입니다.");
+    }
+
+    /**
+     * 고객 카카오 회원가입 실패
+     * - 실패 사유 : 회사 이름 필드 유효성
+     */
+    @Test
+    public void 고객_카카오_회원가입_실패_회사이름_필드_유효성() throws Exception {
+        // given
+        final JoinKakaoCustomerRequest request = JoinKakaoCustomerRequestBuilder.invalidCompanyNameBuild();
+
+        // when
+        final ResultActions resultActions = requestJoinKakaoCustomer(request);
+
+        // then
+        assertErrorWithMessage(CommonErrorCode.INVALID_REQUEST_BODY_FIELDS, resultActions, "회사 이름의 최대 글자수는 20자입니다.");
+    }
+
+    /**
+     * 고객 카카오 회원가입 실패
+     * - 실패 사유 : 연락처 null
+     */
+    @Test
+    public void 고객_카카오_회원가입_실패_연락처_필드_null() throws Exception {
+        // given
+        final JoinKakaoCustomerRequest request = JoinKakaoCustomerRequestBuilder.nullPhoneBuild();
+
+        // when
+        final ResultActions resultActions = requestJoinKakaoCustomer(request);
+
+        // then
+        assertErrorWithMessage(CommonErrorCode.INVALID_REQUEST_BODY_FIELDS, resultActions, "연락처는 필수 입력값입니다.");
+    }
+
+    /**
+     * 고객 카카오 회원가입 실패
+     * - 실패 사유 : 연락처 유효성
+     */
+    @Test
+    public void 고객_카카오_회원가입_실패_연락처_필드_유효성() throws Exception {
+        // given
+        final JoinKakaoCustomerRequest request = JoinKakaoCustomerRequestBuilder.invalidPhoneBuild();
+
+        // when
+        final ResultActions resultActions = requestJoinKakaoCustomer(request);
+
+        // then
+        assertErrorWithMessage(CommonErrorCode.INVALID_REQUEST_BODY_FIELDS, resultActions, "연락처 형식에 맞지 않습니다.");
+    }
+
+    /**
+     * 고객 카카오 회원가입 실패
+     * - 실패 사유 : 우편번호 null
+     */
+    @Test
+    public void 고객_카카오_회원가입_실패_우편번호_필드_null() throws Exception {
+        // given
+        final JoinKakaoCustomerRequest request = JoinKakaoCustomerRequestBuilder.nullZipCodeBuild();
+
+        // when
+        final ResultActions resultActions = requestJoinKakaoCustomer(request);
+
+        // then
+        assertErrorWithMessage(CommonErrorCode.INVALID_REQUEST_BODY_FIELDS, resultActions, "우편번호는 필수 입력값입니다.");
+    }
+
+    /**
+     * 고객 카카오 회원가입 실패
+     * - 실패 사유 : 우편번호 유효성
+     */
+    @Test
+    public void 고객_카카오_회원가입_실패_우편번호_필드_유효성() throws Exception {
+        // given
+        final JoinKakaoCustomerRequest request = JoinKakaoCustomerRequestBuilder.invalidZipCodeBuild();
+
+        // when
+        final ResultActions resultActions = requestJoinKakaoCustomer(request);
+
+        // then
+        assertErrorWithMessage(CommonErrorCode.INVALID_REQUEST_BODY_FIELDS, resultActions, "우편번호는 5자리 정수입니다.");
+    }
+
+    /**
+     * 고객 카카오 회원가입 실패
+     * - 실패 사유 : 기본 주소 null
+     */
+    @Test
+    public void 고객_카카오_회원가입_실패_기본주소_필드_null() throws Exception {
+        // given
+        final JoinKakaoCustomerRequest request = JoinKakaoCustomerRequestBuilder.nullAddressBuild();
+
+        // when
+        final ResultActions resultActions = requestJoinKakaoCustomer(request);
+
+        // then
+        assertErrorWithMessage(CommonErrorCode.INVALID_REQUEST_BODY_FIELDS, resultActions, "기본 주소는 필수 입력값입니다.");
+    }
+
+    /**
+     * 고객 카카오 회원가입 실패
+     * - 실패 사유 : 기본 주소 empty
+     */
+    @Test
+    public void 고객_카카오_회원가입_실패_기본주소_필드_empty() throws Exception {
+        // given
+        final JoinKakaoCustomerRequest request = JoinKakaoCustomerRequestBuilder.emptyAddressBuild();
+
+        // when
+        final ResultActions resultActions = requestJoinKakaoCustomer(request);
+
+        // then
+        assertErrorWithMessage(CommonErrorCode.INVALID_REQUEST_BODY_FIELDS, resultActions, "기본 주소는 필수 입력값입니다.");
+    }
+
+    /**
+     * 고객 카카오 회원가입 실패
+     * - 실패 사유 : 상세주소 유효성
+     */
+    @Test
+    public void 고객_카카오_회원가입_실패_상세주소_필드_유효성() throws Exception {
+        // given
+        final JoinKakaoCustomerRequest request = JoinKakaoCustomerRequestBuilder.invalidDetailAddressBuild();
+
+        // when
+        final ResultActions resultActions = requestJoinKakaoCustomer(request);
+
+        // then
+        assertErrorWithMessage(CommonErrorCode.INVALID_REQUEST_BODY_FIELDS, resultActions, "상세 주소의 최대 글자수는 30자입니다.");
+    }
+
     private ResultActions requestForRequestEmailVerify(String email) throws Exception {
         return mvc.perform(post("/user/request-verify")
                         .param("email", email))
@@ -589,6 +851,13 @@ public class UserJoinAPIUnitTest extends APIUnitTest {
 
     private ResultActions requestJoinCustomer(JoinBasicCustomerRequest request) throws Exception {
         return mvc.perform(post("/user/customer")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andDo(print());
+    }
+
+    private ResultActions requestJoinKakaoCustomer(JoinKakaoCustomerRequest request) throws Exception {
+        return mvc.perform(post("/user/kakao/customer")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andDo(print());

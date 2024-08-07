@@ -237,6 +237,25 @@ public class UserAccountAPIUnitTest extends APIUnitTest {
     }
 
     /**
+     * 비밀번호 찾기 - 이메일로 비밀번호 변경 링크 전송 실패
+     * - 실패 사유 : 소셜 계정은 비밀번호 변경 불가
+     */
+    @Test
+    public void 비밀번호_찾기_이메일로_비밀번호_변경_링크_전송_실패_Social_User_Unable_To_Change_Password() throws Exception {
+        // given
+        final RequestChangePasswordRequest request = RequestChangePasswordRequestBuilder.socialUserBuild();
+
+        // stub
+        doThrow(new CustomCommonException(UserErrorCode.SOCIAL_USER_UNABLE_TO_CHANGE_PASSWORD)).when(userAccountService).requestChangePassword(any());
+
+        // when
+        final ResultActions resultActions = requestForRequestChangePasswordWithOutAuthentication(request);
+
+        // then
+        assertError(UserErrorCode.SOCIAL_USER_UNABLE_TO_CHANGE_PASSWORD, resultActions);
+    }
+
+    /**
      * 비밀번호 변경 - 이메일로 비밀번호 변경 링크 전송 성공
      */
     @Test
@@ -286,6 +305,23 @@ public class UserAccountAPIUnitTest extends APIUnitTest {
 
         // then
         assertErrorWithMessage(CommonErrorCode.INVALID_PARAMETER, resultActions, "base URL 형식이 유효하지 않습니다.");
+    }
+
+    @Test
+    @WithMockUser
+    public void 비밀번호_변경_이메일로_비밀번호_변경_링크_전송_실패_Social_User_Unable_To_Change_Password() throws Exception {
+        // given
+        final String accessToken = "access-token";
+        final String baseUrl = "https://www.kumoh.org/edit-password";
+
+        // stub
+        doThrow(new CustomCommonException(UserErrorCode.SOCIAL_USER_UNABLE_TO_CHANGE_PASSWORD)).when(userAccountService).requestChangePassword(any());
+
+        // when
+        final ResultActions resultActions = requestForRequestChangePassword(accessToken, baseUrl);
+
+        // then
+        assertError(UserErrorCode.SOCIAL_USER_UNABLE_TO_CHANGE_PASSWORD, resultActions);
     }
 
     /**
@@ -360,6 +396,27 @@ public class UserAccountAPIUnitTest extends APIUnitTest {
 
         // then
         assertError(UserErrorCode.INVALID_CHANGE_PASSWORD_TOKEN, resultActions);
+    }
+
+    /**
+     * 비밀번호 변경 실패
+     * - 실패 사유 : 소셜 계정은 비밀번호 변경 불가
+     */
+    @Test
+    @WithMockUser
+    public void 비밀번호_변경_실패_Social_User_Unable_To_Change_Password() throws Exception {
+        // given
+        final String changePasswordToken = "change-password-token";
+        final ChangePasswordRequest request = ChangePasswordRequestBuilder.build();
+
+        // stub
+        doThrow(new CustomCommonException(UserErrorCode.SOCIAL_USER_UNABLE_TO_CHANGE_PASSWORD)).when(userAccountService).changePassword(any(), any());
+
+        // when
+        final ResultActions resultActions = requestChangePassword(changePasswordToken, request);
+
+        // then
+        assertError(UserErrorCode.SOCIAL_USER_UNABLE_TO_CHANGE_PASSWORD, resultActions);
     }
 
     /**

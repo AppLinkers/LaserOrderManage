@@ -168,10 +168,10 @@ public class UserAuthIntegrationTest extends IntegrationTest {
 
     /**
      * 사용자 카카오 로그인 실패
-     * - 실패 사유 : 이메일 중복
+     * - 실패 사유 : 동일한 이메일의 기본 계정이 존재
      */
     @Test
-    public void 카카오_로그인_실패_이메일_중복() throws Exception {
+    public void 카카오_로그인_실패_동일한_이메일의_기본_계정이_존재() throws Exception {
         // before
         objectMapper.registerModule(new JavaTimeModule());
 

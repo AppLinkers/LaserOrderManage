@@ -6,4 +6,10 @@ public class LoginKakaoRequestBuilder {
                 .kakaoAccessToken("kakao-access-token")
                 .build();
     }
+
+    public static LoginKakaoRequest nullKakaoAccessTokenBuild() {
+        return LoginKakaoRequest.builder()
+                .kakaoAccessToken(null)
+                .build();
+    }
 }

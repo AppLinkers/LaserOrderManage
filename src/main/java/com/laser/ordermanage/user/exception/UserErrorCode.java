@@ -13,7 +13,7 @@ public enum UserErrorCode implements ErrorCode {
     MISSING_JWT("USER_400_01", HttpStatus.BAD_REQUEST, "JWT 정보가 요청에 포함되지 않았습니다."),
     INVALID_CREDENTIALS("USER_400_02", HttpStatus.BAD_REQUEST, "ID 또는 비밀번호가 올바르지 않습니다."),
     SOCIAL_USER_UNABLE_TO_CHANGE_PASSWORD("USER_400_03", HttpStatus.BAD_REQUEST, "소셜 계정은 비밀번호 변경을 지원하지 않습니다."),
-    EXIST_BASIC_DUPLICATED_EMAIL_USER("USER_400_04", HttpStatus.BAD_REQUEST, "동일한 이메일의 계정이 존재합니다."),
+    EXIST_BASIC_DUPLICATED_EMAIL_USER("USER_400_04", HttpStatus.BAD_REQUEST, "동일한 이메일의 기본 계정이 존재합니다."),
 
     // 401 UNAUTHORIZED 인증 자격 정보가 유효하지 않음
     INVALID_JWT("USER_401_01", HttpStatus.UNAUTHORIZED, "JWT 정보가 유효하지 않습니다."),

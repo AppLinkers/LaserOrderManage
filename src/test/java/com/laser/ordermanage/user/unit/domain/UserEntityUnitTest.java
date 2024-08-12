@@ -37,6 +37,19 @@ public class UserEntityUnitTest {
     }
 
     @Test
+    public void isSocialAccount() {
+        // given
+        final UserEntity actualUser = UserEntityBuilder.build();
+        final Boolean expectedIsSocialAccount = Boolean.FALSE;
+
+        // when
+        final Boolean actualIsSocialAccount = actualUser.isSocialAccount();
+
+        // then
+        Assertions.assertThat(actualIsSocialAccount).isEqualTo(expectedIsSocialAccount);
+    }
+
+    @Test
     public void updateProperties() {
         // given
         final UserEntity actualUser = UserEntityBuilder.build();

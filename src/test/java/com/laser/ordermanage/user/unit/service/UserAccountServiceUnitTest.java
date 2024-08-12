@@ -105,6 +105,25 @@ public class UserAccountServiceUnitTest extends ServiceUnitTest {
     }
 
     /**
+     * 비밀번호 변경 링크 요청 실패
+     * - 실패 사유 : 소셜 계정은 비밀번호 변경 불가
+     */
+    @Test
+    public void requestChangePassword_실패_SOCIAL_USER_UNABLE_TO_CHANGE_PASSWORD() {
+        // given
+        final RequestChangePasswordRequest request = RequestChangePasswordRequestBuilder.socialUserBuild();
+        final UserEntity user = UserEntityBuilder.kakaoUserBuild();
+
+        // stub
+        when(userAuthService.getUserByEmail(request.email())).thenReturn(user);
+
+        // when & then
+        Assertions.assertThatThrownBy(() -> userAccountService.requestChangePassword(request))
+                .isInstanceOf(CustomCommonException.class)
+                .hasMessage(UserErrorCode.SOCIAL_USER_UNABLE_TO_CHANGE_PASSWORD.getMessage());
+    }
+
+    /**
      * 비밀번호 변경 성공
      */
     @Test
@@ -154,6 +173,35 @@ public class UserAccountServiceUnitTest extends ServiceUnitTest {
         Assertions.assertThatThrownBy(() -> userAccountService.changePassword(httpServletRequest, request))
                 .isInstanceOf(CustomCommonException.class)
                 .hasMessage(UserErrorCode.INVALID_CHANGE_PASSWORD_TOKEN.getMessage());
+    }
+
+    /**
+     * 비밀번호 변경 실패
+     * - 실패 사유 : 소셜 계정은 비밀번호 변경 불가
+     */
+    @Test
+    public void changePassword_실패_SOCIAL_USER_UNABLE_TO_CHANGE_PASSWORD() {
+        // given
+        setUp();
+        final String changePasswordToken = "change-password-token";
+        final ChangePasswordRequest request = ChangePasswordRequestBuilder.build();
+
+        httpServletRequest.setAttribute("resolvedToken", changePasswordToken);
+
+        final UserEntity user = UserEntityBuilder.kakaoUserBuild();
+
+        final Collection<? extends GrantedAuthority> authorities = Collections.singleton(new SimpleGrantedAuthority(Role.ROLE_CUSTOMER.name()));
+        final Authentication authentication = new UsernamePasswordAuthenticationToken(user.getEmail(), "", authorities);
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        // stub
+        when(jwtProvider.getType(changePasswordToken)).thenReturn(JwtProvider.TYPE_CHANGE_PASSWORD);
+        when(userAuthService.getUserByEmail(user.getEmail())).thenReturn(user);
+
+        // when & then
+        Assertions.assertThatThrownBy(() -> userAccountService.changePassword(httpServletRequest, request))
+                .isInstanceOf(CustomCommonException.class)
+                .hasMessage(UserErrorCode.SOCIAL_USER_UNABLE_TO_CHANGE_PASSWORD.getMessage());
     }
 
     /**

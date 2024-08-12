@@ -37,7 +37,7 @@ public class UserAuthIntegrationTest extends IntegrationTest {
     @Autowired
     private JwtBuilder jwtBuilder;
 
-    public static MockWebServer mockWebServer = new MockWebServer();
+    public static MockWebServer mockWebServer;
 
     @DynamicPropertySource
     public static void addUrlProperties(DynamicPropertyRegistry registry) {
@@ -46,11 +46,12 @@ public class UserAuthIntegrationTest extends IntegrationTest {
 
     @BeforeAll
     public static void setUp() throws IOException {
+        mockWebServer = new MockWebServer();
         mockWebServer.start();
     }
 
     @AfterAll
-    public static void shutdown() throws IOException {
+    public static void tearDown() throws IOException {
         mockWebServer.shutdown();
     }
 

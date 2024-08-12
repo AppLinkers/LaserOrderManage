@@ -18,7 +18,6 @@ import com.laser.ordermanage.user.exception.UserErrorCode;
 import com.laser.ordermanage.user.repository.UserEntityRepository;
 import io.netty.handler.codec.http.HttpHeaderValues;
 import jakarta.servlet.http.HttpServletRequest;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
@@ -41,7 +40,6 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor
 public class UserAuthService {
 
     private final JwtProvider jwtProvider;
@@ -52,8 +50,23 @@ public class UserAuthService {
 
     private final UserEntityRepository userRepository;
 
-    @Value("${kakao.account-uri}")
     private String KAKAO_ACCOUNT_URI;
+
+    public UserAuthService(
+            JwtProvider jwtProvider,
+            AuthenticationManager authenticationManager,
+            BlackListRedisRepository blackListRedisRepository,
+            RefreshTokenRedisRepository refreshTokenRedisRepository,
+            UserEntityRepository userRepository,
+            @Value("${kakao.account-uri}") String kakaoAccountURI
+    ) {
+        this.jwtProvider = jwtProvider;
+        this.authenticationManager = authenticationManager;
+        this.blackListRedisRepository = blackListRedisRepository;
+        this.refreshTokenRedisRepository = refreshTokenRedisRepository;
+        this.userRepository = userRepository;
+        this.KAKAO_ACCOUNT_URI = kakaoAccountURI;
+    }
 
     @Transactional(readOnly = true)
     public UserEntity getUserByEmail(String email) {

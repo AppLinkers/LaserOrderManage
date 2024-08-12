@@ -1,5 +1,7 @@
 package com.laser.ordermanage.common;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.context.ActiveProfiles;
@@ -17,6 +19,8 @@ import static org.mockito.Mockito.doAnswer;
 @ActiveProfiles("test")
 @ExtendWith(MockitoExtension.class)
 public class ServiceUnitTest {
+
+    protected ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
 
     public void setUpForAsync(Executor asyncExecutor) {
         // Async -> Sync Test

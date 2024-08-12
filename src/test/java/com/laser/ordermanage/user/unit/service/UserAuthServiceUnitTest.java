@@ -11,14 +11,22 @@ import com.laser.ordermanage.user.domain.UserEntity;
 import com.laser.ordermanage.user.domain.UserEntityBuilder;
 import com.laser.ordermanage.user.domain.type.Authority;
 import com.laser.ordermanage.user.domain.type.Role;
+import com.laser.ordermanage.user.dto.request.LoginKakaoRequest;
+import com.laser.ordermanage.user.dto.request.LoginKakaoRequestBuilder;
 import com.laser.ordermanage.user.dto.request.LoginRequest;
 import com.laser.ordermanage.user.dto.request.LoginRequestBuilder;
+import com.laser.ordermanage.user.dto.response.KakaoAccountResponse;
+import com.laser.ordermanage.user.dto.response.KakaoAccountResponseBuilder;
 import com.laser.ordermanage.user.dto.response.TokenInfoResponse;
 import com.laser.ordermanage.user.dto.response.TokenInfoResponseBuilder;
 import com.laser.ordermanage.user.exception.UserErrorCode;
 import com.laser.ordermanage.user.repository.UserEntityRepository;
 import com.laser.ordermanage.user.service.UserAuthService;
+import okhttp3.mockwebserver.MockResponse;
+import okhttp3.mockwebserver.MockWebServer;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -30,8 +38,14 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
 
-import java.util.*;
+import java.io.IOException;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static org.mockito.Mockito.when;
 
@@ -57,8 +71,21 @@ public class UserAuthServiceUnitTest extends ServiceUnitTest {
 
     private MockHttpServletRequest httpServletRequest;
 
+    public static MockWebServer mockWebServer;
+
+    @BeforeAll
+    public static void setUpForAll() throws IOException {
+        mockWebServer = new MockWebServer();
+        mockWebServer.start();
+    }
+
+    @AfterAll
+    public static void tearDownForAll() throws IOException {
+        mockWebServer.shutdown();
+    }
+
     @BeforeEach
-    public void setUp() {
+    public void setUpForEach() {
         httpServletRequest = new MockHttpServletRequest();
     }
 
@@ -135,7 +162,138 @@ public class UserAuthServiceUnitTest extends ServiceUnitTest {
         Assertions.assertThatThrownBy(() -> userAuthService.authenticateBasic(invalidLoginRequest))
                 .isInstanceOf(CustomCommonException.class)
                 .hasMessage(UserErrorCode.INVALID_CREDENTIALS.getMessage());
+    }
 
+    /**
+     * 사용자 카카오 인증 성공
+     */
+    @Test
+    public void authenticateKakao_성공() throws Exception {
+        // given
+        final LoginKakaoRequest loginKakaoRequest = LoginKakaoRequestBuilder.build();
+        final KakaoAccountResponse expectedKakaoAccountResponse = KakaoAccountResponseBuilder.existKakaoBuild();
+        final String mockResponse = objectMapper.writeValueAsString(expectedKakaoAccountResponse);
+        final UserEntity expectedUser = UserEntityBuilder.kakaoUserBuild();
+        final Authentication expectedAuthentication = new PreAuthenticatedAuthenticationToken(expectedUser.getEmail(), null, expectedUser.getAuthorities());
+
+        UserAuthService newUserAuthService = new UserAuthService(jwtProvider, authenticationManager, blackListRedisRepository, refreshTokenRedisRepository, userRepository, "http://localhost:" + mockWebServer.getPort() + "/v2/user/me");
+
+        // stub
+        mockWebServer.enqueue(new MockResponse()
+                .setResponseCode(200)
+                .setBody(mockResponse)
+                .addHeader("Content-Type", "application/json"));
+
+        when(userRepository.findFirstByEmail(expectedKakaoAccountResponse.kakao_account().email())).thenReturn(Optional.of(expectedUser));
+
+        // when
+        final Authentication actualAuthentication = newUserAuthService.authenticateKakao(loginKakaoRequest);
+
+        // then
+        Assertions.assertThat(actualAuthentication).isEqualTo(expectedAuthentication);
+    }
+
+    /**
+     * 사용자 카카오 인증 실패
+     * - 실패 사유 : 존재하지 않는 사용자
+     */
+    @Test
+    public void authenticateKakao_실패_NOT_FOUND_USER() throws Exception {
+        // given
+        final LoginKakaoRequest loginKakaoRequest = LoginKakaoRequestBuilder.build();
+        final KakaoAccountResponse expectedKakaoAccountResponse = KakaoAccountResponseBuilder.existKakaoBuild();
+        final String mockResponse = objectMapper.writeValueAsString(expectedKakaoAccountResponse);
+
+        UserAuthService newUserAuthService = new UserAuthService(jwtProvider, authenticationManager, blackListRedisRepository, refreshTokenRedisRepository, userRepository, "http://localhost:" + mockWebServer.getPort() + "/v2/user/me");
+
+        // stub
+        mockWebServer.enqueue(new MockResponse()
+                .setResponseCode(200)
+                .setBody(mockResponse)
+                .addHeader("Content-Type", "application/json"));
+
+        when(userRepository.findFirstByEmail(expectedKakaoAccountResponse.kakao_account().email())).thenReturn(Optional.empty());
+
+        // when & then
+        Assertions.assertThatThrownBy(() -> newUserAuthService.authenticateKakao(loginKakaoRequest))
+                .isInstanceOf(CustomCommonException.class)
+                .hasMessage(UserErrorCode.NOT_FOUND_USER.getMessage());
+    }
+
+    /**
+     * 사용자 카카오 인증 실패
+     * - 실패 사유 : 동일한 이메일의 기본 계정이 존재
+     */
+    @Test
+    public void authenticateKakao_실패_EXIST_BASIC_DUPLICATED_EMAIL_USER() throws Exception {
+        // given
+        final LoginKakaoRequest loginKakaoRequest = LoginKakaoRequestBuilder.build();
+        final KakaoAccountResponse expectedKakaoAccountResponse = KakaoAccountResponseBuilder.existKakaoBuild();
+        final String mockResponse = objectMapper.writeValueAsString(expectedKakaoAccountResponse);
+        final UserEntity expectedUser = UserEntityBuilder.build();
+
+        UserAuthService newUserAuthService = new UserAuthService(jwtProvider, authenticationManager, blackListRedisRepository, refreshTokenRedisRepository, userRepository, "http://localhost:" + mockWebServer.getPort() + "/v2/user/me");
+
+        // stub
+        mockWebServer.enqueue(new MockResponse()
+                .setResponseCode(200)
+                .setBody(mockResponse)
+                .addHeader("Content-Type", "application/json"));
+
+        when(userRepository.findFirstByEmail(expectedKakaoAccountResponse.kakao_account().email())).thenReturn(Optional.of(expectedUser));
+
+        // when & then
+        Assertions.assertThatThrownBy(() -> newUserAuthService.authenticateKakao(loginKakaoRequest))
+                .isInstanceOf(CustomCommonException.class)
+                .hasMessage(UserErrorCode.EXIST_BASIC_DUPLICATED_EMAIL_USER.getMessage());
+    }
+
+    /**
+     * 사용자 로그인 성공
+     */
+    @Test
+    public void login_성공() {
+        // given
+        final Authentication authentication = new UsernamePasswordAuthenticationToken("user@gmail.com", null, Collections.singleton(new SimpleGrantedAuthority(Role.ROLE_CUSTOMER.name())));
+        Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
+        List<String> authorityList = authorities.stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.toList());
+        final TokenInfoResponse expectedResponse = TokenInfoResponseBuilder.build();
+
+        // stub
+        when(jwtProvider.generateToken(authentication.getName(), authorityList)).thenReturn(expectedResponse);
+
+        // when
+        final TokenInfoResponse actualResponse = userAuthService.login(httpServletRequest, authentication);
+
+        // then
+        Assertions.assertThat(actualResponse).isEqualTo(expectedResponse);
+    }
+
+    /**
+     * 카카오 사용자 정보 조회 외부 API 성공
+     */
+    @Test
+    public void getKakaoAccount_성공() throws Exception {
+        // given
+        final String kakaoAccessToken = "kakaoAccessToken";
+        final KakaoAccountResponse expectedResponse = KakaoAccountResponseBuilder.existKakaoBuild();
+        final String mockResponse = objectMapper.writeValueAsString(expectedResponse);
+
+        UserAuthService newUserAuthService = new UserAuthService(jwtProvider, authenticationManager, blackListRedisRepository, refreshTokenRedisRepository, userRepository, "http://localhost:" + mockWebServer.getPort() + "/v2/user/me");
+
+        // stub
+        mockWebServer.enqueue(new MockResponse()
+                .setResponseCode(200)
+                .setBody(mockResponse)
+                .addHeader("Content-Type", "application/json"));
+
+        // when
+        final KakaoAccountResponse actualResponse = newUserAuthService.getKakaoAccount(kakaoAccessToken);
+
+        // then
+        Assertions.assertThat(actualResponse).isEqualTo(expectedResponse);
     }
 
     /**

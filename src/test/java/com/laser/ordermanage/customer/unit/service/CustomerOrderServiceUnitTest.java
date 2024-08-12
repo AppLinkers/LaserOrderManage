@@ -455,6 +455,10 @@ public class CustomerOrderServiceUnitTest extends ServiceUnitTest {
     }
 
     /**
+     * 거래 발주서 수정(파일 재 업로드) 성공
+     */
+
+    /**
      * 고객의 거래 중, (견적 대기, 견적 승인, 제작 중, 제작 완료) 단계의 거래 전체 삭제 성공
      */
     @Test

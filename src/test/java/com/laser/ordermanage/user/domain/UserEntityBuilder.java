@@ -27,6 +27,25 @@ public class UserEntityBuilder {
                 .build();
     }
 
+    public static UserEntity kakaoUserBuild() {
+        Address address = Address.builder()
+                .zipCode("11111")
+                .address("user2_address")
+                .detailAddress("user2_detail_address")
+                .build();
+
+        return UserEntity.builder()
+                .email("user2@gmail.com")
+                .password(null)
+                .name("고객 이름 3")
+                .role(Role.ROLE_CUSTOMER)
+                .authority(Authority.AUTHORITY_ADMIN)
+                .phone("01033331111")
+                .address(address)
+                .signupMethod(SignupMethod.OAUTH_KAKAO)
+                .build();
+    }
+
     public static UserEntity factoryAdminUserBuild() {
         Address address = Address.builder()
                 .zipCode("11111")

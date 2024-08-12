@@ -951,11 +951,21 @@ public class CustomerOrderIntegrationTest extends IntegrationTest {
         // given
         final String accessToken = jwtBuilder.accessJwtBuildOfUser2();
         final String orderId = "9";
+        final String filePath = "src/test/resources/purchase-order/purchase-order.png";
+        final MockMultipartFile file = new MockMultipartFile(
+                "file",
+                "purchase-order.png",
+                MediaType.MULTIPART_FORM_DATA_VALUE,
+                new FileInputStream(filePath)
+        );
         final CustomerCreateOrUpdateOrderPurchaseOrderRequest request = CustomerCreateOrUpdateOrderPurchaseOrderRequestBuilder.updateBuild();
         final CustomerCreateOrUpdateOrderPurchaseOrderResponse expectedResponse = CustomerCreateOrUpdateOrderPurchaseOrderResponseBuilder.updateBuild();
 
+        // stub
+        when(s3Service.upload(any(), (MultipartFile) any(), eq("purchase-order.png"))).thenReturn("purchase-order-url.png");
+
         // when
-        final ResultActions resultActions = requestCreateOrUpdateOrderPurchaseOrderWithOutFile(accessToken, orderId, request);
+        final ResultActions resultActions = requestCreateOrUpdateOrderPurchaseOrder(accessToken, orderId, file, request);
 
         // then
         final String responseString = resultActions

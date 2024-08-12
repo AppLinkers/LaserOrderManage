@@ -431,21 +431,29 @@ public class CustomerOrderServiceUnitTest extends ServiceUnitTest {
      * 거래 발주서 수정 성공
      */
     @Test
-    public void updateOrderPurchaseOrder_성공() {
+    public void updateOrderPurchaseOrder_성공() throws Exception {
         // given
         final Order order = OrderBuilder.build();
         final PurchaseOrder purchaseOrder = PurchaseOrderBuilder.build();
         order.createPurchaseOrder(purchaseOrder);
 
         final Long orderId = 1L;
+        final String filePath = "src/test/resources/purchase-order/purchase-order.png";
+        final MockMultipartFile file = new MockMultipartFile(
+                "file",
+                "purchase-order.png",
+                MediaType.MULTIPART_FORM_DATA_VALUE,
+                new FileInputStream(filePath)
+        );
         final CustomerCreateOrUpdateOrderPurchaseOrderRequest request = CustomerCreateOrUpdateOrderPurchaseOrderRequestBuilder.updateBuild();
         final CustomerCreateOrUpdateOrderPurchaseOrderResponse expectedResponse = CustomerCreateOrUpdateOrderPurchaseOrderResponseBuilder.build();
 
         // stub
         when(orderService.getOrderById(orderId)).thenReturn(order);
+        when(s3Service.upload(any(), (MultipartFile) any(), eq("purchase-order.png"))).thenReturn("purchase-order-url.png");
 
         // when
-        final CustomerCreateOrUpdateOrderPurchaseOrderResponse actualResponse = customerOrderService.updateOrderPurchaseOrder(orderId, null, request);
+        final CustomerCreateOrUpdateOrderPurchaseOrderResponse actualResponse = customerOrderService.updateOrderPurchaseOrder(orderId, file, request);
 
         // then
         Assertions.assertThat(actualResponse).isEqualTo(expectedResponse);

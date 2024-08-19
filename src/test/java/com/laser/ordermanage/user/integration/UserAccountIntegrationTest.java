@@ -152,7 +152,7 @@ public class UserAccountIntegrationTest extends IntegrationTest {
     @Test
     public void 비밀번호_변경_이메일로_비밀번호_변경_링크_전송_성공() throws Exception {
         // given
-        final String accessToken = jwtBuilder.accessJwtBuild();
+        final String accessToken = jwtBuilder.accessJwtBuildOfCustomer();
         final String baseUrl = "https://www.kumoh.org/edit-password";
 
         // when
@@ -169,7 +169,7 @@ public class UserAccountIntegrationTest extends IntegrationTest {
     @Test
     public void 비밀번호_변경_이메일로_비밀번호_변경_링크_전송_실패_소셜_계정_비밀번호_변경_불가() throws Exception {
         // given
-        final String accessToken = jwtBuilder.accessJwtBuildOfUser2();
+        final String accessToken = jwtBuilder.accessJwtBuildOfSocialCustomer();
         final String baseUrl = "https://www.kumoh.org/edit-password";
 
         // when
@@ -219,7 +219,7 @@ public class UserAccountIntegrationTest extends IntegrationTest {
     @Test
     public void 비밀번호_변경_이메일로_비밀번호_변경_링크_전송_실패_Token_Type() throws Exception {
         // given
-        final String refreshToken = jwtBuilder.refreshJwtBuild();
+        final String refreshToken = jwtBuilder.refreshJwtBuildOfCustomer();
         final String baseUrl = "https://www.kumoh.org/edit-password";
 
         // when
@@ -270,7 +270,7 @@ public class UserAccountIntegrationTest extends IntegrationTest {
     @Test
     public void 비밀번호_변경_이메일로_비밀번호_변경_링크_전송_실패_사용자_존재() throws Exception {
         // given
-        final String accessTokenOfUnknownUser = jwtBuilder.accessJwtOfUnknownUserBuild();
+        final String accessTokenOfUnknownUser = jwtBuilder.accessJwtOfUnknownCustomerBuild();
         final String baseUrl = "https://www.kumoh.org/edit-password";
 
         // when
@@ -286,7 +286,7 @@ public class UserAccountIntegrationTest extends IntegrationTest {
     @Test
     public void 비밀번호_변경_성공() throws Exception {
         // given
-        final String changePasswordToken = jwtBuilder.changePasswordJwtBuild();
+        final String changePasswordToken = jwtBuilder.changePasswordJwtBuildOfCustomer();
         final LoginRequest expectedLoginRequest = LoginRequestBuilder.newPasswordBuild();
         final ChangePasswordRequest request = ChangePasswordRequest.builder()
                 .password(expectedLoginRequest.password())
@@ -309,7 +309,7 @@ public class UserAccountIntegrationTest extends IntegrationTest {
      */
     @Test
     public void 비밀번호_변경_실패_소셜_계정_비밀번호_변경_불가() throws Exception {
-        final String changePasswordToken = jwtBuilder.changePasswordJwtBuildOfUser2();
+        final String changePasswordToken = jwtBuilder.changePasswordJwtBuildOfSocialCustomer();
         final ChangePasswordRequest request = ChangePasswordRequestBuilder.build();
 
         // given
@@ -359,7 +359,7 @@ public class UserAccountIntegrationTest extends IntegrationTest {
     @Test
     public void 비밀번호_변경_실패_Token_Type() throws Exception {
         // given
-        final String accessToken = jwtBuilder.accessJwtBuild();
+        final String accessToken = jwtBuilder.accessJwtBuildOfCustomer();
         final ChangePasswordRequest request = ChangePasswordRequestBuilder.build();
 
         // when
@@ -410,7 +410,7 @@ public class UserAccountIntegrationTest extends IntegrationTest {
     @Test
     public void 비밀번호_변경_실패_사용자_존재() throws Exception {
         // given
-        final String changePasswordTokenOfUnknownUser = jwtBuilder.changePasswordJwtOfUnknownUserBuild();
+        final String changePasswordTokenOfUnknownUser = jwtBuilder.changePasswordJwtOfUnknownCustomerBuild();
         final ChangePasswordRequest request = ChangePasswordRequestBuilder.build();
 
         // when
@@ -426,7 +426,7 @@ public class UserAccountIntegrationTest extends IntegrationTest {
     @Test
     public void 마이페이지_계정_기본_정보_조회_성공() throws Exception {
         // given
-        final String accessToken = jwtBuilder.accessJwtBuild();
+        final String accessToken = jwtBuilder.accessJwtBuildOfCustomer();
         final GetUserAccountResponse expectedResponse = GetUserAccountResponseBuilder.build();
 
         // when
@@ -479,7 +479,7 @@ public class UserAccountIntegrationTest extends IntegrationTest {
     @Test
     public void 마이페이지_계정_기본_정보_조회_실패_Token_Type() throws Exception {
         // given
-        final String refreshToken = jwtBuilder.refreshJwtBuild();
+        final String refreshToken = jwtBuilder.refreshJwtBuildOfCustomer();
 
         // when
         final ResultActions resultActions = requestGetUserAccount(refreshToken);
@@ -526,7 +526,7 @@ public class UserAccountIntegrationTest extends IntegrationTest {
     @Test
     public void 마이페이지_계정_기본_정보_변경_성공() throws Exception {
         // given
-        final String accessToken = jwtBuilder.accessJwtBuild();
+        final String accessToken = jwtBuilder.accessJwtBuildOfCustomer();
         final UpdateUserAccountRequest request = UpdateUserAccountRequestBuilder.build();
 
         // when
@@ -576,7 +576,7 @@ public class UserAccountIntegrationTest extends IntegrationTest {
     @Test
     public void 마이페이지_계정_기본_정보_변경_실패_Token_Type() throws Exception {
         // given
-        final String refreshToken = jwtBuilder.refreshJwtBuild();
+        final String refreshToken = jwtBuilder.refreshJwtBuildOfCustomer();
         final UpdateUserAccountRequest request = UpdateUserAccountRequestBuilder.build();
 
         // when
@@ -627,7 +627,7 @@ public class UserAccountIntegrationTest extends IntegrationTest {
     @Test
     public void 마이페이지_계정_기본_정보_변경_실패_사용자_존재() throws Exception {
         // given
-        final String accessTokenOfUnknownUser = jwtBuilder.accessJwtOfUnknownUserBuild();
+        final String accessTokenOfUnknownUser = jwtBuilder.accessJwtOfUnknownCustomerBuild();
         final UpdateUserAccountRequest request = UpdateUserAccountRequestBuilder.build();
 
         // when
@@ -643,7 +643,7 @@ public class UserAccountIntegrationTest extends IntegrationTest {
     @Test
     public void 사용자_이메일_알림_설정_변경_성공() throws Exception {
         // given
-        final String accessToken = jwtBuilder.accessJwtBuild();
+        final String accessToken = jwtBuilder.accessJwtBuildOfCustomer();
         final Boolean isActivate = Boolean.TRUE;
 
         // when
@@ -693,7 +693,7 @@ public class UserAccountIntegrationTest extends IntegrationTest {
     @Test
     public void 사용자_이메일_알림_설정_변경_실패_Token_Type() throws Exception {
         // given
-        final String refreshToken = jwtBuilder.refreshJwtBuild();
+        final String refreshToken = jwtBuilder.refreshJwtBuildOfCustomer();
         final Boolean isActivate = Boolean.TRUE;
 
         // when
@@ -744,7 +744,7 @@ public class UserAccountIntegrationTest extends IntegrationTest {
     @Test
     public void 사용자_이메일_알림_설정_변경_실패_사용자_존재() throws Exception {
         // given
-        final String accessTokenOfUnknownUser = jwtBuilder.accessJwtOfUnknownUserBuild();
+        final String accessTokenOfUnknownUser = jwtBuilder.accessJwtOfUnknownCustomerBuild();
         final Boolean isActivate = Boolean.TRUE;
 
         // when

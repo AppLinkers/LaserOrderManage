@@ -257,7 +257,7 @@ public class UserAuthIntegrationTest extends IntegrationTest {
     @Test
     public void Access_Token_재발급_실패_Token_Type() throws Exception {
         // given
-        final String accessToken = jwtBuilder.accessJwtBuild();
+        final String accessToken = jwtBuilder.accessJwtBuildOfCustomer();
 
         // when
         final ResultActions resultActions = requestReIssue(accessToken);
@@ -398,7 +398,7 @@ public class UserAuthIntegrationTest extends IntegrationTest {
     @Test
     public void 로그아웃_실패_Token_Type() throws Exception {
         // given
-        final String refreshToken = jwtBuilder.refreshJwtBuild();
+        final String refreshToken = jwtBuilder.refreshJwtBuildOfCustomer();
 
         // when
         final ResultActions resultActions = requestLogout(refreshToken);

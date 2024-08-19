@@ -36,7 +36,7 @@ public class DrawingIntegrationTest extends IntegrationTest {
     @Test
     public void 도면_파일_업로드_성공_DWG() throws Exception {
         // given
-        final String accessToken = jwtBuilder.accessJwtBuild();
+        final String accessToken = jwtBuilder.accessJwtBuildOfCustomer();
         final String filePath = "src/test/resources/drawing/drawing.dwg";
         final MockMultipartFile file = new MockMultipartFile(
                 "file",
@@ -69,7 +69,7 @@ public class DrawingIntegrationTest extends IntegrationTest {
     @Test
     public void 도면_파일_업로드_성공_DXF() throws Exception {
         // given
-        final String accessToken = jwtBuilder.accessJwtBuild();
+        final String accessToken = jwtBuilder.accessJwtBuildOfCustomer();
         final String filePath = "src/test/resources/drawing/drawing.dxf";
         final MockMultipartFile file = new MockMultipartFile(
                 "file",
@@ -102,7 +102,7 @@ public class DrawingIntegrationTest extends IntegrationTest {
     @Test
     public void 도면_파일_업로드_성공_PDF() throws Exception {
         // given
-        final String accessToken = jwtBuilder.accessJwtBuild();
+        final String accessToken = jwtBuilder.accessJwtBuildOfCustomer();
         final String filePath = "src/test/resources/drawing/drawing.pdf";
         final MockMultipartFile file = new MockMultipartFile(
                 "file",
@@ -135,7 +135,7 @@ public class DrawingIntegrationTest extends IntegrationTest {
     @Test
     public void 도면_파일_업로드_성공_PNG() throws Exception {
         // given
-        final String accessToken = jwtBuilder.accessJwtBuild();
+        final String accessToken = jwtBuilder.accessJwtBuildOfCustomer();
         final String filePath = "src/test/resources/drawing/drawing.png";
         final MockMultipartFile file = new MockMultipartFile(
                 "file",
@@ -214,7 +214,7 @@ public class DrawingIntegrationTest extends IntegrationTest {
     @Test
     public void 도면_파일_업로드_실패_Token_Type() throws Exception {
         // given
-        final String refreshToken = jwtBuilder.refreshJwtBuild();
+        final String refreshToken = jwtBuilder.refreshJwtBuildOfCustomer();
         final String filePath = "src/test/resources/drawing/drawing.dwg";
         final MockMultipartFile file = new MockMultipartFile(
                 "file",
@@ -283,7 +283,7 @@ public class DrawingIntegrationTest extends IntegrationTest {
     @Test
     public void 도면_파일_업로드_실패_Invalid_File_Extension() throws Exception {
         // given
-        final String accessToken = jwtBuilder.accessJwtBuild();
+        final String accessToken = jwtBuilder.accessJwtBuildOfCustomer();
         final String invalidFilePath = "src/test/resources/quotation/quotation.xlsx";
         final MockMultipartFile invalidFile = new MockMultipartFile(
                 "file",

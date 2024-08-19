@@ -17,11 +17,11 @@ public class JwtBuilder {
 
     private final JwtProvider jwtProvider;
 
-    public String accessJwtBuild() {
+    public String accessJwtBuildOfCustomer() {
         return jwtProvider.generateJWT("user1@gmail.com", List.of(Role.ROLE_CUSTOMER.name(), Authority.AUTHORITY_ADMIN.name()), JwtProvider.TYPE_ACCESS, new Date(), ExpireTime.ACCESS_TOKEN_EXPIRE_TIME);
     }
 
-    public String accessJwtBuildOfUser2() {
+    public String accessJwtBuildOfSocialCustomer() {
         return jwtProvider.generateJWT("user2@gmail.com", List.of(Role.ROLE_CUSTOMER.name(), Authority.AUTHORITY_ADMIN.name()), JwtProvider.TYPE_ACCESS, new Date(), ExpireTime.ACCESS_TOKEN_EXPIRE_TIME);
     }
 
@@ -29,15 +29,19 @@ public class JwtBuilder {
         return jwtProvider.generateJWT("admin@kumoh.org", List.of(Role.ROLE_FACTORY.name(), Authority.AUTHORITY_ADMIN.name()), JwtProvider.TYPE_ACCESS, new Date(), ExpireTime.ACCESS_TOKEN_EXPIRE_TIME);
     }
 
-    public String refreshJwtBuild() {
+    public String refreshJwtBuildOfCustomer() {
         return jwtProvider.generateJWT("user1@gmail.com", List.of(Role.ROLE_CUSTOMER.name(), Authority.AUTHORITY_ADMIN.name()), JwtProvider.TYPE_REFRESH, new Date(), ExpireTime.REFRESH_TOKEN_EXPIRE_TIME);
     }
 
-    public String changePasswordJwtBuild() {
+    public String refreshJwtBuildOfFactory() {
+        return jwtProvider.generateJWT("admin@kumoh.org", List.of(Role.ROLE_FACTORY.name(), Authority.AUTHORITY_ADMIN.name()), JwtProvider.TYPE_REFRESH, new Date(), ExpireTime.REFRESH_TOKEN_EXPIRE_TIME);
+    }
+
+    public String changePasswordJwtBuildOfCustomer() {
         return jwtProvider.generateJWT("user1@gmail.com", List.of(Role.ROLE_CUSTOMER.name(), Authority.AUTHORITY_ADMIN.name()), JwtProvider.TYPE_CHANGE_PASSWORD, new Date(), ExpireTime.CHANGE_PASSWORD_TOKEN_EXPIRE_TIME);
     }
 
-    public String changePasswordJwtBuildOfUser2() {
+    public String changePasswordJwtBuildOfSocialCustomer() {
         return jwtProvider.generateJWT("user2@gmail.com", List.of(Role.ROLE_CUSTOMER.name(), Authority.AUTHORITY_ADMIN.name()), JwtProvider.TYPE_CHANGE_PASSWORD, new Date(), ExpireTime.CHANGE_PASSWORD_TOKEN_EXPIRE_TIME);
     }
 
@@ -46,37 +50,41 @@ public class JwtBuilder {
     }
 
     public String unauthorizedAccessJwtBuild() {
-        return jwtProvider.generateJWT("user1@gmail.com", new ArrayList<>(), JwtProvider.TYPE_ACCESS, new Date(), ExpireTime.ACCESS_TOKEN_EXPIRE_TIME);
+        return jwtProvider.generateJWT("user@gmail.com", new ArrayList<>(), JwtProvider.TYPE_ACCESS, new Date(), ExpireTime.ACCESS_TOKEN_EXPIRE_TIME);
     }
 
     public String unauthorizedRefreshJwtBuild() {
-        return jwtProvider.generateJWT("user1@gmail.com", new ArrayList<>(), JwtProvider.TYPE_REFRESH, new Date(), ExpireTime.REFRESH_TOKEN_EXPIRE_TIME);
+        return jwtProvider.generateJWT("user@gmail.com", new ArrayList<>(), JwtProvider.TYPE_REFRESH, new Date(), ExpireTime.REFRESH_TOKEN_EXPIRE_TIME);
     }
 
     public String unauthorizedChangePasswordJwtBuild() {
-        return jwtProvider.generateJWT("user1@gmail.com", new ArrayList<>(), JwtProvider.TYPE_CHANGE_PASSWORD, new Date(), ExpireTime.CHANGE_PASSWORD_TOKEN_EXPIRE_TIME);
+        return jwtProvider.generateJWT("user@gmail.com", new ArrayList<>(), JwtProvider.TYPE_CHANGE_PASSWORD, new Date(), ExpireTime.CHANGE_PASSWORD_TOKEN_EXPIRE_TIME);
     }
 
     public String expiredAccessJwtBuild() {
         Date expiredDate = new Date(new Date().getTime() - ExpireTime.ACCESS_TOKEN_EXPIRE_TIME);
-        return jwtProvider.generateJWT("user1@gmail.com", List.of(Role.ROLE_CUSTOMER.name(), Authority.AUTHORITY_ADMIN.name()), JwtProvider.TYPE_ACCESS, expiredDate, ExpireTime.ACCESS_TOKEN_EXPIRE_TIME);
+        return jwtProvider.generateJWT("user@gmail.com", new ArrayList<>(), JwtProvider.TYPE_ACCESS, expiredDate, ExpireTime.ACCESS_TOKEN_EXPIRE_TIME);
     }
 
     public String expiredRefreshJwtBuild() {
         Date expiredDate = new Date(new Date().getTime() - ExpireTime.REFRESH_TOKEN_EXPIRE_TIME);
-        return jwtProvider.generateJWT("user1@gmail.com", List.of(Role.ROLE_CUSTOMER.name(), Authority.AUTHORITY_ADMIN.name()), JwtProvider.TYPE_REFRESH, expiredDate, ExpireTime.REFRESH_TOKEN_EXPIRE_TIME);
+        return jwtProvider.generateJWT("user@gmail.com", new ArrayList<>(), JwtProvider.TYPE_REFRESH, expiredDate, ExpireTime.REFRESH_TOKEN_EXPIRE_TIME);
     }
 
     public String expiredChangePasswordJwtBuild() {
         Date expiredDate = new Date(new Date().getTime() - ExpireTime.CHANGE_PASSWORD_TOKEN_EXPIRE_TIME);
-        return jwtProvider.generateJWT("user1@gmail.com", List.of(Role.ROLE_CUSTOMER.name(), Authority.AUTHORITY_ADMIN.name()), JwtProvider.TYPE_CHANGE_PASSWORD, expiredDate, ExpireTime.CHANGE_PASSWORD_TOKEN_EXPIRE_TIME);
+        return jwtProvider.generateJWT("user@gmail.com", new ArrayList<>(), JwtProvider.TYPE_CHANGE_PASSWORD, expiredDate, ExpireTime.CHANGE_PASSWORD_TOKEN_EXPIRE_TIME);
     }
 
-    public String accessJwtOfUnknownUserBuild() {
-        return jwtProvider.generateJWT("unknwon-user@gmail.com", List.of(Role.ROLE_CUSTOMER.name(), Authority.AUTHORITY_ADMIN.name()), JwtProvider.TYPE_ACCESS, new Date(), ExpireTime.ACCESS_TOKEN_EXPIRE_TIME);
+    public String accessJwtOfUnknownCustomerBuild() {
+        return jwtProvider.generateJWT("unknwon-customer@gmail.com", List.of(Role.ROLE_CUSTOMER.name(), Authority.AUTHORITY_ADMIN.name()), JwtProvider.TYPE_ACCESS, new Date(), ExpireTime.ACCESS_TOKEN_EXPIRE_TIME);
     }
 
-    public String changePasswordJwtOfUnknownUserBuild() {
-        return jwtProvider.generateJWT("unknwon-user@gmail.com", List.of(Role.ROLE_CUSTOMER.name(), Authority.AUTHORITY_ADMIN.name()), JwtProvider.TYPE_CHANGE_PASSWORD, new Date(), ExpireTime.CHANGE_PASSWORD_TOKEN_EXPIRE_TIME);
+    public String accessJwtOfUnknownFactoryBuild() {
+        return jwtProvider.generateJWT("unknwon-factory@gmail.com", List.of(Role.ROLE_FACTORY.name(), Authority.AUTHORITY_ADMIN.name()), JwtProvider.TYPE_ACCESS, new Date(), ExpireTime.ACCESS_TOKEN_EXPIRE_TIME);
+    }
+
+    public String changePasswordJwtOfUnknownCustomerBuild() {
+        return jwtProvider.generateJWT("unknwon-customer@gmail.com", List.of(Role.ROLE_CUSTOMER.name(), Authority.AUTHORITY_ADMIN.name()), JwtProvider.TYPE_CHANGE_PASSWORD, new Date(), ExpireTime.CHANGE_PASSWORD_TOKEN_EXPIRE_TIME);
     }
 }

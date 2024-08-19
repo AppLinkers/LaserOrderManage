@@ -31,7 +31,7 @@ public class CustomerUserAccountIntegrationTest extends IntegrationTest {
     @Test
     public void 고객_정보_조회_성공() throws Exception {
         // given
-        final String accessToken = jwtBuilder.accessJwtBuild();
+        final String accessToken = jwtBuilder.accessJwtBuildOfCustomer();
         final CustomerGetCustomerAccountResponse expectedResponse = CustomerGetCustomerAccountResponseBuilder.build();
 
         // when
@@ -84,7 +84,7 @@ public class CustomerUserAccountIntegrationTest extends IntegrationTest {
     @Test
     public void 고객_정보_조회_실패_Token_Type() throws Exception {
         // given
-        final String refreshToken = jwtBuilder.refreshJwtBuild();
+        final String refreshToken = jwtBuilder.refreshJwtBuildOfCustomer();
 
         // when
         final ResultActions resultActions = requestGetCustomerAccount(refreshToken);
@@ -132,7 +132,7 @@ public class CustomerUserAccountIntegrationTest extends IntegrationTest {
     @Test
     public void 고객_정보_조회_실패_고객_정보_존재() throws Exception {
         // given
-        final String accessTokenOfUnknownUser = jwtBuilder.accessJwtOfUnknownUserBuild();
+        final String accessTokenOfUnknownUser = jwtBuilder.accessJwtOfUnknownCustomerBuild();
 
         // when
         final ResultActions resultActions = requestGetCustomerAccount(accessTokenOfUnknownUser);
@@ -147,7 +147,7 @@ public class CustomerUserAccountIntegrationTest extends IntegrationTest {
     @Test
     public void 고객_정보_변경_성공() throws Exception {
         // given
-        final String accessToken = jwtBuilder.accessJwtBuild();
+        final String accessToken = jwtBuilder.accessJwtBuildOfCustomer();
         final CustomerUpdateCustomerAccountRequest request = CustomerUpdateCustomerAccountRequestBuilder.build();
 
         // when
@@ -197,7 +197,7 @@ public class CustomerUserAccountIntegrationTest extends IntegrationTest {
     @Test
     public void 고객_정보_변경_실패_Token_Type() throws Exception {
         // given
-        final String refreshToken = jwtBuilder.refreshJwtBuild();
+        final String refreshToken = jwtBuilder.refreshJwtBuildOfCustomer();
         final CustomerUpdateCustomerAccountRequest request = CustomerUpdateCustomerAccountRequestBuilder.build();
 
         // when
@@ -248,7 +248,7 @@ public class CustomerUserAccountIntegrationTest extends IntegrationTest {
     @Test
     public void 고객_정보_변경_실패_고객_정보_존재() throws Exception {
         // given
-        final String accessTokenOfUnknownUser = jwtBuilder.accessJwtOfUnknownUserBuild();
+        final String accessTokenOfUnknownUser = jwtBuilder.accessJwtOfUnknownCustomerBuild();
         final CustomerUpdateCustomerAccountRequest request = CustomerUpdateCustomerAccountRequestBuilder.build();
 
         // when
@@ -264,7 +264,7 @@ public class CustomerUserAccountIntegrationTest extends IntegrationTest {
     @Test
     public void 고객_회원의_회원_탈퇴_성공() throws Exception {
         // given
-        final String accessToken = jwtBuilder.accessJwtBuild();
+        final String accessToken = jwtBuilder.accessJwtBuildOfCustomer();
 
         // when
         final ResultActions resultActions = requestDeleteUserAccount(accessToken);
@@ -311,7 +311,7 @@ public class CustomerUserAccountIntegrationTest extends IntegrationTest {
     @Test
     public void 고객_회원의_회원_탈퇴_실패_Token_Type() throws Exception {
         // given
-        final String refreshToken = jwtBuilder.refreshJwtBuild();
+        final String refreshToken = jwtBuilder.refreshJwtBuildOfCustomer();
 
         // when
         final ResultActions resultActions = requestDeleteUserAccount(refreshToken);
@@ -359,7 +359,7 @@ public class CustomerUserAccountIntegrationTest extends IntegrationTest {
     @Test
     public void 고객_회원의_회원_탈퇴_실패_고객_정보_존재() throws Exception {
         // given
-        final String accessTokenOfUnknownUser = jwtBuilder.accessJwtOfUnknownUserBuild();
+        final String accessTokenOfUnknownUser = jwtBuilder.accessJwtOfUnknownCustomerBuild();
 
         // when
         final ResultActions resultActions = requestDeleteUserAccount(accessTokenOfUnknownUser);

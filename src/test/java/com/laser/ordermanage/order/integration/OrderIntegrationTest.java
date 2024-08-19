@@ -21,8 +21,6 @@ import org.springframework.test.web.servlet.ResultActions;
 
 import java.nio.charset.StandardCharsets;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doNothing;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -39,7 +37,7 @@ public class OrderIntegrationTest extends IntegrationTest {
     @Test
     public void 거래_상세_정보_조회_성공() throws Exception {
         // given
-        final String accessToken = jwtBuilder.accessJwtBuild();
+        final String accessToken = jwtBuilder.accessJwtBuildOfCustomer();
         final String orderId = "1";
         final GetOrderDetailResponse expectedResponse = GetOrderDetailResponseBuilder.build();
 
@@ -96,7 +94,7 @@ public class OrderIntegrationTest extends IntegrationTest {
     @Test
     public void 거래_상세_정보_조회_실패_Token_Type() throws Exception {
         // given
-        final String refreshToken = jwtBuilder.refreshJwtBuild();
+        final String refreshToken = jwtBuilder.refreshJwtBuildOfCustomer();
         final String orderId = "1";
 
         // when
@@ -147,7 +145,7 @@ public class OrderIntegrationTest extends IntegrationTest {
     @Test
     public void 거래_상세_정보_조회_실패_거래_접근_권한() throws Exception {
         // given
-        final String accessTokenOfUser2 = jwtBuilder.accessJwtBuildOfUser2();
+        final String accessTokenOfUser2 = jwtBuilder.accessJwtBuildOfSocialCustomer();
         final String orderId = "1";
 
         // when
@@ -163,7 +161,7 @@ public class OrderIntegrationTest extends IntegrationTest {
     @Test
     public void 거래_댓글_목록_조회_성공() throws Exception {
         // given
-        final String accessToken = jwtBuilder.accessJwtBuild();
+        final String accessToken = jwtBuilder.accessJwtBuildOfCustomer();
         final String orderId = "1";
         final ListResponse<GetCommentResponse> expectedResponse = new ListResponse<>(GetCommentResponseBuilder.buildListForOrder1());
 
@@ -220,7 +218,7 @@ public class OrderIntegrationTest extends IntegrationTest {
     @Test
     public void 거래_댓글_목록_조회_실패_Token_Type() throws Exception {
         // given
-        final String refreshToken = jwtBuilder.refreshJwtBuild();
+        final String refreshToken = jwtBuilder.refreshJwtBuildOfCustomer();
         final String orderId = "1";
 
         // when
@@ -271,7 +269,7 @@ public class OrderIntegrationTest extends IntegrationTest {
     @Test
     public void 거래_댓글_목록_조회_실패_거래_접근_권한() throws Exception {
         // given
-        final String accessTokenOfUser2 = jwtBuilder.accessJwtBuildOfUser2();
+        final String accessTokenOfUser2 = jwtBuilder.accessJwtBuildOfSocialCustomer();
         final String orderId = "1";
 
         // when
@@ -287,7 +285,7 @@ public class OrderIntegrationTest extends IntegrationTest {
     @Test
     public void 거래_댓글_작성_성공_By_Customer() throws Exception {
         // given
-        final String accessToken = jwtBuilder.accessJwtBuild();
+        final String accessToken = jwtBuilder.accessJwtBuildOfCustomer();
         final String orderId = "1";
         final CreateCommentRequest request = CreateCommentRequestBuilder.build();
 
@@ -373,7 +371,7 @@ public class OrderIntegrationTest extends IntegrationTest {
     @Test
     public void 거래_댓글_작성_실패_Token_Type() throws Exception {
         // given
-        final String refreshToken = jwtBuilder.refreshJwtBuild();
+        final String refreshToken = jwtBuilder.refreshJwtBuildOfCustomer();
         final String orderId = "1";
         final CreateCommentRequest request = CreateCommentRequestBuilder.build();
 
@@ -427,7 +425,7 @@ public class OrderIntegrationTest extends IntegrationTest {
     @Test
     public void 거래_댓글_작성_실패_거래_접근_권한() throws Exception {
         // given
-        final String accessTokenOfUser2 = jwtBuilder.accessJwtBuildOfUser2();
+        final String accessTokenOfUser2 = jwtBuilder.accessJwtBuildOfSocialCustomer();
         final String orderId = "1";
         final CreateCommentRequest request = CreateCommentRequestBuilder.build();
 
@@ -444,7 +442,7 @@ public class OrderIntegrationTest extends IntegrationTest {
     @Test
     public void 거래_삭제_성공_By_Customer() throws Exception {
         // given
-        final String accessToken = jwtBuilder.accessJwtBuild();
+        final String accessToken = jwtBuilder.accessJwtBuildOfCustomer();
         final String orderId = "5";
 
         // when
@@ -522,7 +520,7 @@ public class OrderIntegrationTest extends IntegrationTest {
     @Test
     public void 거래_삭제_실패_Token_Type() throws Exception {
         // given
-        final String refreshToken = jwtBuilder.refreshJwtBuild();
+        final String refreshToken = jwtBuilder.refreshJwtBuildOfCustomer();
         final String orderId = "1";
 
         // when
@@ -573,7 +571,7 @@ public class OrderIntegrationTest extends IntegrationTest {
     @Test
     public void 거래_삭제_실패_거래_접근_권한() throws Exception {
         // given
-        final String accessTokenOfUser2 = jwtBuilder.accessJwtBuildOfUser2();
+        final String accessTokenOfUser2 = jwtBuilder.accessJwtBuildOfSocialCustomer();
         final String orderId = "5";
 
         // when
@@ -590,7 +588,7 @@ public class OrderIntegrationTest extends IntegrationTest {
     @Test
     public void 거래_삭제_실패_거래삭제_가능단계() throws Exception {
         // given
-        final String accessToken = jwtBuilder.accessJwtBuild();
+        final String accessToken = jwtBuilder.accessJwtBuildOfCustomer();
         final String orderId = "1";
 
         // when

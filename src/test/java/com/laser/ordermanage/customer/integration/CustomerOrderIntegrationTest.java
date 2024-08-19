@@ -44,7 +44,7 @@ public class CustomerOrderIntegrationTest extends IntegrationTest {
     @Test
     public void 고객_회원의_거래_생성_성공() throws Exception {
         // given
-        final String accessToken = jwtBuilder.accessJwtBuild();
+        final String accessToken = jwtBuilder.accessJwtBuildOfCustomer();
         final CustomerCreateOrderRequest request = CustomerCreateOrderRequestBuilder.build();
 
         // when
@@ -94,7 +94,7 @@ public class CustomerOrderIntegrationTest extends IntegrationTest {
     @Test
     public void 고객_회원의_거래_생성_실패_Token_Type() throws Exception {
         // given
-        final String refreshToken = jwtBuilder.refreshJwtBuild();
+        final String refreshToken = jwtBuilder.refreshJwtBuildOfCustomer();
         final CustomerCreateOrderRequest request = CustomerCreateOrderRequestBuilder.build();
 
         // when
@@ -144,7 +144,7 @@ public class CustomerOrderIntegrationTest extends IntegrationTest {
     @Test
     public void 거래_배송지_수정_성공() throws Exception {
         // given
-        final String accessToken = jwtBuilder.accessJwtBuild();
+        final String accessToken = jwtBuilder.accessJwtBuildOfCustomer();
         final String orderId = "3";
         final CustomerUpdateOrderDeliveryAddressRequest request = CustomerUpdateOrderDeliveryAddressRequestBuilder.buildOfDeliveryAddress2();
 
@@ -197,7 +197,7 @@ public class CustomerOrderIntegrationTest extends IntegrationTest {
     @Test
     public void 거래_배송지_수정_실패_Token_Type() throws Exception {
         // given
-        final String refreshToken = jwtBuilder.refreshJwtBuild();
+        final String refreshToken = jwtBuilder.refreshJwtBuildOfCustomer();
         final String orderId = "3";
         final CustomerUpdateOrderDeliveryAddressRequest request = CustomerUpdateOrderDeliveryAddressRequestBuilder.buildOfDeliveryAddress2();
 
@@ -251,7 +251,7 @@ public class CustomerOrderIntegrationTest extends IntegrationTest {
     @Test
     public void 거래_배송지_수정_실패_거래_접근_권한() throws Exception {
         // given
-        final String accessTokenOfUser2 = jwtBuilder.accessJwtBuildOfUser2();
+        final String accessTokenOfUser2 = jwtBuilder.accessJwtBuildOfSocialCustomer();
         final String orderId = "3";
         final CustomerUpdateOrderDeliveryAddressRequest request = CustomerUpdateOrderDeliveryAddressRequestBuilder.buildOfDeliveryAddress8();
 
@@ -269,7 +269,7 @@ public class CustomerOrderIntegrationTest extends IntegrationTest {
     @Test
     public void 거래_배송지_수정_실패_배송지_접근_권한() throws Exception {
         // given
-        final String accessTokenOfUser2 = jwtBuilder.accessJwtBuildOfUser2();
+        final String accessTokenOfUser2 = jwtBuilder.accessJwtBuildOfSocialCustomer();
         final String orderId = "8";
         final CustomerUpdateOrderDeliveryAddressRequest request = CustomerUpdateOrderDeliveryAddressRequestBuilder.buildOfDeliveryAddress2();
 
@@ -287,7 +287,7 @@ public class CustomerOrderIntegrationTest extends IntegrationTest {
     @Test
     public void 거래_배송지_수정_실패_거래배송지수정_가능단계() throws Exception {
         // given
-        final String accessToken = jwtBuilder.accessJwtBuild();
+        final String accessToken = jwtBuilder.accessJwtBuildOfCustomer();
         final String orderId = "1";
         final CustomerUpdateOrderDeliveryAddressRequest request = CustomerUpdateOrderDeliveryAddressRequestBuilder.buildOfDeliveryAddress2();
 
@@ -304,7 +304,7 @@ public class CustomerOrderIntegrationTest extends IntegrationTest {
     @Test
     public void 거래_도면_항목_추가_성공() throws Exception {
         // given
-        final String accessToken = jwtBuilder.accessJwtBuild();
+        final String accessToken = jwtBuilder.accessJwtBuildOfCustomer();
         final String orderId = "3";
         final CustomerCreateDrawingRequest request = CustomerCreateDrawingRequestBuilder.build();
         final CustomerCreateDrawingResponse expectedResponse = CustomerCreateDrawingResponseBuilder.build();
@@ -365,7 +365,7 @@ public class CustomerOrderIntegrationTest extends IntegrationTest {
     @Test
     public void 거래_도면_항목_추가_실패_Token_Type() throws Exception {
         // given
-        final String refreshToken = jwtBuilder.refreshJwtBuild();
+        final String refreshToken = jwtBuilder.refreshJwtBuildOfCustomer();
         final String orderId = "3";
         final CustomerCreateDrawingRequest request = CustomerCreateDrawingRequestBuilder.build();
 
@@ -419,7 +419,7 @@ public class CustomerOrderIntegrationTest extends IntegrationTest {
     @Test
     public void 거래_도면_항목_추가_실패_거래_접근_권한() throws Exception {
         // given
-        final String accessTokenOfUser2 = jwtBuilder.accessJwtBuildOfUser2();
+        final String accessTokenOfUser2 = jwtBuilder.accessJwtBuildOfSocialCustomer();
         final String orderId = "3";
         final CustomerCreateDrawingRequest request = CustomerCreateDrawingRequestBuilder.build();
 
@@ -437,7 +437,7 @@ public class CustomerOrderIntegrationTest extends IntegrationTest {
     @Test
     public void 거래_도면_항목_추가_실패_거래도면추가_가능단계() throws Exception {
         // given
-        final String accessToken = jwtBuilder.accessJwtBuild();
+        final String accessToken = jwtBuilder.accessJwtBuildOfCustomer();
         final String orderId = "1";
         final CustomerCreateDrawingRequest request = CustomerCreateDrawingRequestBuilder.build();
 
@@ -454,7 +454,7 @@ public class CustomerOrderIntegrationTest extends IntegrationTest {
     @Test
     public void 거래_도면_항목_수정_성공() throws Exception {
         // given
-        final String accessToken = jwtBuilder.accessJwtBuild();
+        final String accessToken = jwtBuilder.accessJwtBuildOfCustomer();
         final String orderId = "3";
         final String drawingId = "3";
         final CustomerUpdateDrawingRequest request = CustomerUpdateDrawingRequestBuilder.build();
@@ -510,7 +510,7 @@ public class CustomerOrderIntegrationTest extends IntegrationTest {
     @Test
     public void 거래_도면_항목_수정_실패_Token_Type() throws Exception {
         // given
-        final String refreshToken = jwtBuilder.refreshJwtBuild();
+        final String refreshToken = jwtBuilder.refreshJwtBuildOfCustomer();
         final String orderId = "3";
         final String drawingId = "3";
         final CustomerUpdateDrawingRequest request = CustomerUpdateDrawingRequestBuilder.build();
@@ -567,7 +567,7 @@ public class CustomerOrderIntegrationTest extends IntegrationTest {
     @Test
     public void 거래_도면_항목_수정_실패_거래_접근_권한() throws Exception {
         // given
-        final String accessTokenOfUser2 = jwtBuilder.accessJwtBuildOfUser2();
+        final String accessTokenOfUser2 = jwtBuilder.accessJwtBuildOfSocialCustomer();
         final String orderId = "3";
         final String drawingId = "3";
         final CustomerUpdateDrawingRequest request = CustomerUpdateDrawingRequestBuilder.build();
@@ -586,7 +586,7 @@ public class CustomerOrderIntegrationTest extends IntegrationTest {
     @Test
     public void 거래_도면_항목_수정_실패_거래도면항목수정_가능단계() throws Exception {
         // given
-        final String accessToken = jwtBuilder.accessJwtBuild();
+        final String accessToken = jwtBuilder.accessJwtBuildOfCustomer();
         final String orderId = "1";
         final String drawingId = "3";
         final CustomerUpdateDrawingRequest request = CustomerUpdateDrawingRequestBuilder.build();
@@ -604,7 +604,7 @@ public class CustomerOrderIntegrationTest extends IntegrationTest {
     @Test
     public void 거래_도면_삭제_성공() throws Exception {
         // given
-        final String accessToken = jwtBuilder.accessJwtBuild();
+        final String accessToken = jwtBuilder.accessJwtBuildOfCustomer();
         final String orderId = "5";
         final String drawingId = "16";
 
@@ -657,7 +657,7 @@ public class CustomerOrderIntegrationTest extends IntegrationTest {
     @Test
     public void 거래_도면_삭제_실패_Token_Type() throws Exception {
         // given
-        final String refreshToken = jwtBuilder.refreshJwtBuild();
+        final String refreshToken = jwtBuilder.refreshJwtBuildOfCustomer();
         final String orderId = "5";
         final String drawingId = "16";
 
@@ -711,7 +711,7 @@ public class CustomerOrderIntegrationTest extends IntegrationTest {
     @Test
     public void 거래_도면_삭제_실패_거래_접근_권한() throws Exception {
         // given
-        final String accessTokenOfUser2 = jwtBuilder.accessJwtBuildOfUser2();
+        final String accessTokenOfUser2 = jwtBuilder.accessJwtBuildOfSocialCustomer();
         final String orderId = "5";
         final String drawingId = "16";
 
@@ -729,7 +729,7 @@ public class CustomerOrderIntegrationTest extends IntegrationTest {
     @Test
     public void 거래_도면_삭제_실패_도면삭제_가능단계() throws Exception {
         // given
-        final String accessToken = jwtBuilder.accessJwtBuild();
+        final String accessToken = jwtBuilder.accessJwtBuildOfCustomer();
         final String orderId = "1";
         final String drawingId = "1";
 
@@ -747,7 +747,7 @@ public class CustomerOrderIntegrationTest extends IntegrationTest {
     @Test
     public void 거래_도면_삭제_실패_마지막도면_삭제() throws Exception {
         // given
-        final String accessToken = jwtBuilder.accessJwtBuild();
+        final String accessToken = jwtBuilder.accessJwtBuildOfCustomer();
         final String orderId = "3";
         final String drawingId = "3";
 
@@ -764,7 +764,7 @@ public class CustomerOrderIntegrationTest extends IntegrationTest {
     @Test
     public void 거래_견적서_승인_성공() throws Exception {
         // given
-        final String accessToken = jwtBuilder.accessJwtBuildOfUser2();
+        final String accessToken = jwtBuilder.accessJwtBuildOfSocialCustomer();
         final String orderId = "10";
 
         // when
@@ -814,7 +814,7 @@ public class CustomerOrderIntegrationTest extends IntegrationTest {
     @Test
     public void 거래_견적서_승인_실패_Token_Type() throws Exception {
         // given
-        final String refreshToken = jwtBuilder.refreshJwtBuild();
+        final String refreshToken = jwtBuilder.refreshJwtBuildOfCustomer();
         final String orderId = "10";
 
         // when
@@ -865,7 +865,7 @@ public class CustomerOrderIntegrationTest extends IntegrationTest {
     @Test
     public void 거래_견적서_승인_실패_거래_접근_권한() throws Exception {
         // given
-        final String accessTokenOfUser1 = jwtBuilder.accessJwtBuild();
+        final String accessTokenOfUser1 = jwtBuilder.accessJwtBuildOfCustomer();
         final String orderId = "10";
 
         // when
@@ -882,7 +882,7 @@ public class CustomerOrderIntegrationTest extends IntegrationTest {
     @Test
     public void 거래_견적서_승인_실패_견적서승인_가능단계() throws Exception {
         // given
-        final String accessToken = jwtBuilder.accessJwtBuild();
+        final String accessToken = jwtBuilder.accessJwtBuildOfCustomer();
         final String orderId = "4";
 
         // when
@@ -899,7 +899,7 @@ public class CustomerOrderIntegrationTest extends IntegrationTest {
     @Test
     public void 거래_견적서_승인_실패_견적서_존재() throws Exception {
         // given
-        final String accessToken = jwtBuilder.accessJwtBuild();
+        final String accessToken = jwtBuilder.accessJwtBuildOfCustomer();
         final String orderId = "5";
 
         // when
@@ -915,7 +915,7 @@ public class CustomerOrderIntegrationTest extends IntegrationTest {
     @Test
     public void 거래_발주서_작성_성공() throws Exception {
         // given
-        final String accessToken = jwtBuilder.accessJwtBuild();
+        final String accessToken = jwtBuilder.accessJwtBuildOfCustomer();
         final String orderId = "4";
         final String filePath = "src/test/resources/purchase-order/purchase-order.png";
         final MockMultipartFile file = new MockMultipartFile(
@@ -949,7 +949,7 @@ public class CustomerOrderIntegrationTest extends IntegrationTest {
     @Test
     public void 거래_발주서_수정_성공() throws Exception {
         // given
-        final String accessToken = jwtBuilder.accessJwtBuildOfUser2();
+        final String accessToken = jwtBuilder.accessJwtBuildOfSocialCustomer();
         final String orderId = "9";
         final String filePath = "src/test/resources/purchase-order/purchase-order.png";
         final MockMultipartFile file = new MockMultipartFile(
@@ -1034,7 +1034,7 @@ public class CustomerOrderIntegrationTest extends IntegrationTest {
     @Test
     public void 거래_발주서_작성및수정_실패_Token_Type() throws Exception {
         // given
-        final String refreshToken = jwtBuilder.refreshJwtBuild();
+        final String refreshToken = jwtBuilder.refreshJwtBuildOfCustomer();
         final String orderId = "4";
         final String filePath = "src/test/resources/purchase-order/purchase-order.png";
         final MockMultipartFile file = new MockMultipartFile(
@@ -1109,7 +1109,7 @@ public class CustomerOrderIntegrationTest extends IntegrationTest {
     @Test
     public void 거래_발주서_작성및수정_실패_거래_접근_권한() throws Exception {
         // given
-        final String accessTokenOfUser2 = jwtBuilder.accessJwtBuildOfUser2();
+        final String accessTokenOfUser2 = jwtBuilder.accessJwtBuildOfSocialCustomer();
         final String orderId = "4";
         final String filePath = "src/test/resources/purchase-order/purchase-order.png";
         final MockMultipartFile file = new MockMultipartFile(
@@ -1134,7 +1134,7 @@ public class CustomerOrderIntegrationTest extends IntegrationTest {
     @Test
     public void 거래_발주서_작성및수정_실패_거래_존재() throws Exception {
         // given
-        final String accessToken = jwtBuilder.accessJwtBuild();
+        final String accessToken = jwtBuilder.accessJwtBuildOfCustomer();
         final String unknownOrderId = "0";
         final String filePath = "src/test/resources/purchase-order/purchase-order.png";
         final MockMultipartFile file = new MockMultipartFile(
@@ -1159,7 +1159,7 @@ public class CustomerOrderIntegrationTest extends IntegrationTest {
     @Test
     public void 거래_발주서_작성및수정_실패_발주서작성및수정_가능단계() throws Exception {
         // given
-        final String accessToken = jwtBuilder.accessJwtBuild();
+        final String accessToken = jwtBuilder.accessJwtBuildOfCustomer();
         final String orderId = "3";
         final String filePath = "src/test/resources/purchase-order/purchase-order.png";
         final MockMultipartFile file = new MockMultipartFile(
@@ -1184,7 +1184,7 @@ public class CustomerOrderIntegrationTest extends IntegrationTest {
     @Test
     public void 거래_발주서_작성및수정_실패_발주서_파일_존재() throws Exception {
         // given
-        final String accessToken = jwtBuilder.accessJwtBuild();
+        final String accessToken = jwtBuilder.accessJwtBuildOfCustomer();
         final String orderId = "4";
         final CustomerCreateOrUpdateOrderPurchaseOrderRequest request = CustomerCreateOrUpdateOrderPurchaseOrderRequestBuilder.createBuild();
 

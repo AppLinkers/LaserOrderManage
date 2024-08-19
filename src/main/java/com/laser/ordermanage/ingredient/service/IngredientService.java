@@ -4,6 +4,7 @@ import com.laser.ordermanage.common.exception.CustomCommonException;
 import com.laser.ordermanage.common.paging.ListResponse;
 import com.laser.ordermanage.factory.domain.Factory;
 import com.laser.ordermanage.factory.repository.FactoryRepository;
+import com.laser.ordermanage.factory.service.FactoryUserAccountService;
 import com.laser.ordermanage.ingredient.domain.Ingredient;
 import com.laser.ordermanage.ingredient.domain.IngredientPrice;
 import com.laser.ordermanage.ingredient.domain.IngredientStock;
@@ -33,6 +34,8 @@ public class IngredientService {
     private final IngredientStockRepository ingredientStockRepository;
     private final IngredientPriceRepository ingredientPriceRepository;
     private final IngredientRepository ingredientRepository;
+
+    private final FactoryUserAccountService factoryUserAccountService;
 
     @Transactional(readOnly = true)
     public Ingredient getIngredientById(Long ingredientId) {
@@ -84,7 +87,7 @@ public class IngredientService {
 
     @Transactional
     public void createIngredient(String email, CreateIngredientRequest request) {
-        Factory factory = factoryRepository.findFactoryByFactoryManager(email);
+        Factory factory = factoryUserAccountService.getFactoryByFactoryManagerUserEmail(email);
         Ingredient ingredient = Ingredient.builder()
                 .factory(factory)
                 .texture(request.texture())
@@ -291,7 +294,7 @@ public class IngredientService {
     public void checkAuthorityOfIngredient(String email, Long ingredientId) {
         // ingredientId 에 해당하는 Ingredient 존재 여부 확인
         Ingredient ingredient = getIngredientById(ingredientId);
-        Factory factory = factoryRepository.findFactoryByFactoryManager(email);
+        Factory factory = factoryUserAccountService.getFactoryByFactoryManagerUserEmail(email);
 
         if (!ingredient.getFactory().getId().equals(factory.getId())) {
             throw new CustomCommonException(IngredientErrorCode.DENIED_ACCESS_TO_INGREDIENT);

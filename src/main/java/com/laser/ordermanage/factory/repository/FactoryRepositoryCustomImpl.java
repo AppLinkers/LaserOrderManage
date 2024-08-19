@@ -4,6 +4,8 @@ import com.laser.ordermanage.factory.domain.Factory;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 
+import java.util.Optional;
+
 import static com.laser.ordermanage.factory.domain.QFactory.factory;
 import static com.laser.ordermanage.factory.domain.QFactoryManager.factoryManager;
 import static com.laser.ordermanage.user.domain.QUserEntity.userEntity;
@@ -14,12 +16,12 @@ public class FactoryRepositoryCustomImpl implements FactoryRepositoryCustom {
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public Factory findFactoryByFactoryManager(String email) {
-        return queryFactory
+    public Optional<Factory> findFactoryByFactoryManager(String email) {
+        return Optional.ofNullable(queryFactory
                 .selectFrom(factory)
                 .join(factoryManager).on(factoryManager.factory.eq(factory))
                 .join(factoryManager.user, userEntity)
                 .where(userEntity.email.eq(email))
-                .fetchOne();
+                .fetchOne());
     }
 }

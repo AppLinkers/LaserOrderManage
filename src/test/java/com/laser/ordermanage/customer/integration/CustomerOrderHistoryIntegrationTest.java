@@ -35,7 +35,7 @@ public class CustomerOrderHistoryIntegrationTest extends IntegrationTest {
     @Test
     public void 고객_회원의_거래_목록_조회_성공() throws Exception {
         // given
-        final String accessToken = jwtBuilder.accessJwtBuild();
+        final String accessToken = jwtBuilder.accessJwtBuildOfCustomer();
         final List<CustomerGetOrderHistoryResponse> expectedOrderList = CustomerGetOrderHistoryResponseBuilder.buildListOfCustomer1();
         final PageResponse<CustomerGetOrderHistoryResponse> expectedResponse = new PageResponse<>(new PageImpl<>(expectedOrderList, pageable, expectedOrderList.size()));
 
@@ -91,7 +91,7 @@ public class CustomerOrderHistoryIntegrationTest extends IntegrationTest {
     @Test
     public void 고객_회원의_거래_목록_조회_실패_Token_Type() throws Exception {
         // given
-        final String refreshToken = jwtBuilder.refreshJwtBuild();
+        final String refreshToken = jwtBuilder.refreshJwtBuildOfCustomer();
 
         // when
         final ResultActions resultActions = requestGetOrderHistory(refreshToken);
@@ -138,7 +138,7 @@ public class CustomerOrderHistoryIntegrationTest extends IntegrationTest {
     @Test
     public void 고객_회원의_거래_완료_목록_조회_성공() throws Exception {
         // given
-        final String accessToken = jwtBuilder.accessJwtBuild();
+        final String accessToken = jwtBuilder.accessJwtBuildOfCustomer();
         final List<CustomerGetOrderIsCompletedHistoryResponse> expectedOrderList = CustomerGetOrderIsCompletedHistoryResponseBuilder.build();
         final PageResponse<CustomerGetOrderIsCompletedHistoryResponse> expectedResponse = new PageResponse<>(new PageImpl<>(expectedOrderList, pageable, expectedOrderList.size()));
 
@@ -194,7 +194,7 @@ public class CustomerOrderHistoryIntegrationTest extends IntegrationTest {
     @Test
     public void 고객_회원의_거래_완료_목록_조회_실패_Token_Type() throws Exception {
         // given
-        final String refreshToken = jwtBuilder.refreshJwtBuild();
+        final String refreshToken = jwtBuilder.refreshJwtBuildOfCustomer();
 
         // when
         final ResultActions resultActions = requestGetOrderIsCompletedHistory(refreshToken);
@@ -241,7 +241,7 @@ public class CustomerOrderHistoryIntegrationTest extends IntegrationTest {
     @Test
     public void 고객_회원의_특정_거래의_생성_정보_조회_성공() throws Exception {
         // given
-        final String accessToken = jwtBuilder.accessJwtBuild();
+        final String accessToken = jwtBuilder.accessJwtBuildOfCustomer();
         final String orderId = "1";
         final CustomerGetOrderCreateInformationResponse expectedResponse = CustomerGetOrderCreateInformationResponseBuilder.build();
 
@@ -298,7 +298,7 @@ public class CustomerOrderHistoryIntegrationTest extends IntegrationTest {
     @Test
     public void 고객_회원의_특정_거래의_생성_정보_조회_실패_Token_Type() throws Exception {
         // given
-        final String refreshToken = jwtBuilder.refreshJwtBuild();
+        final String refreshToken = jwtBuilder.refreshJwtBuildOfCustomer();
         final String orderId = "1";
 
         // when
@@ -349,7 +349,7 @@ public class CustomerOrderHistoryIntegrationTest extends IntegrationTest {
     @Test
     public void 고객_회원의_특정_거래의_생성_정보_조회_실패_거래_접근_권한() throws Exception {
         // given
-        final String accessTokenOfUser2 = jwtBuilder.accessJwtBuildOfUser2();
+        final String accessTokenOfUser2 = jwtBuilder.accessJwtBuildOfSocialCustomer();
         final String orderId = "1";
 
         // when

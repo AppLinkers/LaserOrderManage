@@ -33,7 +33,7 @@ public class CustomerDeliveryAddressIntegrationTest extends IntegrationTest {
     @Test
     public void 고객_배송지_생성_성공() throws Exception {
         // given
-        final String accessToken = jwtBuilder.accessJwtBuild();
+        final String accessToken = jwtBuilder.accessJwtBuildOfCustomer();
         final CustomerCreateOrUpdateDeliveryAddressRequest request = CustomerCreateOrUpdateDeliveryAddressRequestBuilder.createBuild();
 
         // when
@@ -83,7 +83,7 @@ public class CustomerDeliveryAddressIntegrationTest extends IntegrationTest {
     @Test
     public void 고객_배송지_생성_실패_Token_Type() throws Exception {
         // given
-        final String refreshToken = jwtBuilder.refreshJwtBuild();
+        final String refreshToken = jwtBuilder.refreshJwtBuildOfCustomer();
         final CustomerCreateOrUpdateDeliveryAddressRequest request = CustomerCreateOrUpdateDeliveryAddressRequestBuilder.createBuild();
 
         // when
@@ -133,7 +133,7 @@ public class CustomerDeliveryAddressIntegrationTest extends IntegrationTest {
     @Test
     public void 고객_배송지_목록_조회_성공() throws Exception {
         // given
-        final String accessToken = jwtBuilder.accessJwtBuild();
+        final String accessToken = jwtBuilder.accessJwtBuildOfCustomer();
         final ListResponse<CustomerGetDeliveryAddressResponse> expectedResponse = new ListResponse<>(CustomerGetDeliveryAddressResponseBuilder.buildListOfCustomer1());
 
         // when
@@ -187,7 +187,7 @@ public class CustomerDeliveryAddressIntegrationTest extends IntegrationTest {
     @Test
     public void 고객_배송지_목록_조회_실패_Token_Type() throws Exception {
         // given
-        final String refreshToken = jwtBuilder.refreshJwtBuild();
+        final String refreshToken = jwtBuilder.refreshJwtBuildOfCustomer();
 
         // when
         final ResultActions resultActions = requestGetDeliveryAddressList(refreshToken);
@@ -235,7 +235,7 @@ public class CustomerDeliveryAddressIntegrationTest extends IntegrationTest {
     @Test
     public void 고객_배송지_항목_수정_성공() throws Exception {
         // given
-        final String accessToken = jwtBuilder.accessJwtBuild();
+        final String accessToken = jwtBuilder.accessJwtBuildOfCustomer();
         final String deliveryAddressId = "1";
         final CustomerCreateOrUpdateDeliveryAddressRequest request = CustomerCreateOrUpdateDeliveryAddressRequestBuilder.updateBuild();
 
@@ -288,7 +288,7 @@ public class CustomerDeliveryAddressIntegrationTest extends IntegrationTest {
     @Test
     public void 고객_배송지_항목_수정_실패_Token_Type() throws Exception {
         // given
-        final String refreshToken = jwtBuilder.refreshJwtBuild();
+        final String refreshToken = jwtBuilder.refreshJwtBuildOfCustomer();
         final String deliveryAddressId = "1";
         final CustomerCreateOrUpdateDeliveryAddressRequest request = CustomerCreateOrUpdateDeliveryAddressRequestBuilder.updateBuild();
 
@@ -342,7 +342,7 @@ public class CustomerDeliveryAddressIntegrationTest extends IntegrationTest {
     @Test
     public void 고객_배송지_항목_수정_실패_배송지_접근_권한() throws Exception {
         // given
-        final String accessTokenOfUser2 = jwtBuilder.accessJwtBuildOfUser2();
+        final String accessTokenOfUser2 = jwtBuilder.accessJwtBuildOfSocialCustomer();
         final String deliveryAddressId = "1";
         final CustomerCreateOrUpdateDeliveryAddressRequest request = CustomerCreateOrUpdateDeliveryAddressRequestBuilder.updateBuild();
 
@@ -360,7 +360,7 @@ public class CustomerDeliveryAddressIntegrationTest extends IntegrationTest {
     @Test
     public void 고객_배송지_항목_수정_실패_기본_배송지_해제() throws Exception {
         // given
-        final String accessToken = jwtBuilder.accessJwtBuild();
+        final String accessToken = jwtBuilder.accessJwtBuildOfCustomer();
         final String deliveryAddressId = "1";
         final CustomerCreateOrUpdateDeliveryAddressRequest request = CustomerCreateOrUpdateDeliveryAddressRequestBuilder.defaultDeliveryAddressDisableUpdateBuild();
 
@@ -377,7 +377,7 @@ public class CustomerDeliveryAddressIntegrationTest extends IntegrationTest {
     @Test
     public void 고객_배송지_삭제_성공() throws Exception {
         // given
-        final String accessToken = jwtBuilder.accessJwtBuild();
+        final String accessToken = jwtBuilder.accessJwtBuildOfCustomer();
         final String deliveryAddressId = "2";
 
         // when
@@ -427,7 +427,7 @@ public class CustomerDeliveryAddressIntegrationTest extends IntegrationTest {
     @Test
     public void 고객_배송지_삭제_실패_Token_Type() throws Exception {
         // given
-        final String refreshToken = jwtBuilder.refreshJwtBuild();
+        final String refreshToken = jwtBuilder.refreshJwtBuildOfCustomer();
         final String deliveryAddressId = "2";
 
         // when
@@ -478,7 +478,7 @@ public class CustomerDeliveryAddressIntegrationTest extends IntegrationTest {
     @Test
     public void 고객_배송지_삭제_실패_배송지_접근_권한() throws Exception {
         // given
-        final String accessTokenOfUser2 = jwtBuilder.accessJwtBuildOfUser2();
+        final String accessTokenOfUser2 = jwtBuilder.accessJwtBuildOfSocialCustomer();
         final String deliveryAddressId = "2";
 
         // when
@@ -495,7 +495,7 @@ public class CustomerDeliveryAddressIntegrationTest extends IntegrationTest {
     @Test
     public void 고객_배송지_삭제_실패_기본_배송지_삭제() throws Exception {
         // given
-        final String accessToken = jwtBuilder.accessJwtBuild();
+        final String accessToken = jwtBuilder.accessJwtBuildOfCustomer();
         final String defaultDeliveryAddressId = "1";
 
         // when

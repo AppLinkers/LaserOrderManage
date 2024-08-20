@@ -16,7 +16,7 @@ public class FactoryRepositoryCustomImpl implements FactoryRepositoryCustom {
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public Optional<Factory> findFactoryByFactoryManager(String email) {
+    public Optional<Factory> findFactoryByFactoryManagerUserEmail(String email) {
         return Optional.ofNullable(queryFactory
                 .selectFrom(factory)
                 .join(factoryManager).on(factoryManager.factory.eq(factory))

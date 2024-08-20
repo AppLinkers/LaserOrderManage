@@ -6,5 +6,5 @@ import java.util.Optional;
 
 public interface FactoryRepositoryCustom {
 
-    Optional<Factory> findFactoryByFactoryManager(String email);
+    Optional<Factory> findFactoryByFactoryManagerUserEmail(String email);
 }

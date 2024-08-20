@@ -18,7 +18,7 @@ public class FactoryUserAccountService {
 
     @Transactional(readOnly = true)
     public Factory getFactoryByFactoryManagerUserEmail(String email) {
-        return factoryRepository.findFactoryByFactoryManager(email).orElseThrow(() -> new CustomCommonException(FactoryErrorCode.NOT_FOUND_FACTORY));
+        return factoryRepository.findFactoryByFactoryManagerUserEmail(email).orElseThrow(() -> new CustomCommonException(FactoryErrorCode.NOT_FOUND_FACTORY));
     }
 
     @Transactional(readOnly = true)

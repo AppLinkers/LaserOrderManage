@@ -38,7 +38,7 @@ public class FactoryUserAccountServiceUnitTest extends ServiceUnitTest {
         final String factoryManagerUserEmail = "factory@gmail.com";
 
         // stub
-        when(factoryRepository.findFactoryByFactoryManager(factoryManagerUserEmail)).thenReturn(Optional.of(expectedFactory));
+        when(factoryRepository.findFactoryByFactoryManagerUserEmail(factoryManagerUserEmail)).thenReturn(Optional.of(expectedFactory));
 
         // when
         final Factory actualFactory = factoryUserAccountService.getFactoryByFactoryManagerUserEmail(factoryManagerUserEmail);
@@ -57,7 +57,7 @@ public class FactoryUserAccountServiceUnitTest extends ServiceUnitTest {
         final String unknownUserEmail = "unknown-user@gmail.com";
 
         // stub
-        when(factoryRepository.findFactoryByFactoryManager(unknownUserEmail)).thenReturn(Optional.empty());
+        when(factoryRepository.findFactoryByFactoryManagerUserEmail(unknownUserEmail)).thenReturn(Optional.empty());
 
         // when & then
         Assertions.assertThatThrownBy(() -> factoryUserAccountService.getFactoryByFactoryManagerUserEmail(unknownUserEmail))
@@ -76,7 +76,7 @@ public class FactoryUserAccountServiceUnitTest extends ServiceUnitTest {
         final FactoryGetFactoryAccountResponse expectedResponse = FactoryGetFactoryAccountResponseBuilder.build();
 
         // stub
-        when(factoryRepository.findFactoryByFactoryManager(factoryManagerUserEmail)).thenReturn(Optional.of(factory));
+        when(factoryRepository.findFactoryByFactoryManagerUserEmail(factoryManagerUserEmail)).thenReturn(Optional.of(factory));
 
         // when
         final FactoryGetFactoryAccountResponse actualResponse = factoryUserAccountService.getFactoryAccount(factoryManagerUserEmail);
@@ -95,7 +95,7 @@ public class FactoryUserAccountServiceUnitTest extends ServiceUnitTest {
         final String unknownUserEmail = "unknown-user@gmail.com";
 
         // stub
-        when(factoryRepository.findFactoryByFactoryManager(unknownUserEmail)).thenReturn(Optional.empty());
+        when(factoryRepository.findFactoryByFactoryManagerUserEmail(unknownUserEmail)).thenReturn(Optional.empty());
 
         // when & then
         Assertions.assertThatThrownBy(() -> factoryUserAccountService.getFactoryAccount(unknownUserEmail))
@@ -114,7 +114,7 @@ public class FactoryUserAccountServiceUnitTest extends ServiceUnitTest {
         final FactoryUpdateFactoryAccountRequest request = FactoryUpdateFactoryAccountRequestBuilder.build();
 
         // stub
-        when(factoryRepository.findFactoryByFactoryManager(factoryManagerUserEmail)).thenReturn(Optional.of(factory));
+        when(factoryRepository.findFactoryByFactoryManagerUserEmail(factoryManagerUserEmail)).thenReturn(Optional.of(factory));
 
         // when
         factoryUserAccountService.updateFactoryAccount(factoryManagerUserEmail, request);
@@ -136,7 +136,7 @@ public class FactoryUserAccountServiceUnitTest extends ServiceUnitTest {
         final FactoryUpdateFactoryAccountRequest request = FactoryUpdateFactoryAccountRequestBuilder.build();
 
         // stub
-        when(factoryRepository.findFactoryByFactoryManager(unknownUserEmail)).thenReturn(Optional.empty());
+        when(factoryRepository.findFactoryByFactoryManagerUserEmail(unknownUserEmail)).thenReturn(Optional.empty());
 
         // when & then
         Assertions.assertThatThrownBy(() -> factoryUserAccountService.updateFactoryAccount(unknownUserEmail, request))

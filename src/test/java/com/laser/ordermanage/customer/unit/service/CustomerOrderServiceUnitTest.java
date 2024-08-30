@@ -450,7 +450,7 @@ public class CustomerOrderServiceUnitTest extends ServiceUnitTest {
 
         // stub
         when(orderService.getOrderById(orderId)).thenReturn(order);
-        when(s3Service.upload(any(), (MultipartFile) any(), eq("purchase-order.png"))).thenReturn("purchase-order-url.png");
+        when(s3Service.upload(any(), (MultipartFile) any(), eq("purchase-order.png"))).thenReturn(expectedResponse.fileUrl());
 
         // when
         final CustomerCreateOrUpdateOrderPurchaseOrderResponse actualResponse = customerOrderService.updateOrderPurchaseOrder(orderId, file, request);

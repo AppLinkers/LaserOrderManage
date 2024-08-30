@@ -928,7 +928,7 @@ public class CustomerOrderIntegrationTest extends IntegrationTest {
         final CustomerCreateOrUpdateOrderPurchaseOrderResponse expectedResponse = CustomerCreateOrUpdateOrderPurchaseOrderResponseBuilder.createBuild();
 
         // stub
-        when(s3Service.upload(any(), (MultipartFile) any(), eq("purchase-order.png"))).thenReturn("purchase-order-url.png");
+        when(s3Service.upload(any(), (MultipartFile) any(), eq("purchase-order.png"))).thenReturn(expectedResponse.fileUrl());
 
         // when
         final ResultActions resultActions = requestCreateOrUpdateOrderPurchaseOrder(accessToken, orderId, file, request);
@@ -962,7 +962,7 @@ public class CustomerOrderIntegrationTest extends IntegrationTest {
         final CustomerCreateOrUpdateOrderPurchaseOrderResponse expectedResponse = CustomerCreateOrUpdateOrderPurchaseOrderResponseBuilder.updateBuild();
 
         // stub
-        when(s3Service.upload(any(), (MultipartFile) any(), eq("purchase-order.png"))).thenReturn("purchase-order-url.png");
+        when(s3Service.upload(any(), (MultipartFile) any(), eq("purchase-order.png"))).thenReturn(expectedResponse.fileUrl());
 
         // when
         final ResultActions resultActions = requestCreateOrUpdateOrderPurchaseOrder(accessToken, orderId, file, request);
@@ -1182,7 +1182,7 @@ public class CustomerOrderIntegrationTest extends IntegrationTest {
      * - 실패 사유 : 발주서 작성 시, 요청에 발주서의 파일이 존재하지 않음
      */
     @Test
-    public void 거래_발주서_작성및수정_실패_발주서_파일_존재() throws Exception {
+    public void 거래_발주서_작성_실패_발주서_파일_존재() throws Exception {
         // given
         final String accessToken = jwtBuilder.accessJwtBuildOfCustomer();
         final String orderId = "4";

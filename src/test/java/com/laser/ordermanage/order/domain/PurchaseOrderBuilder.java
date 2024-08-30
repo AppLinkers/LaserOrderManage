@@ -11,7 +11,7 @@ public class PurchaseOrderBuilder {
                 .name("purchase-order.png")
                 .size(3608L)
                 .type(PurchaseOrderFileType.PNG)
-                .url("purchase-order-url.png")
+                .url("https://ordermanage.s3.ap-northeast-2.amazonaws.com/purchase-order/purchase-order.png")
                 .build();
 
         return PurchaseOrder.builder()

@@ -1057,7 +1057,7 @@ public class FactoryOrderIntegrationTest extends IntegrationTest {
     @Test
     public void 거래_고객_정보_조회_실패_Token_Type() throws Exception {
         // given
-        final String refreshToken = jwtBuilder.refreshJwtBuildOfCustomer();
+        final String refreshToken = jwtBuilder.refreshJwtBuildOfFactory();
         final String orderId = "1";
 
         // when
@@ -1164,7 +1164,7 @@ public class FactoryOrderIntegrationTest extends IntegrationTest {
     @Test
     public void 거래_발주서_파일_조회_실패_Token_Type() throws Exception {
         // given
-        final String refreshToken = jwtBuilder.refreshJwtBuildOfCustomer();
+        final String refreshToken = jwtBuilder.refreshJwtBuildOfFactory();
         final String orderId = "1";
 
         // when

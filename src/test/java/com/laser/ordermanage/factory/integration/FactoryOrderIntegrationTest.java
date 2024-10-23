@@ -1,6 +1,7 @@
 package com.laser.ordermanage.factory.integration;
 
 import com.laser.ordermanage.common.IntegrationTest;
+import com.laser.ordermanage.common.exception.CommonErrorCode;
 import com.laser.ordermanage.common.security.jwt.setup.JwtBuilder;
 import com.laser.ordermanage.factory.dto.request.*;
 import com.laser.ordermanage.factory.dto.response.*;
@@ -42,7 +43,24 @@ public class FactoryOrderIntegrationTest extends IntegrationTest {
         // given
         final String accessToken = jwtBuilder.accessJwtBuildOfFactory();
         final String orderId = "2";
-        final FactoryUpdateOrderIsUrgentRequest request = FactoryUpdateOrderIsUrgentRequestBuilder.build();
+        final FactoryUpdateOrderIsUrgentRequest request = FactoryUpdateOrderIsUrgentRequestBuilder.isUrgentTrueBuild();
+
+        // when
+        final ResultActions resultActions = requestUpdateOrderIsUrgent(accessToken, orderId, request);
+
+        // then
+        resultActions.andExpect(status().isOk());
+    }
+
+    /**
+     * 거래 긴급 해제 설정 성공
+     */
+    @Test
+    public void 거래_긴급_해제_설정_성공() throws Exception {
+        // given
+        final String accessToken = jwtBuilder.accessJwtBuildOfFactory();
+        final String orderId = "3";
+        final FactoryUpdateOrderIsUrgentRequest request = FactoryUpdateOrderIsUrgentRequestBuilder.isUrgentFalseBuild();
 
         // when
         final ResultActions resultActions = requestUpdateOrderIsUrgent(accessToken, orderId, request);
@@ -59,7 +77,7 @@ public class FactoryOrderIntegrationTest extends IntegrationTest {
     public void 거래_긴급_설정_실패_Header_Authorization_존재() throws Exception {
         // given
         final String orderId = "2";
-        final FactoryUpdateOrderIsUrgentRequest request = FactoryUpdateOrderIsUrgentRequestBuilder.build();
+        final FactoryUpdateOrderIsUrgentRequest request = FactoryUpdateOrderIsUrgentRequestBuilder.isUrgentTrueBuild();
 
         // when
         final ResultActions resultActions = requestUpdateOrderIsUrgentWithOutAccessToken(orderId, request);
@@ -77,7 +95,7 @@ public class FactoryOrderIntegrationTest extends IntegrationTest {
         // given
         final String unauthorizedAccessToken = jwtBuilder.unauthorizedAccessJwtBuild();
         final String orderId = "2";
-        final FactoryUpdateOrderIsUrgentRequest request = FactoryUpdateOrderIsUrgentRequestBuilder.build();
+        final FactoryUpdateOrderIsUrgentRequest request = FactoryUpdateOrderIsUrgentRequestBuilder.isUrgentTrueBuild();
 
         // when
         final ResultActions resultActions = requestUpdateOrderIsUrgent(unauthorizedAccessToken, orderId, request);
@@ -95,7 +113,7 @@ public class FactoryOrderIntegrationTest extends IntegrationTest {
         // given
         final String refreshToken = jwtBuilder.refreshJwtBuildOfFactory();
         final String orderId = "2";
-        final FactoryUpdateOrderIsUrgentRequest request = FactoryUpdateOrderIsUrgentRequestBuilder.build();
+        final FactoryUpdateOrderIsUrgentRequest request = FactoryUpdateOrderIsUrgentRequestBuilder.isUrgentTrueBuild();
 
         // when
         final ResultActions resultActions = requestUpdateOrderIsUrgent(refreshToken, orderId, request);
@@ -113,7 +131,7 @@ public class FactoryOrderIntegrationTest extends IntegrationTest {
         // given
         final String expiredAccessToken = jwtBuilder.expiredAccessJwtBuild();
         final String orderId = "2";
-        final FactoryUpdateOrderIsUrgentRequest request = FactoryUpdateOrderIsUrgentRequestBuilder.build();
+        final FactoryUpdateOrderIsUrgentRequest request = FactoryUpdateOrderIsUrgentRequestBuilder.isUrgentTrueBuild();
 
         // when
         final ResultActions resultActions = requestUpdateOrderIsUrgent(expiredAccessToken, orderId, request);
@@ -131,7 +149,7 @@ public class FactoryOrderIntegrationTest extends IntegrationTest {
         // given
         final String invalidToken = jwtBuilder.invalidJwtBuild();
         final String orderId = "2";
-        final FactoryUpdateOrderIsUrgentRequest request = FactoryUpdateOrderIsUrgentRequestBuilder.build();
+        final FactoryUpdateOrderIsUrgentRequest request = FactoryUpdateOrderIsUrgentRequestBuilder.isUrgentTrueBuild();
 
         // when
         final ResultActions resultActions = requestUpdateOrderIsUrgent(invalidToken, orderId, request);
@@ -149,7 +167,7 @@ public class FactoryOrderIntegrationTest extends IntegrationTest {
         // given
         final String accessToken = jwtBuilder.accessJwtBuildOfFactory();
         final String orderId = "1";
-        final FactoryUpdateOrderIsUrgentRequest request = FactoryUpdateOrderIsUrgentRequestBuilder.build();
+        final FactoryUpdateOrderIsUrgentRequest request = FactoryUpdateOrderIsUrgentRequestBuilder.isUrgentTrueBuild();
 
         // when
         final ResultActions resultActions = requestUpdateOrderIsUrgent(accessToken, orderId, request);
@@ -416,6 +434,56 @@ public class FactoryOrderIntegrationTest extends IntegrationTest {
 
         // then
         assertError(OrderErrorCode.REQUIRED_QUOTATION_FILE, resultActions);
+    }
+
+    /**
+     * 거래 견적서 작성 실패
+     * - 실패 사유 : 견적서의 납기일은 거래 생성일 이전임
+     */
+    @Test
+    public void 거래_견적서_작성_실패_납기일_거래_생성일_이전() throws Exception {
+        // given
+        final String accessToken = jwtBuilder.accessJwtBuildOfFactory();
+        final String orderId = "5";
+        final String filePath = "src/test/resources/quotation/quotation.xlsx";
+        final MockMultipartFile file = new MockMultipartFile(
+                "file",
+                "quotation.xlsx",
+                MediaType.MULTIPART_FORM_DATA_VALUE,
+                new FileInputStream(filePath)
+        );
+        final FactoryCreateOrUpdateOrderQuotationRequest request = FactoryCreateOrUpdateOrderQuotationRequestBuilder.earlyDeliveryDateBuild();
+
+        // when
+        final ResultActions resultActions = requestCreateOrUpdateOrderQuotation(accessToken, orderId, file, request);
+
+        // then
+        assertErrorWithMessage(CommonErrorCode.INVALID_REQUEST_BODY_FIELDS, resultActions, "견적서의 납기일은 거래 생성일 이후이어야 합니다.");
+    }
+
+    /**
+     * 거래 견적서 수정 실패
+     * - 실패 사유 : 견적서의 납기일은 거래 생성일 이전임
+     */
+    @Test
+    public void 거래_견적서_수정_실패_납기일_거래_생성일_이전() throws Exception {
+        // given
+        final String accessToken = jwtBuilder.accessJwtBuildOfFactory();
+        final String orderId = "10";
+        final String filePath = "src/test/resources/quotation/quotation.xlsx";
+        final MockMultipartFile file = new MockMultipartFile(
+                "file",
+                "quotation.xlsx",
+                MediaType.MULTIPART_FORM_DATA_VALUE,
+                new FileInputStream(filePath)
+        );
+        final FactoryCreateOrUpdateOrderQuotationRequest request = FactoryCreateOrUpdateOrderQuotationRequestBuilder.earlyDeliveryDateBuild();
+
+        // when
+        final ResultActions resultActions = requestCreateOrUpdateOrderQuotation(accessToken, orderId, file, request);
+
+        // then
+        assertErrorWithMessage(CommonErrorCode.INVALID_REQUEST_BODY_FIELDS, resultActions, "견적서의 납기일은 거래 생성일 이후이어야 합니다.");
     }
 
     /**

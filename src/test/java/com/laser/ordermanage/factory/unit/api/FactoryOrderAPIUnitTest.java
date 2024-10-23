@@ -72,7 +72,7 @@ public class FactoryOrderAPIUnitTest extends APIUnitTest {
         // given
         final String accessToken = "access-token";
         final String orderId = "1";
-        final FactoryUpdateOrderIsUrgentRequest request = FactoryUpdateOrderIsUrgentRequestBuilder.build();
+        final FactoryUpdateOrderIsUrgentRequest request = FactoryUpdateOrderIsUrgentRequestBuilder.isUrgentTrueBuild();
 
         // when
         final ResultActions resultActions = requestUpdateOrderIsUrgent(accessToken, orderId, request);
@@ -91,7 +91,7 @@ public class FactoryOrderAPIUnitTest extends APIUnitTest {
         // given
         final String accessToken = "access-token";
         final String orderId = "1";
-        final FactoryUpdateOrderIsUrgentRequest request = FactoryUpdateOrderIsUrgentRequestBuilder.build();
+        final FactoryUpdateOrderIsUrgentRequest request = FactoryUpdateOrderIsUrgentRequestBuilder.isUrgentTrueBuild();
 
         // when
         final ResultActions resultActions = requestUpdateOrderIsUrgent(accessToken, orderId, request);
@@ -110,7 +110,7 @@ public class FactoryOrderAPIUnitTest extends APIUnitTest {
         // given
         final String accessToken = "access-token";
         final String orderId = "1";
-        final FactoryUpdateOrderIsUrgentRequest request = FactoryUpdateOrderIsUrgentRequestBuilder.build();
+        final FactoryUpdateOrderIsUrgentRequest request = FactoryUpdateOrderIsUrgentRequestBuilder.isUrgentTrueBuild();
 
         // when
         final ResultActions resultActions = requestUpdateOrderIsUrgent(accessToken, orderId, request);
@@ -148,7 +148,7 @@ public class FactoryOrderAPIUnitTest extends APIUnitTest {
         // given
         final String accessToken = "access-token";
         final String orderId = "1";
-        final FactoryUpdateOrderIsUrgentRequest request = FactoryUpdateOrderIsUrgentRequestBuilder.build();
+        final FactoryUpdateOrderIsUrgentRequest request = FactoryUpdateOrderIsUrgentRequestBuilder.isUrgentTrueBuild();
 
         // stub
         doThrow(new CustomCommonException(OrderErrorCode.INVALID_ORDER_STAGE, Stage.COMPLETED.getValue())).when(factoryOrderService).updateOrderIsUrgent(any(), any());
@@ -469,7 +469,7 @@ public class FactoryOrderAPIUnitTest extends APIUnitTest {
         // given
         final String accessToken = "access-token";
         final String orderId = "1";
-        final FactoryCreateOrUpdateOrderQuotationRequest request = FactoryCreateOrUpdateOrderQuotationRequestBuilder.build();
+        final FactoryCreateOrUpdateOrderQuotationRequest request = FactoryCreateOrUpdateOrderQuotationRequestBuilder.earlyDeliveryDateBuild();
 
         final Order order = OrderBuilder.build();
         final Quotation quotation = QuotationBuilder.build();

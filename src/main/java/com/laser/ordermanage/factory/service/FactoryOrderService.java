@@ -2,6 +2,7 @@ package com.laser.ordermanage.factory.service;
 
 import com.laser.ordermanage.common.cloud.aws.S3Service;
 import com.laser.ordermanage.common.entity.embedded.File;
+import com.laser.ordermanage.common.exception.CommonErrorCode;
 import com.laser.ordermanage.common.exception.CustomCommonException;
 import com.laser.ordermanage.common.util.FileUtil;
 import com.laser.ordermanage.customer.domain.Customer;
@@ -55,6 +56,11 @@ public class FactoryOrderService {
             throw new CustomCommonException(OrderErrorCode.REQUIRED_QUOTATION_FILE);
         }
 
+        // TODO: 10/23/24 CommonErrorCode -> OrderErrorCode 전환 및 모듈화
+        if (order.getCreatedAt().toLocalDate().isAfter(request.deliveryDate())) {
+            throw new CustomCommonException(CommonErrorCode.INVALID_REQUEST_BODY_FIELDS, "견적서의 납기일은 거래 생성일 이후이어야 합니다.");
+        }
+
         File<QuotationFileType> quotationFile = uploadQuotationFile(file);
 
         Quotation quotation = Quotation.builder()
@@ -73,6 +79,11 @@ public class FactoryOrderService {
     public FactoryCreateOrUpdateOrderQuotationResponse updateOrderQuotation(Long orderId, MultipartFile file, FactoryCreateOrUpdateOrderQuotationRequest request) {
         Order order = orderService.getOrderById(orderId);
         Quotation quotation = order.getQuotation();
+
+        // TODO: 10/23/24 CommonErrorCode -> OrderErrorCode 전환 및 모듈화
+        if (order.getCreatedAt().toLocalDate().isAfter(request.deliveryDate())) {
+            throw new CustomCommonException(CommonErrorCode.INVALID_REQUEST_BODY_FIELDS, "견적서의 납기일은 거래 생성일 이후이어야 합니다.");
+        }
 
         // 견적서 파일 유무 확인
         if (file != null && !file.isEmpty()) {
@@ -139,9 +150,20 @@ public class FactoryOrderService {
         order.changeStageToCompleted();
 
         Customer customer = order.getCustomer();
-        if (customer.isNewCustomer()) {
-            customer.disableNewCustomer();
-        }
+        customer.disableNewCustomer();
+    }
+
+    @Transactional(readOnly = true)
+    public FactoryGetOrderCustomerResponse getOrderCustomer(Long orderId) {
+        Order order = orderService.getOrderById(orderId);
+
+        Customer customer = order.getCustomer();
+
+        return FactoryGetOrderCustomerResponse.builder()
+                .orderId(order.getId())
+                .orderName(order.getName())
+                .customer(customer)
+                .build();
     }
 
     @Transactional(readOnly = true)
@@ -158,19 +180,6 @@ public class FactoryOrderService {
                 .id(purchaseOrder.getId())
                 .fileName(purchaseOrder.getFile().getName())
                 .fileUrl(purchaseOrder.getFile().getUrl())
-                .build();
-    }
-
-    @Transactional(readOnly = true)
-    public FactoryGetOrderCustomerResponse getOrderCustomer(Long orderId) {
-        Order order = orderService.getOrderById(orderId);
-
-        Customer customer = order.getCustomer();
-
-        return FactoryGetOrderCustomerResponse.builder()
-                .orderId(order.getId())
-                .orderName(order.getName())
-                .customer(customer)
                 .build();
     }
 

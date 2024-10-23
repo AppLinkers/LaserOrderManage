@@ -466,7 +466,7 @@ public class UserJoinAPIUnitTest extends APIUnitTest {
 
     /**
      * 고객 회원가입 실패
-     * - 실패 사유 : 연락처 null
+     * - 실패 사유 : 연락처 필드 null
      */
     @Test
     public void 고객_회원가입_실패_연락처_필드_null() throws Exception {
@@ -482,7 +482,7 @@ public class UserJoinAPIUnitTest extends APIUnitTest {
 
     /**
      * 고객 회원가입 실패
-     * - 실패 사유 : 연락처 유효성
+     * - 실패 사유 : 연락처 필드 유효성
      */
     @Test
     public void 고객_회원가입_실패_연락처_필드_유효성() throws Exception {
@@ -498,7 +498,7 @@ public class UserJoinAPIUnitTest extends APIUnitTest {
 
     /**
      * 고객 회원가입 실패
-     * - 실패 사유 : 우편번호 null
+     * - 실패 사유 : 우편번호 필드 null
      */
     @Test
     public void 고객_회원가입_실패_우편번호_필드_null() throws Exception {
@@ -514,7 +514,7 @@ public class UserJoinAPIUnitTest extends APIUnitTest {
 
     /**
      * 고객 회원가입 실패
-     * - 실패 사유 : 우편번호 유효성
+     * - 실패 사유 : 우편번호 필드 유효성
      */
     @Test
     public void 고객_회원가입_실패_우편번호_필드_유효성() throws Exception {
@@ -530,7 +530,7 @@ public class UserJoinAPIUnitTest extends APIUnitTest {
 
     /**
      * 고객 회원가입 실패
-     * - 실패 사유 : 기본 주소 null
+     * - 실패 사유 : 기본 주소 필드 null
      */
     @Test
     public void 고객_회원가입_실패_기본주소_필드_null() throws Exception {
@@ -546,7 +546,7 @@ public class UserJoinAPIUnitTest extends APIUnitTest {
 
     /**
      * 고객 회원가입 실패
-     * - 실패 사유 : 기본 주소 empty
+     * - 실패 사유 : 기본 주소 필드 empty
      */
     @Test
     public void 고객_회원가입_실패_기본주소_필드_empty() throws Exception {
@@ -562,7 +562,7 @@ public class UserJoinAPIUnitTest extends APIUnitTest {
 
     /**
      * 고객 회원가입 실패
-     * - 실패 사유 : 상세주소 유효성
+     * - 실패 사유 : 상세주소 필드 유효성
      */
     @Test
     public void 고객_회원가입_실패_상세주소_필드_유효성() throws Exception {
@@ -726,7 +726,7 @@ public class UserJoinAPIUnitTest extends APIUnitTest {
 
     /**
      * 고객 카카오 회원가입 실패
-     * - 실패 사유 : 연락처 null
+     * - 실패 사유 : 연락처 필드 null
      */
     @Test
     public void 고객_카카오_회원가입_실패_연락처_필드_null() throws Exception {
@@ -742,7 +742,7 @@ public class UserJoinAPIUnitTest extends APIUnitTest {
 
     /**
      * 고객 카카오 회원가입 실패
-     * - 실패 사유 : 연락처 유효성
+     * - 실패 사유 : 연락처 필드 유효성
      */
     @Test
     public void 고객_카카오_회원가입_실패_연락처_필드_유효성() throws Exception {
@@ -758,7 +758,7 @@ public class UserJoinAPIUnitTest extends APIUnitTest {
 
     /**
      * 고객 카카오 회원가입 실패
-     * - 실패 사유 : 우편번호 null
+     * - 실패 사유 : 우편번호 필드 null
      */
     @Test
     public void 고객_카카오_회원가입_실패_우편번호_필드_null() throws Exception {
@@ -774,7 +774,7 @@ public class UserJoinAPIUnitTest extends APIUnitTest {
 
     /**
      * 고객 카카오 회원가입 실패
-     * - 실패 사유 : 우편번호 유효성
+     * - 실패 사유 : 우편번호 필드 유효성
      */
     @Test
     public void 고객_카카오_회원가입_실패_우편번호_필드_유효성() throws Exception {
@@ -790,7 +790,7 @@ public class UserJoinAPIUnitTest extends APIUnitTest {
 
     /**
      * 고객 카카오 회원가입 실패
-     * - 실패 사유 : 기본 주소 null
+     * - 실패 사유 : 기본 주소 필드 null
      */
     @Test
     public void 고객_카카오_회원가입_실패_기본주소_필드_null() throws Exception {
@@ -806,7 +806,7 @@ public class UserJoinAPIUnitTest extends APIUnitTest {
 
     /**
      * 고객 카카오 회원가입 실패
-     * - 실패 사유 : 기본 주소 empty
+     * - 실패 사유 : 기본 주소 필드 empty
      */
     @Test
     public void 고객_카카오_회원가입_실패_기본주소_필드_empty() throws Exception {
@@ -822,7 +822,7 @@ public class UserJoinAPIUnitTest extends APIUnitTest {
 
     /**
      * 고객 카카오 회원가입 실패
-     * - 실패 사유 : 상세주소 유효성
+     * - 실패 사유 : 상세주소 필드 유효성
      */
     @Test
     public void 고객_카카오_회원가입_실패_상세주소_필드_유효성() throws Exception {

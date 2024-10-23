@@ -1533,7 +1533,7 @@ public class CustomerOrderAPIUnitTest extends APIUnitTest {
      */
     @Test
     @WithMockUser(roles = {"FACTORY"})
-    public void 거래_발주서_작성_실패_역할() throws Exception {
+    public void 거래_발주서_작성_및_수정_실패_역할() throws Exception {
         // given
         final String accessToken = "access-token";
         final String orderId = "1";

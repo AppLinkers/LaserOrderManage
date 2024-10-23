@@ -75,6 +75,6 @@ public class IntegrationTest {
         actual
                 .andExpect(status().is(expected.getHttpStatus().value()))
                 .andExpect(jsonPath("errorCode").value(expected.getCode()))
-                .andExpect(jsonPath("message").value(message + expected.getMessage()));
+                .andExpect(jsonPath("message").value(String.format(expected.getMessage(), message)));
     }
 }

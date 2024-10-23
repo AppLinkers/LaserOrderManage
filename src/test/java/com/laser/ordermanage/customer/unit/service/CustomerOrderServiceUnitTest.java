@@ -125,7 +125,7 @@ public class CustomerOrderServiceUnitTest extends ServiceUnitTest {
         // when & then
         Assertions.assertThatThrownBy(() -> customerOrderService.updateOrderDeliveryAddress(orderId, request))
                 .isInstanceOf(CustomCommonException.class)
-                .hasMessage(order.getStage().getValue() + OrderErrorCode.INVALID_ORDER_STAGE.getMessage());
+                .hasMessage(String.format(OrderErrorCode.INVALID_ORDER_STAGE.getMessage(), order.getStage().getValue()));
     }
 
     /**
@@ -168,7 +168,7 @@ public class CustomerOrderServiceUnitTest extends ServiceUnitTest {
         // when & then
         Assertions.assertThatThrownBy(() -> customerOrderService.createOrderDrawing(orderId, request))
                 .isInstanceOf(CustomCommonException.class)
-                .hasMessage(order.getStage().getValue() + OrderErrorCode.INVALID_ORDER_STAGE.getMessage());
+                .hasMessage(String.format(OrderErrorCode.INVALID_ORDER_STAGE.getMessage(), order.getStage().getValue()));
     }
 
     /**
@@ -210,7 +210,7 @@ public class CustomerOrderServiceUnitTest extends ServiceUnitTest {
         // when & then
         Assertions.assertThatThrownBy(() -> customerOrderService.updateOrderDrawing(orderId, drawingId, request))
                 .isInstanceOf(CustomCommonException.class)
-                .hasMessage(order.getStage().getValue() + OrderErrorCode.INVALID_ORDER_STAGE.getMessage());
+                .hasMessage(String.format(OrderErrorCode.INVALID_ORDER_STAGE.getMessage(), order.getStage().getValue()));
     }
 
     /**
@@ -254,7 +254,7 @@ public class CustomerOrderServiceUnitTest extends ServiceUnitTest {
         // when & then
         Assertions.assertThatThrownBy(() -> customerOrderService.deleteOrderDrawing(orderId, drawingId))
                 .isInstanceOf(CustomCommonException.class)
-                .hasMessage(order.getStage().getValue() + OrderErrorCode.INVALID_ORDER_STAGE.getMessage());
+                .hasMessage(String.format(OrderErrorCode.INVALID_ORDER_STAGE.getMessage(), order.getStage().getValue()));
     }
 
     /**
@@ -352,7 +352,7 @@ public class CustomerOrderServiceUnitTest extends ServiceUnitTest {
         // when & then
         Assertions.assertThatThrownBy(() -> customerOrderService.approveQuotation(orderId))
                 .isInstanceOf(CustomCommonException.class)
-                .hasMessage(order.getStage().getValue() + OrderErrorCode.INVALID_ORDER_STAGE.getMessage());
+                .hasMessage(String.format(OrderErrorCode.INVALID_ORDER_STAGE.getMessage(), order.getStage().getValue()));
     }
 
     /**

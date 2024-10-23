@@ -1,6 +1,5 @@
 package com.laser.ordermanage.factory.api;
 
-import com.laser.ordermanage.common.exception.CommonErrorCode;
 import com.laser.ordermanage.common.exception.CustomCommonException;
 import com.laser.ordermanage.common.scheduler.service.ScheduleService;
 import com.laser.ordermanage.common.validation.constraints.ValidFile;
@@ -19,9 +18,11 @@ import jakarta.validation.constraints.Pattern;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+@Validated
 @RequiredArgsConstructor
 @RequestMapping("/factory/order")
 @RestController
@@ -72,10 +73,6 @@ public class FactoryOrderAPI {
 
         if (!order.enableManageQuotation()) {
             throw new CustomCommonException(OrderErrorCode.INVALID_ORDER_STAGE, order.getStage().getValue());
-        }
-
-        if (order.getCreatedAt().toLocalDate().isAfter(request.deliveryDate())) {
-            throw new CustomCommonException(CommonErrorCode.INVALID_REQUEST_BODY_FIELDS, "견적서의 납기일은 거래 생성일 이후이어야 합니다.");
         }
 
         if (order.hasQuotation()) {
@@ -131,14 +128,14 @@ public class FactoryOrderAPI {
     /**
      * 거래 완료 - 이메일로 인수자 확인 및 서명 링크 전송
      * - path parameter {order-id} 에 해당하는 거래 조회
-     * - 거래 완료 가능 단계 확인 (제작 완료)
+     * - 거래 완료 가능 단계 확인 (제작 완료) 898 83
      * - 공장에게 인수자 확인 및 서명 링크를 이메일로 전송합니다.
      */
     @PreAuthorize("hasAuthority('AUTHORITY_ADMIN')")
     @PostMapping("/{order-id}/acquirer/email-link")
     public ResponseEntity<?> sendEmailForAcquirer(
             @PathVariable("order-id") Long orderId,
-            @NotEmpty(message = "base URL 은 필수 입력값입니다.")
+            @NotEmpty
             @Pattern(regexp = "^((http(s?))\\:\\/\\/)([0-9a-zA-Z\\-]+\\.)+[a-zA-Z]{2,6}(\\:[0-9]+)?(\\/\\S*)?$", message = "base URL 형식이 유효하지 않습니다.")
             @RequestParam(value = "base-url") String baseUrl
     ) {

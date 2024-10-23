@@ -101,11 +101,11 @@ public class DrawingAPIUnitTest extends APIUnitTest {
 
     /**
      * 도면 파일 업로드 실패
-     * - 실패 사유 : 파일 파라미터 null
+     * - 실패 사유 : file 파라미터 null
      */
     @Test
     @WithMockUser(roles = "CUSTOMER")
-    public void 도면_파일_업로드_파일_파라미터_null() throws Exception {
+    public void 도면_파일_업로드_file_파라미터_null() throws Exception {
         // given
         final String accessToken = "access-token";
 
@@ -118,11 +118,11 @@ public class DrawingAPIUnitTest extends APIUnitTest {
 
     /**
      * 도면 파일 업로드 실패
-     * - 실패 사유 : 파일 파라미터 empty
+     * - 실패 사유 : file 파라미터 empty
      */
     @Test
     @WithMockUser(roles = "CUSTOMER")
-    public void 도면_파일_업로드_파일_파라미터_empty() throws Exception {
+    public void 도면_파일_업로드_file_파라미터_empty() throws Exception {
         // given
         final String accessToken = "access-token";
         final MockMultipartFile emptyFile = new MockMultipartFile("file", new byte[0]);

@@ -7,7 +7,6 @@ import com.laser.ordermanage.order.domain.Comment;
 import com.laser.ordermanage.order.domain.CommentBuilder;
 import com.laser.ordermanage.order.domain.Order;
 import com.laser.ordermanage.order.domain.OrderBuilder;
-import com.laser.ordermanage.order.domain.type.Stage;
 import com.laser.ordermanage.order.dto.request.CreateCommentRequest;
 import com.laser.ordermanage.order.dto.request.CreateCommentRequestBuilder;
 import com.laser.ordermanage.order.dto.response.*;
@@ -317,7 +316,7 @@ public class OrderServiceUnitTest extends ServiceUnitTest {
         // when & then
         Assertions.assertThatThrownBy(() -> orderService.deleteOrder(orderId))
                 .isInstanceOf(CustomCommonException.class)
-                .hasMessage(Stage.COMPLETED.getValue() + OrderErrorCode.INVALID_ORDER_STAGE.getMessage());
+                .hasMessage(String.format(OrderErrorCode.INVALID_ORDER_STAGE.getMessage(), order.getStage().getValue()));
     }
 
     /**

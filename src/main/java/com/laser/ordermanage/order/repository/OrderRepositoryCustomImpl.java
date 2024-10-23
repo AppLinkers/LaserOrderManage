@@ -336,7 +336,7 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
                                new QGetOrderDetailResponse(
                                        new QGetCustomerResponse(
                                               customer.id,
-                                               userEntity.name,
+                                              userEntity.name,
                                               customer.companyName,
                                               userEntity.phone,
                                               userEntity.email

@@ -18,7 +18,7 @@ public class CustomCommonException extends RuntimeException{
     }
 
     public CustomCommonException(ErrorCode errorcode, String parameter) {
-        super(parameter + errorcode.getMessage());
+        super(String.format(errorcode.getMessage(), parameter));
         this.httpStatus = errorcode.getHttpStatus();
         this.errorCode = errorcode.getCode();
     }

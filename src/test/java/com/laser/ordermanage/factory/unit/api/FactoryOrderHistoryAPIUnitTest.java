@@ -25,6 +25,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -151,7 +152,7 @@ public class FactoryOrderHistoryAPIUnitTest extends APIUnitTest {
         final PageResponse<FactoryGetOrderHistoryResponse> expectedResponse = new PageResponse<>(new PageImpl<>(expectedOrderList, pageable, expectedOrderList.size() ));
 
         // stub
-        when(factoryOrderHistoryService.getOrderHistory(any(), Boolean.TRUE, any(), any(), any(), any(), any())).thenReturn(expectedResponse);
+        when(factoryOrderHistoryService.getOrderHistory(any(), eq(Boolean.TRUE), any(), any(), any(), any(), any())).thenReturn(expectedResponse);
 
         // when
         final ResultActions resultActions = requestGetOrderIsCompletedHistory(accessToken);
@@ -176,6 +177,9 @@ public class FactoryOrderHistoryAPIUnitTest extends APIUnitTest {
         final String accessToken = "access-token";
         final List<FactoryGetOrderHistoryResponse> expectedOrderList = FactoryGetOrderHistoryResponseBuilder.buildOfIsCompletedFalseAndPage1();
         final PageResponse<FactoryGetOrderHistoryResponse> expectedResponse = new PageResponse<>(new PageImpl<>(expectedOrderList, pageable, 12 ));
+
+        // stub
+        when(factoryOrderHistoryService.getOrderHistory(any(), eq(Boolean.FALSE), any(), any(), any(), any(), any())).thenReturn(expectedResponse);
 
         // when
         final ResultActions resultActions = requestGetOrderIsNotCompletedHistory(accessToken);

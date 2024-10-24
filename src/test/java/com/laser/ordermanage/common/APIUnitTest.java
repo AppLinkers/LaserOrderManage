@@ -19,6 +19,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
+ * API(Controller) 컴포넌트의 역할
+ * - API 호출 방식을 정의 -> ex. @GetMapping
+ * - 어떤 비즈니스 로직을 실행할 것인지 결정 -> ex. 서비스 컴포넌트의 메서드 호출
+ * - API 호출 결과를 어떤 포맷으로 응답할지 정의 -> ex. ResponseEntity<>, response DTO 변환
+ */
+
+/**
  * API Unit Test
  * 1. 테스트 성공
  * 2. Role, Authority 검증

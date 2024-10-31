@@ -96,10 +96,10 @@ dependencies {
 	testAnnotationProcessor 'org.projectlombok:lombok'
 
 	// test-containers
-	testImplementation group: 'org.testcontainers', name: 'testcontainers', version: '1.17.2'
+	testImplementation group: 'org.testcontainers', name: 'testcontainers', version: '1.20.3'
 
 	// slack
-	implementation 'com.slack.api:slack-api-client:1.37.0'
+	implementation 'com.slack.api:slack-api-client:1.44.0'
 }
 
 configurations.all {

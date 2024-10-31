@@ -1,6 +1,5 @@
 package com.laser.ordermanage.customer.api;
 
-import com.laser.ordermanage.common.exception.CommonErrorCode;
 import com.laser.ordermanage.common.exception.CustomCommonException;
 import com.laser.ordermanage.customer.dto.request.*;
 import com.laser.ordermanage.customer.dto.response.CustomerCreateDrawingResponse;
@@ -200,10 +199,6 @@ public class CustomerOrderAPI {
 
         if (!order.enableManagePurchaseOrder()) {
             throw new CustomCommonException(OrderErrorCode.INVALID_ORDER_STAGE, order.getStage().getValue());
-        }
-
-        if (order.getQuotation().getDeliveryDate().isAfter(request.inspectionPeriod()) || order.getQuotation().getDeliveryDate().isAfter(request.paymentDate())) {
-            throw new CustomCommonException(CommonErrorCode.INVALID_REQUEST_BODY_FIELDS, "발주서의 검수기간 및 지급일은 거래 납기일 이후이어야 합니다.");
         }
 
         CustomerCreateOrUpdateOrderPurchaseOrderResponse response;

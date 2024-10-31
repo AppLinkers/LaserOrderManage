@@ -366,35 +366,6 @@ public class FactoryOrderAPIUnitTest extends APIUnitTest {
 
     /**
      * 거래 견적서 작성 및 수정 실패
-     * - 실패 사유 : 존재하지 않는 거래
-     */
-    @Test
-    @WithMockUser(authorities = {"ROLE_FACTORY", "AUTHORITY_ADMIN"})
-    public void 거래_견적서_작성_및_수정_실패_존재하지_않는_거래() throws Exception {
-        // given
-        final String accessToken = "access-token";
-        final String orderId = "1";
-        final String filePath = "src/test/resources/quotation/quotation.xlsx";
-        final MockMultipartFile file = new MockMultipartFile(
-                "file",
-                "quotation.xlsx",
-                MediaType.MULTIPART_FORM_DATA_VALUE,
-                new FileInputStream(filePath)
-        );
-        final FactoryCreateOrUpdateOrderQuotationRequest request = FactoryCreateOrUpdateOrderQuotationRequestBuilder.build();
-
-        // stub
-        doThrow(new CustomCommonException(OrderErrorCode.NOT_FOUND_ORDER)).when(orderService).getOrderById(any());
-
-        // when
-        final ResultActions resultActions = requestCreateOrUpdateOrderQuotation(accessToken, orderId, file, request);
-
-        // then
-        assertError(OrderErrorCode.NOT_FOUND_ORDER, resultActions);
-    }
-
-    /**
-     * 거래 견적서 작성 및 수정 실패
      * - 실패 사유 : 거래 단계가 견적서 작성 및 수정 가능 단계(견적 대기)가 아님
      */
     @Test
@@ -429,7 +400,7 @@ public class FactoryOrderAPIUnitTest extends APIUnitTest {
 
     /**
      * 거래 견적서 작성 실패
-     * - 실패 사유 : 견적서의 납기일은 거래 생성일 이전임
+     * - 실패 사유 : 견적서의 납기일이 거래 생성일 이전임
      */
     @Test
     @WithMockUser(authorities = {"ROLE_FACTORY", "AUTHORITY_ADMIN"})
@@ -450,40 +421,13 @@ public class FactoryOrderAPIUnitTest extends APIUnitTest {
 
         // stub
         when(orderService.getOrderById(any())).thenReturn(order);
-        doThrow(new CustomCommonException(CommonErrorCode.INVALID_REQUEST_BODY_FIELDS, "견적서의 납기일은 거래 생성일 이후이어야 합니다.")).when(factoryOrderService).createOrderQuotation(any(), any(), any());
+        doThrow(new CustomCommonException(OrderErrorCode.INVALID_QUOTATION_DELIVERY_DATE)).when(factoryOrderService).createOrderQuotation(any(), any(), any());
 
         // when
         final ResultActions resultActions = requestCreateOrUpdateOrderQuotation(accessToken, orderId, file, request);
 
         // then
-        assertErrorWithMessage(CommonErrorCode.INVALID_REQUEST_BODY_FIELDS, resultActions, "견적서의 납기일은 거래 생성일 이후이어야 합니다.");
-    }
-
-    /**
-     * 거래 견적서 수정 실패
-     * - 실패 사유 : 견적서의 납기일은 거래 생성일 이전임
-     */
-    @Test
-    @WithMockUser(authorities = {"ROLE_FACTORY", "AUTHORITY_ADMIN"})
-    public void 거래_견적서_수정_실패_납기일_거래_생성일_이전() throws Exception {
-        // given
-        final String accessToken = "access-token";
-        final String orderId = "1";
-        final FactoryCreateOrUpdateOrderQuotationRequest request = FactoryCreateOrUpdateOrderQuotationRequestBuilder.earlyDeliveryDateBuild();
-
-        final Order order = OrderBuilder.build();
-        final Quotation quotation = QuotationBuilder.build();
-        order.createQuotation(quotation);
-
-        // stub
-        when(orderService.getOrderById(any())).thenReturn(order);
-        doThrow(new CustomCommonException(CommonErrorCode.INVALID_REQUEST_BODY_FIELDS, "견적서의 납기일은 거래 생성일 이후이어야 합니다.")).when(factoryOrderService).updateOrderQuotation(any(), any(), any());
-
-        // when
-        final ResultActions resultActions = requestCreateOrUpdateOrderQuotationWithOutFile(accessToken, orderId, request);
-
-        // then
-        assertErrorWithMessage(CommonErrorCode.INVALID_REQUEST_BODY_FIELDS, resultActions, "견적서의 납기일은 거래 생성일 이후이어야 합니다.");
+        assertError(OrderErrorCode.INVALID_QUOTATION_DELIVERY_DATE, resultActions);
     }
 
     /**
@@ -509,6 +453,33 @@ public class FactoryOrderAPIUnitTest extends APIUnitTest {
 
         // then
         assertError(OrderErrorCode.REQUIRED_QUOTATION_FILE, resultActions);
+    }
+
+    /**
+     * 거래 견적서 수정 실패
+     * - 실패 사유 : 견적서의 납기일이 거래 생성일 이전임
+     */
+    @Test
+    @WithMockUser(authorities = {"ROLE_FACTORY", "AUTHORITY_ADMIN"})
+    public void 거래_견적서_수정_실패_납기일_거래_생성일_이전() throws Exception {
+        // given
+        final String accessToken = "access-token";
+        final String orderId = "1";
+        final FactoryCreateOrUpdateOrderQuotationRequest request = FactoryCreateOrUpdateOrderQuotationRequestBuilder.earlyDeliveryDateBuild();
+
+        final Order order = OrderBuilder.build();
+        final Quotation quotation = QuotationBuilder.build();
+        order.createQuotation(quotation);
+
+        // stub
+        when(orderService.getOrderById(any())).thenReturn(order);
+        doThrow(new CustomCommonException(OrderErrorCode.INVALID_QUOTATION_DELIVERY_DATE)).when(factoryOrderService).updateOrderQuotation(any(), any(), any());
+
+        // when
+        final ResultActions resultActions = requestCreateOrUpdateOrderQuotationWithOutFile(accessToken, orderId, request);
+
+        // then
+        assertError(OrderErrorCode.INVALID_QUOTATION_DELIVERY_DATE, resultActions);
     }
 
     /**
@@ -584,7 +555,7 @@ public class FactoryOrderAPIUnitTest extends APIUnitTest {
 
     /**
      * 거래 발주서 승인 실패
-     * - 실패 사유 : 거래 단계가 견적서 승인 가능 단계(견적 승인)가 아님
+     * - 실패 사유 : 거래 단계가 발주서 승인 가능 단계(견적 승인)가 아님
      */
     @Test
     @WithMockUser(authorities = {"ROLE_FACTORY", "AUTHORITY_ADMIN"})

@@ -189,6 +189,14 @@ public class CustomerOrderService {
     public CustomerCreateOrUpdateOrderPurchaseOrderResponse createOrderPurchaseOrder(Long orderId, MultipartFile file, CustomerCreateOrUpdateOrderPurchaseOrderRequest request) {
         Order order = orderService.getOrderById(orderId);
 
+        if (order.getQuotation().getDeliveryDate().isAfter(request.inspectionPeriod())) {
+            throw new CustomCommonException(OrderErrorCode.INVALID_PURCHASE_ORDER_INSPECTION_PERIOD);
+        }
+
+        if (order.getQuotation().getDeliveryDate().isAfter(request.paymentDate())) {
+            throw new CustomCommonException(OrderErrorCode.INVALID_PURCHASE_ORDER_PAYMENT_DATE);
+        }
+
         // 발주서 파일 유무 확인
         if (file == null || file.isEmpty()) {
             throw new CustomCommonException(OrderErrorCode.REQUIRED_PURCHASE_ORDER_FILE);
@@ -213,6 +221,14 @@ public class CustomerOrderService {
     public CustomerCreateOrUpdateOrderPurchaseOrderResponse updateOrderPurchaseOrder(Long orderId, MultipartFile file, CustomerCreateOrUpdateOrderPurchaseOrderRequest request) {
         Order order = orderService.getOrderById(orderId);
         PurchaseOrder purchaseOrder = order.getPurchaseOrder();
+
+        if (order.getQuotation().getDeliveryDate().isAfter(request.inspectionPeriod())) {
+            throw new CustomCommonException(OrderErrorCode.INVALID_PURCHASE_ORDER_INSPECTION_PERIOD);
+        }
+
+        if (order.getQuotation().getDeliveryDate().isAfter(request.paymentDate())) {
+            throw new CustomCommonException(OrderErrorCode.INVALID_PURCHASE_ORDER_PAYMENT_DATE);
+        }
 
         // 발주서 파일 유무 확인
         if (file != null && !file.isEmpty()) {

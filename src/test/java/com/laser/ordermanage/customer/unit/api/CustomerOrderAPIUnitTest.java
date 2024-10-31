@@ -1448,6 +1448,11 @@ public class CustomerOrderAPIUnitTest extends APIUnitTest {
     @WithMockUser(roles = {"CUSTOMER"})
     public void 거래_발주서_작성_성공() throws Exception {
         // given
+        final Order order = OrderBuilder.build();
+        final Quotation quotation = QuotationBuilder.build();
+        order.createQuotation(quotation);
+        order.approveQuotation();
+
         final String accessToken = "access-token";
         final String orderId = "1";
         final String filePath = "src/test/resources/purchase-order/purchase-order.png";
@@ -1457,13 +1462,7 @@ public class CustomerOrderAPIUnitTest extends APIUnitTest {
                 MediaType.MULTIPART_FORM_DATA_VALUE,
                 new FileInputStream(filePath)
         );
-        final CustomerCreateOrUpdateOrderPurchaseOrderRequest request = CustomerCreateOrUpdateOrderPurchaseOrderRequestBuilder.createBuild();
-
-        final Order order = OrderBuilder.build();
-        final Quotation quotation = QuotationBuilder.build();
-        order.createQuotation(quotation);
-        order.approveQuotation();
-
+        final CustomerCreateOrUpdateOrderPurchaseOrderRequest request = CustomerCreateOrUpdateOrderPurchaseOrderRequestBuilder.build();
         final CustomerCreateOrUpdateOrderPurchaseOrderResponse expectedResponse = CustomerCreateOrUpdateOrderPurchaseOrderResponseBuilder.createBuild();
 
         // stub
@@ -1492,14 +1491,7 @@ public class CustomerOrderAPIUnitTest extends APIUnitTest {
         // given
         final String accessToken = "access-token";
         final String orderId = "1";
-        final String filePath = "src/test/resources/purchase-order/purchase-order.png";
-        final MockMultipartFile file = new MockMultipartFile(
-                "file",
-                "purchase-order.png",
-                MediaType.MULTIPART_FORM_DATA_VALUE,
-                new FileInputStream(filePath)
-        );
-        final CustomerCreateOrUpdateOrderPurchaseOrderRequest request = CustomerCreateOrUpdateOrderPurchaseOrderRequestBuilder.updateBuild();
+        final CustomerCreateOrUpdateOrderPurchaseOrderRequest request = CustomerCreateOrUpdateOrderPurchaseOrderRequestBuilder.build();
 
         final Order order = OrderBuilder.build();
         final Quotation quotation = QuotationBuilder.build();
@@ -1515,7 +1507,7 @@ public class CustomerOrderAPIUnitTest extends APIUnitTest {
         when(customerOrderService.updateOrderPurchaseOrder(any(), any(), any())).thenReturn(expectedResponse);
 
         // when
-        final ResultActions resultActions = requestCreateOrUpdateOrderPurchaseOrder(accessToken, orderId, file, request);
+        final ResultActions resultActions = requestCreateOrUpdateOrderPurchaseOrderWithOutFile(accessToken, orderId, request);
 
         // then
         final String responseString = resultActions
@@ -1544,7 +1536,7 @@ public class CustomerOrderAPIUnitTest extends APIUnitTest {
                 MediaType.MULTIPART_FORM_DATA_VALUE,
                 new FileInputStream(filePath)
         );
-        final CustomerCreateOrUpdateOrderPurchaseOrderRequest request = CustomerCreateOrUpdateOrderPurchaseOrderRequestBuilder.createBuild();
+        final CustomerCreateOrUpdateOrderPurchaseOrderRequest request = CustomerCreateOrUpdateOrderPurchaseOrderRequestBuilder.build();
 
         // when
         final ResultActions resultActions = requestCreateOrUpdateOrderPurchaseOrder(accessToken, orderId, file, request);
@@ -1570,7 +1562,7 @@ public class CustomerOrderAPIUnitTest extends APIUnitTest {
                 MediaType.MULTIPART_FORM_DATA_VALUE,
                 new FileInputStream(filePath)
         );
-        final CustomerCreateOrUpdateOrderPurchaseOrderRequest request = CustomerCreateOrUpdateOrderPurchaseOrderRequestBuilder.createBuild();
+        final CustomerCreateOrUpdateOrderPurchaseOrderRequest request = CustomerCreateOrUpdateOrderPurchaseOrderRequestBuilder.build();
 
         // when
         final ResultActions resultActions = requestCreateOrUpdateOrderPurchaseOrder(accessToken, invalidOrderId, file, request);
@@ -1700,7 +1692,7 @@ public class CustomerOrderAPIUnitTest extends APIUnitTest {
                 MediaType.MULTIPART_FORM_DATA_VALUE,
                 new FileInputStream(filePath)
         );
-        final CustomerCreateOrUpdateOrderPurchaseOrderRequest request = CustomerCreateOrUpdateOrderPurchaseOrderRequestBuilder.createBuild();
+        final CustomerCreateOrUpdateOrderPurchaseOrderRequest request = CustomerCreateOrUpdateOrderPurchaseOrderRequestBuilder.build();
 
         // stub
         doThrow(new CustomCommonException(OrderErrorCode.DENIED_ACCESS_TO_ORDER)).when(customerOrderService).checkAuthorityOfOrder(any(), any());
@@ -1729,7 +1721,7 @@ public class CustomerOrderAPIUnitTest extends APIUnitTest {
                 MediaType.MULTIPART_FORM_DATA_VALUE,
                 new FileInputStream(filePath)
         );
-        final CustomerCreateOrUpdateOrderPurchaseOrderRequest request = CustomerCreateOrUpdateOrderPurchaseOrderRequestBuilder.createBuild();
+        final CustomerCreateOrUpdateOrderPurchaseOrderRequest request = CustomerCreateOrUpdateOrderPurchaseOrderRequestBuilder.build();
 
         // stub
         doThrow(new CustomCommonException(OrderErrorCode.NOT_FOUND_ORDER)).when(orderService).getOrderById(any());
@@ -1758,7 +1750,7 @@ public class CustomerOrderAPIUnitTest extends APIUnitTest {
                 MediaType.MULTIPART_FORM_DATA_VALUE,
                 new FileInputStream(filePath)
         );
-        final CustomerCreateOrUpdateOrderPurchaseOrderRequest request = CustomerCreateOrUpdateOrderPurchaseOrderRequestBuilder.createBuild();
+        final CustomerCreateOrUpdateOrderPurchaseOrderRequest request = CustomerCreateOrUpdateOrderPurchaseOrderRequestBuilder.build();
 
         final Order order = OrderBuilder.build();
         final Quotation quotation = QuotationBuilder.build();
@@ -1779,12 +1771,12 @@ public class CustomerOrderAPIUnitTest extends APIUnitTest {
     }
 
     /**
-     * 거래 발주서 작성 및 수정 실패
+     * 거래 발주서 작성 실패
      * - 실패 사유 : 발주서의 검수기간이 거래 납기일 이전임
      */
     @Test
     @WithMockUser(roles = {"CUSTOMER"})
-    public void 거래_발주서_작성_및_수정_실패_검수기간_거래_납기일_이전() throws Exception {
+    public void 거래_발주서_작성_실패_검수기간_거래_납기일_이전() throws Exception {
         final String accessToken = "access-token";
         final String orderId = "1";
         final String filePath = "src/test/resources/purchase-order/purchase-order.png";
@@ -1794,7 +1786,7 @@ public class CustomerOrderAPIUnitTest extends APIUnitTest {
                 MediaType.MULTIPART_FORM_DATA_VALUE,
                 new FileInputStream(filePath)
         );
-        final CustomerCreateOrUpdateOrderPurchaseOrderRequest request = CustomerCreateOrUpdateOrderPurchaseOrderRequestBuilder.earlyInspectionPeriodBuild();
+        final CustomerCreateOrUpdateOrderPurchaseOrderRequest request = CustomerCreateOrUpdateOrderPurchaseOrderRequestBuilder.build();
 
         final Order order = OrderBuilder.build();
         final Quotation quotation = QuotationBuilder.build();
@@ -1803,21 +1795,22 @@ public class CustomerOrderAPIUnitTest extends APIUnitTest {
 
         // stub
         when(orderService.getOrderById(any())).thenReturn(order);
+        doThrow(new CustomCommonException(OrderErrorCode.INVALID_PURCHASE_ORDER_INSPECTION_PERIOD)).when(customerOrderService).createOrderPurchaseOrder(any(), any(), any());
 
         // when
         final ResultActions resultActions = requestCreateOrUpdateOrderPurchaseOrder(accessToken, orderId, file, request);
 
         // then
-        assertErrorWithMessage(CommonErrorCode.INVALID_REQUEST_BODY_FIELDS, resultActions, "발주서의 검수기간 및 지급일은 거래 납기일 이후이어야 합니다.");
+        assertError(OrderErrorCode.INVALID_PURCHASE_ORDER_INSPECTION_PERIOD, resultActions);
     }
 
     /**
-     * 거래 발주서 작성 및 수정 실패
+     * 거래 발주서 작성 실패
      * - 실패 사유 : 발주서의 지급일이 거래 납기일 이전임
      */
     @Test
     @WithMockUser(roles = {"CUSTOMER"})
-    public void 거래_발주서_작성_및_수정_실패_지급일_거래_납기일_이전() throws Exception {
+    public void 거래_발주서_작성_실패_지급일_거래_납기일_이전() throws Exception {
         final String accessToken = "access-token";
         final String orderId = "1";
         final String filePath = "src/test/resources/purchase-order/purchase-order.png";
@@ -1827,7 +1820,7 @@ public class CustomerOrderAPIUnitTest extends APIUnitTest {
                 MediaType.MULTIPART_FORM_DATA_VALUE,
                 new FileInputStream(filePath)
         );
-        final CustomerCreateOrUpdateOrderPurchaseOrderRequest request = CustomerCreateOrUpdateOrderPurchaseOrderRequestBuilder.earlyPaymentDateBuild();
+        final CustomerCreateOrUpdateOrderPurchaseOrderRequest request = CustomerCreateOrUpdateOrderPurchaseOrderRequestBuilder.build();
 
         final Order order = OrderBuilder.build();
         final Quotation quotation = QuotationBuilder.build();
@@ -1836,12 +1829,13 @@ public class CustomerOrderAPIUnitTest extends APIUnitTest {
 
         // stub
         when(orderService.getOrderById(any())).thenReturn(order);
+        doThrow(new CustomCommonException(OrderErrorCode.INVALID_PURCHASE_ORDER_PAYMENT_DATE)).when(customerOrderService).createOrderPurchaseOrder(any(), any(), any());
 
         // when
         final ResultActions resultActions = requestCreateOrUpdateOrderPurchaseOrder(accessToken, orderId, file, request);
 
         // then
-        assertErrorWithMessage(CommonErrorCode.INVALID_REQUEST_BODY_FIELDS, resultActions, "발주서의 검수기간 및 지급일은 거래 납기일 이후이어야 합니다.");
+        assertError(OrderErrorCode.INVALID_PURCHASE_ORDER_PAYMENT_DATE, resultActions);
     }
 
     /**
@@ -1854,7 +1848,7 @@ public class CustomerOrderAPIUnitTest extends APIUnitTest {
         // given
         final String accessToken = "access-token";
         final String orderId = "1";
-        final CustomerCreateOrUpdateOrderPurchaseOrderRequest request = CustomerCreateOrUpdateOrderPurchaseOrderRequestBuilder.createBuild();
+        final CustomerCreateOrUpdateOrderPurchaseOrderRequest request = CustomerCreateOrUpdateOrderPurchaseOrderRequestBuilder.build();
 
         final Order order = OrderBuilder.build();
         final Quotation quotation = QuotationBuilder.build();
@@ -1872,6 +1866,63 @@ public class CustomerOrderAPIUnitTest extends APIUnitTest {
         assertError(OrderErrorCode.REQUIRED_PURCHASE_ORDER_FILE, resultActions);
     }
 
+    /**
+     * 거래 발주서 수정 실패
+     * - 실패 사유 : 발주서의 검수기간이 거래 납기일 이전임
+     */
+    @Test
+    @WithMockUser(roles = {"CUSTOMER"})
+    public void 거래_발주서_수정_실패_검수기간_거래_납기일_이전() throws Exception {
+        final String accessToken = "access-token";
+        final String orderId = "1";
+        final CustomerCreateOrUpdateOrderPurchaseOrderRequest request = CustomerCreateOrUpdateOrderPurchaseOrderRequestBuilder.build();
+
+        final Order order = OrderBuilder.build();
+        final Quotation quotation = QuotationBuilder.build();
+        order.createQuotation(quotation);
+        order.approveQuotation();
+        final PurchaseOrder purchaseOrder = PurchaseOrderBuilder.build();
+        order.createPurchaseOrder(purchaseOrder);
+
+        // stub
+        when(orderService.getOrderById(any())).thenReturn(order);
+        doThrow(new CustomCommonException(OrderErrorCode.INVALID_PURCHASE_ORDER_INSPECTION_PERIOD)).when(customerOrderService).updateOrderPurchaseOrder(any(), any(), any());
+
+        // when
+        final ResultActions resultActions = requestCreateOrUpdateOrderPurchaseOrderWithOutFile(accessToken, orderId, request);
+
+        // then
+        assertError(OrderErrorCode.INVALID_PURCHASE_ORDER_INSPECTION_PERIOD, resultActions);
+    }
+
+    /**
+     * 거래 발주서 수정 실패
+     * - 실패 사유 : 발주서의 지급일이 거래 납기일 이전임
+     */
+    @Test
+    @WithMockUser(roles = {"CUSTOMER"})
+    public void 거래_발주서_수정_실패_지급일_거래_납기일_이전() throws Exception {
+        final String accessToken = "access-token";
+        final String orderId = "1";
+        final CustomerCreateOrUpdateOrderPurchaseOrderRequest request = CustomerCreateOrUpdateOrderPurchaseOrderRequestBuilder.build();
+
+        final Order order = OrderBuilder.build();
+        final Quotation quotation = QuotationBuilder.build();
+        order.createQuotation(quotation);
+        order.approveQuotation();
+        final PurchaseOrder purchaseOrder = PurchaseOrderBuilder.build();
+        order.createPurchaseOrder(purchaseOrder);
+
+        // stub
+        when(orderService.getOrderById(any())).thenReturn(order);
+        doThrow(new CustomCommonException(OrderErrorCode.INVALID_PURCHASE_ORDER_PAYMENT_DATE)).when(customerOrderService).updateOrderPurchaseOrder(any(), any(), any());
+
+        // when
+        final ResultActions resultActions = requestCreateOrUpdateOrderPurchaseOrderWithOutFile(accessToken, orderId, request);
+
+        // then
+        assertError(OrderErrorCode.INVALID_PURCHASE_ORDER_PAYMENT_DATE, resultActions);
+    }
 
     private ResultActions requestCreateOrder(String accessToken, CustomerCreateOrderRequest request) throws Exception {
         return mvc.perform(post("/customer/order")

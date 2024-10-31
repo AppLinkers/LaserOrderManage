@@ -1,7 +1,6 @@
 package com.laser.ordermanage.factory.integration;
 
 import com.laser.ordermanage.common.IntegrationTest;
-import com.laser.ordermanage.common.exception.CommonErrorCode;
 import com.laser.ordermanage.common.security.jwt.setup.JwtBuilder;
 import com.laser.ordermanage.factory.dto.request.*;
 import com.laser.ordermanage.factory.dto.response.*;
@@ -195,7 +194,7 @@ public class FactoryOrderIntegrationTest extends IntegrationTest {
         final FactoryCreateOrUpdateOrderQuotationResponse expectedResponse = FactoryCreateOrUpdateOrderQuotationResponseBuilder.createBuild();
 
         // stub
-        when(s3Service.upload(any(), (MultipartFile) any(), eq("quotation.xlsx"))).thenReturn("quotation-url.xlsx");
+        when(s3Service.upload(any(), (MultipartFile) any(), eq("quotation.xlsx"))).thenReturn("https://ordermanage.s3.ap-northeast-2.amazonaws.com/quotation.xlsx");
 
         // when
         final ResultActions resultActions = requestCreateOrUpdateOrderQuotation(accessToken, orderId, file, request);
@@ -218,21 +217,14 @@ public class FactoryOrderIntegrationTest extends IntegrationTest {
         // given
         final String accessToken = jwtBuilder.accessJwtBuildOfFactory();
         final String orderId = "10";
-        final String filePath = "src/test/resources/quotation/quotation.xlsx";
-        final MockMultipartFile file = new MockMultipartFile(
-                "file",
-                "quotation.xlsx",
-                MediaType.MULTIPART_FORM_DATA_VALUE,
-                new FileInputStream(filePath)
-        );
         final FactoryCreateOrUpdateOrderQuotationRequest request = FactoryCreateOrUpdateOrderQuotationRequestBuilder.build();
         final FactoryCreateOrUpdateOrderQuotationResponse expectedResponse = FactoryCreateOrUpdateOrderQuotationResponseBuilder.updateBuild();
 
         // stub
-        when(s3Service.upload(any(), (MultipartFile) any(), eq("quotation.xlsx"))).thenReturn("quotation-url.xlsx");
+        when(s3Service.upload(any(), (MultipartFile) any(), eq("quotation.xlsx"))).thenReturn("https://ordermanage.s3.ap-northeast-2.amazonaws.com/quotation.xlsx");
 
         // when
-        final ResultActions resultActions = requestCreateOrUpdateOrderQuotation(accessToken, orderId, file, request);
+        final ResultActions resultActions = requestCreateOrUpdateOrderQuotationWithOutFile(accessToken, orderId, request);
 
         // then
         final String responseString = resultActions
@@ -434,56 +426,6 @@ public class FactoryOrderIntegrationTest extends IntegrationTest {
 
         // then
         assertError(OrderErrorCode.REQUIRED_QUOTATION_FILE, resultActions);
-    }
-
-    /**
-     * 거래 견적서 작성 실패
-     * - 실패 사유 : 견적서의 납기일은 거래 생성일 이전임
-     */
-    @Test
-    public void 거래_견적서_작성_실패_납기일_거래_생성일_이전() throws Exception {
-        // given
-        final String accessToken = jwtBuilder.accessJwtBuildOfFactory();
-        final String orderId = "5";
-        final String filePath = "src/test/resources/quotation/quotation.xlsx";
-        final MockMultipartFile file = new MockMultipartFile(
-                "file",
-                "quotation.xlsx",
-                MediaType.MULTIPART_FORM_DATA_VALUE,
-                new FileInputStream(filePath)
-        );
-        final FactoryCreateOrUpdateOrderQuotationRequest request = FactoryCreateOrUpdateOrderQuotationRequestBuilder.earlyDeliveryDateBuild();
-
-        // when
-        final ResultActions resultActions = requestCreateOrUpdateOrderQuotation(accessToken, orderId, file, request);
-
-        // then
-        assertErrorWithMessage(CommonErrorCode.INVALID_REQUEST_BODY_FIELDS, resultActions, "견적서의 납기일은 거래 생성일 이후이어야 합니다.");
-    }
-
-    /**
-     * 거래 견적서 수정 실패
-     * - 실패 사유 : 견적서의 납기일은 거래 생성일 이전임
-     */
-    @Test
-    public void 거래_견적서_수정_실패_납기일_거래_생성일_이전() throws Exception {
-        // given
-        final String accessToken = jwtBuilder.accessJwtBuildOfFactory();
-        final String orderId = "10";
-        final String filePath = "src/test/resources/quotation/quotation.xlsx";
-        final MockMultipartFile file = new MockMultipartFile(
-                "file",
-                "quotation.xlsx",
-                MediaType.MULTIPART_FORM_DATA_VALUE,
-                new FileInputStream(filePath)
-        );
-        final FactoryCreateOrUpdateOrderQuotationRequest request = FactoryCreateOrUpdateOrderQuotationRequestBuilder.earlyDeliveryDateBuild();
-
-        // when
-        final ResultActions resultActions = requestCreateOrUpdateOrderQuotation(accessToken, orderId, file, request);
-
-        // then
-        assertErrorWithMessage(CommonErrorCode.INVALID_REQUEST_BODY_FIELDS, resultActions, "견적서의 납기일은 거래 생성일 이후이어야 합니다.");
     }
 
     /**

@@ -33,7 +33,7 @@ public class PurchaseOrderUnitTest {
     public void updateProperties() {
         // given
         final PurchaseOrder purchaseOrder = PurchaseOrderBuilder.build();
-        final CustomerCreateOrUpdateOrderPurchaseOrderRequest request = CustomerCreateOrUpdateOrderPurchaseOrderRequestBuilder.createBuild();
+        final CustomerCreateOrUpdateOrderPurchaseOrderRequest request = CustomerCreateOrUpdateOrderPurchaseOrderRequestBuilder.build();
 
         // when
         purchaseOrder.updateProperties(request);

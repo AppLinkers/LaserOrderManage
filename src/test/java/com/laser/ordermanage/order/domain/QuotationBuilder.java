@@ -8,10 +8,10 @@ import java.time.LocalDate;
 public class QuotationBuilder {
     public static Quotation build() {
         File<QuotationFileType> file = File.<QuotationFileType>builder()
-                .name("quotation.pdf")
+                .name("quotation.xlsx")
                 .size(306480L)
                 .type(QuotationFileType.PDF)
-                .url("https://ordermanage.s3.ap-northeast-2.amazonaws.com/quotation.pdf")
+                .url("https://ordermanage.s3.ap-northeast-2.amazonaws.com/quotation.xlsx")
                 .build();
 
         return Quotation.builder()

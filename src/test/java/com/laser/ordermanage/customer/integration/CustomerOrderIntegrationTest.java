@@ -924,7 +924,7 @@ public class CustomerOrderIntegrationTest extends IntegrationTest {
                 MediaType.MULTIPART_FORM_DATA_VALUE,
                 new FileInputStream(filePath)
         );
-        final CustomerCreateOrUpdateOrderPurchaseOrderRequest request = CustomerCreateOrUpdateOrderPurchaseOrderRequestBuilder.createBuild();
+        final CustomerCreateOrUpdateOrderPurchaseOrderRequest request = CustomerCreateOrUpdateOrderPurchaseOrderRequestBuilder.build();
         final CustomerCreateOrUpdateOrderPurchaseOrderResponse expectedResponse = CustomerCreateOrUpdateOrderPurchaseOrderResponseBuilder.createBuild();
 
         // stub
@@ -951,21 +951,11 @@ public class CustomerOrderIntegrationTest extends IntegrationTest {
         // given
         final String accessToken = jwtBuilder.accessJwtBuildOfSocialCustomer();
         final String orderId = "9";
-        final String filePath = "src/test/resources/purchase-order/purchase-order.png";
-        final MockMultipartFile file = new MockMultipartFile(
-                "file",
-                "purchase-order.png",
-                MediaType.MULTIPART_FORM_DATA_VALUE,
-                new FileInputStream(filePath)
-        );
-        final CustomerCreateOrUpdateOrderPurchaseOrderRequest request = CustomerCreateOrUpdateOrderPurchaseOrderRequestBuilder.updateBuild();
+        final CustomerCreateOrUpdateOrderPurchaseOrderRequest request = CustomerCreateOrUpdateOrderPurchaseOrderRequestBuilder.build();
         final CustomerCreateOrUpdateOrderPurchaseOrderResponse expectedResponse = CustomerCreateOrUpdateOrderPurchaseOrderResponseBuilder.updateBuild();
 
-        // stub
-        when(s3Service.upload(any(), (MultipartFile) any(), eq("purchase-order.png"))).thenReturn(expectedResponse.fileUrl());
-
         // when
-        final ResultActions resultActions = requestCreateOrUpdateOrderPurchaseOrder(accessToken, orderId, file, request);
+        final ResultActions resultActions = requestCreateOrUpdateOrderPurchaseOrderWithOutFile(accessToken, orderId, request);
 
         // then
         final String responseString = resultActions
@@ -992,7 +982,7 @@ public class CustomerOrderIntegrationTest extends IntegrationTest {
                 MediaType.MULTIPART_FORM_DATA_VALUE,
                 new FileInputStream(filePath)
         );
-        final CustomerCreateOrUpdateOrderPurchaseOrderRequest request = CustomerCreateOrUpdateOrderPurchaseOrderRequestBuilder.createBuild();
+        final CustomerCreateOrUpdateOrderPurchaseOrderRequest request = CustomerCreateOrUpdateOrderPurchaseOrderRequestBuilder.build();
 
         // when
         final ResultActions resultActions = requestCreateOrUpdateOrderPurchaseOrderWithOutAccessToken(orderId, file, request);
@@ -1017,7 +1007,7 @@ public class CustomerOrderIntegrationTest extends IntegrationTest {
                 MediaType.MULTIPART_FORM_DATA_VALUE,
                 new FileInputStream(filePath)
         );
-        final CustomerCreateOrUpdateOrderPurchaseOrderRequest request = CustomerCreateOrUpdateOrderPurchaseOrderRequestBuilder.createBuild();
+        final CustomerCreateOrUpdateOrderPurchaseOrderRequest request = CustomerCreateOrUpdateOrderPurchaseOrderRequestBuilder.build();
 
         // when
         final ResultActions resultActions = requestCreateOrUpdateOrderPurchaseOrder(unauthorizedAccessToken, orderId, file, request);
@@ -1043,7 +1033,7 @@ public class CustomerOrderIntegrationTest extends IntegrationTest {
                 MediaType.MULTIPART_FORM_DATA_VALUE,
                 new FileInputStream(filePath)
         );
-        final CustomerCreateOrUpdateOrderPurchaseOrderRequest request = CustomerCreateOrUpdateOrderPurchaseOrderRequestBuilder.createBuild();
+        final CustomerCreateOrUpdateOrderPurchaseOrderRequest request = CustomerCreateOrUpdateOrderPurchaseOrderRequestBuilder.build();
 
         // when
         final ResultActions resultActions = requestCreateOrUpdateOrderPurchaseOrder(refreshToken, orderId, file, request);
@@ -1068,7 +1058,7 @@ public class CustomerOrderIntegrationTest extends IntegrationTest {
                 MediaType.MULTIPART_FORM_DATA_VALUE,
                 new FileInputStream(filePath)
         );
-        final CustomerCreateOrUpdateOrderPurchaseOrderRequest request = CustomerCreateOrUpdateOrderPurchaseOrderRequestBuilder.createBuild();
+        final CustomerCreateOrUpdateOrderPurchaseOrderRequest request = CustomerCreateOrUpdateOrderPurchaseOrderRequestBuilder.build();
 
         // when
         final ResultActions resultActions = requestCreateOrUpdateOrderPurchaseOrder(expiredAccessToken, orderId, file, request);
@@ -1093,7 +1083,7 @@ public class CustomerOrderIntegrationTest extends IntegrationTest {
                 MediaType.MULTIPART_FORM_DATA_VALUE,
                 new FileInputStream(filePath)
         );
-        final CustomerCreateOrUpdateOrderPurchaseOrderRequest request = CustomerCreateOrUpdateOrderPurchaseOrderRequestBuilder.createBuild();
+        final CustomerCreateOrUpdateOrderPurchaseOrderRequest request = CustomerCreateOrUpdateOrderPurchaseOrderRequestBuilder.build();
 
         // when
         final ResultActions resultActions = requestCreateOrUpdateOrderPurchaseOrder(invalidToken, orderId, file, request);
@@ -1118,7 +1108,7 @@ public class CustomerOrderIntegrationTest extends IntegrationTest {
                 MediaType.MULTIPART_FORM_DATA_VALUE,
                 new FileInputStream(filePath)
         );
-        final CustomerCreateOrUpdateOrderPurchaseOrderRequest request = CustomerCreateOrUpdateOrderPurchaseOrderRequestBuilder.createBuild();
+        final CustomerCreateOrUpdateOrderPurchaseOrderRequest request = CustomerCreateOrUpdateOrderPurchaseOrderRequestBuilder.build();
 
         // when
         final ResultActions resultActions = requestCreateOrUpdateOrderPurchaseOrder(accessTokenOfUser2, orderId, file, request);
@@ -1143,7 +1133,7 @@ public class CustomerOrderIntegrationTest extends IntegrationTest {
                 MediaType.MULTIPART_FORM_DATA_VALUE,
                 new FileInputStream(filePath)
         );
-        final CustomerCreateOrUpdateOrderPurchaseOrderRequest request = CustomerCreateOrUpdateOrderPurchaseOrderRequestBuilder.createBuild();
+        final CustomerCreateOrUpdateOrderPurchaseOrderRequest request = CustomerCreateOrUpdateOrderPurchaseOrderRequestBuilder.build();
 
         // when
         final ResultActions resultActions = requestCreateOrUpdateOrderPurchaseOrder(accessToken, unknownOrderId, file, request);
@@ -1168,7 +1158,7 @@ public class CustomerOrderIntegrationTest extends IntegrationTest {
                 MediaType.MULTIPART_FORM_DATA_VALUE,
                 new FileInputStream(filePath)
         );
-        final CustomerCreateOrUpdateOrderPurchaseOrderRequest request = CustomerCreateOrUpdateOrderPurchaseOrderRequestBuilder.createBuild();
+        final CustomerCreateOrUpdateOrderPurchaseOrderRequest request = CustomerCreateOrUpdateOrderPurchaseOrderRequestBuilder.build();
 
         // when
         final ResultActions resultActions = requestCreateOrUpdateOrderPurchaseOrder(accessToken, orderId, file, request);
@@ -1186,7 +1176,7 @@ public class CustomerOrderIntegrationTest extends IntegrationTest {
         // given
         final String accessToken = jwtBuilder.accessJwtBuildOfCustomer();
         final String orderId = "4";
-        final CustomerCreateOrUpdateOrderPurchaseOrderRequest request = CustomerCreateOrUpdateOrderPurchaseOrderRequestBuilder.createBuild();
+        final CustomerCreateOrUpdateOrderPurchaseOrderRequest request = CustomerCreateOrUpdateOrderPurchaseOrderRequestBuilder.build();
 
         // when
         final ResultActions resultActions = requestCreateOrUpdateOrderPurchaseOrderWithOutFile(accessToken, orderId, request);

@@ -73,6 +73,7 @@ public class CustomerOrderServiceUnitTest extends ServiceUnitTest {
     public void createOrder_성공() {
         // given
         final Order expectedOrder = OrderBuilder.build();
+
         final String userEmail = "user@gmail.com";
         final CustomerCreateOrderRequest request = CustomerCreateOrderRequestBuilder.build();
 
@@ -96,6 +97,7 @@ public class CustomerOrderServiceUnitTest extends ServiceUnitTest {
         // given
         final Order order = OrderBuilder.build();
         final DeliveryAddress deliveryAddress = DeliveryAddressBuilder.build2();
+
         final Long orderId = 1L;
         final CustomerUpdateOrderDeliveryAddressRequest request = CustomerUpdateOrderDeliveryAddressRequestBuilder.buildOfDeliveryAddress2();
 
@@ -116,6 +118,7 @@ public class CustomerOrderServiceUnitTest extends ServiceUnitTest {
         // given
         final Order order = OrderBuilder.build();
         order.changeStageToCompleted();
+
         final Long orderId = 1L;
         final CustomerUpdateOrderDeliveryAddressRequest request = CustomerUpdateOrderDeliveryAddressRequestBuilder.buildOfDeliveryAddress2();
 
@@ -136,6 +139,7 @@ public class CustomerOrderServiceUnitTest extends ServiceUnitTest {
         // given
         final Order order = OrderBuilder.build();
         final Drawing expectedDrawing = DrawingBuilder.build();
+
         final Long orderId = 1L;
         final CustomerCreateDrawingRequest request = CustomerCreateDrawingRequestBuilder.build();
 
@@ -159,6 +163,7 @@ public class CustomerOrderServiceUnitTest extends ServiceUnitTest {
         // given
         final Order order = OrderBuilder.build();
         order.changeStageToCompleted();
+
         final Long orderId = 1L;
         final CustomerCreateDrawingRequest request = CustomerCreateDrawingRequestBuilder.build();
 
@@ -179,6 +184,7 @@ public class CustomerOrderServiceUnitTest extends ServiceUnitTest {
         // given
         final Order order = OrderBuilder.build();
         final Drawing drawing = DrawingBuilder.build();
+
         final Long orderId = 1L;
         final Long drawingId = 1L;
         final CustomerUpdateDrawingRequest request = CustomerUpdateDrawingRequestBuilder.build();
@@ -200,6 +206,7 @@ public class CustomerOrderServiceUnitTest extends ServiceUnitTest {
         // given
         final Order order = OrderBuilder.build();
         order.changeStageToCompleted();
+
         final Long orderId = 1L;
         final Long drawingId = 1L;
         final CustomerUpdateDrawingRequest request = CustomerUpdateDrawingRequestBuilder.build();
@@ -221,6 +228,7 @@ public class CustomerOrderServiceUnitTest extends ServiceUnitTest {
         // given
         final Order order = OrderBuilder.build();
         final Drawing drawing = DrawingBuilder.build();
+
         final Long orderId = 1L;
         final Long drawingId = 1L;
 
@@ -245,6 +253,7 @@ public class CustomerOrderServiceUnitTest extends ServiceUnitTest {
         // given
         final Order order = OrderBuilder.build();
         order.changeStageToCompleted();
+
         final Long orderId = 1L;
         final Long drawingId = 1L;
 
@@ -265,6 +274,7 @@ public class CustomerOrderServiceUnitTest extends ServiceUnitTest {
     public void deleteOrderDrawing_실패_LAST_DRAWING_DELETE() {
         // given
         final Order order = OrderBuilder.build();
+
         final Long orderId = 1L;
         final Long drawingId = 1L;
 
@@ -285,6 +295,7 @@ public class CustomerOrderServiceUnitTest extends ServiceUnitTest {
     public void checkAuthorityOfOrder_성공() {
         // given
         final String userEmail = "user@gmail.com";
+
         final Long orderId = 1L;
 
         // stub
@@ -303,6 +314,7 @@ public class CustomerOrderServiceUnitTest extends ServiceUnitTest {
         // given
         final String userEmail = "user@gmail.com";
         final String userEmailOfOrder = "user-order@gmail.com";
+
         final Long orderId = 1L;
 
         // stub
@@ -323,6 +335,7 @@ public class CustomerOrderServiceUnitTest extends ServiceUnitTest {
         final Order order = OrderBuilder.build();
         final Quotation quotation = QuotationBuilder.build();
         order.createQuotation(quotation);
+
         final Long orderId = 1L;
 
         // stub
@@ -344,6 +357,7 @@ public class CustomerOrderServiceUnitTest extends ServiceUnitTest {
         // given
         final Order order = OrderBuilder.build();
         order.changeStageToCompleted();
+
         final Long orderId = 1L;
 
         // stub
@@ -363,6 +377,7 @@ public class CustomerOrderServiceUnitTest extends ServiceUnitTest {
     public void approveQuotation_실패_NOT_FOUND_QUOTATION() {
         // given
         final Order order = OrderBuilder.build();
+
         final Long orderId = 1L;
 
         // stub
@@ -381,7 +396,10 @@ public class CustomerOrderServiceUnitTest extends ServiceUnitTest {
     public void createOrderPurchaseOrder_성공() throws Exception {
         // given
         final Order order = OrderBuilder.build();
+        final Quotation quotation = QuotationBuilder.build();
+        order.createQuotation(quotation);
         final PurchaseOrder purchaseOrder = PurchaseOrderBuilder.build();
+
         final Long orderId = 1L;
         final String filePath = "src/test/resources/purchase-order/purchase-order.png";
         final MockMultipartFile file = new MockMultipartFile(
@@ -390,7 +408,7 @@ public class CustomerOrderServiceUnitTest extends ServiceUnitTest {
                 MediaType.MULTIPART_FORM_DATA_VALUE,
                 new FileInputStream(filePath)
         );
-        final CustomerCreateOrUpdateOrderPurchaseOrderRequest request = CustomerCreateOrUpdateOrderPurchaseOrderRequestBuilder.createBuild();
+        final CustomerCreateOrUpdateOrderPurchaseOrderRequest request = CustomerCreateOrUpdateOrderPurchaseOrderRequestBuilder.build();
         final CustomerCreateOrUpdateOrderPurchaseOrderResponse expectedResponse = CustomerCreateOrUpdateOrderPurchaseOrderResponseBuilder.build();
 
         // stub
@@ -408,15 +426,78 @@ public class CustomerOrderServiceUnitTest extends ServiceUnitTest {
 
     /**
      * 거래 발주서 작성 실패
+     * - 실패 사유 : 발주서의 검수기간이 거래 납기일 이전임
+     */
+    @Test
+    public void createOrderPurchaseOrder_실패_INVALID_PURCHASE_ORDER_INSPECTION_PERIOD() throws Exception {
+        // given
+        final Order order = OrderBuilder.build();
+        final Quotation quotation = QuotationBuilder.build();
+        order.createQuotation(quotation);
+
+        final Long orderId = 1L;
+        final String filePath = "src/test/resources/purchase-order/purchase-order.png";
+        final MockMultipartFile file = new MockMultipartFile(
+                "file",
+                "purchase-order.png",
+                MediaType.MULTIPART_FORM_DATA_VALUE,
+                new FileInputStream(filePath)
+        );
+        final CustomerCreateOrUpdateOrderPurchaseOrderRequest request = CustomerCreateOrUpdateOrderPurchaseOrderRequestBuilder.earlyInspectionPeriodBuild();
+
+        // stub
+        when(orderService.getOrderById(orderId)).thenReturn(order);
+
+        // when & then
+        Assertions.assertThatThrownBy(() -> customerOrderService.createOrderPurchaseOrder(orderId, file, request))
+                .isInstanceOf(CustomCommonException.class)
+                .hasMessage(OrderErrorCode.INVALID_PURCHASE_ORDER_INSPECTION_PERIOD.getMessage());
+    }
+
+    /**
+     * 거래 발주서 작성 실패
+     * - 실패 사유 : 발주서의 지급일이 거래 납기일 이전임
+     */
+    @Test
+    public void createOrderPurchaseOrder_실패_INVALID_PURCHASE_ORDER_PAYMENT_DATE() throws Exception {
+        // given
+        final Order order = OrderBuilder.build();
+        final Quotation quotation = QuotationBuilder.build();
+        order.createQuotation(quotation);
+
+        final Long orderId = 1L;
+        final String filePath = "src/test/resources/purchase-order/purchase-order.png";
+        final MockMultipartFile file = new MockMultipartFile(
+                "file",
+                "purchase-order.png",
+                MediaType.MULTIPART_FORM_DATA_VALUE,
+                new FileInputStream(filePath)
+        );
+        final CustomerCreateOrUpdateOrderPurchaseOrderRequest request = CustomerCreateOrUpdateOrderPurchaseOrderRequestBuilder.earlyPaymentDateBuild();
+
+        // stub
+        when(orderService.getOrderById(orderId)).thenReturn(order);
+
+        // when & then
+        Assertions.assertThatThrownBy(() -> customerOrderService.createOrderPurchaseOrder(orderId, file, request))
+                .isInstanceOf(CustomCommonException.class)
+                .hasMessage(OrderErrorCode.INVALID_PURCHASE_ORDER_PAYMENT_DATE.getMessage());
+    }
+
+    /**
+     * 거래 발주서 작성 실패
      * - 실패 사유 : 발주서의 파일이 존재하지 않음
      */
     @Test
     public void createOrderPurchaseOrder_실패_REQUIRED_PURCHASE_ORDER_FILE() {
         // given
         final Order order = OrderBuilder.build();
+        final Quotation quotation = QuotationBuilder.build();
+        order.createQuotation(quotation);
+
         final Long orderId = 1L;
         final MockMultipartFile emptyFile = new MockMultipartFile("emptyFile", new byte[0]);
-        final CustomerCreateOrUpdateOrderPurchaseOrderRequest request = CustomerCreateOrUpdateOrderPurchaseOrderRequestBuilder.createBuild();
+        final CustomerCreateOrUpdateOrderPurchaseOrderRequest request = CustomerCreateOrUpdateOrderPurchaseOrderRequestBuilder.build();
 
         // stub
         when(orderService.getOrderById(orderId)).thenReturn(order);
@@ -434,26 +515,21 @@ public class CustomerOrderServiceUnitTest extends ServiceUnitTest {
     public void updateOrderPurchaseOrder_성공() throws Exception {
         // given
         final Order order = OrderBuilder.build();
+        final Quotation quotation = QuotationBuilder.build();
+        order.createQuotation(quotation);
         final PurchaseOrder purchaseOrder = PurchaseOrderBuilder.build();
         order.createPurchaseOrder(purchaseOrder);
 
         final Long orderId = 1L;
-        final String filePath = "src/test/resources/purchase-order/purchase-order.png";
-        final MockMultipartFile file = new MockMultipartFile(
-                "file",
-                "purchase-order.png",
-                MediaType.MULTIPART_FORM_DATA_VALUE,
-                new FileInputStream(filePath)
-        );
-        final CustomerCreateOrUpdateOrderPurchaseOrderRequest request = CustomerCreateOrUpdateOrderPurchaseOrderRequestBuilder.updateBuild();
+        final MockMultipartFile emptyFile = new MockMultipartFile("emptyFile", new byte[0]);
+        final CustomerCreateOrUpdateOrderPurchaseOrderRequest request = CustomerCreateOrUpdateOrderPurchaseOrderRequestBuilder.build();
         final CustomerCreateOrUpdateOrderPurchaseOrderResponse expectedResponse = CustomerCreateOrUpdateOrderPurchaseOrderResponseBuilder.build();
 
         // stub
         when(orderService.getOrderById(orderId)).thenReturn(order);
-        when(s3Service.upload(any(), (MultipartFile) any(), eq("purchase-order.png"))).thenReturn(expectedResponse.fileUrl());
 
         // when
-        final CustomerCreateOrUpdateOrderPurchaseOrderResponse actualResponse = customerOrderService.updateOrderPurchaseOrder(orderId, file, request);
+        final CustomerCreateOrUpdateOrderPurchaseOrderResponse actualResponse = customerOrderService.updateOrderPurchaseOrder(orderId, emptyFile, request);
 
         // then
         Assertions.assertThat(actualResponse).isEqualTo(expectedResponse);
@@ -463,12 +539,65 @@ public class CustomerOrderServiceUnitTest extends ServiceUnitTest {
     }
 
     /**
+     * 거래 발주서 수정 실패
+     * - 실패 사유 : 발주서의 검수기간이 거래 납기일 이전임
+     */
+    @Test
+    public void updateOrderPurchaseOrder_실패_INVALID_PURCHASE_ORDER_INSPECTION_PERIOD() throws Exception {
+        // given
+        final Order order = OrderBuilder.build();
+        final Quotation quotation = QuotationBuilder.build();
+        order.createQuotation(quotation);
+        final PurchaseOrder purchaseOrder = PurchaseOrderBuilder.build();
+        order.createPurchaseOrder(purchaseOrder);
+
+        final Long orderId = 1L;
+        final MockMultipartFile emptyFile = new MockMultipartFile("emptyFile", new byte[0]);
+        final CustomerCreateOrUpdateOrderPurchaseOrderRequest request = CustomerCreateOrUpdateOrderPurchaseOrderRequestBuilder.earlyInspectionPeriodBuild();
+
+        // stub
+        when(orderService.getOrderById(orderId)).thenReturn(order);
+
+        // when & then
+        Assertions.assertThatThrownBy(() -> customerOrderService.updateOrderPurchaseOrder(orderId, emptyFile, request))
+                .isInstanceOf(CustomCommonException.class)
+                .hasMessage(OrderErrorCode.INVALID_PURCHASE_ORDER_INSPECTION_PERIOD.getMessage());
+    }
+
+    /**
+     * 거래 발주서 수정 실패
+     * - 실패 사유 : 발주서의 지급일이 거래 납기일 이전임
+     */
+    @Test
+    public void updateOrderPurchaseOrder_실패_INVALID_PURCHASE_ORDER_PAYMENT_DATE() throws Exception {
+        // given
+        final Order order = OrderBuilder.build();
+        final Quotation quotation = QuotationBuilder.build();
+        order.createQuotation(quotation);
+        final PurchaseOrder purchaseOrder = PurchaseOrderBuilder.build();
+        order.createPurchaseOrder(purchaseOrder);
+
+        final Long orderId = 1L;
+        final MockMultipartFile emptyFile = new MockMultipartFile("emptyFile", new byte[0]);
+        final CustomerCreateOrUpdateOrderPurchaseOrderRequest request = CustomerCreateOrUpdateOrderPurchaseOrderRequestBuilder.earlyPaymentDateBuild();
+
+        // stub
+        when(orderService.getOrderById(orderId)).thenReturn(order);
+
+        // when & then
+        Assertions.assertThatThrownBy(() -> customerOrderService.updateOrderPurchaseOrder(orderId, emptyFile, request))
+                .isInstanceOf(CustomCommonException.class)
+                .hasMessage(OrderErrorCode.INVALID_PURCHASE_ORDER_PAYMENT_DATE.getMessage());
+    }
+
+    /**
      * 고객의 거래 중, (견적 대기, 견적 승인, 제작 중, 제작 완료) 단계의 거래 전체 삭제 성공
      */
     @Test
     public void deleteOrderByStageNotCompleted_성공() {
         // given
         final List<Long> orderIdList = List.of(1L);
+
         final String email = "user@gmail.com";
 
         // stub
@@ -491,6 +620,7 @@ public class CustomerOrderServiceUnitTest extends ServiceUnitTest {
         // given
         final Order order = OrderBuilder.build();
         final List<Order> orderList = List.of(order);
+
         final String email = "user@gmail.com";
 
         // stub

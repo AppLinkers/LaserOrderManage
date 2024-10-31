@@ -2,7 +2,6 @@ package com.laser.ordermanage.factory.service;
 
 import com.laser.ordermanage.common.cloud.aws.S3Service;
 import com.laser.ordermanage.common.entity.embedded.File;
-import com.laser.ordermanage.common.exception.CommonErrorCode;
 import com.laser.ordermanage.common.exception.CustomCommonException;
 import com.laser.ordermanage.common.util.FileUtil;
 import com.laser.ordermanage.customer.domain.Customer;
@@ -51,14 +50,14 @@ public class FactoryOrderService {
     @Transactional
     public FactoryCreateOrUpdateOrderQuotationResponse createOrderQuotation(Long orderId, MultipartFile file, FactoryCreateOrUpdateOrderQuotationRequest request) {
         Order order = orderService.getOrderById(orderId);
+
+        if (order.getCreatedAt().toLocalDate().isAfter(request.deliveryDate())) {
+            throw new CustomCommonException(OrderErrorCode.INVALID_QUOTATION_DELIVERY_DATE);
+        }
+
         // 견적서 파일 유무 확인
         if (file == null || file.isEmpty()) {
             throw new CustomCommonException(OrderErrorCode.REQUIRED_QUOTATION_FILE);
-        }
-
-        // TODO: 10/23/24 CommonErrorCode -> OrderErrorCode 전환 및 모듈화
-        if (order.getCreatedAt().toLocalDate().isAfter(request.deliveryDate())) {
-            throw new CustomCommonException(CommonErrorCode.INVALID_REQUEST_BODY_FIELDS, "견적서의 납기일은 거래 생성일 이후이어야 합니다.");
         }
 
         File<QuotationFileType> quotationFile = uploadQuotationFile(file);
@@ -80,9 +79,8 @@ public class FactoryOrderService {
         Order order = orderService.getOrderById(orderId);
         Quotation quotation = order.getQuotation();
 
-        // TODO: 10/23/24 CommonErrorCode -> OrderErrorCode 전환 및 모듈화
         if (order.getCreatedAt().toLocalDate().isAfter(request.deliveryDate())) {
-            throw new CustomCommonException(CommonErrorCode.INVALID_REQUEST_BODY_FIELDS, "견적서의 납기일은 거래 생성일 이후이어야 합니다.");
+            throw new CustomCommonException(OrderErrorCode.INVALID_QUOTATION_DELIVERY_DATE);
         }
 
         // 견적서 파일 유무 확인
@@ -114,7 +112,7 @@ public class FactoryOrderService {
     }
 
     @Transactional
-    public Order changeStageToProductionCompleted(Long orderId) {
+    public void changeStageToProductionCompleted(Long orderId) {
         Order order = orderService.getOrderById(orderId);
 
         if (!order.enableChangeStageToProductionCompleted()) {
@@ -122,8 +120,6 @@ public class FactoryOrderService {
         }
 
         order.changeStageToProductionCompleted();
-
-        return order;
     }
 
     @Transactional

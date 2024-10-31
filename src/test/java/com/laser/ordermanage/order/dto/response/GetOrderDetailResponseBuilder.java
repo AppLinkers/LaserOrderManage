@@ -37,7 +37,7 @@ public class GetOrderDetailResponseBuilder {
 
         LocalDate deliveryDate = LocalDate.parse("2023-10-19", DateTimeFormatter.ISO_LOCAL_DATE);
         LocalDateTime createdAtOfQuotation = LocalDateTime.parse("2023-10-14 00:00:00", formatter);
-        GetQuotationResponse quotation = new GetQuotationResponse(1L, "quotation.pdf", "https://ordermanage.s3.ap-northeast-2.amazonaws.com/quotation.pdf", 100000000L, deliveryDate, createdAtOfQuotation);
+        GetQuotationResponse quotation = new GetQuotationResponse(1L, "quotation.xlsx", "https://ordermanage.s3.ap-northeast-2.amazonaws.com/quotation.xlsx", 100000000L, deliveryDate, createdAtOfQuotation);
 
         LocalDate inspectionPeriod = LocalDate.parse("2023-10-20", DateTimeFormatter.ISO_LOCAL_DATE);
         LocalDate paymentDate = LocalDate.parse("2023-10-20", DateTimeFormatter.ISO_LOCAL_DATE);

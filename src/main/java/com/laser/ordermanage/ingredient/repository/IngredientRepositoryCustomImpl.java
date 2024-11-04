@@ -13,7 +13,10 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 
 import java.time.LocalDate;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static com.laser.ordermanage.factory.domain.QFactory.factory;
 import static com.laser.ordermanage.factory.domain.QFactoryManager.factoryManager;
@@ -30,7 +33,9 @@ public class IngredientRepositoryCustomImpl implements IngredientRepositoryCusto
     public List<GetIngredientResponse> findIngredientStatusByFactoryAndDate(String email, LocalDate date) {
         SqlParameterSource namedParameters = new MapSqlParameterSource()
                 .addValue("email", email)
-                .addValue("date", date);
+                .addValue("previousDate", date.minusDays(1))
+                .addValue("date", date)
+                .addValue("nextDate", date.plusDays(1));
 
         String findIngredientQuery = """
             SELECT
@@ -40,7 +45,7 @@ public class IngredientRepositoryCustomImpl implements IngredientRepositoryCusto
                 ingredient.width AS width,
                 ingredient.height AS height,
                 ingredient.weight AS weight,
-                NOT ISNULL(ingredient.deleted_at) AS isDeleted,
+                ingredient.deleted_at IS NOT NULL AS isDeleted,
                 ingredient_price_data.purchase AS purchase,
                 ingredient_price_data.sell AS sell,
                 COALESCE(ingredient_previous_stock_data.stock, 0) AS previousDay,
@@ -80,7 +85,7 @@ public class IngredientRepositoryCustomImpl implements IngredientRepositoryCusto
                         ingredient_stock.optimal,
                         ROW_NUMBER() OVER (PARTITION BY ingredient_stock.ingredient_id ORDER BY ingredient_stock.created_at DESC) AS rn
                     FROM ingredient_stock
-                    WHERE ingredient_stock.created_at <= DATE_SUB(:date, INTERVAL 1 DAY )
+                    WHERE ingredient_stock.created_at <= :previousDate
                 ) AS ranked_data
                 WHERE ranked_data.rn = 1
             ) AS ingredient_previous_stock_data ON ingredient_previous_stock_data.ingredient_id = ingredient.id
@@ -95,11 +100,10 @@ public class IngredientRepositoryCustomImpl implements IngredientRepositoryCusto
                 WHERE ingredient_stock.created_at = :date
             ) AS ingredient_stock_data ON ingredient_stock_data.ingredient_id = ingredient.id
             WHERE
-                ingredient.created_at < DATE_ADD(:date, INTERVAL 1 DAY ) AND
-                (ISNULL(ingredient.deleted_at) or ingredient.deleted_at >= :date) AND
+                ingredient.created_at < :nextDate AND
+                (ingredient.deleted_at IS NULL or ingredient.deleted_at >= :date) AND
                 user_table.email = :email
             """;
-
         return jdbcTemplate.query(findIngredientQuery, namedParameters, new IngredientRowMapper());
     }
 

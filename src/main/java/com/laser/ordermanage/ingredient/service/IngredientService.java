@@ -122,7 +122,7 @@ public class IngredientService {
     public void updateIngredientStock(Long ingredientId, UpdateIngredientStockRequest request) {
         Ingredient ingredient = getIngredientById(ingredientId);
 
-        if (ingredient.getDeletedAt() != null) {
+        if (ingredient.isDeleted()) {
             throw new CustomCommonException(IngredientErrorCode.UNABLE_UPDATE_DELETED_INGREDIENT);
         }
 
@@ -153,7 +153,7 @@ public class IngredientService {
     public void updateIngredient(Long ingredientId, UpdateIngredientRequest request) {
         Ingredient ingredient = getIngredientById(ingredientId);
 
-        if (ingredient.getDeletedAt() != null) {
+        if (ingredient.isDeleted()) {
             throw new CustomCommonException(IngredientErrorCode.UNABLE_UPDATE_DELETED_INGREDIENT);
         }
 
@@ -197,7 +197,7 @@ public class IngredientService {
     public void deleteIngredient(Long ingredientId) {
         Ingredient ingredient = getIngredientById(ingredientId);
 
-        if (ingredient.getDeletedAt() != null) {
+        if (ingredient.isDeleted()) {
             throw new CustomCommonException(IngredientErrorCode.UNABLE_DELETE_DELETED_INGREDIENT);
         }
 

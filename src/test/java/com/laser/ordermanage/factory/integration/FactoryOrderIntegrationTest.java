@@ -1360,19 +1360,6 @@ public class FactoryOrderIntegrationTest extends IntegrationTest {
                 .andDo(print());
     }
 
-    private ResultActions requestChangeStageToCompletedWithOutFile(String accessToken, String orderId, FactoryCreateOrderAcquirerRequest request) throws Exception {
-        MockMultipartHttpServletRequestBuilder builder = MockMvcRequestBuilders.multipart("/factory/order/{order-id}/stage/completed", orderId);
-
-        String requestJson = objectMapper.writeValueAsString(request);
-        MockMultipartFile acquire = new MockMultipartFile("acquire", "acquire", MediaType.APPLICATION_JSON_VALUE, requestJson.getBytes(StandardCharsets.UTF_8));
-
-        return mvc.perform(builder
-                        .file(acquire)
-                        .header("Authorization", "Bearer " + accessToken)
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andDo(print());
-    }
-
     private ResultActions requestChangeStageToCompletedWithOutAccessToken(String orderId, MockMultipartFile file, FactoryCreateOrderAcquirerRequest request) throws Exception {
         MockMultipartHttpServletRequestBuilder builder = MockMvcRequestBuilders.multipart("/factory/order/{order-id}/stage/completed", orderId);
 

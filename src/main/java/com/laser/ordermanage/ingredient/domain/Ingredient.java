@@ -7,8 +7,6 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDate;
 
@@ -57,5 +55,9 @@ public class Ingredient extends CreatedAtEntity {
 
     public void delete() {
         this.deletedAt = LocalDate.now();
+    }
+
+    public boolean isDeleted() {
+        return this.deletedAt != null;
     }
 }

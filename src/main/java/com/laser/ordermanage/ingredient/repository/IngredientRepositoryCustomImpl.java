@@ -130,7 +130,8 @@ public class IngredientRepositoryCustomImpl implements IngredientRepositoryCusto
         SqlParameterSource namedParameters = new MapSqlParameterSource()
                 .addValue("email", email)
                 .addValue("startDate", startDate)
-                .addValue("endDate", endDate);
+                .addValue("endDate", endDate)
+                .addValue("nextEndDate", endDate.plusMonths(1));
 
         String findIngredientAnalysisQuery = """
                 SELECT
@@ -141,14 +142,14 @@ public class IngredientRepositoryCustomImpl implements IngredientRepositoryCusto
                     ingredient_stock_data.optimal
                 FROM
                     (
-                        WITH RECURSIVE T_TEMP_DATES AS (
-                           SELECT :startDate AS DT
+                        WITH RECURSIVE T_TEMP_DATES(DT) AS (
+                           SELECT :startDate
                         UNION
-                           SELECT DATE_ADD(T_TEMP_DATES.DT, INTERVAL 1 MONTH)
+                           SELECT TIMESTAMPADD(MONTH, 1, DT)
                            FROM T_TEMP_DATES
-                           WHERE DATE_ADD(T_TEMP_DATES.DT, INTERVAL 1 MONTH) <= :endDate
+                           WHERE TIMESTAMPADD(MONTH, 1, DT) <= :endDate
                         )
-                        SELECT DATE_FORMAT(DT, '%Y-%m') AS yearmonth FROM T_TEMP_DATES
+                        SELECT (CONCAT(YEAR(DT), '-', LPAD(MONTH(DT), 2, '0'))) AS yearmonth FROM T_TEMP_DATES
                     )  AS date LEFT OUTER JOIN (
                         SELECT
                             ingredient_stock_data_1.yearmonth AS yearmonth,
@@ -160,7 +161,7 @@ public class IngredientRepositoryCustomImpl implements IngredientRepositoryCusto
                             (
                                 SELECT
                                     ingredient_stock.ingredient_id,
-                                    DATE_FORMAT(ingredient_stock.created_at, '%Y-%m') AS yearmonth,
+                                    (CONCAT(YEAR(ingredient_stock.created_at), '-', LPAD(MONTH(ingredient_stock.created_at), 2, '0'))) AS yearmonth,
                 """ +
                 (stockUnit.equals("count") ? """
                                     SUM(ingredient_stock.incoming) AS incoming,
@@ -177,7 +178,7 @@ public class IngredientRepositoryCustomImpl implements IngredientRepositoryCusto
                                 JOIN factory_manager ON factory.id = factory_manager.factory_id
                                 JOIN user_table ON user_table.id = factory_manager.user_id
                                 WHERE
-                                    ingredient_stock.created_at >= :startDate AND ingredient_stock.created_at < DATE_ADD(:endDate, INTERVAL 1 MONTH ) AND
+                                    ingredient_stock.created_at >= :startDate AND ingredient_stock.created_at < :nextEndDate AND
                                     user_table.email = :email
                                 GROUP BY ingredient_stock.ingredient_id, yearmonth
                             ) AS ingredient_stock_data_1
@@ -191,7 +192,7 @@ public class IngredientRepositoryCustomImpl implements IngredientRepositoryCusto
                                 FROM (
                                     SELECT
                                         ingredient_stock.ingredient_id,
-                                        DATE_FORMAT(ingredient_stock.created_at, '%Y-%m') AS yearmonth,
+                                        (CONCAT(YEAR(ingredient_stock.created_at), '-', LPAD(MONTH(ingredient_stock.created_at), 2, '0'))) AS yearmonth,
                 """ +
                 (stockUnit.equals("count") ? """
                                         ingredient_stock.stock,
@@ -202,14 +203,14 @@ public class IngredientRepositoryCustomImpl implements IngredientRepositoryCusto
                                         ROUND(CAST(ingredient_stock.optimal AS DECIMAL(10, 2)) * CAST(ingredient.weight AS DECIMAL(10, 2)), 2) AS optimal,
                 """) +
                 """
-                                        ROW_NUMBER() over (PARTITION BY ingredient_stock.ingredient_id, DATE_FORMAT(ingredient_stock.created_at, '%Y-%m') ORDER BY ingredient_stock.created_at DESC) AS rn
+                                        ROW_NUMBER() over (PARTITION BY ingredient_stock.ingredient_id, (CONCAT(YEAR(ingredient_stock.created_at), '-', LPAD(MONTH(ingredient_stock.created_at), 2, '0'))) ORDER BY ingredient_stock.created_at DESC) AS rn
                                     FROM ingredient_stock
                                     JOIN ingredient ON ingredient.id = ingredient_stock.ingredient_id
                                     JOIN factory ON factory.id = ingredient.factory_id
                                     JOIN factory_manager ON factory.id = factory_manager.factory_id
                                     JOIN user_table ON user_table.id = factory_manager.user_id
                                     WHERE
-                                        ingredient_stock.created_at >= :startDate AND ingredient_stock.created_at < DATE_ADD(:endDate, INTERVAL 1 MONTH ) AND
+                                        ingredient_stock.created_at >= :startDate AND ingredient_stock.created_at < :nextEndDate AND
                                         user_table.email = :email
                                 ) AS ranked_data
                                 WHERE ranked_data.rn = 1
@@ -229,7 +230,8 @@ public class IngredientRepositoryCustomImpl implements IngredientRepositoryCusto
         SqlParameterSource namedParameters = new MapSqlParameterSource()
                 .addValue("email", email)
                 .addValue("startDate", startDate)
-                .addValue("endDate", endDate);
+                .addValue("endDate", endDate)
+                .addValue("nextEndDate", endDate.plusMonths(1));
 
         String findIngredientAnalysisQuery = """
                 SELECT
@@ -238,14 +240,14 @@ public class IngredientRepositoryCustomImpl implements IngredientRepositoryCusto
                     ingredient_price_data.sell
                 FROM
                     (
-                        WITH RECURSIVE T_TEMP_DATES AS (
-                           SELECT :startDate AS DT
+                        WITH RECURSIVE T_TEMP_DATES(DT) AS (
+                           SELECT :startDate
                         UNION
-                           SELECT DATE_ADD(T_TEMP_DATES.DT, INTERVAL 1 MONTH)
+                           SELECT TIMESTAMPADD(MONTH, 1, DT)
                            FROM T_TEMP_DATES
-                           WHERE DATE_ADD(T_TEMP_DATES.DT, INTERVAL 1 MONTH) <= :endDate
+                           WHERE TIMESTAMPADD(MONTH, 1, DT) <= :endDate
                         )
-                        SELECT DT, DATE_FORMAT(DT, '%Y-%m') AS yearmonth FROM T_TEMP_DATES
+                        SELECT (CONCAT(YEAR(DT), '-', LPAD(MONTH(DT), 2, '0'))) AS yearmonth FROM T_TEMP_DATES
                     )  AS date LEFT OUTER JOIN (
                         SELECT
                             ranked_data.yearmonth,
@@ -253,17 +255,17 @@ public class IngredientRepositoryCustomImpl implements IngredientRepositoryCusto
                             SUM(ranked_data.sell) as sell
                         FROM (
                             SELECT
-                                DATE_FORMAT(ingredient_price.created_at, '%Y-%m') AS yearmonth,
+                                (CONCAT(YEAR(ingredient_price.created_at), '-', LPAD(MONTH(ingredient_price.created_at), 2, '0'))) AS yearmonth,
                                 ingredient_price.purchase,
                                 ingredient_price.sell,
-                                ROW_NUMBER() over (PARTITION BY ingredient_price.ingredient_id, DATE_FORMAT(ingredient_price.created_at, '%Y-%m') ORDER BY ingredient_price.created_at DESC) AS rn
+                                ROW_NUMBER() over (PARTITION BY ingredient_price.ingredient_id, (CONCAT(YEAR(ingredient_price.created_at), '-', LPAD(MONTH(ingredient_price.created_at), 2, '0'))) ORDER BY ingredient_price.created_at DESC) AS rn
                             FROM ingredient_price
                             JOIN ingredient ON ingredient.id = ingredient_price.ingredient_id
                             JOIN factory ON factory.id = ingredient.factory_id
                             JOIN factory_manager ON factory.id = factory_manager.factory_id
                             JOIN user_table ON user_table.id = factory_manager.user_id
                             WHERE
-                                ingredient_price.created_at >= :startDate AND ingredient_price.created_at < DATE_ADD(:endDate, INTERVAL 1 MONTH ) AND
+                                ingredient_price.created_at >= :startDate AND ingredient_price.created_at < :nextEndDate AND
                                 user_table.email = :email
                         ) AS ranked_data
                         WHERE ranked_data.rn = 1
@@ -280,28 +282,29 @@ public class IngredientRepositoryCustomImpl implements IngredientRepositoryCusto
         SqlParameterSource namedParameters = new MapSqlParameterSource()
                 .addValue("email", email)
                 .addValue("startDate", startDate)
-                .addValue("endDate", endDate);
+                .addValue("endDate", endDate)
+                .addValue("nextEndDate", endDate.plusYears(1));
 
         String findIngredientAnalysisQuery = """
                 SELECT
-                    date.year,
+                    date.yr,
                     ingredient_stock_data.incoming,
                     ingredient_stock_data.production,
                     ingredient_stock_data.stock,
                     ingredient_stock_data.optimal
                 FROM
                     (
-                        WITH RECURSIVE T_TEMP_DATES AS (
-                           SELECT :startDate AS DT
+                        WITH RECURSIVE T_TEMP_DATES(DT) AS (
+                           SELECT :startDate
                         UNION
-                           SELECT DATE_ADD(T_TEMP_DATES.DT, INTERVAL 1 YEAR)
+                           SELECT TIMESTAMPADD(YEAR, 1, DT)
                            FROM T_TEMP_DATES
-                           WHERE DATE_ADD(T_TEMP_DATES.DT, INTERVAL 1 YEAR) <= :endDate
+                           WHERE TIMESTAMPADD(YEAR, 1, DT) <= :endDate
                         )
-                        SELECT DT, DATE_FORMAT(DT, '%Y') AS year FROM T_TEMP_DATES
+                        SELECT YEAR(DT) AS yr FROM T_TEMP_DATES
                     )  AS date LEFT OUTER JOIN (
                         SELECT
-                            ingredient_stock_data_1.year AS year,
+                            ingredient_stock_data_1.yr AS yr,
                             SUM(ingredient_stock_data_1.incoming) AS incoming,
                             SUM(ingredient_stock_data_1.production) AS production,
                             SUM(ingredient_stock_data_2.stock) AS stock,
@@ -310,7 +313,7 @@ public class IngredientRepositoryCustomImpl implements IngredientRepositoryCusto
                             (
                                 SELECT
                                     ingredient_stock.ingredient_id,
-                                    DATE_FORMAT(ingredient_stock.created_at, '%Y') AS year,
+                                    YEAR(ingredient_stock.created_at) AS yr,
                 """ +
                 (stockUnit.equals("count") ? """
                                     SUM(ingredient_stock.incoming) AS incoming,
@@ -327,21 +330,21 @@ public class IngredientRepositoryCustomImpl implements IngredientRepositoryCusto
                                 JOIN factory_manager ON factory.id = factory_manager.factory_id
                                 JOIN user_table ON user_table.id = factory_manager.user_id
                                 WHERE
-                                    ingredient_stock.created_at >= :startDate AND ingredient_stock.created_at < DATE_ADD(:endDate, INTERVAL 1 YEAR ) AND
+                                    ingredient_stock.created_at >= :startDate AND ingredient_stock.created_at < :nextEndDate AND
                                     user_table.email = :email
-                                GROUP BY ingredient_stock.ingredient_id, year
+                                GROUP BY ingredient_stock.ingredient_id, yr
                             ) AS ingredient_stock_data_1
                             JOIN
                             (
                                 SELECT
                                     ranked_data.ingredient_id as ingredient_id,
-                                    ranked_data.year,
+                                    ranked_data.yr,
                                     ranked_data.stock as stock,
                                     ranked_data.optimal as optimal
                                 FROM (
                                     SELECT
                                         ingredient_stock.ingredient_id,
-                                        DATE_FORMAT(ingredient_stock.created_at, '%Y') AS year,
+                                        YEAR(ingredient_stock.created_at) AS yr,
                 """ +
                 (stockUnit.equals("count") ? """
                                         ingredient_stock.stock,
@@ -352,23 +355,23 @@ public class IngredientRepositoryCustomImpl implements IngredientRepositoryCusto
                                         ROUND(CAST(ingredient_stock.optimal AS DECIMAL(10, 2)) * CAST(ingredient.weight AS DECIMAL(10, 2)), 2) AS optimal,
                 """) +
                 """
-                                        ROW_NUMBER() over (PARTITION BY ingredient_stock.ingredient_id, DATE_FORMAT(ingredient_stock.created_at, '%Y') ORDER BY ingredient_stock.created_at DESC) AS rn
+                                        ROW_NUMBER() over (PARTITION BY ingredient_stock.ingredient_id, YEAR(ingredient_stock.created_at) ORDER BY ingredient_stock.created_at DESC) AS rn
                                     FROM ingredient_stock
                                     JOIN ingredient ON ingredient.id = ingredient_stock.ingredient_id
                                     JOIN factory ON factory.id = ingredient.factory_id
                                     JOIN factory_manager ON factory.id = factory_manager.factory_id
                                     JOIN user_table ON user_table.id = factory_manager.user_id
                                     WHERE
-                                        ingredient_stock.created_at >= :startDate AND ingredient_stock.created_at < DATE_ADD(:endDate, INTERVAL 1 YEAR ) AND
+                                        ingredient_stock.created_at >= :startDate AND ingredient_stock.created_at < :nextEndDate AND
                                         user_table.email = :email
                                 ) AS ranked_data
                                 WHERE ranked_data.rn = 1
                             ) AS ingredient_stock_data_2
-                            ON (ingredient_stock_data_1.ingredient_id = ingredient_stock_data_2.ingredient_id and ingredient_stock_data_1.year = ingredient_stock_data_2.year)
-                        GROUP BY ingredient_stock_data_1.year
+                            ON (ingredient_stock_data_1.ingredient_id = ingredient_stock_data_2.ingredient_id and ingredient_stock_data_1.yr = ingredient_stock_data_2.yr)
+                        GROUP BY ingredient_stock_data_1.yr
                     ) AS ingredient_stock_data
-                ON (date.year = ingredient_stock_data.year)
-                ORDER BY date.year
+                ON (date.yr = ingredient_stock_data.yr)
+                ORDER BY date.yr
                 """;
 
         return extractAnalysisResponse(itemTypeList, jdbcTemplate.query(findIngredientAnalysisQuery, namedParameters, new ColumnMapRowMapper()));
@@ -379,47 +382,48 @@ public class IngredientRepositoryCustomImpl implements IngredientRepositoryCusto
         SqlParameterSource namedParameters = new MapSqlParameterSource()
                 .addValue("email", email)
                 .addValue("startDate", startDate)
-                .addValue("endDate", endDate);
+                .addValue("endDate", endDate)
+                .addValue("nextEndDate", endDate.plusYears(1));
 
         String findIngredientAnalysisQuery = """
                 SELECT
-                   date.year,
+                   date.yr,
                    ingredient_price_data.purchase,
                    ingredient_price_data.sell
                 FROM
                    (
-                       WITH RECURSIVE T_TEMP_DATES AS (
-                          SELECT :startDate AS DT
+                       WITH RECURSIVE T_TEMP_DATES(DT) AS (
+                          SELECT :startDate
                        UNION
-                          SELECT DATE_ADD(T_TEMP_DATES.DT, INTERVAL 1 YEAR)
+                          SELECT TIMESTAMPADD(YEAR, 1, DT)
                           FROM T_TEMP_DATES
-                          WHERE DATE_ADD(T_TEMP_DATES.DT, INTERVAL 1 YEAR) <= :endDate
+                          WHERE TIMESTAMPADD(YEAR, 1, DT) <= :endDate
                        )
-                       SELECT DT, DATE_FORMAT(DT, '%Y') AS year FROM T_TEMP_DATES
+                       SELECT YEAR(DT) AS yr FROM T_TEMP_DATES
                    )  AS date LEFT OUTER JOIN (
                        SELECT
-                           ranked_data.year,
+                           ranked_data.yr,
                            SUM(ranked_data.purchase) as purchase,
                            SUM(ranked_data.sell) as sell
                        FROM (
                            SELECT
-                               DATE_FORMAT(ingredient_price.created_at, '%Y') as year,
+                               YEAR(ingredient_price.created_at) as yr,
                                ingredient_price.purchase,
                                ingredient_price.sell,
-                               ROW_NUMBER() over (PARTITION BY ingredient_price.ingredient_id, DATE_FORMAT(ingredient_price.created_at, '%Y') ORDER BY ingredient_price.created_at DESC) AS rn
+                               ROW_NUMBER() over (PARTITION BY ingredient_price.ingredient_id, YEAR(ingredient_price.created_at) ORDER BY ingredient_price.created_at DESC) AS rn
                            FROM ingredient_price
                            JOIN ingredient ON ingredient.id = ingredient_price.ingredient_id
                            JOIN factory ON factory.id = ingredient.factory_id
                            JOIN factory_manager ON factory.id = factory_manager.factory_id
                            JOIN user_table ON user_table.id = factory_manager.user_id
                            WHERE
-                               ingredient_price.created_at >= :startDate AND ingredient_price.created_at < DATE_ADD(:endDate, INTERVAL 1 YEAR ) AND
+                               ingredient_price.created_at >= :startDate AND ingredient_price.created_at < :nextEndDate AND
                                user_table.email = :email
                        ) AS ranked_data
                        WHERE ranked_data.rn = 1
-                       GROUP BY year) AS ingredient_price_data
-                ON (date.year = ingredient_price_data.year)
-                ORDER BY date.year
+                       GROUP BY yr) AS ingredient_price_data
+                ON (date.yr = ingredient_price_data.yr)
+                ORDER BY date.yr
                 """;
 
         return extractAnalysisResponse(itemTypeList, jdbcTemplate.query(findIngredientAnalysisQuery, namedParameters, new ColumnMapRowMapper()));
@@ -430,7 +434,8 @@ public class IngredientRepositoryCustomImpl implements IngredientRepositoryCusto
         SqlParameterSource namedParameters = new MapSqlParameterSource()
                 .addValue("email", email)
                 .addValue("startDate", startDate)
-                .addValue("endDate", endDate);
+                .addValue("endDate", endDate)
+                .addValue("nextEndDate", endDate.plusMonths(1));
 
         String findIngredientAnalysisQuery = """
                 SELECT
@@ -441,14 +446,14 @@ public class IngredientRepositoryCustomImpl implements IngredientRepositoryCusto
                     ingredient_stock_data.optimal
                 FROM
                     (
-                        WITH RECURSIVE T_TEMP_DATES AS (
-                           SELECT :startDate AS DT
+                        WITH RECURSIVE T_TEMP_DATES(DT) AS (
+                           SELECT :startDate
                         UNION
-                           SELECT DATE_ADD(T_TEMP_DATES.DT, INTERVAL 1 MONTH)
+                           SELECT TIMESTAMPADD(MONTH, 1, DT)
                            FROM T_TEMP_DATES
-                           WHERE DATE_ADD(T_TEMP_DATES.DT, INTERVAL 1 MONTH) <= :endDate
+                           WHERE TIMESTAMPADD(MONTH, 1, DT) <= :endDate
                         )
-                        SELECT DATE_FORMAT(DT, '%Y-%m') AS yearmonth FROM T_TEMP_DATES
+                        SELECT (CONCAT(YEAR(DT), '-', LPAD(MONTH(DT), 2, '0'))) AS yearmonth FROM T_TEMP_DATES
                     )  AS date LEFT OUTER JOIN (
                         SELECT
                             ingredient_stock_data_1.yearmonth AS yearmonth,
@@ -460,7 +465,7 @@ public class IngredientRepositoryCustomImpl implements IngredientRepositoryCusto
                             (
                                 SELECT
                                     ingredient_stock.ingredient_id,
-                                    DATE_FORMAT(ingredient_stock.created_at, '%Y-%m') AS yearmonth,
+                                    (CONCAT(YEAR(ingredient_stock.created_at), '-', LPAD(MONTH(ingredient_stock.created_at), 2, '0'))) AS yearmonth,
                 """ +
                 (stockUnit.equals("count") ? """
                                     SUM(ingredient_stock.incoming) AS incoming,
@@ -477,7 +482,7 @@ public class IngredientRepositoryCustomImpl implements IngredientRepositoryCusto
                                 JOIN factory_manager ON factory.id = factory_manager.factory_id
                                 JOIN user_table ON user_table.id = factory_manager.user_id
                                 WHERE
-                                    ingredient_stock.created_at >= :startDate AND ingredient_stock.created_at < DATE_ADD(:endDate, INTERVAL 1 MONTH ) AND
+                                    ingredient_stock.created_at >= :startDate AND ingredient_stock.created_at < :nextEndDate AND
                                     user_table.email = :email
                                 GROUP BY ingredient_stock.ingredient_id, yearmonth
                             ) AS ingredient_stock_data_1
@@ -491,7 +496,7 @@ public class IngredientRepositoryCustomImpl implements IngredientRepositoryCusto
                                 FROM (
                                     SELECT
                                         ingredient_stock.ingredient_id,
-                                        DATE_FORMAT(ingredient_stock.created_at, '%Y-%m') AS yearmonth,
+                                        (CONCAT(YEAR(ingredient_stock.created_at), '-', LPAD(MONTH(ingredient_stock.created_at), 2, '0'))) AS yearmonth,
                 """ +
                 (stockUnit.equals("count") ? """
                                         ingredient_stock.stock,
@@ -502,14 +507,14 @@ public class IngredientRepositoryCustomImpl implements IngredientRepositoryCusto
                                         ROUND(CAST(ingredient_stock.optimal AS DECIMAL(10, 2)) * CAST(ingredient.weight AS DECIMAL(10, 2)), 2) AS optimal,
                 """) +
                 """
-                                        ROW_NUMBER() over (PARTITION BY ingredient_stock.ingredient_id, DATE_FORMAT(ingredient_stock.created_at, '%Y-%m') ORDER BY ingredient_stock.created_at DESC) AS rn
+                                        ROW_NUMBER() over (PARTITION BY ingredient_stock.ingredient_id, (CONCAT(YEAR(ingredient_stock.created_at), '-', LPAD(MONTH(ingredient_stock.created_at), 2, '0'))) ORDER BY ingredient_stock.created_at DESC) AS rn
                                     FROM ingredient_stock
                                     JOIN ingredient ON ingredient.id = ingredient_stock.ingredient_id
                                     JOIN factory ON factory.id = ingredient.factory_id
                                     JOIN factory_manager ON factory.id = factory_manager.factory_id
                                     JOIN user_table ON user_table.id = factory_manager.user_id
                                     WHERE
-                                        ingredient_stock.created_at >= :startDate AND ingredient_stock.created_at < DATE_ADD(:endDate, INTERVAL 1 MONTH ) AND
+                                        ingredient_stock.created_at >= :startDate AND ingredient_stock.created_at < :nextEndDate AND
                                         user_table.email = :email
                                 ) AS ranked_data
                                 WHERE ranked_data.rn = 1
@@ -529,7 +534,8 @@ public class IngredientRepositoryCustomImpl implements IngredientRepositoryCusto
         SqlParameterSource namedParameters = new MapSqlParameterSource()
                 .addValue("email", email)
                 .addValue("startDate", startDate)
-                .addValue("endDate", endDate);
+                .addValue("endDate", endDate)
+                .addValue("nextEndDate", endDate.plusMonths(1));
 
         String findIngredientAnalysisQuery = """
                 SELECT
@@ -538,14 +544,14 @@ public class IngredientRepositoryCustomImpl implements IngredientRepositoryCusto
                     ingredient_price_data.sell
                 FROM
                     (
-                        WITH RECURSIVE T_TEMP_DATES AS (
-                           SELECT :startDate AS DT
+                        WITH RECURSIVE T_TEMP_DATES(DT) AS (
+                           SELECT :startDate
                         UNION
-                           SELECT DATE_ADD(T_TEMP_DATES.DT, INTERVAL 1 MONTH)
+                           SELECT TIMESTAMPADD(MONTH, 1, DT)
                            FROM T_TEMP_DATES
-                           WHERE DATE_ADD(T_TEMP_DATES.DT, INTERVAL 1 MONTH) <= :endDate
+                           WHERE TIMESTAMPADD(MONTH, 1, DT) <= :endDate
                         )
-                        SELECT DT, DATE_FORMAT(DT, '%Y-%m') AS yearmonth FROM T_TEMP_DATES
+                        SELECT (CONCAT(YEAR(DT), '-', LPAD(MONTH(DT), 2, '0'))) AS yearmonth FROM T_TEMP_DATES
                     )  AS date LEFT OUTER JOIN (
                         SELECT
                             ranked_data.yearmonth,
@@ -553,17 +559,17 @@ public class IngredientRepositoryCustomImpl implements IngredientRepositoryCusto
                             ROUND(AVG(ranked_data.sell), 2) as sell
                         FROM (
                             SELECT
-                                DATE_FORMAT(ingredient_price.created_at, '%Y-%m') AS yearmonth,
+                                (CONCAT(YEAR(ingredient_price.created_at), '-', LPAD(MONTH(ingredient_price.created_at), 2, '0'))) AS yearmonth,
                                 ingredient_price.purchase,
                                 ingredient_price.sell,
-                                ROW_NUMBER() over (PARTITION BY ingredient_price.ingredient_id, DATE_FORMAT(ingredient_price.created_at, '%Y-%m') ORDER BY ingredient_price.created_at DESC) AS rn
+                                ROW_NUMBER() over (PARTITION BY ingredient_price.ingredient_id, (CONCAT(YEAR(ingredient_price.created_at), '-', LPAD(MONTH(ingredient_price.created_at), 2, '0'))) ORDER BY ingredient_price.created_at DESC) AS rn
                             FROM ingredient_price
                             JOIN ingredient ON ingredient.id = ingredient_price.ingredient_id
                             JOIN factory ON factory.id = ingredient.factory_id
                             JOIN factory_manager ON factory.id = factory_manager.factory_id
                             JOIN user_table ON user_table.id = factory_manager.user_id
                             WHERE
-                                ingredient_price.created_at >= :startDate AND ingredient_price.created_at < DATE_ADD(:endDate, INTERVAL 1 MONTH ) AND
+                                ingredient_price.created_at >= :startDate AND ingredient_price.created_at < :nextEndDate AND
                                 user_table.email = :email
                         ) AS ranked_data
                         WHERE ranked_data.rn = 1
@@ -580,28 +586,29 @@ public class IngredientRepositoryCustomImpl implements IngredientRepositoryCusto
         SqlParameterSource namedParameters = new MapSqlParameterSource()
                 .addValue("email", email)
                 .addValue("startDate", startDate)
-                .addValue("endDate", endDate);
+                .addValue("endDate", endDate)
+                .addValue("nextEndDate", endDate.plusYears(1));
 
         String findIngredientAnalysisQuery = """
                 SELECT
-                    date.year,
+                    date.yr,
                     ingredient_stock_data.incoming,
                     ingredient_stock_data.production,
                     ingredient_stock_data.stock,
                     ingredient_stock_data.optimal
                 FROM
                     (
-                        WITH RECURSIVE T_TEMP_DATES AS (
-                           SELECT :startDate AS DT
+                        WITH RECURSIVE T_TEMP_DATES(DT) AS (
+                           SELECT :startDate
                         UNION
-                           SELECT DATE_ADD(T_TEMP_DATES.DT, INTERVAL 1 YEAR)
+                           SELECT TIMESTAMPADD(YEAR, 1, DT)
                            FROM T_TEMP_DATES
-                           WHERE DATE_ADD(T_TEMP_DATES.DT, INTERVAL 1 YEAR) <= :endDate
+                           WHERE TIMESTAMPADD(YEAR, 1, DT) <= :endDate
                         )
-                        SELECT DT, DATE_FORMAT(DT, '%Y') AS year FROM T_TEMP_DATES
+                        SELECT YEAR(DT) AS yr FROM T_TEMP_DATES
                     )  AS date LEFT OUTER JOIN (
                         SELECT
-                            ingredient_stock_data_1.year AS year,
+                            ingredient_stock_data_1.yr AS yr,
                             ROUND(AVG(ingredient_stock_data_1.incoming), 2) AS incoming,
                             ROUND(AVG(ingredient_stock_data_1.production), 2) AS production,
                             ROUND(AVG(ingredient_stock_data_2.stock), 2) AS stock,
@@ -610,7 +617,7 @@ public class IngredientRepositoryCustomImpl implements IngredientRepositoryCusto
                             (
                                 SELECT
                                     ingredient_stock.ingredient_id,
-                                    DATE_FORMAT(ingredient_stock.created_at, '%Y') AS year,
+                                    YEAR(ingredient_stock.created_at) AS yr,
                 """ +
                 (stockUnit.equals("count") ? """
                                     SUM(ingredient_stock.incoming) AS incoming,
@@ -627,21 +634,21 @@ public class IngredientRepositoryCustomImpl implements IngredientRepositoryCusto
                                 JOIN factory_manager ON factory.id = factory_manager.factory_id
                                 JOIN user_table ON user_table.id = factory_manager.user_id
                                 WHERE
-                                    ingredient_stock.created_at >= :startDate AND ingredient_stock.created_at < DATE_ADD(:endDate, INTERVAL 1 YEAR ) AND
+                                    ingredient_stock.created_at >= :startDate AND ingredient_stock.created_at < :nextEndDate AND
                                     user_table.email = :email
-                                GROUP BY ingredient_stock.ingredient_id, year
+                                GROUP BY ingredient_stock.ingredient_id, yr
                             ) AS ingredient_stock_data_1
                             JOIN
                             (
                                 SELECT
                                     ranked_data.ingredient_id as ingredient_id,
-                                    ranked_data.year,
+                                    ranked_data.yr,
                                     ranked_data.stock as stock,
                                     ranked_data.optimal as optimal
                                 FROM (
                                     SELECT
                                         ingredient_stock.ingredient_id,
-                                        DATE_FORMAT(ingredient_stock.created_at, '%Y') AS year,
+                                        YEAR(ingredient_stock.created_at) AS yr,
                 """ +
                 (stockUnit.equals("count") ? """
                                         ingredient_stock.stock,
@@ -652,23 +659,23 @@ public class IngredientRepositoryCustomImpl implements IngredientRepositoryCusto
                                         ROUND(CAST(ingredient_stock.optimal AS DECIMAL(10, 2)) * CAST(ingredient.weight AS DECIMAL(10, 2)), 2) AS optimal,
                 """) +
                 """
-                                        ROW_NUMBER() over (PARTITION BY ingredient_stock.ingredient_id, DATE_FORMAT(ingredient_stock.created_at, '%Y') ORDER BY ingredient_stock.created_at DESC) AS rn
+                                        ROW_NUMBER() over (PARTITION BY ingredient_stock.ingredient_id, YEAR(ingredient_stock.created_at) ORDER BY ingredient_stock.created_at DESC) AS rn
                                     FROM ingredient_stock
                                     JOIN ingredient ON ingredient.id = ingredient_stock.ingredient_id
                                     JOIN factory ON factory.id = ingredient.factory_id
                                     JOIN factory_manager ON factory.id = factory_manager.factory_id
                                     JOIN user_table ON user_table.id = factory_manager.user_id
                                     WHERE
-                                        ingredient_stock.created_at >= :startDate AND ingredient_stock.created_at < DATE_ADD(:endDate, INTERVAL 1 YEAR ) AND
+                                        ingredient_stock.created_at >= :startDate AND ingredient_stock.created_at < :nextEndDate AND
                                         user_table.email = :email
                                 ) AS ranked_data
                                 WHERE ranked_data.rn = 1
                             ) AS ingredient_stock_data_2
-                            ON (ingredient_stock_data_1.ingredient_id = ingredient_stock_data_2.ingredient_id and ingredient_stock_data_1.year = ingredient_stock_data_2.year)
-                        GROUP BY ingredient_stock_data_1.year
+                            ON (ingredient_stock_data_1.ingredient_id = ingredient_stock_data_2.ingredient_id and ingredient_stock_data_1.yr = ingredient_stock_data_2.yr)
+                        GROUP BY ingredient_stock_data_1.yr
                     ) AS ingredient_stock_data
-                ON (date.year = ingredient_stock_data.year)
-                ORDER BY date.year
+                ON (date.yr = ingredient_stock_data.yr)
+                ORDER BY date.yr
                 """;
 
         return extractAnalysisResponse(itemTypeList, jdbcTemplate.query(findIngredientAnalysisQuery, namedParameters, new ColumnMapRowMapper()));
@@ -679,47 +686,48 @@ public class IngredientRepositoryCustomImpl implements IngredientRepositoryCusto
         SqlParameterSource namedParameters = new MapSqlParameterSource()
                 .addValue("email", email)
                 .addValue("startDate", startDate)
-                .addValue("endDate", endDate);
+                .addValue("endDate", endDate)
+                .addValue("nextEndDate", endDate.plusYears(1));
 
         String findIngredientAnalysisQuery = """
                 SELECT
-                   date.year,
+                   date.yr,
                    ingredient_price_data.purchase,
                    ingredient_price_data.sell
                 FROM
                    (
-                       WITH RECURSIVE T_TEMP_DATES AS (
-                          SELECT :startDate AS DT
+                       WITH RECURSIVE T_TEMP_DATES(DT) AS (
+                          SELECT :startDate
                        UNION
-                          SELECT DATE_ADD(T_TEMP_DATES.DT, INTERVAL 1 YEAR)
+                          SELECT TIMESTAMPADD(YEAR, 1, DT)
                           FROM T_TEMP_DATES
-                          WHERE DATE_ADD(T_TEMP_DATES.DT, INTERVAL 1 YEAR) <= :endDate
+                          WHERE TIMESTAMPADD(YEAR, 1, DT) <= :endDate
                        )
-                       SELECT DT, DATE_FORMAT(DT, '%Y') AS year FROM T_TEMP_DATES
+                       SELECT YEAR(DT) AS yr FROM T_TEMP_DATES
                    )  AS date LEFT OUTER JOIN (
                        SELECT
-                           ranked_data.year,
+                           ranked_data.yr,
                            ROUND(AVG(ranked_data.purchase), 2) as purchase,
                            ROUND(AVG(ranked_data.sell), 2) as sell
                        FROM (
                            SELECT
-                               DATE_FORMAT(ingredient_price.created_at, '%Y') as year,
+                               YEAR(ingredient_price.created_at) as yr,
                                ingredient_price.purchase,
                                ingredient_price.sell,
-                               ROW_NUMBER() over (PARTITION BY ingredient_price.ingredient_id, DATE_FORMAT(ingredient_price.created_at, '%Y') ORDER BY ingredient_price.created_at DESC) AS rn
+                               ROW_NUMBER() over (PARTITION BY ingredient_price.ingredient_id, YEAR(ingredient_price.created_at) ORDER BY ingredient_price.created_at DESC) AS rn
                            FROM ingredient_price
                            JOIN ingredient ON ingredient.id = ingredient_price.ingredient_id
                            JOIN factory ON factory.id = ingredient.factory_id
                            JOIN factory_manager ON factory.id = factory_manager.factory_id
                            JOIN user_table ON user_table.id = factory_manager.user_id
                            WHERE
-                               ingredient_price.created_at >= :startDate AND ingredient_price.created_at < DATE_ADD(:endDate, INTERVAL 1 YEAR ) AND
+                               ingredient_price.created_at >= :startDate AND ingredient_price.created_at < :nextEndDate AND
                                user_table.email = :email
                        ) AS ranked_data
                        WHERE ranked_data.rn = 1
-                       GROUP BY year) AS ingredient_price_data
-                ON (date.year = ingredient_price_data.year)
-                ORDER BY date.year
+                       GROUP BY yr) AS ingredient_price_data
+                ON (date.yr = ingredient_price_data.yr)
+                ORDER BY date.yr
                 """;
 
         return extractAnalysisResponse(itemTypeList, jdbcTemplate.query(findIngredientAnalysisQuery, namedParameters, new ColumnMapRowMapper()));
@@ -730,7 +738,8 @@ public class IngredientRepositoryCustomImpl implements IngredientRepositoryCusto
         SqlParameterSource namedParameters = new MapSqlParameterSource()
                 .addValue("ingredientId", ingredientId)
                 .addValue("startDate", startDate)
-                .addValue("endDate", endDate);
+                .addValue("endDate", endDate)
+                .addValue("nextEndDate", endDate.plusMonths(1));
 
         String findIngredientAnalysisQuery = """
                 SELECT
@@ -741,14 +750,14 @@ public class IngredientRepositoryCustomImpl implements IngredientRepositoryCusto
                     ingredient_stock_data.optimal
                 FROM
                     (
-                        WITH RECURSIVE T_TEMP_DATES AS (
-                           SELECT :startDate AS DT
+                        WITH RECURSIVE T_TEMP_DATES(DT) AS (
+                           SELECT :startDate
                         UNION
-                           SELECT DATE_ADD(T_TEMP_DATES.DT, INTERVAL 1 MONTH)
+                           SELECT TIMESTAMPADD(MONTH, 1, DT)
                            FROM T_TEMP_DATES
-                           WHERE DATE_ADD(T_TEMP_DATES.DT, INTERVAL 1 MONTH) <= :endDate
+                           WHERE TIMESTAMPADD(MONTH, 1, DT) <= :endDate
                         )
-                        SELECT DATE_FORMAT(DT, '%Y-%m') AS yearmonth FROM T_TEMP_DATES
+                        SELECT (CONCAT(YEAR(DT), '-', LPAD(MONTH(DT), 2, '0'))) AS yearmonth FROM T_TEMP_DATES
                     )  AS date LEFT OUTER JOIN (
                         SELECT
                             ingredient_stock_data_1.yearmonth AS yearmonth,
@@ -759,7 +768,7 @@ public class IngredientRepositoryCustomImpl implements IngredientRepositoryCusto
                         FROM
                             (
                                 SELECT
-                                    DATE_FORMAT(ingredient_stock.created_at, '%Y-%m') AS yearmonth,
+                                    (CONCAT(YEAR(ingredient_stock.created_at), '-', LPAD(MONTH(ingredient_stock.created_at), 2, '0'))) AS yearmonth,
                 """ +
                 (stockUnit.equals("count") ? """
                                     SUM(ingredient_stock.incoming) AS incoming,
@@ -774,7 +783,7 @@ public class IngredientRepositoryCustomImpl implements IngredientRepositoryCusto
                                 JOIN ingredient ON ingredient.id = ingredient_stock.ingredient_id
                                 WHERE
                                     ingredient_stock.ingredient_id = :ingredientId AND
-                                    ingredient_stock.created_at >= :startDate AND ingredient_stock.created_at < DATE_ADD(:endDate, INTERVAL 1 MONTH )
+                                    ingredient_stock.created_at >= :startDate AND ingredient_stock.created_at < :nextEndDate
                                 GROUP BY yearmonth
                             ) AS ingredient_stock_data_1
                             JOIN
@@ -785,7 +794,7 @@ public class IngredientRepositoryCustomImpl implements IngredientRepositoryCusto
                                     ranked_data.optimal as optimal
                                 FROM (
                                     SELECT
-                                        DATE_FORMAT(ingredient_stock.created_at, '%Y-%m') AS yearmonth,            
+                                        (CONCAT(YEAR(ingredient_stock.created_at), '-', LPAD(MONTH(ingredient_stock.created_at), 2, '0'))) AS yearmonth,     
                 """ +
                 (stockUnit.equals("count") ? """
                                         ingredient_stock.stock,
@@ -796,12 +805,12 @@ public class IngredientRepositoryCustomImpl implements IngredientRepositoryCusto
                                         ROUND(CAST(ingredient_stock.optimal AS DECIMAL(10, 2)) * CAST(ingredient.weight AS DECIMAL(10, 2)), 2) AS optimal,
                 """) +
                 """                
-                                        ROW_NUMBER() over (PARTITION BY DATE_FORMAT(ingredient_stock.created_at, '%Y-%m') ORDER BY ingredient_stock.created_at DESC) AS rn
+                                        ROW_NUMBER() over (PARTITION BY (CONCAT(YEAR(ingredient_stock.created_at), '-', LPAD(MONTH(ingredient_stock.created_at), 2, '0'))) ORDER BY ingredient_stock.created_at DESC) AS rn
                                     FROM ingredient_stock
                                     JOIN ingredient ON ingredient.id = ingredient_stock.ingredient_id
                                     WHERE
                                     ingredient_stock.ingredient_id = :ingredientId AND
-                                    ingredient_stock.created_at >= :startDate AND ingredient_stock.created_at < DATE_ADD(:endDate, INTERVAL 1 MONTH )
+                                    ingredient_stock.created_at >= :startDate AND ingredient_stock.created_at < :nextEndDate
                                 ) AS ranked_data
                                 WHERE ranked_data.rn = 1
                             ) AS ingredient_stock_data_2
@@ -819,7 +828,8 @@ public class IngredientRepositoryCustomImpl implements IngredientRepositoryCusto
         SqlParameterSource namedParameters = new MapSqlParameterSource()
                 .addValue("ingredientId", ingredientId)
                 .addValue("startDate", startDate)
-                .addValue("endDate", endDate);
+                .addValue("endDate", endDate)
+                .addValue("nextEndDate", endDate.plusMonths(1));
 
         String findIngredientAnalysisQuery = """
                 SELECT
@@ -828,14 +838,14 @@ public class IngredientRepositoryCustomImpl implements IngredientRepositoryCusto
                     data.sell
                 FROM
                     (
-                        WITH RECURSIVE T_TEMP_DATES AS (
-                           SELECT :startDate AS DT
+                        WITH RECURSIVE T_TEMP_DATES(DT) AS (
+                           SELECT :startDate
                         UNION
-                           SELECT DATE_ADD(T_TEMP_DATES.DT, INTERVAL 1 MONTH)
+                           SELECT TIMESTAMPADD(MONTH, 1, DT)
                            FROM T_TEMP_DATES
-                           WHERE DATE_ADD(T_TEMP_DATES.DT, INTERVAL 1 MONTH) <= :endDate
+                           WHERE TIMESTAMPADD(MONTH, 1, DT) <= :endDate
                         )
-                        SELECT DT, DATE_FORMAT(DT, '%Y-%m') AS yearmonth FROM T_TEMP_DATES
+                        SELECT (CONCAT(YEAR(DT), '-', LPAD(MONTH(DT), 2, '0'))) AS yearmonth FROM T_TEMP_DATES
                     )  AS date LEFT OUTER JOIN (
                         SELECT
                             ranked_data.yearmonth,
@@ -843,14 +853,14 @@ public class IngredientRepositoryCustomImpl implements IngredientRepositoryCusto
                             ranked_data.sell as sell
                         FROM (
                             SELECT
-                                DATE_FORMAT(ingredient_price.created_at, '%Y-%m') AS yearmonth,
+                                (CONCAT(YEAR(ingredient_price.created_at), '-', LPAD(MONTH(ingredient_price.created_at), 2, '0'))) AS yearmonth,
                                 ingredient_price.purchase,
                                 ingredient_price.sell,
-                                ROW_NUMBER() over (PARTITION BY DATE_FORMAT(ingredient_price.created_at, '%Y-%m') ORDER BY ingredient_price.created_at DESC) AS rn
+                                ROW_NUMBER() over (PARTITION BY (CONCAT(YEAR(ingredient_price.created_at), '-', LPAD(MONTH(ingredient_price.created_at), 2, '0'))) ORDER BY ingredient_price.created_at DESC) AS rn
                             FROM ingredient_price
                             WHERE
                                 ingredient_price.ingredient_id = :ingredientId AND
-                                ingredient_price.created_at >= :startDate AND ingredient_price.created_at < DATE_ADD(:endDate, INTERVAL 1 MONTH )
+                                ingredient_price.created_at >= :startDate AND ingredient_price.created_at < :nextEndDate
                         ) AS ranked_data
                         WHERE ranked_data.rn = 1) AS data
                 ON (date.yearmonth = data.yearmonth)
@@ -865,28 +875,29 @@ public class IngredientRepositoryCustomImpl implements IngredientRepositoryCusto
         SqlParameterSource namedParameters = new MapSqlParameterSource()
                 .addValue("ingredientId", ingredientId)
                 .addValue("startDate", startDate)
-                .addValue("endDate", endDate);
+                .addValue("endDate", endDate)
+                .addValue("nextEndDate", endDate.plusYears(1));
 
         String findIngredientAnalysisQuery = """
                 SELECT
-                    date.year,
+                    date.yr,
                     data.incoming,
                     data.production,
                     data.stock,
                     data.optimal
                 FROM
                     (
-                        WITH RECURSIVE T_TEMP_DATES AS (
-                           SELECT :startDate AS DT
+                        WITH RECURSIVE T_TEMP_DATES(DT) AS (
+                           SELECT :startDate
                         UNION
-                           SELECT DATE_ADD(T_TEMP_DATES.DT, INTERVAL 1 YEAR)
+                           SELECT TIMESTAMPADD(YEAR, 1, DT)
                            FROM T_TEMP_DATES
-                           WHERE DATE_ADD(T_TEMP_DATES.DT, INTERVAL 1 YEAR) <= :endDate
+                           WHERE TIMESTAMPADD(YEAR, 1, DT) <= :endDate
                         )
-                        SELECT DT, DATE_FORMAT(DT, '%Y') AS year FROM T_TEMP_DATES
+                        SELECT YEAR(DT) AS yr FROM T_TEMP_DATES
                     )  AS date LEFT OUTER JOIN (
                         SELECT
-                            data1.year AS year,
+                            data1.yr AS yr,
                             data1.incoming AS incoming,
                             data1.production AS production,
                             data2.stock AS stock,
@@ -894,7 +905,7 @@ public class IngredientRepositoryCustomImpl implements IngredientRepositoryCusto
                         FROM
                             (
                                 SELECT
-                                    DATE_FORMAT(ingredient_stock.created_at, '%Y') AS year,
+                                    YEAR(ingredient_stock.created_at) AS yr,
                 """ +
                 (stockUnit.equals("count") ? """
                                     SUM(ingredient_stock.incoming) AS incoming,
@@ -909,18 +920,18 @@ public class IngredientRepositoryCustomImpl implements IngredientRepositoryCusto
                                 JOIN ingredient ON ingredient.id = ingredient_stock.ingredient_id
                                 WHERE
                                     ingredient_stock.ingredient_id = :ingredientId AND
-                                    ingredient_stock.created_at >= :startDate AND ingredient_stock.created_at < DATE_ADD(:endDate, INTERVAL 1 YEAR )
-                                GROUP BY year
+                                    ingredient_stock.created_at >= :startDate AND ingredient_stock.created_at < :nextEndDate
+                                GROUP BY yr
                             ) AS data1
                             JOIN
                             (
                                 SELECT
-                                    ranked_data.year,
+                                    ranked_data.yr,
                                     ranked_data.stock as stock,
                                     ranked_data.optimal as optimal
                                 FROM (
                                     SELECT
-                                        DATE_FORMAT(ingredient_stock.created_at, '%Y') AS year,
+                                        YEAR(ingredient_stock.created_at) AS yr,
                 """ +
                 (stockUnit.equals("count") ? """
                                         ingredient_stock.stock,
@@ -931,19 +942,19 @@ public class IngredientRepositoryCustomImpl implements IngredientRepositoryCusto
                                         ROUND(CAST(ingredient_stock.optimal AS DECIMAL(10, 2)) * CAST(ingredient.weight AS DECIMAL(10, 2)), 2) AS optimal,
                 """) +
                 """
-                                        ROW_NUMBER() over (PARTITION BY DATE_FORMAT(ingredient_stock.created_at, '%Y') ORDER BY ingredient_stock.created_at DESC) AS rn
+                                        ROW_NUMBER() over (PARTITION BY YEAR(ingredient_stock.created_at) ORDER BY ingredient_stock.created_at DESC) AS rn
                                     FROM ingredient_stock
                                     JOIN ingredient ON ingredient.id = ingredient_stock.ingredient_id
                                     WHERE
                                         ingredient_stock.ingredient_id = :ingredientId AND
-                                        ingredient_stock.created_at >= :startDate AND ingredient_stock.created_at < DATE_ADD(:endDate, INTERVAL 1 YEAR )
+                                        ingredient_stock.created_at >= :startDate AND ingredient_stock.created_at < :nextEndDate
                                 ) AS ranked_data
                                 WHERE ranked_data.rn = 1
                             ) AS data2
-                            ON (data1.year = data2.year)
+                            ON (data1.yr = data2.yr)
                     ) AS data
-                ON (date.year = data.year)
-                ORDER BY date.year
+                ON (date.yr = data.yr)
+                ORDER BY date.yr
                 """;
 
         return extractAnalysisResponse(itemTypeList, jdbcTemplate.query(findIngredientAnalysisQuery, namedParameters, new ColumnMapRowMapper()));
@@ -954,42 +965,43 @@ public class IngredientRepositoryCustomImpl implements IngredientRepositoryCusto
         SqlParameterSource namedParameters = new MapSqlParameterSource()
                 .addValue("ingredientId", ingredientId)
                 .addValue("startDate", startDate)
-                .addValue("endDate", endDate);
+                .addValue("endDate", endDate)
+                .addValue("nextEndDate", endDate.plusYears(1));
 
         String findIngredientAnalysisQuery = """
                 SELECT
-                    date.year,
+                    date.yr,
                     data.purchase,
                     data.sell
                 FROM
                     (
-                         WITH RECURSIVE T_TEMP_DATES AS (
-                           SELECT :startDate AS DT
+                         WITH RECURSIVE T_TEMP_DATES(DT) AS (
+                           SELECT :startDate
                         UNION
-                           SELECT DATE_ADD(T_TEMP_DATES.DT, INTERVAL 1 YEAR)
+                           SELECT TIMESTAMPADD(YEAR, 1, DT)
                            FROM T_TEMP_DATES
-                           WHERE DATE_ADD(T_TEMP_DATES.DT, INTERVAL 1 YEAR) <= :endDate
+                           WHERE TIMESTAMPADD(YEAR, 1, DT) <= :endDate
                         )
-                        SELECT DT, DATE_FORMAT(DT, '%Y') AS year FROM T_TEMP_DATES
+                        SELECT YEAR(DT) AS yr FROM T_TEMP_DATES
                     )  AS date LEFT OUTER JOIN (
                         SELECT
-                            ranked_data.year,
+                            ranked_data.yr,
                             ranked_data.purchase as purchase,
                             ranked_data.sell as sell
                         FROM (
                             SELECT
-                                DATE_FORMAT(ingredient_price.created_at, '%Y') AS year,
+                                YEAR(ingredient_price.created_at) AS yr,
                                 ingredient_price.purchase,
                                 ingredient_price.sell,
-                                ROW_NUMBER() over (PARTITION BY DATE_FORMAT(ingredient_price.created_at, '%Y') ORDER BY ingredient_price.created_at DESC) AS rn
+                                ROW_NUMBER() over (PARTITION BY YEAR(ingredient_price.created_at) ORDER BY ingredient_price.created_at DESC) AS rn
                             FROM ingredient_price
                             WHERE
                                 ingredient_price.ingredient_id = :ingredientId AND
-                                ingredient_price.created_at >= :startDate AND ingredient_price.created_at < DATE_ADD(:endDate, INTERVAL 1 YEAR )
+                                ingredient_price.created_at >= :startDate AND ingredient_price.created_at < :nextEndDate
                         ) AS ranked_data
                         WHERE ranked_data.rn = 1) AS data
-                ON (date.year = data.year)
-                ORDER BY date.year
+                ON (date.yr = data.yr)
+                ORDER BY date.yr
                 """;
 
         return extractAnalysisResponse(itemTypeList, jdbcTemplate.query(findIngredientAnalysisQuery, namedParameters, new ColumnMapRowMapper()));

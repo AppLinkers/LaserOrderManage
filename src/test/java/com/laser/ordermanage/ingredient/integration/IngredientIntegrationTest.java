@@ -788,11 +788,6 @@ public class IngredientIntegrationTest extends IntegrationTest {
         assertError(UserErrorCode.INVALID_JWT, resultActions);
     }
 
-    /**
-     * 자재 재고 분석 데이터 조회 성공
-     * todo - 조회 필터 테스트 필요
-     */
-
     private ResultActions requestGetIngredientStatus(String accessToken, String date) throws Exception {
         return mvc.perform(get("/factory/ingredient/status")
                         .header("Authorization", "Bearer " + accessToken)

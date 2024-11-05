@@ -47,7 +47,7 @@ public class GlobalExceptionHandler {
     @Value("${slack.webhook.url}")
     private String webhookUrl;
 
-    @ExceptionHandler(Exception.class)
+//    @ExceptionHandler(Exception.class)
     public ResponseEntity<?> handleUnknownException(Exception e, HttpServletRequest request) {
         sendSlackAlertErrorLog(e, request); // 슬랙 알림 보내는 메서드
         CustomCommonException exception = new CustomCommonException(CommonErrorCode.UNKNOWN_ERROR);

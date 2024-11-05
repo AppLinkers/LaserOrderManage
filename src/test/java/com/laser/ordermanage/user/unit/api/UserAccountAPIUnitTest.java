@@ -76,10 +76,10 @@ public class UserAccountAPIUnitTest extends APIUnitTest {
 
     /**
      * 이메일 찾기 실패
-     * - 실패 사유 : 이름 파라미터 null
+     * - 실패 사유 : name 파라미터 null
      */
     @Test
-    public void 이메일_찾기_실패_이름_파라미터_null() throws Exception {
+    public void 이메일_찾기_실패_name_파라미터_null() throws Exception {
         // given
         final String phone = "01011111111";
 
@@ -92,10 +92,10 @@ public class UserAccountAPIUnitTest extends APIUnitTest {
 
     /**
      * 이메일 찾기 실패
-     * - 실패 사유 : 이름 파라미터 - empty
+     * - 실패 사유 : name 파라미터 - empty
      */
     @Test
-    public void 이메일_찾기_실패_이름_파라미터_empty() throws Exception {
+    public void 이메일_찾기_실패_name_파라미터_empty() throws Exception {
         // given
         final String emptyName = "";
         final String phone = "01011111111";
@@ -109,10 +109,10 @@ public class UserAccountAPIUnitTest extends APIUnitTest {
 
     /**
      * 이메일 찾기 실패
-     * - 실패 사유 : 이름 파라미터 유효성
+     * - 실패 사유 : name 파라미터 유효성
      */
     @Test
-    public void 이메일_찾기_실패_이름_파라미터_유효성() throws Exception {
+    public void 이메일_찾기_실패_name_파라미터_유효성() throws Exception {
         // given
         final String invalidName = "사용자 이름".repeat(4);
         final String phone = "01011111111";
@@ -126,10 +126,10 @@ public class UserAccountAPIUnitTest extends APIUnitTest {
 
     /**
      * 이메일 찾기 실패
-     * - 실패 사유 : 휴대폰 번호 파라미터 null
+     * - 실패 사유 : phone 파라미터 null
      */
     @Test
-    public void 이메일_찾기_실패_휴대폰_번호_파라미터_null() throws Exception {
+    public void 이메일_찾기_실패_phone_파라미터_null() throws Exception {
         // given
         final String name = "사용자 이름 1";
 
@@ -142,10 +142,10 @@ public class UserAccountAPIUnitTest extends APIUnitTest {
 
     /**
      * 이메일 찾기 실패
-     * - 실패 사유 : 휴대폰 번호 파라미터 유효성
+     * - 실패 사유 : phone 파라미터 유효성
      */
     @Test
-    public void 이메일_찾기_실패_휴대폰_번호_파라미터_유효성() throws Exception {
+    public void 이메일_찾기_실패_phone_파라미터_유효성() throws Exception {
         // given
         final String name = "사용자 이름 1";
         final String invalidPhone = "010-1111-1111";

@@ -8,7 +8,6 @@ import lombok.Getter;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -33,8 +32,14 @@ public enum IngredientPriceType {
 
         return requestList.stream()
                 .map(
-                        request -> Optional.ofNullable(ingredientPriceTypeMap.get(request).request)
-                                .orElseThrow(() -> new CustomCommonException(CommonErrorCode.INVALID_PARAMETER, "price-item 파라미터가 올바르지 않습니다.")))
+                        request -> {
+                            IngredientPriceType ingredientPriceType = ingredientPriceTypeMap.get(request);
+                            if (ingredientPriceType == null) {
+                                throw new CustomCommonException(CommonErrorCode.INVALID_PARAMETER, "price-item 파라미터가 올바르지 않습니다.");
+                            }
+
+                            return ingredientPriceType.request;
+                        })
                 .collect(Collectors.toList());
     }
 }

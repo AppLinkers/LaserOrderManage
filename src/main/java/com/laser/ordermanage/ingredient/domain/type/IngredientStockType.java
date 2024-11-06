@@ -5,7 +5,9 @@ import com.laser.ordermanage.common.exception.CustomCommonException;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -32,8 +34,14 @@ public enum IngredientStockType {
 
         return requestList.stream()
                 .map(
-                        request -> Optional.ofNullable(ingredientStockTypeMap.get(request).request)
-                                .orElseThrow(() -> new CustomCommonException(CommonErrorCode.INVALID_PARAMETER, "stock-item 파라미터가 올바르지 않습니다.")))
+                        request -> {
+                            IngredientStockType ingredientStockType = ingredientStockTypeMap.get(request);
+                            if (ingredientStockType == null) {
+                                throw new CustomCommonException(CommonErrorCode.INVALID_PARAMETER, "stock-item 파라미터가 올바르지 않습니다.");
+                            }
+
+                            return ingredientStockType.request;
+                        })
                 .collect(Collectors.toList());
     }
 }

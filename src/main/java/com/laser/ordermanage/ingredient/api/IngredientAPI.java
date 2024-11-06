@@ -19,6 +19,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.time.Year;
 import java.time.YearMonth;
 import java.util.List;
 
@@ -164,7 +165,7 @@ public class IngredientAPI {
         }
 
         if (data.equals("ingredient") && (ingredientId == null)) {
-            throw new CustomCommonException(CommonErrorCode.INVALID_PARAMETER, "ingredient-id 파라미터는 필수 입력값입니다.");
+            throw new CustomCommonException(CommonErrorCode.REQUIRED_PARAMETER, "ingredient-id");
         }
 
         if (!(timeUnit.equals("year") || timeUnit.equals("month"))) {
@@ -175,9 +176,16 @@ public class IngredientAPI {
             throw new CustomCommonException(CommonErrorCode.INVALID_PARAMETER, "조회 시작 날짜는 종료 날짜 이전이어야 합니다.");
         }
 
-        // todo: 조회 시작 날짜 검증
+        if (timeUnit.equals("year") && (Year.from(startDate).isBefore(Year.of(2023)))) {
+            throw new CustomCommonException(CommonErrorCode.INVALID_PARAMETER, "조회 시작 날짜는 2023년 이후이어야 합니다.");
+        }
+
+        if (timeUnit.equals("month") && (YearMonth.from(startDate).isBefore(YearMonth.of(2023,1)))) {
+            throw new CustomCommonException(CommonErrorCode.INVALID_PARAMETER, "조회 시작 날짜는 2023년 1월 이후이어야 합니다.");
+        }
+
         LocalDate nowDate = LocalDate.now();
-        if (timeUnit.equals("year") && (nowDate.getYear() < startDate.getYear() || nowDate.getYear() < endDate.getYear())) {
+        if (timeUnit.equals("year") && (Year.from(nowDate).isBefore(Year.from(startDate)) || Year.from(nowDate).isBefore(Year.from(endDate)))) {
             throw new CustomCommonException(CommonErrorCode.INVALID_PARAMETER, "조회 시작 및 종료 날짜는 현재 날짜 이전이어야 합니다.");
         }
 
@@ -194,7 +202,7 @@ public class IngredientAPI {
             ingredientItemTypeList = IngredientStockType.ofRequest(stockItem);
 
             if (stockUnit == null) {
-                throw new CustomCommonException(CommonErrorCode.INVALID_PARAMETER, "stock-unit 파라미터는 필수 입력값입니다.");
+                throw new CustomCommonException(CommonErrorCode.REQUIRED_PARAMETER, "stock-unit");
             }
 
             if (!(stockUnit.equals("count") || stockUnit.equals("weight"))) {
@@ -209,6 +217,5 @@ public class IngredientAPI {
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         return ResponseEntity.ok(ingredientService.getIngredientAnalysisByFactoryManager(user.getUsername(), data, ingredientId, timeUnit, startDate, endDate, itemUnit, ingredientItemTypeList, stockUnit));
-
     }
 }

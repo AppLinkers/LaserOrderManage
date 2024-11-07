@@ -3,7 +3,6 @@ package com.laser.ordermanage.ingredient.service;
 import com.laser.ordermanage.common.exception.CustomCommonException;
 import com.laser.ordermanage.common.paging.ListResponse;
 import com.laser.ordermanage.factory.domain.Factory;
-import com.laser.ordermanage.factory.repository.FactoryRepository;
 import com.laser.ordermanage.factory.service.FactoryUserAccountService;
 import com.laser.ordermanage.ingredient.domain.Ingredient;
 import com.laser.ordermanage.ingredient.domain.IngredientPrice;
@@ -30,7 +29,6 @@ import java.util.Optional;
 @Service
 public class IngredientService {
 
-    private final FactoryRepository factoryRepository;
     private final IngredientStockRepository ingredientStockRepository;
     private final IngredientPriceRepository ingredientPriceRepository;
     private final IngredientRepository ingredientRepository;
@@ -46,43 +44,7 @@ public class IngredientService {
     public GetIngredientStatusResponse getIngredientStatus(String email, LocalDate date) {
         List<GetIngredientResponse> getIngredientResponseList = ingredientRepository.findIngredientStatusByFactoryAndDate(email, date);
 
-        // average price 와 total stock 구하기
-        int sumPurchasePrice = 0;
-        int sumSellPrice = 0;
-        int totalStockCount = 0;
-        double totalStockWeight = 0.0;
-
-        int averagePurchase = 0;
-        int averageSell = 0;
-
-        if (getIngredientResponseList.size() > 0) {
-            for (GetIngredientResponse ingredientResponse : getIngredientResponseList) {
-                sumPurchasePrice += ingredientResponse.price().purchase();
-                sumSellPrice += ingredientResponse.price().sell();
-                totalStockCount += (int) ingredientResponse.stockCount().currentDay();
-                totalStockWeight += (double) ingredientResponse.stockWeight().currentDay();
-            }
-
-            averagePurchase = sumPurchasePrice / getIngredientResponseList.size();
-            averageSell = sumSellPrice / getIngredientResponseList.size();
-        }
-
-        return GetIngredientStatusResponse.builder()
-                .averagePrice(
-                        GetIngredientPriceResponse.builder()
-                                .purchase(averagePurchase)
-                                .sell(averageSell)
-                                .build()
-                )
-                .totalStock(
-                        GetIngredientTotalStockResponse.builder()
-                                .count(totalStockCount)
-                                .weight(totalStockWeight)
-                                .build()
-                )
-                .ingredientList(getIngredientResponseList)
-                .date(date)
-                .build();
+        return GetIngredientStatusResponse.from(getIngredientResponseList, date);
     }
 
     @Transactional

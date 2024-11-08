@@ -41,6 +41,11 @@ public class IngredientService {
     }
 
     @Transactional(readOnly = true)
+    public Ingredient getIngredientByIdForUpdate(Long ingredientId) {
+        return ingredientRepository.findFirstByIdForUpdate(ingredientId).orElseThrow(() -> new CustomCommonException(IngredientErrorCode.NOT_FOUND_INGREDIENT));
+    }
+
+    @Transactional(readOnly = true)
     public GetIngredientStatusResponse getIngredientStatus(String email, LocalDate date) {
         List<GetIngredientResponse> getIngredientResponseList = ingredientRepository.findIngredientStatusByFactoryAndDate(email, date);
 
@@ -82,7 +87,7 @@ public class IngredientService {
 
     @Transactional
     public void updateIngredientStock(Long ingredientId, UpdateIngredientStockRequest request) {
-        Ingredient ingredient = getIngredientById(ingredientId);
+        Ingredient ingredient = getIngredientByIdForUpdate(ingredientId);
 
         if (ingredient.isDeleted()) {
             throw new CustomCommonException(IngredientErrorCode.UNABLE_UPDATE_DELETED_INGREDIENT);
@@ -96,24 +101,25 @@ public class IngredientService {
 
         // 당일 자재 재고 현황 조회 및 업데이트
         Optional<IngredientStock> ingredientStockOptional = ingredientStockRepository.findByIngredientIdAndCreatedAt(ingredientId, nowDate);
-        if (ingredientStockOptional.isPresent()) {
-            ingredientStockOptional.get().updateStock(request);
-        } else {
-            IngredientStock ingredientStock = IngredientStock.builder()
-                    .ingredient(ingredient)
-                    .incoming(request.incoming())
-                    .production(request.production())
-                    .stock(request.currentDay())
-                    .optimal(previousIngredientStock.getOptimal())
-                    .build();
+        ingredientStockOptional.ifPresentOrElse(
+                ingredientStock -> ingredientStock.updateStock(request),
+                () -> {
+                    IngredientStock ingredientStock = IngredientStock.builder()
+                            .ingredient(ingredient)
+                            .incoming(request.incoming())
+                            .production(request.production())
+                            .stock(request.currentDay())
+                            .optimal(previousIngredientStock.getOptimal())
+                            .build();
 
-            ingredientStockRepository.save(ingredientStock);
-        }
+                    ingredientStockRepository.save(ingredientStock);
+                }
+        );
     }
 
     @Transactional
     public void updateIngredient(Long ingredientId, UpdateIngredientRequest request) {
-        Ingredient ingredient = getIngredientById(ingredientId);
+        Ingredient ingredient = getIngredientByIdForUpdate(ingredientId);
 
         if (ingredient.isDeleted()) {
             throw new CustomCommonException(IngredientErrorCode.UNABLE_UPDATE_DELETED_INGREDIENT);

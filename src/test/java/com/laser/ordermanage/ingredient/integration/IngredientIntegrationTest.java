@@ -401,7 +401,6 @@ public class IngredientIntegrationTest extends IntegrationTest {
 
         // then
         assertError(IngredientErrorCode.INVALID_INGREDIENT_STOCK, resultActions);
-
     }
 
     /**

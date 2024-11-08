@@ -108,6 +108,44 @@ public class IngredientServiceUnitTest extends ServiceUnitTest {
     }
 
     /**
+     * 자재 DB id 기준으로 자재 조회 With Lock 성공
+     */
+    @Test
+    public void getIngredientByIdForUpdate_성공() {
+        // given
+        final Ingredient expectedIngredient = IngredientBuilder.build();
+
+        // stub
+        when(ingredientRepository.findFirstByIdForUpdate(ingredientId)).thenReturn(Optional.of(expectedIngredient));
+
+        // when
+        final Ingredient actualIngredient = ingredientService.getIngredientByIdForUpdate(ingredientId);
+
+        // then
+        verify(ingredientRepository, times(1)).findFirstByIdForUpdate(ingredientId);
+        Assertions.assertThat(actualIngredient).isEqualTo(expectedIngredient);
+    }
+
+    /**
+     * 자재 DB id 기준으로 자재 조회 With Lock 실패
+     * - 실패 사유 : 존재하지 않는 자재
+     */
+    @Test
+    public void getIngredientByIdForUpdate_실패_NOT_FOUND_INGREDIENT() {
+        // given
+        final Long unknownIngredientId = 0L;
+
+        // stub
+        when(ingredientRepository.findFirstByIdForUpdate(unknownIngredientId)).thenReturn(Optional.empty());
+
+        // when & then
+        Assertions.assertThatThrownBy(() -> ingredientService.getIngredientByIdForUpdate(unknownIngredientId))
+                .isInstanceOf(CustomCommonException.class)
+                .hasMessage(IngredientErrorCode.NOT_FOUND_INGREDIENT.getMessage());
+        verify(ingredientRepository, times(1)).findFirstByIdForUpdate(unknownIngredientId);
+    }
+
+    /**
      * 자재 현황 데이터 조회 성공
      */
     @Test
@@ -162,7 +200,7 @@ public class IngredientServiceUnitTest extends ServiceUnitTest {
         final IngredientStock previousIngredientStock = IngredientStockBuilder.build();
 
         // stub
-        when(ingredientRepository.findFirstById(ingredientId)).thenReturn(Optional.of(ingredient));
+        when(ingredientRepository.findFirstByIdForUpdate(ingredientId)).thenReturn(Optional.of(ingredient));
         when(ingredientStockRepository.findPreviousByIngredientIdAndDate(eq(ingredientId), any())).thenReturn(previousIngredientStock);
         when(ingredientStockRepository.findByIngredientIdAndCreatedAt(eq(ingredientId), any())).thenReturn(Optional.empty());
 
@@ -170,7 +208,7 @@ public class IngredientServiceUnitTest extends ServiceUnitTest {
         ingredientService.updateIngredientStock(ingredientId, request);
 
         // then
-        verify(ingredientRepository, times(1)).findFirstById(ingredientId);
+        verify(ingredientRepository, times(1)).findFirstByIdForUpdate(ingredientId);
         verify(ingredientStockRepository, times(1)).findPreviousByIngredientIdAndDate(eq(ingredientId), any());
         verify(ingredientStockRepository, times(1)).findByIngredientIdAndCreatedAt(eq(ingredientId), any());
         verify(ingredientStockRepository, times(1)).save(any());
@@ -189,7 +227,7 @@ public class IngredientServiceUnitTest extends ServiceUnitTest {
         final IngredientStock todayIngredientStock = IngredientStockBuilder.build();
 
         // stub
-        when(ingredientRepository.findFirstById(ingredientId)).thenReturn(Optional.of(ingredient));
+        when(ingredientRepository.findFirstByIdForUpdate(ingredientId)).thenReturn(Optional.of(ingredient));
         when(ingredientStockRepository.findPreviousByIngredientIdAndDate(eq(ingredientId), any())).thenReturn(previousIngredientStock);
         when(ingredientStockRepository.findByIngredientIdAndCreatedAt(eq(ingredientId), any())).thenReturn(Optional.of(todayIngredientStock));
 
@@ -200,7 +238,7 @@ public class IngredientServiceUnitTest extends ServiceUnitTest {
         Assertions.assertThat(todayIngredientStock.getIncoming()).isEqualTo(request.incoming());
         Assertions.assertThat(todayIngredientStock.getProduction()).isEqualTo(request.production());
         Assertions.assertThat(todayIngredientStock.getStock()).isEqualTo(request.currentDay());
-        verify(ingredientRepository, times(1)).findFirstById(ingredientId);
+        verify(ingredientRepository, times(1)).findFirstByIdForUpdate(ingredientId);
         verify(ingredientStockRepository, times(1)).findPreviousByIngredientIdAndDate(eq(ingredientId), any());
         verify(ingredientStockRepository, times(1)).findByIngredientIdAndCreatedAt(eq(ingredientId), any());
     }
@@ -216,7 +254,7 @@ public class IngredientServiceUnitTest extends ServiceUnitTest {
         final UpdateIngredientStockRequest request = UpdateIngredientStockRequestBuilder.build();
 
         // stub
-        when(ingredientRepository.findFirstById(unknownIngredientId)).thenReturn(Optional.empty());
+        when(ingredientRepository.findFirstByIdForUpdate(unknownIngredientId)).thenReturn(Optional.empty());
 
         // when & then
         Assertions.assertThatThrownBy(() -> ingredientService.updateIngredientStock(unknownIngredientId, request))
@@ -236,7 +274,7 @@ public class IngredientServiceUnitTest extends ServiceUnitTest {
         ingredient.delete();
 
         // stub
-        when(ingredientRepository.findFirstById(ingredientId)).thenReturn(Optional.of(ingredient));
+        when(ingredientRepository.findFirstByIdForUpdate(ingredientId)).thenReturn(Optional.of(ingredient));
 
         // when & then
         Assertions.assertThatThrownBy(() -> ingredientService.updateIngredientStock(ingredientId, request))
@@ -256,7 +294,7 @@ public class IngredientServiceUnitTest extends ServiceUnitTest {
         final IngredientStock previousIngredientStock = IngredientStockBuilder.build();
 
         // stub
-        when(ingredientRepository.findFirstById(ingredientId)).thenReturn(Optional.of(ingredient));
+        when(ingredientRepository.findFirstByIdForUpdate(ingredientId)).thenReturn(Optional.of(ingredient));
         when(ingredientStockRepository.findByIngredientIdAndCreatedAt(eq(ingredientId), any())).thenReturn(Optional.empty());
         when(ingredientStockRepository.findPreviousByIngredientIdAndDate(eq(ingredientId), any())).thenReturn(previousIngredientStock);
         when(ingredientPriceRepository.findByIngredientIdAndCreatedAt(eq(ingredientId), any())).thenReturn(Optional.empty());
@@ -265,7 +303,7 @@ public class IngredientServiceUnitTest extends ServiceUnitTest {
         ingredientService.updateIngredient(ingredientId, request);
 
         // then
-        verify(ingredientRepository, times(1)).findFirstById(ingredientId);
+        verify(ingredientRepository, times(1)).findFirstByIdForUpdate(ingredientId);
         verify(ingredientStockRepository, times(1)).findByIngredientIdAndCreatedAt(eq(ingredientId), any());
         verify(ingredientStockRepository, times(1)).findPreviousByIngredientIdAndDate(eq(ingredientId), any());
         verify(ingredientStockRepository, times(1)).save(any());
@@ -286,7 +324,7 @@ public class IngredientServiceUnitTest extends ServiceUnitTest {
         final IngredientPrice todayIngredientPrice = IngredientPriceBuilder.build();
 
         // stub
-        when(ingredientRepository.findFirstById(ingredientId)).thenReturn(Optional.of(ingredient));
+        when(ingredientRepository.findFirstByIdForUpdate(ingredientId)).thenReturn(Optional.of(ingredient));
         when(ingredientStockRepository.findByIngredientIdAndCreatedAt(eq(ingredientId), any())).thenReturn(Optional.of(todayIngredientStock));
         when(ingredientPriceRepository.findByIngredientIdAndCreatedAt(eq(ingredientId), any())).thenReturn(Optional.of(todayIngredientPrice));
 
@@ -297,7 +335,7 @@ public class IngredientServiceUnitTest extends ServiceUnitTest {
         Assertions.assertThat(todayIngredientStock.getOptimal()).isEqualTo(request.optimalStock());
         Assertions.assertThat(todayIngredientPrice.getPurchase()).isEqualTo(request.price().purchase());
         Assertions.assertThat(todayIngredientPrice.getSell()).isEqualTo(request.price().sell());
-        verify(ingredientRepository, times(1)).findFirstById(ingredientId);
+        verify(ingredientRepository, times(1)).findFirstByIdForUpdate(ingredientId);
         verify(ingredientStockRepository, times(1)).findByIngredientIdAndCreatedAt(eq(ingredientId), any());
         verify(ingredientPriceRepository, times(1)).findByIngredientIdAndCreatedAt(eq(ingredientId), any());
     }
@@ -313,7 +351,7 @@ public class IngredientServiceUnitTest extends ServiceUnitTest {
         final UpdateIngredientRequest request = UpdateIngredientRequestBuilder.build();
 
         // stub
-        when(ingredientRepository.findFirstById(unknownIngredientId)).thenReturn(Optional.empty());
+        when(ingredientRepository.findFirstByIdForUpdate(unknownIngredientId)).thenReturn(Optional.empty());
 
         // when & then
         Assertions.assertThatThrownBy(() -> ingredientService.updateIngredient(unknownIngredientId, request))
@@ -333,7 +371,7 @@ public class IngredientServiceUnitTest extends ServiceUnitTest {
         ingredient.delete();
 
         // stub
-        when(ingredientRepository.findFirstById(ingredientId)).thenReturn(Optional.of(ingredient));
+        when(ingredientRepository.findFirstByIdForUpdate(ingredientId)).thenReturn(Optional.of(ingredient));
 
         // when & then
         Assertions.assertThatThrownBy(() -> ingredientService.updateIngredient(ingredientId, request))

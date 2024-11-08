@@ -34,7 +34,8 @@ public enum UserErrorCode implements ErrorCode {
 
     // 404 NOT_FOUND 리소스가 존재하지 않음
     NOT_FOUND_USER("USER_404_01", HttpStatus.NOT_FOUND, "존재하지 않는 사용자 입니다."),
-    NOT_FOUND_VERIFY_CODE("USER_404_02", HttpStatus.NOT_FOUND, "이메일에 해당하는 인증 코드가 존재하지 않습니다.");
+    NOT_FOUND_VERIFY_CODE("USER_404_02", HttpStatus.NOT_FOUND, "이메일에 해당하는 인증 코드가 존재하지 않습니다."),
+    NOT_FOUND_CHANGE_PASSWORD_TOKEN("USER_404_03", HttpStatus.NOT_FOUND, "존재하지 않는 비밀번호 변경 임시 코드 입니다.");
 
     private final String code;
     private final HttpStatus httpStatus;

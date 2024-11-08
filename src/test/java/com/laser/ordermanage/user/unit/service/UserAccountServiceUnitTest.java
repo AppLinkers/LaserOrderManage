@@ -1,6 +1,8 @@
 package com.laser.ordermanage.user.unit.service;
 
 import com.laser.ordermanage.common.ServiceUnitTest;
+import com.laser.ordermanage.common.cache.redis.dao.ChangePasswordToken;
+import com.laser.ordermanage.common.cache.redis.dao.ChangePasswordTokenBuilder;
 import com.laser.ordermanage.common.cache.redis.repository.ChangePasswordTokenRedisRepository;
 import com.laser.ordermanage.common.email.EmailService;
 import com.laser.ordermanage.common.exception.CustomCommonException;
@@ -33,6 +35,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import static org.mockito.Mockito.when;
 
@@ -130,10 +133,10 @@ public class UserAccountServiceUnitTest extends ServiceUnitTest {
     public void changePassword_성공() {
         // given
         setUp();
-        final String changePasswordToken = "change-password-token";
+        final ChangePasswordToken changePasswordToken = ChangePasswordTokenBuilder.build();
         final ChangePasswordRequest request = ChangePasswordRequestBuilder.build();
 
-        httpServletRequest.setAttribute("resolvedToken", changePasswordToken);
+        httpServletRequest.setAttribute("resolvedToken", changePasswordToken.getChangePasswordToken());
 
         final UserEntity user = UserEntityBuilder.build();
 
@@ -142,8 +145,9 @@ public class UserAccountServiceUnitTest extends ServiceUnitTest {
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         // stub
-        when(jwtProvider.getType(changePasswordToken)).thenReturn(JwtProvider.TYPE_CHANGE_PASSWORD);
         when(userAuthService.getUserByEmail(user.getEmail())).thenReturn(user);
+        when(jwtProvider.getType(changePasswordToken.getChangePasswordToken())).thenReturn(JwtProvider.TYPE_CHANGE_PASSWORD);
+        when(changePasswordTokenRedisRepository.findByChangePasswordToken(changePasswordToken.getChangePasswordToken())).thenReturn(Optional.of(changePasswordToken));
         when(passwordEncoder.encode(request.password())).thenReturn(request.password());
 
         // when
@@ -151,6 +155,34 @@ public class UserAccountServiceUnitTest extends ServiceUnitTest {
 
         // then
         Assertions.assertThat(user.getPassword()).isEqualTo(request.password());
+    }
+
+    /**
+     * 비밀번호 변경 실패
+     * - 실패 사유 : 소셜 계정은 비밀번호 변경 불가
+     */
+    @Test
+    public void changePassword_실패_SOCIAL_USER_UNABLE_TO_CHANGE_PASSWORD() {
+        // given
+        setUp();
+        final ChangePasswordToken changePasswordToken = ChangePasswordTokenBuilder.build();
+        final ChangePasswordRequest request = ChangePasswordRequestBuilder.build();
+
+        httpServletRequest.setAttribute("resolvedToken", changePasswordToken.getChangePasswordToken());
+
+        final UserEntity user = UserEntityBuilder.kakaoUserBuild();
+
+        final Collection<? extends GrantedAuthority> authorities = Collections.singleton(new SimpleGrantedAuthority(Role.ROLE_CUSTOMER.name()));
+        final Authentication authentication = new UsernamePasswordAuthenticationToken(user.getEmail(), "", authorities);
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        // stub
+        when(userAuthService.getUserByEmail(user.getEmail())).thenReturn(user);
+
+        // when & then
+        Assertions.assertThatThrownBy(() -> userAccountService.changePassword(httpServletRequest, request))
+                .isInstanceOf(CustomCommonException.class)
+                .hasMessage(UserErrorCode.SOCIAL_USER_UNABLE_TO_CHANGE_PASSWORD.getMessage());
     }
 
     /**
@@ -166,7 +198,14 @@ public class UserAccountServiceUnitTest extends ServiceUnitTest {
 
         httpServletRequest.setAttribute("resolvedToken", accessToken);
 
+        final UserEntity user = UserEntityBuilder.build();
+
+        final Collection<? extends GrantedAuthority> authorities = Collections.singleton(new SimpleGrantedAuthority(Role.ROLE_CUSTOMER.name()));
+        final Authentication authentication = new UsernamePasswordAuthenticationToken(user.getEmail(), "", authorities);
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
         // stub
+        when(userAuthService.getUserByEmail(user.getEmail())).thenReturn(user);
         when(jwtProvider.getType(accessToken)).thenReturn(JwtProvider.TYPE_ACCESS);
 
         // when & then
@@ -177,31 +216,32 @@ public class UserAccountServiceUnitTest extends ServiceUnitTest {
 
     /**
      * 비밀번호 변경 실패
-     * - 실패 사유 : 소셜 계정은 비밀번호 변경 불가
+     * - 실패 사유 : 존재하지 않는 changePasswordToken
      */
     @Test
-    public void changePassword_실패_SOCIAL_USER_UNABLE_TO_CHANGE_PASSWORD() {
+    public void changePassword_실패_NOT_FOUND_CHANGE_PASSWORD_TOKEN() {
         // given
         setUp();
-        final String changePasswordToken = "change-password-token";
+        final ChangePasswordToken changePasswordToken = ChangePasswordTokenBuilder.build();
         final ChangePasswordRequest request = ChangePasswordRequestBuilder.build();
 
-        httpServletRequest.setAttribute("resolvedToken", changePasswordToken);
+        httpServletRequest.setAttribute("resolvedToken", changePasswordToken.getChangePasswordToken());
 
-        final UserEntity user = UserEntityBuilder.kakaoUserBuild();
+        final UserEntity user = UserEntityBuilder.build();
 
         final Collection<? extends GrantedAuthority> authorities = Collections.singleton(new SimpleGrantedAuthority(Role.ROLE_CUSTOMER.name()));
         final Authentication authentication = new UsernamePasswordAuthenticationToken(user.getEmail(), "", authorities);
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         // stub
-        when(jwtProvider.getType(changePasswordToken)).thenReturn(JwtProvider.TYPE_CHANGE_PASSWORD);
         when(userAuthService.getUserByEmail(user.getEmail())).thenReturn(user);
+        when(jwtProvider.getType(changePasswordToken.getChangePasswordToken())).thenReturn(JwtProvider.TYPE_CHANGE_PASSWORD);
+        when(changePasswordTokenRedisRepository.findByChangePasswordToken(changePasswordToken.getChangePasswordToken())).thenReturn(Optional.empty());
 
         // when & then
         Assertions.assertThatThrownBy(() -> userAccountService.changePassword(httpServletRequest, request))
                 .isInstanceOf(CustomCommonException.class)
-                .hasMessage(UserErrorCode.SOCIAL_USER_UNABLE_TO_CHANGE_PASSWORD.getMessage());
+                .hasMessage(UserErrorCode.NOT_FOUND_CHANGE_PASSWORD_TOKEN.getMessage());
     }
 
     /**

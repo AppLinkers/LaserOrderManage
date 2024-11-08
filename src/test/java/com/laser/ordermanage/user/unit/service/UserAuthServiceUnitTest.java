@@ -314,7 +314,7 @@ public class UserAuthServiceUnitTest extends ServiceUnitTest {
         // stub
         when(jwtProvider.validateToken(refreshToken.getRefreshToken())).thenReturn(true);
 
-        when(refreshTokenRedisRepository.findByRefreshToken(refreshToken.getRefreshToken())).thenReturn(refreshToken);
+        when(refreshTokenRedisRepository.findByRefreshToken(refreshToken.getRefreshToken())).thenReturn(Optional.of(refreshToken));
         when(jwtProvider.generateToken(refreshToken.getId(), refreshToken.getAuthorityList())).thenReturn(expectedResponse);
 
         // when
@@ -369,7 +369,7 @@ public class UserAuthServiceUnitTest extends ServiceUnitTest {
         // stub
         when(jwtProvider.validateToken(invalidRefreshToken)).thenReturn(true);
 
-        when(refreshTokenRedisRepository.findByRefreshToken(invalidRefreshToken)).thenReturn(null);
+        when(refreshTokenRedisRepository.findByRefreshToken(invalidRefreshToken)).thenReturn(Optional.empty());
 
         // when & then
         Assertions.assertThatThrownBy(() -> userAuthService.reissue(httpServletRequest, invalidRefreshToken))
@@ -394,7 +394,7 @@ public class UserAuthServiceUnitTest extends ServiceUnitTest {
         // stub
         when(jwtProvider.validateToken(refreshToken.getRefreshToken())).thenReturn(true);
 
-        when(refreshTokenRedisRepository.findByRefreshToken(refreshToken.getRefreshToken())).thenReturn(refreshToken);
+        when(refreshTokenRedisRepository.findByRefreshToken(refreshToken.getRefreshToken())).thenReturn(Optional.of(refreshToken));
 
         // when & then
         Assertions.assertThatThrownBy(() -> userAuthService.reissue(httpServletRequest, refreshToken.getRefreshToken()))

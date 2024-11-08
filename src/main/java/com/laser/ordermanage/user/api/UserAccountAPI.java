@@ -77,11 +77,10 @@ public class UserAccountAPI {
 
     /**
      * 비밀번호 변경
+     * - 이메일 기준으로 사용자 조회
      * - Request Header 에 존재하는 Change Password Token 추출 및 검증 수행
-     * - Redis 에 있는 Change Password Token 조회
-     * - Change Password Token 의 이메일 기준으로 사용자 조회
+     * - Redis 에 있는 Change Password Token 조회 및 삭제
      * - 해당 사용자 비밀번호 변경
-     * - Redis 에 있는 Change Password Token 삭제
      */
     @PatchMapping("/password")
     public ResponseEntity<?> changePassword(

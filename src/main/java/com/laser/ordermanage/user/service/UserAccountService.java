@@ -24,6 +24,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 public class UserAccountService {
@@ -83,13 +85,6 @@ public class UserAccountService {
 
     @Transactional
     public void changePassword(HttpServletRequest httpServletRequest, ChangePasswordRequest request) {
-
-        String resolvedToken = (String)httpServletRequest.getAttribute("resolvedToken");
-
-        if (!jwtProvider.getType(resolvedToken).equals(JwtProvider.TYPE_CHANGE_PASSWORD)) {
-            throw new CustomCommonException(UserErrorCode.INVALID_CHANGE_PASSWORD_TOKEN);
-        }
-
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         UserEntity user = userAuthService.getUserByEmail(authentication.getName());
@@ -97,6 +92,19 @@ public class UserAccountService {
         if (user.isSocialAccount()) {
             throw new CustomCommonException(UserErrorCode.SOCIAL_USER_UNABLE_TO_CHANGE_PASSWORD);
         }
+
+        String resolvedToken = (String)httpServletRequest.getAttribute("resolvedToken");
+
+        if (!jwtProvider.getType(resolvedToken).equals(JwtProvider.TYPE_CHANGE_PASSWORD)) {
+            throw new CustomCommonException(UserErrorCode.INVALID_CHANGE_PASSWORD_TOKEN);
+        }
+
+        Optional<ChangePasswordToken> optionalChangePasswordToken = changePasswordTokenRedisRepository.findByChangePasswordToken(resolvedToken);
+        optionalChangePasswordToken.ifPresentOrElse(
+                changePasswordToken -> changePasswordTokenRedisRepository.delete(changePasswordToken),
+                () -> {
+                    throw new CustomCommonException(UserErrorCode.NOT_FOUND_CHANGE_PASSWORD_TOKEN);}
+        );
 
         user.changePassword(passwordEncoder.encode(request.password()));
     }

@@ -36,6 +36,7 @@ import reactor.core.publisher.Mono;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -131,8 +132,9 @@ public class UserAuthService {
         // 1. refresh token 인지 확인
         if (StringUtils.hasText(refreshTokenReq) && jwtProvider.validateToken(refreshTokenReq)) {
             jwtProvider.validateTokenType(refreshTokenReq, JwtProvider.TYPE_REFRESH);
-            RefreshToken refreshToken = refreshTokenRedisRepository.findByRefreshToken(refreshTokenReq);
-            if (refreshToken != null) {
+            Optional<RefreshToken> optionalRefreshToken = refreshTokenRedisRepository.findByRefreshToken(refreshTokenReq);
+            if (optionalRefreshToken.isPresent()) {
+                RefreshToken refreshToken = optionalRefreshToken.get();
                 // 2. 최초 로그인한 ip 와 같은지 확인 (처리 방식에 따라 재발급을 하지 않거나 메일 등의 알림을 주는 방법이 있음)
                 String currentIpAddress = NetworkUtil.getClientIp(httpServletRequest);
                 if (refreshToken.getIp().equals(currentIpAddress)) {

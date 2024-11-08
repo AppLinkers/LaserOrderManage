@@ -286,6 +286,7 @@ public class UserAccountIntegrationTest extends IntegrationTest {
     @Test
     public void 비밀번호_변경_성공() throws Exception {
         // given
+        비밀번호_변경_이메일로_비밀번호_변경_링크_전송_성공();
         final String changePasswordToken = jwtBuilder.changePasswordJwtBuildOfCustomer();
         final LoginRequest expectedLoginRequest = LoginRequestBuilder.newPasswordBuild();
         final ChangePasswordRequest request = ChangePasswordRequest.builder()
@@ -301,22 +302,6 @@ public class UserAccountIntegrationTest extends IntegrationTest {
         // then - 새로운 비밀번호로 로그인
         final ResultActions resultActionsOfLogin = requestLogin(expectedLoginRequest);
         resultActionsOfLogin.andExpect(status().isOk());
-    }
-
-    /**
-     * 비밀번호 변경 실패
-     * - 실패 사유 : 소셜 계정은 비밀번호 변경 불가
-     */
-    @Test
-    public void 비밀번호_변경_실패_소셜_계정_비밀번호_변경_불가() throws Exception {
-        final String changePasswordToken = jwtBuilder.changePasswordJwtBuildOfSocialCustomer();
-        final ChangePasswordRequest request = ChangePasswordRequestBuilder.build();
-
-        // given
-        final ResultActions resultActions = requestChangePassword(changePasswordToken, request);
-
-        // then
-        assertError(UserErrorCode.SOCIAL_USER_UNABLE_TO_CHANGE_PASSWORD, resultActions);
     }
 
     /**
@@ -418,6 +403,42 @@ public class UserAccountIntegrationTest extends IntegrationTest {
 
         // then
         assertError(UserErrorCode.NOT_FOUND_USER, resultActions);
+    }
+
+    /**
+     * 비밀번호 변경 실패
+     * - 실패 사유 : 소셜 계정은 비밀번호 변경 불가
+     */
+    @Test
+    public void 비밀번호_변경_실패_소셜_계정_비밀번호_변경_불가() throws Exception {
+        // given
+        final String changePasswordToken = jwtBuilder.changePasswordJwtBuildOfSocialCustomer();
+        final ChangePasswordRequest request = ChangePasswordRequestBuilder.build();
+
+        // when
+        final ResultActions resultActions = requestChangePassword(changePasswordToken, request);
+
+        // then
+        assertError(UserErrorCode.SOCIAL_USER_UNABLE_TO_CHANGE_PASSWORD, resultActions);
+    }
+
+    /**
+     * 비밀번호 변경 실패
+     * - 실패 사유 : 존재하지 않는 changePasswordToken
+     */
+    @Test
+    public void 비밀번호_변경_실패_비밀번호_변경_임시인증토큰_존재() throws Exception {
+        // given
+        final String changePasswordToken = jwtBuilder.changePasswordJwtBuildOfCustomer();
+        final ChangePasswordRequest request = ChangePasswordRequestBuilder.build();
+
+        // given
+        final ResultActions resultActions = requestChangePassword(changePasswordToken, request);
+
+        // then
+
+        // then
+        assertError(UserErrorCode.NOT_FOUND_CHANGE_PASSWORD_TOKEN, resultActions);
     }
 
     /**

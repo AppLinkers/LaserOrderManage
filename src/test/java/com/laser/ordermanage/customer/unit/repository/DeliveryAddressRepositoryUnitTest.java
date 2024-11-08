@@ -6,7 +6,6 @@ import com.laser.ordermanage.customer.domain.DeliveryAddressBuilder;
 import com.laser.ordermanage.customer.dto.response.CustomerGetDeliveryAddressResponse;
 import com.laser.ordermanage.customer.dto.response.CustomerGetDeliveryAddressResponseBuilder;
 import com.laser.ordermanage.customer.repository.DeliveryAddressRepository;
-import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,10 +18,7 @@ import java.util.Optional;
 public class DeliveryAddressRepositoryUnitTest extends RepositoryUnitTest {
 
     @Autowired
-    protected DeliveryAddressRepository deliveryAddressRepository;
-
-    @Autowired
-    protected JPAQueryFactory queryFactory;
+    private DeliveryAddressRepository deliveryAddressRepository;
 
     @Test
     public void findFirstById_존재_O() {

@@ -20,7 +20,7 @@ import java.util.Optional;
 public class UserEntityRepositoryUnitTest extends RepositoryUnitTest {
 
     @Autowired
-    protected UserEntityRepository userEntityRepository;
+    private UserEntityRepository userEntityRepository;
 
     @Test
     public void findFirstByEmail_존재_O() {

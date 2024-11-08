@@ -10,7 +10,6 @@ import com.laser.ordermanage.order.domain.type.Stage;
 import com.laser.ordermanage.order.dto.response.GetOrderDetailResponse;
 import com.laser.ordermanage.order.dto.response.GetOrderDetailResponseBuilder;
 import com.laser.ordermanage.order.repository.OrderRepository;
-import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,10 +26,7 @@ import java.util.Optional;
 public class OrderRepositoryUnitTest extends RepositoryUnitTest {
 
     @Autowired
-    protected OrderRepository orderRepository;
-
-    @Autowired
-    protected JPAQueryFactory queryFactory;
+    private OrderRepository orderRepository;
 
     private final static Pageable pageable = PageRequest.of(0, 10);
 

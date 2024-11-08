@@ -152,5 +152,4 @@ public class GetIngredientAnalysisItemResponseBuilder {
 
         return List.of(analysisItem1, analysisItem2);
     }
-
 }

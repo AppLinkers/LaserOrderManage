@@ -15,7 +15,7 @@ import java.util.Optional;
 public class FactoryRepositoryUnitTest extends RepositoryUnitTest {
 
     @Autowired
-    protected FactoryRepository factoryRepository;
+    private FactoryRepository factoryRepository;
 
     @Test
     public void findFactoryByFactoryManagerUserEmail_존재_O() {

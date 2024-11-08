@@ -4,7 +4,6 @@ import com.laser.ordermanage.common.RepositoryUnitTest;
 import com.laser.ordermanage.order.domain.Drawing;
 import com.laser.ordermanage.order.domain.DrawingBuilder;
 import com.laser.ordermanage.order.repository.DrawingRepository;
-import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,10 +16,7 @@ import java.util.Optional;
 public class DrawingRepositoryUnitTest extends RepositoryUnitTest {
 
     @Autowired
-    protected DrawingRepository drawingRepository;
-
-    @Autowired
-    protected JPAQueryFactory queryFactory;
+    private DrawingRepository drawingRepository;
 
     @Test
     public void findFirstById_존재_O() {

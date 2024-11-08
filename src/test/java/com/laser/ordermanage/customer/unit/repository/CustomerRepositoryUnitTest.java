@@ -15,7 +15,7 @@ import java.util.Optional;
 public class CustomerRepositoryUnitTest extends RepositoryUnitTest {
 
     @Autowired
-    protected CustomerRepository customerRepository;
+    private CustomerRepository customerRepository;
 
     @Test
     public void findFirstByUserEmail_존재_O() {

@@ -4,7 +4,6 @@ import com.laser.ordermanage.common.RepositoryUnitTest;
 import com.laser.ordermanage.order.dto.response.GetCommentResponse;
 import com.laser.ordermanage.order.dto.response.GetCommentResponseBuilder;
 import com.laser.ordermanage.order.repository.CommentRepository;
-import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,10 +15,7 @@ import java.util.List;
 public class CommentRepositoryUnitTest extends RepositoryUnitTest {
 
     @Autowired
-    protected CommentRepository commentRepository;
-
-    @Autowired
-    protected JPAQueryFactory queryFactory;
+    private CommentRepository commentRepository;
 
     @Test
     public void findCommentByOrder() {

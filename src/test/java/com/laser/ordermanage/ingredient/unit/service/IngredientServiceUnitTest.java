@@ -68,7 +68,6 @@ public class IngredientServiceUnitTest extends ServiceUnitTest {
     private final static List<String> allItemTypeList = List.of("all");
 
     private final static String countStockUnit = "count";
-    private final static String weightStockUnit = "weight";
 
     /**
      * 자재 DB id 기준으로 자재 조회 성공

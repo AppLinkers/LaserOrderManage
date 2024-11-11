@@ -6,6 +6,8 @@ import com.laser.ordermanage.common.exception.ErrorCode;
 import com.laser.ordermanage.common.security.config.TestWebSecurityConfig;
 import com.laser.ordermanage.common.security.jwt.component.JwtAccessDeniedHandler;
 import com.laser.ordermanage.common.security.jwt.component.JwtAuthenticationEntryPoint;
+import com.laser.ordermanage.common.slack.SlackService;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
@@ -36,6 +38,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ContextConfiguration(classes = TestWebSecurityConfig.class)
 @Import({JwtAccessDeniedHandler.class, JwtAuthenticationEntryPoint.class})
 public class APIUnitTest {
+
+    @MockBean
+    protected SlackService slackService;
 
     protected MockMvc mvc;
 

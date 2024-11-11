@@ -6,6 +6,7 @@ import com.laser.ordermanage.common.cache.redis.config.RedisTestContainers;
 import com.laser.ordermanage.common.cloud.aws.S3Service;
 import com.laser.ordermanage.common.email.EmailService;
 import com.laser.ordermanage.common.exception.ErrorCode;
+import com.laser.ordermanage.common.slack.SlackService;
 import org.junit.jupiter.api.AfterEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -49,6 +50,9 @@ public class IntegrationTest {
 
     @MockBean
     protected S3Service s3Service;
+
+    @MockBean
+    protected SlackService slackService;
 
     /**
      * JWT 기반의 인증 및 권한 부여 테스트

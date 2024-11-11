@@ -5,7 +5,8 @@ import com.laser.ordermanage.common.email.dto.EmailWithButtonRequest;
 import com.laser.ordermanage.common.email.dto.EmailWithCodeRequest;
 import com.laser.ordermanage.common.exception.CommonErrorCode;
 import com.laser.ordermanage.common.exception.CustomCommonException;
-import jakarta.mail.MessagingException;
+import com.laser.ordermanage.common.slack.SlackService;
+import com.laser.ordermanage.common.timer.Timer;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,6 +17,8 @@ import org.thymeleaf.context.Context;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Function;
 
 import static jakarta.mail.Message.RecipientType.TO;
 
@@ -28,29 +31,42 @@ public class EmailService {
     private final TemplateEngine templateEngine;
     private final Executor asyncExecutor;
 
+    private final SlackService slackService;
+
+    private final static int MAX_RETRIES = 3;
+
     public void sendEmail(EmailRequest emailRequest) {
-        try {
-            MimeMessage emailForm = createEmailForm(emailRequest);
-            CompletableFuture<Void> completableFuture = CompletableFuture.runAsync(() -> emailSender.send(emailForm), asyncExecutor);
+        MimeMessage emailForm = createEmailForm(emailRequest);
 
-            completableFuture.exceptionally(e -> {
-                log.error(e.getMessage());
-                return null;
-            });
+        CompletableFuture<Void> completableFuture = CompletableFuture.runAsync(() -> emailSender.send(emailForm), asyncExecutor);
 
-        } catch (Exception e) {
-            throw new CustomCommonException(CommonErrorCode.UNABLE_TO_SEND_EMAIL);
+        AtomicInteger attempt = new AtomicInteger(0);
+        for (int i = 1; i <= MAX_RETRIES; i ++) {
+            completableFuture = completableFuture.thenApply(CompletableFuture::completedFuture)
+                    .exceptionally(__ -> {
+                        if (attempt.incrementAndGet() < MAX_RETRIES) {
+                            return CompletableFuture.runAsync(() -> emailSender.send(emailForm), asyncExecutor);
+                        } else {
+                            slackService.sendSlackAlertForMailFailure(emailForm);
+                            return null;
+                        }
+                    })
+                    .thenCompose(Function.identity());
         }
     }
 
     // 발신할 이메일 데이터 세팅
-    private MimeMessage createEmailForm(EmailRequest emailRequest) throws MessagingException {
-        MimeMessage message = emailSender.createMimeMessage();
-        message.addRecipients(TO, emailRequest.recipient());
-        message.setSubject(emailRequest.subject());
-        message.setText(emailRequest.text(), "utf-8", "html");
+    private MimeMessage createEmailForm(EmailRequest emailRequest) {
+        try {
+            MimeMessage message = emailSender.createMimeMessage();
+            message.addRecipients(TO, emailRequest.recipient());
+            message.setSubject(emailRequest.subject());
+            message.setText(emailRequest.text(), "utf-8", "html");
 
-        return message;
+            return message;
+        } catch (Exception e) {
+            throw new CustomCommonException(CommonErrorCode.UNABLE_TO_SEND_EMAIL);
+        }
     }
 
     public void sendEmailWithButton(EmailWithButtonRequest request) {

@@ -24,6 +24,6 @@ public class TimerAop {
         joinPoint.proceed();
 
         stopWatch.stop();
-        log.info(joinPoint.getSignature().getName() + " - total time : " + stopWatch.getTotalTimeSeconds());
+        log.info(joinPoint.getSignature().getName() + " - total time : " + stopWatch.getTotalTimeSeconds() + "초");
     }
 }

@@ -19,14 +19,20 @@ public class AsyncConfig implements AsyncConfigurer {
     @Bean(name = "asyncExecutor")
     public Executor getAsyncExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+        // 최소 스레드 풀 사이즈
         executor.setCorePoolSize(10);
+        // 최대 스레드 풀 사이즈
         executor.setMaxPoolSize(100);
+        // 대기열 길이
         executor.setQueueCapacity(1000);
+        // 스레드 프리픽스
         executor.setThreadNamePrefix("asyncExecutor-");
+        // ThreadPoolExecutor 구성
         executor.initialize();
         return executor;
     }
 
+    // 비동기 예외 처리
     @Override
     public AsyncUncaughtExceptionHandler getAsyncUncaughtExceptionHandler() {
         return (exceptionHandler, method, params) ->

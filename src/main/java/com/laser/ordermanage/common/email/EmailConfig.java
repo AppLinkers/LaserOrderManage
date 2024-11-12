@@ -1,4 +1,4 @@
-package com.laser.ordermanage.common.config;
+package com.laser.ordermanage.common.email;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;

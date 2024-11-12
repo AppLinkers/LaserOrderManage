@@ -21,7 +21,6 @@ public class JwtExceptionFilter extends OncePerRequestFilter {
 
         try {
             filterChain.doFilter(request, response);
-
         } catch (CustomCommonException e) {
             createJwtErrorResponse(request, response, e);
         }

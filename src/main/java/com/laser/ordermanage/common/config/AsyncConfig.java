@@ -19,12 +19,12 @@ public class AsyncConfig implements AsyncConfigurer {
     @Bean(name = "asyncExecutor")
     public Executor getAsyncExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+        int numOfCores = Runtime.getRuntime().availableProcessors();
+        float targetCpuUtilization = 0.3f;
+        float blockingCoefficient = 0.1f;
+        int corePoolSize = (int) (numOfCores * targetCpuUtilization * (1 + blockingCoefficient));
         // 최소 스레드 풀 사이즈
-        executor.setCorePoolSize(10);
-        // 최대 스레드 풀 사이즈
-        executor.setMaxPoolSize(100);
-        // 대기열 길이
-        executor.setQueueCapacity(1000);
+        executor.setCorePoolSize(corePoolSize);
         // 스레드 프리픽스
         executor.setThreadNamePrefix("asyncExecutor-");
         // ThreadPoolExecutor 구성

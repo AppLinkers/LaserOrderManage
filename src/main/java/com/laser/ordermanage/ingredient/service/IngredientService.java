@@ -40,6 +40,7 @@ public class IngredientService {
         return ingredientRepository.findFirstById(ingredientId).orElseThrow(() -> new CustomCommonException(IngredientErrorCode.NOT_FOUND_INGREDIENT));
     }
 
+    //TODO: 2024-11-21 MySQL 을 활용한 분산 Lock 구현
     @Transactional(readOnly = true)
     public Ingredient getIngredientByIdForUpdate(Long ingredientId) {
         return ingredientRepository.findFirstByIdForUpdate(ingredientId).orElseThrow(() -> new CustomCommonException(IngredientErrorCode.NOT_FOUND_INGREDIENT));

@@ -23,6 +23,7 @@ import static com.laser.ordermanage.factory.domain.QFactoryManager.factoryManage
 import static com.laser.ordermanage.ingredient.domain.QIngredient.ingredient;
 import static com.laser.ordermanage.user.domain.QUserEntity.userEntity;
 
+//TODO: 2024-11-21, 목, 16:41 쿼리 가독성 높이기 with 분리 ?
 @RequiredArgsConstructor
 public class IngredientRepositoryCustomImpl implements IngredientRepositoryCustom{
 

@@ -139,6 +139,7 @@ public class IngredientAPI {
         return ResponseEntity.ok(ingredientService.getIngredientInfoByFactoryManager(user.getUsername()));
     }
 
+    //TODO: 2024-11-21, 목, 16:42 요청 파라미터 검증 로직 API 에서 하는게 맞는지 ?
     /**
      * 자재 재고 분석 데이터 조회
      * - 조회 기준

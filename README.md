@@ -6,7 +6,7 @@
 - 레이저 가공 업체 관리자를 위한 거래 및 자재 재고 데이터 관리와 분석 그래프를 제공합니다.
 
 ---
-## ERD 🗄️
+## ERD 🗄️ → [링크](https://www.erdcloud.com/p/AuF5n5TJjaPiiLiyX)
 ### 고객 사용자 및 거래 ERD
 ![order_erd](https://github.com/user-attachments/assets/cfd294d5-bd45-47b5-bbaf-8f57aaeff4ad)
 ### 공장 사용자 및 자재 ERD

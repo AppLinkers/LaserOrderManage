@@ -59,7 +59,7 @@ public class WebSecurityConfig {
                 authorizeRequests
                         .requestMatchers("/secure/actuator/**").permitAll() // actuator 권한 허가
                         .requestMatchers("/user", "/user/logout", "/user/password", "/user/password/email-link", "/user/email-notification").authenticated()
-                        .requestMatchers("/user/**").permitAll()
+                        .requestMatchers("/user/**").permitAll()  // 로그인 및 re-issue JWT AccessToken 검증 X
                         .requestMatchers("/customer/**", "/drawing/**").hasRole("CUSTOMER")
                         .requestMatchers("/factory/**").hasRole("FACTORY")
                         .anyRequest().authenticated()
@@ -84,9 +84,9 @@ public class WebSecurityConfig {
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE"));
         configuration.setAllowCredentials(true);
 
-        // URL 패턴에 따라 다른 CORS 구성을 적용할 수 있게 해줌
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration); // 모든 API Endpoint 에 동일한 configuration 적용
+        // 모든 API Endpoint 에 동일한 configuration 적용
+        source.registerCorsConfiguration("/**", configuration);
 
         return source;
     }

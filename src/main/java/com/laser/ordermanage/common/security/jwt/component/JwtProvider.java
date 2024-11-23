@@ -82,6 +82,9 @@ public class JwtProvider {
         return generateJWT(user.getEmail(), authorityList, TYPE_CHANGE_PASSWORD, new Date(), ExpireTime.CHANGE_PASSWORD_TOKEN_EXPIRE_TIME);
     }
 
+    /**
+     * JWT 생성
+     */
     public String generateJWT(String subject, List<String> authorityList, String type, Date issuedAt, long expireTime) {
         return Jwts.builder()
                 .setSubject(subject)
@@ -118,6 +121,9 @@ public class JwtProvider {
         return new UsernamePasswordAuthenticationToken(principal, "", authorities);
     }
 
+    /**
+     * JWT 검증 수행
+     */
     public boolean validateToken(String token) {
         try {
             Claims claims = parseClaims(token);
@@ -143,12 +149,18 @@ public class JwtProvider {
         }
     }
 
+    /**
+     * JWT 타입 검증
+     */
     public void validateTokenType(String token, String tokenType) {
         if (!getType(token).equals(tokenType)) {
             throw new CustomCommonException(UserErrorCode.INVALID_TOKEN_TYPE);
         }
     }
 
+    /**
+     * JWT 잔여 유효기간
+     */
     public Long getExpiration(String token) {
         Date expiration = parseClaims(token).getExpiration();
         // 현재 시간
@@ -156,6 +168,9 @@ public class JwtProvider {
         return (expiration.getTime() - now);
     }
 
+    /**
+     * JWT 타입 추출
+     */
     public String getType(String token) {
         return (String) parseClaims(token).get(TYPE_KEY);
     }

@@ -60,7 +60,6 @@ public class UserAuthAPI {
 
     /**
      * 로그아웃
-     * - Request Header 에 존재하는 Access Token 추출 및 검증 수행
      * - Redis 에 저장되어 있는 Refresh Token 제거
      * - Redis black list 에 Access Token 데이터 저장
      */

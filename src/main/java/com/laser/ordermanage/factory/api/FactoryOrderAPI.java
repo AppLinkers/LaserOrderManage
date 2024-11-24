@@ -69,11 +69,12 @@ public class FactoryOrderAPI {
             @RequestPart(value = "quotation") @Valid FactoryCreateOrUpdateOrderQuotationRequest request) {
 
         Order order = orderService.getOrderById(orderId);
-        FactoryCreateOrUpdateOrderQuotationResponse response;
 
         if (!order.enableManageQuotation()) {
             throw new CustomCommonException(OrderErrorCode.INVALID_ORDER_STAGE, order.getStage().getValue());
         }
+
+        FactoryCreateOrUpdateOrderQuotationResponse response;
 
         if (order.hasQuotation()) {
             response = factoryOrderService.updateOrderQuotation(orderId, file, request);

@@ -25,11 +25,7 @@ public class FactoryUserAccountService {
     public FactoryGetFactoryAccountResponse getFactoryAccount(String email) {
         Factory factory = getFactoryByFactoryManagerUserEmail(email);
 
-        return FactoryGetFactoryAccountResponse.builder()
-                .companyName(factory.getCompanyName())
-                .representative(factory.getRepresentative())
-                .fax(factory.getFax())
-                .build();
+        return FactoryGetFactoryAccountResponse.fromEntity(factory);
     }
 
     @Transactional

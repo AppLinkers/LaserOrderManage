@@ -56,32 +56,15 @@ public class IngredientService {
     @Transactional
     public void createIngredient(String email, CreateIngredientRequest request) {
         Factory factory = factoryUserAccountService.getFactoryByFactoryManagerUserEmail(email);
-        Ingredient ingredient = Ingredient.builder()
-                .factory(factory)
-                .texture(request.texture())
-                .thickness(request.thickness())
-                .width(request.width())
-                .height(request.height())
-                .weight(request.weight())
-                .build();
+        Ingredient ingredient = request.toEntity(factory);
 
         Ingredient savedIngredient = ingredientRepository.save(ingredient);
 
-        IngredientStock ingredientStock = IngredientStock.builder()
-                .ingredient(savedIngredient)
-                .incoming(0)
-                .production(0)
-                .stock(0)
-                .optimal(request.optimalStock())
-                .build();
+        IngredientStock ingredientStock = request.toIngredientStockEntity(ingredient);
 
         ingredientStockRepository.save(ingredientStock);
 
-        IngredientPrice ingredientPrice = IngredientPrice.builder()
-                .ingredient(savedIngredient)
-                .purchase(request.price().purchase())
-                .sell(request.price().sell())
-                .build();
+        IngredientPrice ingredientPrice = request.price().toEntity(savedIngredient);
 
         ingredientPriceRepository.save(ingredientPrice);
     }
@@ -105,14 +88,7 @@ public class IngredientService {
         ingredientStockOptional.ifPresentOrElse(
                 ingredientStock -> ingredientStock.updateStock(request),
                 () -> {
-                    IngredientStock ingredientStock = IngredientStock.builder()
-                            .ingredient(ingredient)
-                            .incoming(request.incoming())
-                            .production(request.production())
-                            .stock(request.currentDay())
-                            .optimal(previousIngredientStock.getOptimal())
-                            .build();
-
+                    IngredientStock ingredientStock = request.toEntity(ingredient, previousIngredientStock);
                     ingredientStockRepository.save(ingredientStock);
                 }
         );
@@ -136,13 +112,7 @@ public class IngredientService {
             // 가장 최근 자재 데이터 조회
             IngredientStock previousIngredientStock = ingredientStockRepository.findPreviousByIngredientIdAndDate(ingredientId, nowDate);
 
-            IngredientStock ingredientStock = IngredientStock.builder()
-                    .ingredient(ingredient)
-                    .incoming(0)
-                    .production(0)
-                    .stock(previousIngredientStock.getStock())
-                    .optimal(request.optimalStock())
-                    .build();
+            IngredientStock ingredientStock = request.toIngredientStockEntity(ingredient, previousIngredientStock);
 
             ingredientStockRepository.save(ingredientStock);
         }
@@ -152,11 +122,7 @@ public class IngredientService {
         if (ingredientPriceOptional.isPresent()) {
             ingredientPriceOptional.get().updatePrice(request.price());
         } else {
-            IngredientPrice ingredientPrice = IngredientPrice.builder()
-                    .ingredient(ingredient)
-                    .purchase(request.price().purchase())
-                    .sell(request.price().sell())
-                    .build();
+            IngredientPrice ingredientPrice = request.price().toEntity(ingredient);
 
             ingredientPriceRepository.save(ingredientPrice);
         }

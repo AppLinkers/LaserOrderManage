@@ -8,8 +8,9 @@ import com.laser.ordermanage.customer.domain.Customer;
 import com.laser.ordermanage.customer.domain.DeliveryAddress;
 import com.laser.ordermanage.customer.dto.request.*;
 import com.laser.ordermanage.customer.dto.response.CustomerCreateOrUpdateOrderPurchaseOrderResponse;
-import com.laser.ordermanage.order.domain.*;
-import com.laser.ordermanage.order.domain.type.DrawingFileType;
+import com.laser.ordermanage.order.domain.Drawing;
+import com.laser.ordermanage.order.domain.Order;
+import com.laser.ordermanage.order.domain.PurchaseOrder;
 import com.laser.ordermanage.order.domain.type.PurchaseOrderFileType;
 import com.laser.ordermanage.order.exception.OrderErrorCode;
 import com.laser.ordermanage.order.repository.CommentRepository;
@@ -23,8 +24,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -45,46 +46,13 @@ public class CustomerOrderService {
     public Long createOrder(String email, CustomerCreateOrderRequest request) {
         Customer customer = customerUserAccountService.getCustomerByUserEmail(email);
 
-        OrderDeliveryAddress deliveryAddress = OrderDeliveryAddress.ofRequest(request.deliveryAddress());
-
-        OrderManufacturing orderManufacturing = OrderManufacturing.ofRequest(request.manufacturing());
-        OrderPostProcessing orderPostProcessing = OrderPostProcessing.ofRequest(request.postProcessing());
-
-        Order order = Order.builder()
-                .customer(customer)
-                .deliveryAddress(deliveryAddress)
-                .name(request.name())
-                .imgUrl(request.getOrderImgUrl())
-                .manufacturing(orderManufacturing)
-                .postProcessing(orderPostProcessing)
-                .request(request.request())
-                .isNewIssue(request.isNewIssue())
-                .build();
+        Order order = request.toEntity(customer);
 
         Order createdOrder = orderRepository.save(order);
 
-        List<Drawing> drawingList = new ArrayList<>();
-        request.drawingList().forEach(
-                drawingRequest -> {
-                    File<DrawingFileType> file = File.<DrawingFileType>builder()
-                            .name(drawingRequest.fileName())
-                            .size(drawingRequest.fileSize())
-                            .type(DrawingFileType.ofExtension(drawingRequest.fileType()))
-                            .url(drawingRequest.fileUrl())
-                            .build();
-
-                    drawingList.add(
-                            Drawing.builder()
-                                    .order(createdOrder)
-                                    .file(file)
-                                    .thumbnailUrl(drawingRequest.thumbnailUrl())
-                                    .count(drawingRequest.count())
-                                    .ingredient(drawingRequest.ingredient())
-                                    .thickness(drawingRequest.thickness())
-                                    .build()
-                    );
-                }
-        );
+        List<Drawing> drawingList = request.drawingList().stream()
+                .map(drawingRequest -> drawingRequest.toEntity(order))
+                .collect(Collectors.toList());
 
         drawingRepository.saveAll(drawingList);
 
@@ -112,21 +80,7 @@ public class CustomerOrderService {
             throw new CustomCommonException(OrderErrorCode.INVALID_ORDER_STAGE, order.getStage().getValue());
         }
 
-        File<DrawingFileType> drawingFile = File.<DrawingFileType>builder()
-                .name(request.fileName())
-                .size(request.fileSize())
-                .type(DrawingFileType.ofExtension(request.fileType()))
-                .url(request.fileUrl())
-                .build();
-
-        Drawing drawing = Drawing.builder()
-                .order(order)
-                .file(drawingFile)
-                .thumbnailUrl(request.thumbnailUrl())
-                .count(request.count())
-                .ingredient(request.ingredient())
-                .thickness(request.thickness())
-                .build();
+        Drawing drawing = request.toEntity(order);
 
         Drawing createdDrawing = drawingRepository.save(drawing);
 
@@ -189,11 +143,11 @@ public class CustomerOrderService {
     public CustomerCreateOrUpdateOrderPurchaseOrderResponse createOrderPurchaseOrder(Long orderId, MultipartFile file, CustomerCreateOrUpdateOrderPurchaseOrderRequest request) {
         Order order = orderService.getOrderById(orderId);
 
-        if (order.getQuotation().getDeliveryDate().isAfter(request.inspectionPeriod())) {
+        if (request.isValidInspectionPeriod(order)) {
             throw new CustomCommonException(OrderErrorCode.INVALID_PURCHASE_ORDER_INSPECTION_PERIOD);
         }
 
-        if (order.getQuotation().getDeliveryDate().isAfter(request.paymentDate())) {
+        if (request.isValidPaymentDate(order)) {
             throw new CustomCommonException(OrderErrorCode.INVALID_PURCHASE_ORDER_PAYMENT_DATE);
         }
 
@@ -204,12 +158,7 @@ public class CustomerOrderService {
 
         File<PurchaseOrderFileType> purchaseOrderFile = uploadPurchaseOrderFile(file);
 
-        PurchaseOrder purchaseOrder = PurchaseOrder.builder()
-                .inspectionPeriod(request.inspectionPeriod())
-                .inspectionCondition(request.inspectionCondition())
-                .paymentDate(request.paymentDate())
-                .file(purchaseOrderFile)
-                .build();
+        PurchaseOrder purchaseOrder = request.toEntity(purchaseOrderFile);
 
         PurchaseOrder createdPurchaseOrder = purchaseOrderRepository.save(purchaseOrder);
         order.createPurchaseOrder(createdPurchaseOrder);
@@ -222,11 +171,11 @@ public class CustomerOrderService {
         Order order = orderService.getOrderById(orderId);
         PurchaseOrder purchaseOrder = order.getPurchaseOrder();
 
-        if (order.getQuotation().getDeliveryDate().isAfter(request.inspectionPeriod())) {
+        if (request.isValidInspectionPeriod(order)) {
             throw new CustomCommonException(OrderErrorCode.INVALID_PURCHASE_ORDER_INSPECTION_PERIOD);
         }
 
-        if (order.getQuotation().getDeliveryDate().isAfter(request.paymentDate())) {
+        if (request.isValidPaymentDate(order)) {
             throw new CustomCommonException(OrderErrorCode.INVALID_PURCHASE_ORDER_PAYMENT_DATE);
         }
 

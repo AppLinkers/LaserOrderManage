@@ -1,5 +1,7 @@
 package com.laser.ordermanage.customer.dto.request;
 
+import com.laser.ordermanage.common.entity.embedded.Address;
+import com.laser.ordermanage.order.domain.OrderDeliveryAddress;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
@@ -31,4 +33,18 @@ public record CustomerCreateOrderDeliveryAddressRequest (
     @Pattern(regexp = "^\\d{3}\\d{3,4}\\d{4}$", message = "연락처 형식에 맞지 않습니다.")
     String phone2
 
-) {}
+) {
+    public OrderDeliveryAddress toEntity() {
+        return OrderDeliveryAddress.builder()
+                .name(name)
+                .address(Address.builder()
+                        .zipCode(zipCode)
+                        .address(address)
+                        .detailAddress(detailAddress)
+                        .build())
+                .receiver(receiver)
+                .phone1(phone1)
+                .phone2(phone2)
+                .build();
+    }
+}

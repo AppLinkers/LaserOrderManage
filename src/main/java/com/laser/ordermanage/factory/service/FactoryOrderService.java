@@ -62,11 +62,7 @@ public class FactoryOrderService {
 
         File<QuotationFileType> quotationFile = uploadQuotationFile(file);
 
-        Quotation quotation = Quotation.builder()
-                .totalCost(request.totalCost())
-                .file(quotationFile)
-                .deliveryDate(request.deliveryDate())
-                .build();
+        Quotation quotation = request.toEntity(quotationFile);
 
         Quotation createdQuotation = quotationRepository.save(quotation);
         order.createQuotation(createdQuotation);
@@ -85,7 +81,6 @@ public class FactoryOrderService {
 
         // 견적서 파일 유무 확인
         if (file != null && !file.isEmpty()) {
-
             File<QuotationFileType> quotationFile = uploadQuotationFile(file);
 
             quotation.updateFile(quotationFile);
@@ -129,11 +124,7 @@ public class FactoryOrderService {
         // 인수자 서명 파일 업로드
         File<SignatureFileType> signatureFile = uploadAcquirerSignatureFile(file);
 
-        Acquirer acquirer = Acquirer.builder()
-                .name(request.name())
-                .phone(request.phone())
-                .signatureFile(signatureFile)
-                .build();
+        Acquirer acquirer = request.toEntity(signatureFile);
 
         Acquirer createdAcquirer = acquirerRepository.save(acquirer);
         order.createAcquirer(createdAcquirer);
@@ -155,11 +146,7 @@ public class FactoryOrderService {
 
         Customer customer = order.getCustomer();
 
-        return FactoryGetOrderCustomerResponse.builder()
-                .orderId(order.getId())
-                .orderName(order.getName())
-                .customer(customer)
-                .build();
+        return FactoryGetOrderCustomerResponse.fromEntity(order, customer);
     }
 
     @Transactional(readOnly = true)
@@ -172,11 +159,7 @@ public class FactoryOrderService {
 
         PurchaseOrder purchaseOrder = order.getPurchaseOrder();
 
-        return FactoryGetPurchaseOrderFileResponse.builder()
-                .id(purchaseOrder.getId())
-                .fileName(purchaseOrder.getFile().getName())
-                .fileUrl(purchaseOrder.getFile().getUrl())
-                .build();
+        return FactoryGetPurchaseOrderFileResponse.fromEntity(purchaseOrder);
     }
 
     private File<QuotationFileType> uploadQuotationFile(MultipartFile file) {

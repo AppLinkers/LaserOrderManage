@@ -59,11 +59,7 @@ public class OrderService {
         UserEntity user = userAuthService.getUserByEmail(email);
         Order order = this.getOrderById(orderId);
 
-        Comment comment = Comment.builder()
-                .user(user)
-                .order(order)
-                .content(request.content())
-                .build();
+        Comment comment = request.toEntity(user, order);
 
         Comment createdComment = commentRepository.save(comment);
 
@@ -78,10 +74,7 @@ public class OrderService {
             throw new CustomCommonException(OrderErrorCode.INVALID_ORDER_STAGE, order.getStage().getValue());
         }
 
-        DeleteOrderResponse response = DeleteOrderResponse.builder()
-                .name(order.getName())
-                .customerUserEmail(order.getCustomer().getUser().getEmail())
-                .build();
+        DeleteOrderResponse response = DeleteOrderResponse.fromEntity(order);
 
         // 거래 도면 데이터 삭제
         drawingRepository.deleteAllByOrder(orderId);

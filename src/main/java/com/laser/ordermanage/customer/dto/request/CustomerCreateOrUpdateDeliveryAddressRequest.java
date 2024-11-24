@@ -1,5 +1,8 @@
 package com.laser.ordermanage.customer.dto.request;
 
+import com.laser.ordermanage.common.entity.embedded.Address;
+import com.laser.ordermanage.customer.domain.Customer;
+import com.laser.ordermanage.customer.domain.DeliveryAddress;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
@@ -36,4 +39,22 @@ public record CustomerCreateOrUpdateDeliveryAddressRequest (
     @NotNull(message = "배송지 기본 여부는 필수 사항입니다.")
     Boolean isDefault
 
-) {}
+) {
+    public DeliveryAddress toEntity(Customer customer) {
+        Address addressEntity = Address.builder()
+                .zipCode(zipCode)
+                .address(address)
+                .detailAddress(detailAddress)
+                .build();
+
+        return DeliveryAddress.builder()
+                .customer(customer)
+                .name(name)
+                .address(addressEntity)
+                .receiver(receiver)
+                .phone1(phone1)
+                .phone2(phone2)
+                .isDefault(isDefault)
+                .build();
+    }
+}

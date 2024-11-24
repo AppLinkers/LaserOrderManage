@@ -1,5 +1,7 @@
 package com.laser.ordermanage.ingredient.dto.request;
 
+import com.laser.ordermanage.ingredient.domain.Ingredient;
+import com.laser.ordermanage.ingredient.domain.IngredientPrice;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
@@ -16,4 +18,11 @@ public record IngredientPriceRequest(
         @Max(value = 100000, message = "판매단가는 1 이상, 100,000 이하의 정수 입니다.")
         Integer sell
 ) {
+        public IngredientPrice toEntity(Ingredient ingredient) {
+                return IngredientPrice.builder()
+                        .ingredient(ingredient)
+                        .purchase(purchase)
+                        .sell(sell)
+                        .build();
+        }
 }

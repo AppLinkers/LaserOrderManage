@@ -1,5 +1,9 @@
 package com.laser.ordermanage.customer.dto.request;
 
+import com.laser.ordermanage.common.entity.embedded.File;
+import com.laser.ordermanage.order.domain.Drawing;
+import com.laser.ordermanage.order.domain.Order;
+import com.laser.ordermanage.order.domain.type.DrawingFileType;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
@@ -30,4 +34,22 @@ public record CustomerCreateDrawingRequest(
         @Max(value = 19, message = "두께는 1 이상, 19 이하의 정수 입니다.")
         Integer thickness
 
-) { }
+) {
+        public Drawing toEntity(Order order) {
+                File<DrawingFileType> file = File.<DrawingFileType>builder()
+                        .name(fileName)
+                        .size(fileSize)
+                        .type(DrawingFileType.ofExtension(fileType))
+                        .url(fileUrl)
+                        .build();
+
+                return Drawing.builder()
+                        .order(order)
+                        .file(file)
+                        .thumbnailUrl(thumbnailUrl)
+                        .count(count)
+                        .ingredient(ingredient)
+                        .thickness(thickness)
+                        .build();
+        }
+}

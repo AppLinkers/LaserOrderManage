@@ -1,6 +1,10 @@
 package com.laser.ordermanage.customer.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.laser.ordermanage.customer.domain.Customer;
+import com.laser.ordermanage.order.domain.Order;
+import com.laser.ordermanage.order.domain.OrderManufacturing;
+import com.laser.ordermanage.order.domain.OrderPostProcessing;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -32,7 +36,20 @@ public record CustomerCreateOrderRequest (
 
 ) {
     @JsonIgnore
-    public String getOrderImgUrl() {
+    private String getOrderImgUrl() {
         return this.drawingList.get(0).thumbnailUrl();
+    }
+
+    public Order toEntity(Customer customer) {
+        return Order.builder()
+                .customer(customer)
+                .deliveryAddress(deliveryAddress.toEntity())
+                .name(name)
+                .imgUrl(getOrderImgUrl())
+                .manufacturing(OrderManufacturing.ofRequest(manufacturing))
+                .postProcessing(OrderPostProcessing.ofRequest(postProcessing))
+                .request(request)
+                .isNewIssue(isNewIssue)
+                .build();
     }
 }

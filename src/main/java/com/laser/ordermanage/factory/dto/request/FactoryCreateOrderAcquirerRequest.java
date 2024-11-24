@@ -1,5 +1,8 @@
 package com.laser.ordermanage.factory.dto.request;
 
+import com.laser.ordermanage.common.entity.embedded.File;
+import com.laser.ordermanage.order.domain.Acquirer;
+import com.laser.ordermanage.order.domain.type.SignatureFileType;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
@@ -14,4 +17,12 @@ public record FactoryCreateOrderAcquirerRequest(
         @Pattern(regexp = "^\\d{3}\\d{3,4}\\d{4}$", message = "연락처 형식에 맞지 않습니다.")
         String phone
 
-) { }
+) {
+        public Acquirer toEntity(File<SignatureFileType> signatureFile) {
+                return Acquirer.builder()
+                        .name(name)
+                        .phone(phone)
+                        .signatureFile(signatureFile)
+                        .build();
+        }
+}

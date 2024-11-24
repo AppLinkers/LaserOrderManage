@@ -1,6 +1,10 @@
 package com.laser.ordermanage.customer.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.laser.ordermanage.common.entity.embedded.File;
+import com.laser.ordermanage.order.domain.Order;
+import com.laser.ordermanage.order.domain.PurchaseOrder;
+import com.laser.ordermanage.order.domain.type.PurchaseOrderFileType;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 
@@ -19,4 +23,21 @@ public record CustomerCreateOrUpdateOrderPurchaseOrderRequest (
     @JsonFormat(pattern = "yyyy-MM-dd")
     LocalDate paymentDate
 
-) {}
+) {
+    public boolean isValidInspectionPeriod(Order order) {
+        return order.getQuotation().getDeliveryDate().isAfter(inspectionPeriod);
+    }
+
+    public boolean isValidPaymentDate(Order order) {
+        return order.getQuotation().getDeliveryDate().isAfter(paymentDate);
+    }
+
+    public PurchaseOrder toEntity(File<PurchaseOrderFileType> purchaseOrderFile) {
+        return PurchaseOrder.builder()
+                .inspectionPeriod(inspectionPeriod)
+                .inspectionCondition(inspectionCondition)
+                .paymentDate(paymentDate)
+                .file(purchaseOrderFile)
+                .build();
+    }
+}

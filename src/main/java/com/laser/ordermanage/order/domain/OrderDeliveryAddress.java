@@ -2,7 +2,6 @@ package com.laser.ordermanage.order.domain;
 
 import com.laser.ordermanage.common.entity.embedded.Address;
 import com.laser.ordermanage.customer.domain.DeliveryAddress;
-import com.laser.ordermanage.customer.dto.request.CustomerCreateOrderDeliveryAddressRequest;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -42,20 +41,6 @@ public class OrderDeliveryAddress {
         this.receiver = receiver;
         this.phone1 = phone1;
         this.phone2 = phone2;
-    }
-
-    public static OrderDeliveryAddress ofRequest(CustomerCreateOrderDeliveryAddressRequest request) {
-        return OrderDeliveryAddress.builder()
-                .name(request.name())
-                .address(Address.builder()
-                        .zipCode(request.zipCode())
-                        .address(request.address())
-                        .detailAddress(request.detailAddress())
-                        .build())
-                .receiver(request.receiver())
-                .phone1(request.phone1())
-                .phone2(request.phone2())
-                .build();
     }
 
     public void updateDeliveryAddress(DeliveryAddress deliveryAddress) {

@@ -1,5 +1,8 @@
 package com.laser.ordermanage.ingredient.dto.request;
 
+import com.laser.ordermanage.factory.domain.Factory;
+import com.laser.ordermanage.ingredient.domain.Ingredient;
+import com.laser.ordermanage.ingredient.domain.IngredientStock;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 
@@ -34,4 +37,24 @@ public record CreateIngredientRequest(
 
         Integer optimalStock
 ) {
+        public Ingredient toEntity(Factory factory) {
+                return Ingredient.builder()
+                        .factory(factory)
+                        .texture(texture)
+                        .thickness(thickness)
+                        .width(width)
+                        .height(height)
+                        .weight(weight)
+                        .build();
+        }
+
+        public IngredientStock toIngredientStockEntity(Ingredient ingredient) {
+                return  IngredientStock.builder()
+                        .ingredient(ingredient)
+                        .incoming(0)
+                        .production(0)
+                        .stock(0)
+                        .optimal(optimalStock)
+                        .build();
+        }
 }

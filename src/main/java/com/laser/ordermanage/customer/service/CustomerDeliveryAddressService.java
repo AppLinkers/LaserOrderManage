@@ -1,6 +1,5 @@
 package com.laser.ordermanage.customer.service;
 
-import com.laser.ordermanage.common.entity.embedded.Address;
 import com.laser.ordermanage.common.exception.CustomCommonException;
 import com.laser.ordermanage.common.paging.ListResponse;
 import com.laser.ordermanage.customer.domain.Customer;
@@ -33,21 +32,7 @@ public class CustomerDeliveryAddressService {
             defaultDeliveryAddress.disableDefault();
         }
 
-        Address address = Address.builder()
-                .zipCode(request.zipCode())
-                .address(request.address())
-                .detailAddress(request.detailAddress())
-                .build();
-
-        DeliveryAddress deliveryAddress = DeliveryAddress.builder()
-                .customer(customer)
-                .name(request.name())
-                .address(address)
-                .receiver(request.receiver())
-                .phone1(request.phone1())
-                .phone2(request.phone2())
-                .isDefault(request.isDefault())
-                .build();
+        DeliveryAddress deliveryAddress = request.toEntity(customer);
 
         deliveryAddressRepository.save(deliveryAddress);
     }

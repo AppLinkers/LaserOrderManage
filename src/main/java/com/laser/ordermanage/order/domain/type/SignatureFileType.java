@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @AllArgsConstructor
-public enum SignatureFileType {
+public enum SignatureFileType implements FileType {
     PNG("png");
 
     @Getter
@@ -25,5 +25,13 @@ public enum SignatureFileType {
 
     public static SignatureFileType ofExtension(String request) {
         return Optional.ofNullable(extensionMap.get(request)).orElseThrow(() -> new CustomCommonException(OrderErrorCode.UNSUPPORTED_SIGNATURE_FILE_EXTENSION));
+    }
+
+    public static final String FOLDER_NAME = "acquirer-signature";
+
+
+    @Override
+    public String getFolderName() {
+        return FOLDER_NAME;
     }
 }

@@ -1,7 +1,8 @@
 package com.laser.ordermanage.factory.unit.service;
 
 import com.laser.ordermanage.common.ServiceUnitTest;
-import com.laser.ordermanage.common.cloud.aws.S3Service;
+import com.laser.ordermanage.common.component.FileComponent;
+import com.laser.ordermanage.common.entity.FileBuilder;
 import com.laser.ordermanage.common.exception.CustomCommonException;
 import com.laser.ordermanage.factory.dto.request.*;
 import com.laser.ordermanage.factory.dto.response.*;
@@ -19,19 +20,20 @@ import org.mockito.Mock;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.util.ReflectionTestUtils;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.FileInputStream;
 import java.time.LocalDateTime;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 public class FactoryOrderServiceUnitTest extends ServiceUnitTest {
 
     @InjectMocks
     private FactoryOrderService factoryOrderService;
+
+    @Mock
+    private FileComponent fileComponent;
 
     @Mock
     private QuotationRepository quotationRepository;
@@ -41,9 +43,6 @@ public class FactoryOrderServiceUnitTest extends ServiceUnitTest {
 
     @Mock
     private OrderService orderService;
-
-    @Mock
-    private S3Service s3Service;
 
     /**
      * 거래 긴급 설정 성공
@@ -111,7 +110,7 @@ public class FactoryOrderServiceUnitTest extends ServiceUnitTest {
 
         // stub
         when(orderService.getOrderById(orderId)).thenReturn(order);
-        when(s3Service.upload(any(), (MultipartFile) any(), eq("quotation.xlsx"))).thenReturn("quotation.xlsx.png");
+        when(fileComponent.uploadFile(any(), any())).thenReturn(FileBuilder.quotationFileBuild());
         when(quotationRepository.save(any())).thenReturn(quotation);
 
         // when
@@ -353,10 +352,10 @@ public class FactoryOrderServiceUnitTest extends ServiceUnitTest {
         final Acquirer acquirer = AcquirerBuilder.build();
 
         final Long orderId = 1L;
-        final String filePath = "src/test/resources/acquirer-signature/acquirer-signature.png";
+        final String filePath = "src/test/resources/acquirer-signature/signature.png";
         final MockMultipartFile file = new MockMultipartFile(
                 "file",
-                "acquirer-signature.png",
+                "signature.png",
                 MediaType.MULTIPART_FORM_DATA_VALUE,
                 new FileInputStream(filePath)
         );
@@ -364,7 +363,7 @@ public class FactoryOrderServiceUnitTest extends ServiceUnitTest {
 
         // stub
         when(orderService.getOrderById(orderId)).thenReturn(order);
-        when(s3Service.upload(any(), (MultipartFile) any(), eq("acquirer-signature.png"))).thenReturn("acquirer-signature-url.png");
+        when(fileComponent.uploadFile(any(), any())).thenReturn(FileBuilder.signatureFileBuild());
         when(acquirerRepository.save(any())).thenReturn(acquirer);
 
         // when

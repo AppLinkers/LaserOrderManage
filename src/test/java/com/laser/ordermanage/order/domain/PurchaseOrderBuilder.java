@@ -1,13 +1,13 @@
 package com.laser.ordermanage.order.domain;
 
-import com.laser.ordermanage.common.entity.embedded.File;
+import com.laser.ordermanage.common.entity.embedded.FileEntity;
 import com.laser.ordermanage.order.domain.type.PurchaseOrderFileType;
 
 import java.time.LocalDate;
 
 public class PurchaseOrderBuilder {
     public static PurchaseOrder build() {
-        File<PurchaseOrderFileType> file = File.<PurchaseOrderFileType>builder()
+        FileEntity<PurchaseOrderFileType> file = FileEntity.<PurchaseOrderFileType>builder()
                 .name("purchase-order.png")
                 .size(3608L)
                 .type(PurchaseOrderFileType.PNG)

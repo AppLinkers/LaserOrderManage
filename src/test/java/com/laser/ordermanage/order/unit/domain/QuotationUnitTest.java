@@ -1,6 +1,6 @@
 package com.laser.ordermanage.order.unit.domain;
 
-import com.laser.ordermanage.common.entity.embedded.File;
+import com.laser.ordermanage.common.entity.embedded.FileEntity;
 import com.laser.ordermanage.factory.dto.request.FactoryCreateOrUpdateOrderQuotationRequest;
 import com.laser.ordermanage.factory.dto.request.FactoryCreateOrUpdateOrderQuotationRequestBuilder;
 import com.laser.ordermanage.order.domain.Quotation;
@@ -15,7 +15,7 @@ public class QuotationUnitTest {
     public void updateFile() {
         // given
         final Quotation quotation = QuotationBuilder.build();
-        final File<QuotationFileType> file = File.<QuotationFileType>builder()
+        final FileEntity<QuotationFileType> file = FileEntity.<QuotationFileType>builder()
                 .name("new_quotation.pdf")
                 .size(153240L)
                 .type(QuotationFileType.JPG)

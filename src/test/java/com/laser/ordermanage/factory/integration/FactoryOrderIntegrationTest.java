@@ -811,17 +811,17 @@ public class FactoryOrderIntegrationTest extends IntegrationTest {
         // given
         final String accessToken = jwtBuilder.accessJwtBuildOfFactory();
         final String orderId = "7";
-        final String filePath = "src/test/resources/acquirer-signature/acquirer-signature.png";
+        final String filePath = "src/test/resources/acquirer-signature/signature.png";
         final MockMultipartFile file = new MockMultipartFile(
                 "file",
-                "acquirer-signature.png",
+                "signature.png",
                 MediaType.MULTIPART_FORM_DATA_VALUE,
                 new FileInputStream(filePath)
         );
         final FactoryCreateOrderAcquirerRequest request = FactoryCreateOrderAcquirerRequestBuilder.build();
 
         // stub
-        when(s3Service.upload(any(), (MultipartFile) any(), eq("acquirer-signature.png"))).thenReturn("acquirer-signature-url.png");
+        when(s3Service.upload(any(), (MultipartFile) any(), eq("signature.png"))).thenReturn("signature-url.png");
 
         // when
         final ResultActions resultActions = requestChangeStageToCompleted(accessToken, orderId, file, request);
@@ -838,10 +838,10 @@ public class FactoryOrderIntegrationTest extends IntegrationTest {
     public void 거래_완료_실패_Header_Authorization_존재() throws Exception {
         // given
         final String orderId = "7";
-        final String filePath = "src/test/resources/acquirer-signature/acquirer-signature.png";
+        final String filePath = "src/test/resources/acquirer-signature/signature.png";
         final MockMultipartFile file = new MockMultipartFile(
                 "file",
-                "acquirer-signature.png",
+                "signature.png",
                 MediaType.MULTIPART_FORM_DATA_VALUE,
                 new FileInputStream(filePath)
         );
@@ -863,10 +863,10 @@ public class FactoryOrderIntegrationTest extends IntegrationTest {
         // given
         final String unauthorizedAccessToken = jwtBuilder.unauthorizedAccessJwtBuild();
         final String orderId = "7";
-        final String filePath = "src/test/resources/acquirer-signature/acquirer-signature.png";
+        final String filePath = "src/test/resources/acquirer-signature/signature.png";
         final MockMultipartFile file = new MockMultipartFile(
                 "file",
-                "acquirer-signature.png",
+                "signature.png",
                 MediaType.MULTIPART_FORM_DATA_VALUE,
                 new FileInputStream(filePath)
         );
@@ -888,10 +888,10 @@ public class FactoryOrderIntegrationTest extends IntegrationTest {
         // given
         final String refreshToken = jwtBuilder.refreshJwtBuildOfFactory();
         final String orderId = "7";
-        final String filePath = "src/test/resources/acquirer-signature/acquirer-signature.png";
+        final String filePath = "src/test/resources/acquirer-signature/signature.png";
         final MockMultipartFile file = new MockMultipartFile(
                 "file",
-                "acquirer-signature.png",
+                "signature.png",
                 MediaType.MULTIPART_FORM_DATA_VALUE,
                 new FileInputStream(filePath)
         );
@@ -913,10 +913,10 @@ public class FactoryOrderIntegrationTest extends IntegrationTest {
         // given
         final String expiredAccessToken = jwtBuilder.expiredAccessJwtBuild();
         final String orderId = "7";
-        final String filePath = "src/test/resources/acquirer-signature/acquirer-signature.png";
+        final String filePath = "src/test/resources/acquirer-signature/signature.png";
         final MockMultipartFile file = new MockMultipartFile(
                 "file",
-                "acquirer-signature.png",
+                "signature.png",
                 MediaType.MULTIPART_FORM_DATA_VALUE,
                 new FileInputStream(filePath)
         );
@@ -938,10 +938,10 @@ public class FactoryOrderIntegrationTest extends IntegrationTest {
         // given
         final String invalidToken = jwtBuilder.invalidJwtBuild();
         final String orderId = "7";
-        final String filePath = "src/test/resources/acquirer-signature/acquirer-signature.png";
+        final String filePath = "src/test/resources/acquirer-signature/signature.png";
         final MockMultipartFile file = new MockMultipartFile(
                 "file",
-                "acquirer-signature.png",
+                "signature.png",
                 MediaType.MULTIPART_FORM_DATA_VALUE,
                 new FileInputStream(filePath)
         );
@@ -963,10 +963,10 @@ public class FactoryOrderIntegrationTest extends IntegrationTest {
         // given
         final String accessToken = jwtBuilder.accessJwtBuildOfFactory();
         final String unknownOrderId = "0";
-        final String filePath = "src/test/resources/acquirer-signature/acquirer-signature.png";
+        final String filePath = "src/test/resources/acquirer-signature/signature.png";
         final MockMultipartFile file = new MockMultipartFile(
                 "file",
-                "acquirer-signature.png",
+                "signature.png",
                 MediaType.MULTIPART_FORM_DATA_VALUE,
                 new FileInputStream(filePath)
         );
@@ -988,10 +988,10 @@ public class FactoryOrderIntegrationTest extends IntegrationTest {
         // given
         final String accessToken = jwtBuilder.accessJwtBuildOfFactory();
         final String orderId = "1";
-        final String filePath = "src/test/resources/acquirer-signature/acquirer-signature.png";
+        final String filePath = "src/test/resources/acquirer-signature/signature.png";
         final MockMultipartFile file = new MockMultipartFile(
                 "file",
-                "acquirer-signature.png",
+                "signature.png",
                 MediaType.MULTIPART_FORM_DATA_VALUE,
                 new FileInputStream(filePath)
         );

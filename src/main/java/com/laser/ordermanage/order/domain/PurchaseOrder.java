@@ -1,7 +1,7 @@
 package com.laser.ordermanage.order.domain;
 
 import com.laser.ordermanage.common.entity.CreatedAtEntity;
-import com.laser.ordermanage.common.entity.embedded.File;
+import com.laser.ordermanage.common.entity.embedded.FileEntity;
 import com.laser.ordermanage.customer.dto.request.CustomerCreateOrUpdateOrderPurchaseOrderRequest;
 import com.laser.ordermanage.order.domain.type.PurchaseOrderFileType;
 import jakarta.persistence.*;
@@ -33,17 +33,17 @@ public class PurchaseOrder extends CreatedAtEntity {
     private LocalDate paymentDate;
 
     @Embedded
-    private File<PurchaseOrderFileType> file;
+    private FileEntity<PurchaseOrderFileType> file;
 
     @Builder
-    public PurchaseOrder(LocalDate inspectionPeriod, String inspectionCondition, LocalDate paymentDate, File<PurchaseOrderFileType> file) {
+    public PurchaseOrder(LocalDate inspectionPeriod, String inspectionCondition, LocalDate paymentDate, FileEntity<PurchaseOrderFileType> file) {
         this.inspectionPeriod = inspectionPeriod;
         this.inspectionCondition = inspectionCondition;
         this.paymentDate = paymentDate;
         this.file = file;
     }
 
-    public void updateFile(File<PurchaseOrderFileType> file) {
+    public void updateFile(FileEntity<PurchaseOrderFileType> file) {
         this.file = file;
     }
 

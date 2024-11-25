@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @AllArgsConstructor
-public enum DrawingFileType {
+public enum DrawingFileType implements FileType{
     DWG("dwg"),
     DXF("dxf"),
     PDF("pdf"),
@@ -30,5 +30,12 @@ public enum DrawingFileType {
 
     public static DrawingFileType ofExtension(String request) {
         return Optional.ofNullable(extensionMap.get(request)).orElseThrow(() -> new CustomCommonException(OrderErrorCode.UNSUPPORTED_DRAWING_FILE_EXTENSION));
+    }
+
+    public static final String FOLDER_NAME = "drawing";
+
+    @Override
+    public String getFolderName() {
+        return FOLDER_NAME;
     }
 }

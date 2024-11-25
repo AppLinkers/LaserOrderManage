@@ -1,6 +1,7 @@
 package com.laser.ordermanage.order.service;
 
-import com.laser.ordermanage.common.cloud.aws.S3Service;
+import com.laser.ordermanage.common.component.FileComponent;
+import com.laser.ordermanage.common.entity.embedded.FileEntity;
 import com.laser.ordermanage.common.exception.CustomCommonException;
 import com.laser.ordermanage.common.util.CADUtil;
 import com.laser.ordermanage.common.util.FileUtil;
@@ -19,8 +20,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executor;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -30,9 +29,7 @@ public class DrawingService {
     @Value("${path.temp-folder}")
     private String tempFolderPath;
 
-    private final Executor asyncExecutor;
-
-    private final S3Service s3Service;
+    private final FileComponent fileComponent;
 
     private final DrawingRepository drawingRepository;
 
@@ -46,46 +43,25 @@ public class DrawingService {
         return drawingRepository.countByOrderId(orderId);
     }
 
-    public File extractThumbnail(MultipartFile multipartFile, DrawingFileType fileType) {
+    public File extractThumbnail(MultipartFile file) {
+        DrawingFileType fileType = DrawingFileType.ofExtension(FileUtil.getExtension(file));
         return switch (fileType) {
-            case DWG, DXF -> CADUtil.extractThumbnail(multipartFile, tempFolderPath);
-            case PDF -> PDFUtil.extractThumbnail(multipartFile, tempFolderPath);
+            case DWG, DXF -> CADUtil.extractThumbnail(file, tempFolderPath);
+            case PDF -> PDFUtil.extractThumbnail(file, tempFolderPath);
             // PNG, JPG, JPEG
-            default -> ImageUtil.extractThumbnail(multipartFile, tempFolderPath);
+            default -> ImageUtil.extractThumbnail(file, tempFolderPath);
         };
     }
 
-    public String uploadThumbnailFile(File thumbnailFile) {
-        return s3Service.upload("drawing-thumbnail", thumbnailFile, "drawing-thumbnail.png");
-    }
-
     public UploadDrawingFileResponse uploadDrawingFile(MultipartFile file) {
-        String fileName = file.getOriginalFilename();
-        Long fileSize = file.getSize();
-        DrawingFileType fileType = DrawingFileType.ofExtension(FileUtil.getExtension(file));
+        FileEntity<DrawingFileType> drawingFile = fileComponent.uploadFile(file, DrawingFileType::ofExtension);
 
-        CompletableFuture<String> completableFutureForDrawing = CompletableFuture
-                .supplyAsync(() -> s3Service.upload("drawing", file, "drawing." + fileType.getExtension()), asyncExecutor); // 도면 파일 업로드
+        // 썸네일 파일 추출
+        File thumbnailFile = extractThumbnail(file);
+        // 썸네일 파일 업로드
+        String thumbnailUrl = fileComponent.uploadFile("drawing-thumbnail", thumbnailFile, "drawing-thumbnail.png");
+        thumbnailFile.delete();
 
-        CompletableFuture<String> completableFutureForThumbnail = CompletableFuture
-                .supplyAsync(() -> extractThumbnail(file, fileType), asyncExecutor) // 썸네일 추출
-                .thenApplyAsync(thumbnailFile -> {
-                    String thumbnailFileUrl  = uploadThumbnailFile(thumbnailFile); // 썸네일 파일 업로드
-                    thumbnailFile.delete();
-                    return thumbnailFileUrl;
-                }, asyncExecutor);
-
-        CompletableFuture<UploadDrawingFileResponse> completableFuture = completableFutureForDrawing.thenCombine(completableFutureForThumbnail,
-                (fileUrl, thumbnailFileUrl) -> UploadDrawingFileResponse.builder()
-                        .thumbnailUrl(thumbnailFileUrl)
-                        .fileName(fileName)
-                        .fileType(fileType.getExtension())
-                        .fileUrl(fileUrl)
-                        .fileSize(fileSize)
-                        .build());
-
-        UploadDrawingFileResponse uploadDrawingFileResponse = completableFuture.join();
-
-        return uploadDrawingFileResponse;
+        return UploadDrawingFileResponse.fromDTO(drawingFile, thumbnailUrl);
     }
 }

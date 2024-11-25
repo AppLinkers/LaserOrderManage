@@ -1,9 +1,8 @@
 package com.laser.ordermanage.factory.service;
 
-import com.laser.ordermanage.common.cloud.aws.S3Service;
-import com.laser.ordermanage.common.entity.embedded.File;
+import com.laser.ordermanage.common.component.FileComponent;
+import com.laser.ordermanage.common.entity.embedded.FileEntity;
 import com.laser.ordermanage.common.exception.CustomCommonException;
-import com.laser.ordermanage.common.util.FileUtil;
 import com.laser.ordermanage.customer.domain.Customer;
 import com.laser.ordermanage.factory.dto.request.FactoryCreateOrUpdateOrderQuotationRequest;
 import com.laser.ordermanage.factory.dto.request.FactoryCreateOrderAcquirerRequest;
@@ -30,11 +29,12 @@ import org.springframework.web.multipart.MultipartFile;
 @Service
 public class FactoryOrderService {
 
+    private final FileComponent fileComponent;
+
     private final QuotationRepository quotationRepository;
     private final AcquirerRepository acquirerRepository;
 
     private final OrderService orderService;
-    private final S3Service s3Service;
 
     @Transactional
     public void updateOrderIsUrgent(Long orderId, FactoryUpdateOrderIsUrgentRequest request) {
@@ -60,7 +60,7 @@ public class FactoryOrderService {
             throw new CustomCommonException(OrderErrorCode.REQUIRED_QUOTATION_FILE);
         }
 
-        File<QuotationFileType> quotationFile = uploadQuotationFile(file);
+        FileEntity<QuotationFileType> quotationFile = fileComponent.uploadFile(file, QuotationFileType::ofExtension);
 
         Quotation quotation = request.toEntity(quotationFile);
 
@@ -81,7 +81,7 @@ public class FactoryOrderService {
 
         // 견적서 파일 유무 확인
         if (file != null && !file.isEmpty()) {
-            File<QuotationFileType> quotationFile = uploadQuotationFile(file);
+            FileEntity<QuotationFileType> quotationFile = fileComponent.uploadFile(file, QuotationFileType::ofExtension);
 
             quotation.updateFile(quotationFile);
         }
@@ -122,7 +122,7 @@ public class FactoryOrderService {
         Order order = orderService.getOrderById(orderId);
 
         // 인수자 서명 파일 업로드
-        File<SignatureFileType> signatureFile = uploadAcquirerSignatureFile(file);
+        FileEntity<SignatureFileType> signatureFile = fileComponent.uploadFile(file, SignatureFileType::ofExtension);
 
         Acquirer acquirer = request.toEntity(signatureFile);
 
@@ -162,38 +162,4 @@ public class FactoryOrderService {
         return FactoryGetPurchaseOrderFileResponse.fromEntity(purchaseOrder);
     }
 
-    private File<QuotationFileType> uploadQuotationFile(MultipartFile file) {
-        String fileName = file.getOriginalFilename();
-        Long fileSize = file.getSize();
-        QuotationFileType fileType = QuotationFileType.ofExtension(FileUtil.getExtension(file));
-
-        // 견적서 파일 업로드
-        String fileUrl = s3Service.upload("quotation", file, "quotation." + fileType.getExtension());
-
-        File<QuotationFileType> quotationFile = File.<QuotationFileType>builder()
-                .name(fileName)
-                .size(fileSize)
-                .type(fileType)
-                .url(fileUrl)
-                .build();
-
-        return quotationFile;
-    }
-
-    private File<SignatureFileType> uploadAcquirerSignatureFile(MultipartFile file) {
-        String fileName = file.getOriginalFilename();
-        Long fileSize = file.getSize();
-        SignatureFileType fileType = SignatureFileType.ofExtension(FileUtil.getExtension(file));
-
-        // 인수자 서명 파일 업로드
-        String fileUrl = s3Service.upload("acquirer-signature", file, "acquirer-signature." + fileType.getExtension());
-
-        File<SignatureFileType> signatureFile = File.<SignatureFileType>builder()
-                .name(fileName)
-                .size(fileSize)
-                .type(fileType)
-                .url(fileUrl)
-                .build();
-        return signatureFile;
-    }
 }

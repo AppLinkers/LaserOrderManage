@@ -1,11 +1,11 @@
 package com.laser.ordermanage.order.unit.service;
 
 import com.laser.ordermanage.common.ServiceUnitTest;
-import com.laser.ordermanage.common.cloud.aws.S3Service;
+import com.laser.ordermanage.common.component.FileComponent;
+import com.laser.ordermanage.common.entity.FileBuilder;
 import com.laser.ordermanage.common.exception.CustomCommonException;
 import com.laser.ordermanage.order.domain.Drawing;
 import com.laser.ordermanage.order.domain.DrawingBuilder;
-import com.laser.ordermanage.order.domain.type.DrawingFileType;
 import com.laser.ordermanage.order.dto.response.UploadDrawingFileResponse;
 import com.laser.ordermanage.order.dto.response.UploadDrawingFileResponseBuilder;
 import com.laser.ordermanage.order.exception.OrderErrorCode;
@@ -18,15 +18,13 @@ import org.mockito.Mock;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.util.ReflectionTestUtils;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.Optional;
-import java.util.concurrent.Executor;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.when;
 
 public class DrawingServiceUnitTest extends ServiceUnitTest {
 
@@ -34,10 +32,7 @@ public class DrawingServiceUnitTest extends ServiceUnitTest {
     private DrawingService drawingService;
 
     @Mock
-    private Executor asyncExecutor;
-
-    @Mock
-    private S3Service s3Service;
+    private FileComponent fileComponent;
 
     @Mock
     private DrawingRepository drawingRepository;
@@ -120,7 +115,7 @@ public class DrawingServiceUnitTest extends ServiceUnitTest {
         );
 
         // when
-        File thumbnailFile = drawingService.extractThumbnail(file, DrawingFileType.DWG);
+        File thumbnailFile = drawingService.extractThumbnail(file);
 
         // then
         Assertions.assertThat(thumbnailFile.exists()).isTrue();
@@ -148,7 +143,7 @@ public class DrawingServiceUnitTest extends ServiceUnitTest {
         );
 
         // when
-        File thumbnailFile = drawingService.extractThumbnail(file, DrawingFileType.DXF);
+        File thumbnailFile = drawingService.extractThumbnail(file);
 
         // then
         Assertions.assertThat(thumbnailFile.exists()).isTrue();
@@ -176,7 +171,7 @@ public class DrawingServiceUnitTest extends ServiceUnitTest {
         );
 
         // when
-        File thumbnailFile = drawingService.extractThumbnail(file, DrawingFileType.PDF);
+        File thumbnailFile = drawingService.extractThumbnail(file);
 
         // then
         Assertions.assertThat(thumbnailFile.exists()).isTrue();
@@ -204,7 +199,7 @@ public class DrawingServiceUnitTest extends ServiceUnitTest {
         );
 
         // when
-        File thumbnailFile = drawingService.extractThumbnail(file, DrawingFileType.PNG);
+        File thumbnailFile = drawingService.extractThumbnail(file);
 
         // then
         Assertions.assertThat(thumbnailFile.exists()).isTrue();
@@ -215,32 +210,12 @@ public class DrawingServiceUnitTest extends ServiceUnitTest {
     }
 
     /**
-     * 썸네일 파일 S3 업로드 기능 성공
-     */
-    @Test
-    public void uploadThumbnailFile_성공() {
-        // given
-        File thumbnailFile = mock(File.class);
-        String expectedThumbnailFileUrl = "thumbnail-file.url";
-
-        // stub
-        when(s3Service.upload(any(), (File) any(), any())).thenReturn(expectedThumbnailFileUrl);
-
-        // when
-        String actualThumbnailFileUrl = drawingService.uploadThumbnailFile(thumbnailFile);
-
-        // then
-        Assertions.assertThat(actualThumbnailFileUrl).isEqualTo(expectedThumbnailFileUrl);
-    }
-
-    /**
      * 도면 파일 업로드 기능 성공
      */
     @Test
     public void uploadDrawingFile_성공() throws Exception {
         // before
         setUp();
-        setUpForAsync(asyncExecutor);
 
         // given
         final String filePath = "src/test/resources/drawing/drawing.dwg";
@@ -253,9 +228,8 @@ public class DrawingServiceUnitTest extends ServiceUnitTest {
         final UploadDrawingFileResponse expectedResponse = UploadDrawingFileResponseBuilder.buildOfDWGDrawing();
 
         // stub
-        // Executor를 DirectExecutor로 설정하여 비동기 작업 -> 동기 작업
-        when(s3Service.upload(any(), any(MultipartFile.class), any())).thenReturn("drawing-file-url.dwg");
-        when(s3Service.upload(any(), any(File.class), any())).thenReturn("thumbnail-url.dwg");
+        when(fileComponent.uploadFile(any(), any())).thenReturn(FileBuilder.drawingFileBuild());
+        when(fileComponent.uploadFile(any(), any(), any())).thenReturn("thumbnail-url.dwg");
 
         // when
         UploadDrawingFileResponse actualResponse = drawingService.uploadDrawingFile(file);

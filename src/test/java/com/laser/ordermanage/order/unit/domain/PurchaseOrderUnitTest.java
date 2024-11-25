@@ -1,6 +1,6 @@
 package com.laser.ordermanage.order.unit.domain;
 
-import com.laser.ordermanage.common.entity.embedded.File;
+import com.laser.ordermanage.common.entity.embedded.FileEntity;
 import com.laser.ordermanage.customer.dto.request.CustomerCreateOrUpdateOrderPurchaseOrderRequest;
 import com.laser.ordermanage.customer.dto.request.CustomerCreateOrUpdateOrderPurchaseOrderRequestBuilder;
 import com.laser.ordermanage.order.domain.PurchaseOrder;
@@ -15,7 +15,7 @@ public class PurchaseOrderUnitTest {
     public void updateFile() {
         // given
         final PurchaseOrder purchaseOrder = PurchaseOrderBuilder.build();
-        final File<PurchaseOrderFileType> file = File.<PurchaseOrderFileType>builder()
+        final FileEntity<PurchaseOrderFileType> file = FileEntity.<PurchaseOrderFileType>builder()
                 .name("new_purchase_order.png")
                 .size(7216L)
                 .type(PurchaseOrderFileType.JPG)

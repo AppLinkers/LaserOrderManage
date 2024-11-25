@@ -1,13 +1,13 @@
 package com.laser.ordermanage.order.domain;
 
-import com.laser.ordermanage.common.entity.embedded.File;
+import com.laser.ordermanage.common.entity.embedded.FileEntity;
 import com.laser.ordermanage.order.domain.type.QuotationFileType;
 
 import java.time.LocalDate;
 
 public class QuotationBuilder {
     public static Quotation build() {
-        File<QuotationFileType> file = File.<QuotationFileType>builder()
+        FileEntity<QuotationFileType> file = FileEntity.<QuotationFileType>builder()
                 .name("quotation.xlsx")
                 .size(306480L)
                 .type(QuotationFileType.PDF)

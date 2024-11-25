@@ -830,10 +830,10 @@ public class FactoryOrderAPIUnitTest extends APIUnitTest {
         // given
         final String accessToken = "access-token";
         final String orderId = "1";
-        final String filePath = "src/test/resources/acquirer-signature/acquirer-signature.png";
+        final String filePath = "src/test/resources/acquirer-signature/signature.png";
         final MockMultipartFile file = new MockMultipartFile(
                 "file",
-                "acquirer-signature.png",
+                "signature.png",
                 MediaType.MULTIPART_FORM_DATA_VALUE,
                 new FileInputStream(filePath)
         );
@@ -868,10 +868,10 @@ public class FactoryOrderAPIUnitTest extends APIUnitTest {
         // given
         final String accessToken = "access-token";
         final String orderId = "1";
-        final String filePath = "src/test/resources/acquirer-signature/acquirer-signature.png";
+        final String filePath = "src/test/resources/acquirer-signature/signature.png";
         final MockMultipartFile file = new MockMultipartFile(
                 "file",
-                "acquirer-signature.png",
+                "signature.png",
                 MediaType.MULTIPART_FORM_DATA_VALUE,
                 new FileInputStream(filePath)
         );
@@ -894,10 +894,10 @@ public class FactoryOrderAPIUnitTest extends APIUnitTest {
         // given
         final String accessToken = "access-token";
         final String orderId = "1";
-        final String filePath = "src/test/resources/acquirer-signature/acquirer-signature.png";
+        final String filePath = "src/test/resources/acquirer-signature/signature.png";
         final MockMultipartFile file = new MockMultipartFile(
                 "file",
-                "acquirer-signature.png",
+                "signature.png",
                 MediaType.MULTIPART_FORM_DATA_VALUE,
                 new FileInputStream(filePath)
         );
@@ -920,10 +920,10 @@ public class FactoryOrderAPIUnitTest extends APIUnitTest {
         // given
         final String accessToken = "access-token";
         final String invalidOrderId = "invalid-order-id";
-        final String filePath = "src/test/resources/acquirer-signature/acquirer-signature.png";
+        final String filePath = "src/test/resources/acquirer-signature/signature.png";
         final MockMultipartFile file = new MockMultipartFile(
                 "file",
-                "acquirer-signature.png",
+                "signature.png",
                 MediaType.MULTIPART_FORM_DATA_VALUE,
                 new FileInputStream(filePath)
         );
@@ -984,10 +984,10 @@ public class FactoryOrderAPIUnitTest extends APIUnitTest {
     public void 거래_완료_실패_이름_필드_null() throws Exception {
         final String accessToken = "access-token";
         final String orderId = "1";
-        final String filePath = "src/test/resources/acquirer-signature/acquirer-signature.png";
+        final String filePath = "src/test/resources/acquirer-signature/signature.png";
         final MockMultipartFile file = new MockMultipartFile(
                 "file",
-                "acquirer-signature.png",
+                "signature.png",
                 MediaType.MULTIPART_FORM_DATA_VALUE,
                 new FileInputStream(filePath)
         );
@@ -1009,10 +1009,10 @@ public class FactoryOrderAPIUnitTest extends APIUnitTest {
     public void 거래_완료_실패_이름_필드_empty() throws Exception {
         final String accessToken = "access-token";
         final String orderId = "1";
-        final String filePath = "src/test/resources/acquirer-signature/acquirer-signature.png";
+        final String filePath = "src/test/resources/acquirer-signature/signature.png";
         final MockMultipartFile file = new MockMultipartFile(
                 "file",
-                "acquirer-signature.png",
+                "signature.png",
                 MediaType.MULTIPART_FORM_DATA_VALUE,
                 new FileInputStream(filePath)
         );
@@ -1034,10 +1034,10 @@ public class FactoryOrderAPIUnitTest extends APIUnitTest {
     public void 거래_완료_실패_이름_필드_유효성() throws Exception {
         final String accessToken = "access-token";
         final String orderId = "1";
-        final String filePath = "src/test/resources/acquirer-signature/acquirer-signature.png";
+        final String filePath = "src/test/resources/acquirer-signature/signature.png";
         final MockMultipartFile file = new MockMultipartFile(
                 "file",
-                "acquirer-signature.png",
+                "signature.png",
                 MediaType.MULTIPART_FORM_DATA_VALUE,
                 new FileInputStream(filePath)
         );
@@ -1059,10 +1059,10 @@ public class FactoryOrderAPIUnitTest extends APIUnitTest {
     public void 거래_완료_실패_연락처_필드_null() throws Exception {
         final String accessToken = "access-token";
         final String orderId = "1";
-        final String filePath = "src/test/resources/acquirer-signature/acquirer-signature.png";
+        final String filePath = "src/test/resources/acquirer-signature/signature.png";
         final MockMultipartFile file = new MockMultipartFile(
                 "file",
-                "acquirer-signature.png",
+                "signature.png",
                 MediaType.MULTIPART_FORM_DATA_VALUE,
                 new FileInputStream(filePath)
         );
@@ -1085,10 +1085,10 @@ public class FactoryOrderAPIUnitTest extends APIUnitTest {
         // given
         final String accessToken = "access-token";
         final String orderId = "1";
-        final String filePath = "src/test/resources/acquirer-signature/acquirer-signature.png";
+        final String filePath = "src/test/resources/acquirer-signature/signature.png";
         final MockMultipartFile file = new MockMultipartFile(
                 "file",
-                "acquirer-signature.png",
+                "signature.png",
                 MediaType.MULTIPART_FORM_DATA_VALUE,
                 new FileInputStream(filePath)
         );
@@ -1111,10 +1111,10 @@ public class FactoryOrderAPIUnitTest extends APIUnitTest {
         // given
         final String accessToken = "access-token";
         final String orderId = "1";
-        final String filePath = "src/test/resources/acquirer-signature/acquirer-signature.png";
+        final String filePath = "src/test/resources/acquirer-signature/signature.png";
         final MockMultipartFile file = new MockMultipartFile(
                 "file",
-                "acquirer-signature.png",
+                "signature.png",
                 MediaType.MULTIPART_FORM_DATA_VALUE,
                 new FileInputStream(filePath)
         );
@@ -1140,10 +1140,10 @@ public class FactoryOrderAPIUnitTest extends APIUnitTest {
         // given
         final String accessToken = "access-token";
         final String orderId = "1";
-        final String filePath = "src/test/resources/acquirer-signature/acquirer-signature.png";
+        final String filePath = "src/test/resources/acquirer-signature/signature.png";
         final MockMultipartFile file = new MockMultipartFile(
                 "file",
-                "acquirer-signature.png",
+                "signature.png",
                 MediaType.MULTIPART_FORM_DATA_VALUE,
                 new FileInputStream(filePath)
         );

@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @AllArgsConstructor
-public enum PurchaseOrderFileType {
+public enum PurchaseOrderFileType implements FileType {
     PDF("pdf"),
     HWP("hwp"),
     CELL("cell"),
@@ -34,5 +34,13 @@ public enum PurchaseOrderFileType {
 
     public static PurchaseOrderFileType ofExtension(String request) {
         return Optional.ofNullable(extensionMap.get(request)).orElseThrow(() -> new CustomCommonException(OrderErrorCode.UNSUPPORTED_QUOTATION_FILE_EXTENSION));
+    }
+
+    public static final String FOLDER_NAME = "purchase-order";
+
+
+    @Override
+    public String getFolderName() {
+        return FOLDER_NAME;
     }
 }

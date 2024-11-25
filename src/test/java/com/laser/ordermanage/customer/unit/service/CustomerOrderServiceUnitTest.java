@@ -1,7 +1,8 @@
 package com.laser.ordermanage.customer.unit.service;
 
 import com.laser.ordermanage.common.ServiceUnitTest;
-import com.laser.ordermanage.common.cloud.aws.S3Service;
+import com.laser.ordermanage.common.component.FileComponent;
+import com.laser.ordermanage.common.entity.FileBuilder;
 import com.laser.ordermanage.common.exception.CustomCommonException;
 import com.laser.ordermanage.customer.domain.DeliveryAddress;
 import com.laser.ordermanage.customer.domain.DeliveryAddressBuilder;
@@ -26,7 +27,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.FileInputStream;
 import java.util.List;
@@ -38,6 +38,9 @@ public class CustomerOrderServiceUnitTest extends ServiceUnitTest {
 
     @InjectMocks
     private CustomerOrderService customerOrderService;
+
+    @Mock
+    private FileComponent fileComponent;
 
     @Mock
     private CommentRepository commentRepository;
@@ -62,9 +65,6 @@ public class CustomerOrderServiceUnitTest extends ServiceUnitTest {
 
     @Mock
     private DrawingService drawingService;
-
-    @Mock
-    private S3Service s3Service;
 
     /**
      * 거래 생성 성공
@@ -413,7 +413,7 @@ public class CustomerOrderServiceUnitTest extends ServiceUnitTest {
 
         // stub
         when(orderService.getOrderById(orderId)).thenReturn(order);
-        when(s3Service.upload(any(), (MultipartFile) any(), eq("purchase-order.png"))).thenReturn("purchase-order-url.png");
+        when(fileComponent.uploadFile(any(), any())).thenReturn(FileBuilder.purchaseOrderFileBuild());
         when(purchaseOrderRepository.save(any())).thenReturn(purchaseOrder);
 
         // when

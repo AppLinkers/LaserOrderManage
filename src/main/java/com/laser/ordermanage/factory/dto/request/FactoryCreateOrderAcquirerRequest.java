@@ -1,6 +1,6 @@
 package com.laser.ordermanage.factory.dto.request;
 
-import com.laser.ordermanage.common.entity.embedded.File;
+import com.laser.ordermanage.common.entity.embedded.FileEntity;
 import com.laser.ordermanage.order.domain.Acquirer;
 import com.laser.ordermanage.order.domain.type.SignatureFileType;
 import jakarta.validation.constraints.NotEmpty;
@@ -18,7 +18,7 @@ public record FactoryCreateOrderAcquirerRequest(
         String phone
 
 ) {
-        public Acquirer toEntity(File<SignatureFileType> signatureFile) {
+        public Acquirer toEntity(FileEntity<SignatureFileType> signatureFile) {
                 return Acquirer.builder()
                         .name(name)
                         .phone(phone)

@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Embeddable
-public class File<T> {
+public class FileEntity<T> {
 
     @Column(name = "file_name", nullable = false)
     private String name;
@@ -28,7 +28,7 @@ public class File<T> {
     private String url;
 
     @Builder
-    public File(String name, Long size, T type, String url) {
+    public FileEntity(String name, Long size, T type, String url) {
         this.name = name;
         this.size = size;
         this.type = type;

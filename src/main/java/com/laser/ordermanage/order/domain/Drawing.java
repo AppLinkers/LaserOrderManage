@@ -1,6 +1,6 @@
 package com.laser.ordermanage.order.domain;
 
-import com.laser.ordermanage.common.entity.embedded.File;
+import com.laser.ordermanage.common.entity.embedded.FileEntity;
 import com.laser.ordermanage.customer.dto.request.CustomerUpdateDrawingRequest;
 import com.laser.ordermanage.order.domain.type.DrawingFileType;
 import com.laser.ordermanage.order.domain.type.Ingredient;
@@ -26,7 +26,7 @@ public class Drawing {
     private Order order;
 
     @Embedded
-    private File<DrawingFileType> file;
+    private FileEntity<DrawingFileType> file;
 
     @Column(name = "thumbnail_url", nullable = false)
     private String thumbnailUrl;
@@ -42,7 +42,7 @@ public class Drawing {
     private Integer thickness;
 
     @Builder
-    public Drawing(Order order, File<DrawingFileType> file, String thumbnailUrl, Integer count, String ingredient, Integer thickness) {
+    public Drawing(Order order, FileEntity<DrawingFileType> file, String thumbnailUrl, Integer count, String ingredient, Integer thickness) {
         this.order = order;
         this.file = file;
         this.thumbnailUrl = thumbnailUrl;

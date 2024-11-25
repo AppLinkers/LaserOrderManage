@@ -1,7 +1,7 @@
 package com.laser.ordermanage.factory.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.laser.ordermanage.common.entity.embedded.File;
+import com.laser.ordermanage.common.entity.embedded.FileEntity;
 import com.laser.ordermanage.order.domain.Quotation;
 import com.laser.ordermanage.order.domain.type.QuotationFileType;
 import jakarta.validation.constraints.NotNull;
@@ -18,7 +18,7 @@ public record FactoryCreateOrUpdateOrderQuotationRequest (
     LocalDate deliveryDate
 
 ) {
-    public Quotation toEntity(File<QuotationFileType> quotationFile) {
+    public Quotation toEntity(FileEntity<QuotationFileType> quotationFile) {
         return Quotation.builder()
                 .totalCost(totalCost)
                 .file(quotationFile)

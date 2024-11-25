@@ -1,6 +1,6 @@
 package com.laser.ordermanage.customer.dto.request;
 
-import com.laser.ordermanage.common.entity.embedded.File;
+import com.laser.ordermanage.common.entity.embedded.FileEntity;
 import com.laser.ordermanage.order.domain.Drawing;
 import com.laser.ordermanage.order.domain.Order;
 import com.laser.ordermanage.order.domain.type.DrawingFileType;
@@ -36,7 +36,7 @@ public record CustomerCreateDrawingRequest(
 
 ) {
         public Drawing toEntity(Order order) {
-                File<DrawingFileType> file = File.<DrawingFileType>builder()
+                FileEntity<DrawingFileType> file = FileEntity.<DrawingFileType>builder()
                         .name(fileName)
                         .size(fileSize)
                         .type(DrawingFileType.ofExtension(fileType))

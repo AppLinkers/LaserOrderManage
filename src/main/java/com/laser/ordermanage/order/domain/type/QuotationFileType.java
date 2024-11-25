@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @AllArgsConstructor
-public enum QuotationFileType {
+public enum QuotationFileType implements FileType {
     PDF("pdf"),
     HWP("hwp"),
     CELL("cell"),
@@ -34,5 +34,12 @@ public enum QuotationFileType {
 
     public static QuotationFileType ofExtension(String request) {
         return Optional.ofNullable(extensionMap.get(request)).orElseThrow(() -> new CustomCommonException(OrderErrorCode.UNSUPPORTED_QUOTATION_FILE_EXTENSION));
+    }
+
+    public static final String FOLDER_NAME = "quotation";
+
+    @Override
+    public String getFolderName() {
+        return FOLDER_NAME;
     }
 }

@@ -1,7 +1,7 @@
 package com.laser.ordermanage.order.domain;
 
 import com.laser.ordermanage.common.entity.CreatedAtEntity;
-import com.laser.ordermanage.common.entity.embedded.File;
+import com.laser.ordermanage.common.entity.embedded.FileEntity;
 import com.laser.ordermanage.factory.dto.request.FactoryCreateOrUpdateOrderQuotationRequest;
 import com.laser.ordermanage.order.domain.type.QuotationFileType;
 import jakarta.persistence.*;
@@ -27,19 +27,19 @@ public class Quotation extends CreatedAtEntity {
     private Long totalCost;
 
     @Embedded
-    private File<QuotationFileType> file;
+    private FileEntity<QuotationFileType> file;
 
     @Column(name = "delivery_date", nullable = false)
     private LocalDate deliveryDate;
 
     @Builder
-    public Quotation(Long totalCost, File<QuotationFileType> file, LocalDate deliveryDate) {
+    public Quotation(Long totalCost, FileEntity<QuotationFileType> file, LocalDate deliveryDate) {
         this.totalCost = totalCost;
         this.file = file;
         this.deliveryDate = deliveryDate;
     }
 
-    public void updateFile(File<QuotationFileType> file) {
+    public void updateFile(FileEntity<QuotationFileType> file) {
         this.file = file;
     }
 

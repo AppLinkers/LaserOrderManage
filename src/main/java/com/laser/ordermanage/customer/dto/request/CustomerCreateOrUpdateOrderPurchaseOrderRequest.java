@@ -1,7 +1,7 @@
 package com.laser.ordermanage.customer.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.laser.ordermanage.common.entity.embedded.File;
+import com.laser.ordermanage.common.entity.embedded.FileEntity;
 import com.laser.ordermanage.order.domain.Order;
 import com.laser.ordermanage.order.domain.PurchaseOrder;
 import com.laser.ordermanage.order.domain.type.PurchaseOrderFileType;
@@ -32,7 +32,7 @@ public record CustomerCreateOrUpdateOrderPurchaseOrderRequest (
         return order.getQuotation().getDeliveryDate().isAfter(paymentDate);
     }
 
-    public PurchaseOrder toEntity(File<PurchaseOrderFileType> purchaseOrderFile) {
+    public PurchaseOrder toEntity(FileEntity<PurchaseOrderFileType> purchaseOrderFile) {
         return PurchaseOrder.builder()
                 .inspectionPeriod(inspectionPeriod)
                 .inspectionCondition(inspectionCondition)

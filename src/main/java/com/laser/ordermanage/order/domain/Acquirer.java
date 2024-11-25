@@ -1,7 +1,7 @@
 package com.laser.ordermanage.order.domain;
 
 import com.laser.ordermanage.common.entity.CreatedAtEntity;
-import com.laser.ordermanage.common.entity.embedded.File;
+import com.laser.ordermanage.common.entity.embedded.FileEntity;
 import com.laser.ordermanage.order.domain.type.SignatureFileType;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -33,11 +33,11 @@ public class Acquirer extends CreatedAtEntity {
             @AttributeOverride(name = "type", column = @Column(name="signature_file_type")),
             @AttributeOverride(name = "url", column = @Column(name="signature_file_url"))
     })
-    private File<SignatureFileType> signatureFile;
+    private FileEntity<SignatureFileType> signatureFile;
 
 
     @Builder
-    public Acquirer(String name, String phone, File<SignatureFileType> signatureFile) {
+    public Acquirer(String name, String phone, FileEntity<SignatureFileType> signatureFile) {
         this.name = name;
         this.phone = phone;
         this.signatureFile = signatureFile;

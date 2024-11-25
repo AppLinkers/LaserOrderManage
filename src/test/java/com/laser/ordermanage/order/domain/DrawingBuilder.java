@@ -1,6 +1,6 @@
 package com.laser.ordermanage.order.domain;
 
-import com.laser.ordermanage.common.entity.embedded.File;
+import com.laser.ordermanage.common.entity.embedded.FileEntity;
 import com.laser.ordermanage.order.domain.type.DrawingFileType;
 import com.laser.ordermanage.order.domain.type.Ingredient;
 import org.assertj.core.api.Assertions;
@@ -10,7 +10,7 @@ public class DrawingBuilder {
         Order order = OrderBuilder.build();
         order.changeStageToCompleted();
 
-        File<DrawingFileType> file = File.<DrawingFileType>builder()
+        FileEntity<DrawingFileType> file = FileEntity.<DrawingFileType>builder()
                 .name("test.dwg")
                 .size(140801L)
                 .type(DrawingFileType.DWG)

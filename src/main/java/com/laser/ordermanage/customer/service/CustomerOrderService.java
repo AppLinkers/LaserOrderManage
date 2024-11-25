@@ -1,9 +1,8 @@
 package com.laser.ordermanage.customer.service;
 
-import com.laser.ordermanage.common.cloud.aws.S3Service;
-import com.laser.ordermanage.common.entity.embedded.File;
+import com.laser.ordermanage.common.component.FileComponent;
+import com.laser.ordermanage.common.entity.embedded.FileEntity;
 import com.laser.ordermanage.common.exception.CustomCommonException;
-import com.laser.ordermanage.common.util.FileUtil;
 import com.laser.ordermanage.customer.domain.Customer;
 import com.laser.ordermanage.customer.domain.DeliveryAddress;
 import com.laser.ordermanage.customer.dto.request.*;
@@ -31,6 +30,8 @@ import java.util.stream.Collectors;
 @Service
 public class CustomerOrderService {
 
+    private final FileComponent fileComponent;
+
     private final CommentRepository commentRepository;
     private final DrawingRepository drawingRepository;
     private final OrderRepository orderRepository;
@@ -40,7 +41,6 @@ public class CustomerOrderService {
     private final CustomerUserAccountService customerUserAccountService;
     private final CustomerDeliveryAddressService customerDeliveryAddressService;
     private final DrawingService drawingService;
-    private final S3Service s3Service;
 
     @Transactional
     public Long createOrder(String email, CustomerCreateOrderRequest request) {
@@ -156,7 +156,7 @@ public class CustomerOrderService {
             throw new CustomCommonException(OrderErrorCode.REQUIRED_PURCHASE_ORDER_FILE);
         }
 
-        File<PurchaseOrderFileType> purchaseOrderFile = uploadPurchaseOrderFile(file);
+        FileEntity<PurchaseOrderFileType> purchaseOrderFile = fileComponent.uploadFile(file, PurchaseOrderFileType::ofExtension);
 
         PurchaseOrder purchaseOrder = request.toEntity(purchaseOrderFile);
 
@@ -182,7 +182,7 @@ public class CustomerOrderService {
         // 발주서 파일 유무 확인
         if (file != null && !file.isEmpty()) {
 
-            File<PurchaseOrderFileType> purchaseOrderFile = uploadPurchaseOrderFile(file);
+            FileEntity<PurchaseOrderFileType> purchaseOrderFile = fileComponent.uploadFile(file, PurchaseOrderFileType::ofExtension);
 
             purchaseOrder.updateFile(purchaseOrderFile);
         }
@@ -218,23 +218,5 @@ public class CustomerOrderService {
 
         // 거래와 고객의 연관관계 제거 및 삭제 표시
         orderList.forEach(order -> order.delete());
-    }
-
-    private File<PurchaseOrderFileType> uploadPurchaseOrderFile(MultipartFile file) {
-        String fileName = file.getOriginalFilename();
-        Long fileSize = file.getSize();
-        PurchaseOrderFileType fileType = PurchaseOrderFileType.ofExtension(FileUtil.getExtension(file));
-
-        // 발주서 파일 업로드
-        String fileUrl = s3Service.upload("purchase-order", file, "purchase-order." + fileType.getExtension());
-
-        File<PurchaseOrderFileType> purchaseOrderFile = File.<PurchaseOrderFileType>builder()
-                .name(fileName)
-                .size(fileSize)
-                .type(fileType)
-                .url(fileUrl)
-                .build();
-
-        return purchaseOrderFile;
     }
 }
